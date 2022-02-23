@@ -1,0 +1,205 @@
+/*******************************
+         Theme Overrides
+*******************************/
+
+.ui.basic.segment.header-wrapper {
+  margin-bottom: 0;
+}
+
+.ui.basic.segment .header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .logo-nav-wrapper {
+    display: flex;
+    flex-grow: 2;
+    align-items: center;
+
+    .logo {
+      flex: 0 0 auto;
+    }
+
+    .navigation {
+      width: 100%;
+
+      &::-webkit-scrollbar {
+        height: 0; /* remove scrollbar space */
+        background: transparent; /* optional: just make scrollbar invisible */
+      }
+
+      /* optional: show position indicator in red */
+      &::-webkit-scrollbar-thumb {
+        background: #f00;
+      }
+
+      @media only screen and (max-width: @largestTabletScreen) {
+        overflow-x: initial;
+      }
+
+      .ui.secondary.pointing.menu {
+      }
+    }
+  }
+
+  @media only screen and (max-width: @largestTabletScreen) {
+    flex-direction: column;
+    align-items: initial;
+
+    .logo-nav-wrapper {
+      align-items: initial;
+      justify-content: space-between;
+    }
+  }
+
+  .tools-search-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 2;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: @huge;
+
+    & > * {
+      display: flex;
+    }
+
+    .tools {
+    }
+
+    .search {
+      form {
+        @media only screen and (min-width: @largestTabletScreen) {
+          padding: 1.7em 0 @relativeBig;
+        }
+      }
+    }
+  }
+}
+
+// #141204 ensure that main column isn't enlarged over the sidebar section
+@media screen and (max-width: 1480px) {
+  .has-sidebar .logo-nav-wrapper {
+    flex-wrap: wrap;
+  }
+}
+
+/*-------------------
+      HEADER IMS Overrides
+--------------------*/
+
+.navigation-links {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.tools-wrapper {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+}
+
+//@media only screen and (max-width: @mobileWidth) {
+//  .ui.segment.header-wrapper {
+//    position: sticky !important;
+//    z-index: 3;
+//    background: @white;
+//  }
+//
+//  .ui.segment {
+//    position: initial !important;
+//  }
+//
+//  .header .logo-nav-wrapper {
+//    margin: 10px 0 10px;
+//  }
+//}
+//
+//.ui.segment.header-wrapper {
+//  padding: 0;
+//}
+//
+//.ui.segment .header {
+//  padding: 0 15px;
+//}
+//
+//.header .logo-nav-wrapper {
+//  align-items: center;
+//
+//  .navigation {
+//    display: flex;
+//    width: 100%;
+//    align-items: center;
+//    justify-content: center;
+//  }
+//}
+//
+//.header .logo-nav-wrapper .ui.pointing.secondary {
+//  display: flex;
+//  width: 100%;
+//  max-width: 100%;
+//  justify-content: unset;
+//  margin: 0 !important;
+//
+//  .navigation-links {
+//    display: inline-flex;
+//    width: 100%;
+//    justify-content: center;
+//  }
+//
+//  .tools-wrapper {
+//    display: flex;
+//    flex: 1 0 auto;
+//    align-items: center;
+//  }
+//
+//  .tools-search-wrapper {
+//    margin-left: 0;
+//  }
+//
+//  .search form {
+//    padding-top: 0 !important;
+//  }
+//}
+//
+//@media only screen and (max-width: 766px) {
+//  // #141204 take into account that for the header wrapper on mobile views
+//  // we have the volto toolbar on top
+//  .has-toolbar-collapsed .header-wrapper {
+//    top: 20px;
+//  }
+//
+//  .has-toolbar .header-wrapper {
+//    top: 100px;
+//  }
+//}
+//
+//@media only screen and (min-width: 768px) and (max-width: @mobileWidth) {
+//  // #141204 use fixed position instead of sticky in order to always
+//  // have the header on top from 768px to 1279px
+//  .ui.segment.header-wrapper {
+//    position: fixed !important;
+//    top: 0;
+//  }
+//
+//  .header-wrapper {
+//    width: 100%; // when position fixed div behaves as inline
+//  }
+//
+//  .has-toolbar .header-wrapper {
+//    width: calc(100% - 80px); // toolbar width
+//  }
+//
+//  .has-toolbar-collapsed .header-wrapper {
+//    width: calc(100% - 20px);
+//  }
+//}
+//
+//.ui.right.sidebar.metadata-sidebar.menu,
+//.ui.left.sidebar.metadata-sidebar.menu {
+//  .ui.header {
+//    padding: 0;
+//  }
+//}

@@ -1,0 +1,121 @@
+@type: 'extra';
+@element: 'banner';
+
+@import (multiple) '../../theme.config';
+
+/*-------------------
+      BANNER
+--------------------*/
+
+.eea-page-banner {
+  width: 100%;
+  color: @white;
+  background: @bannerBackgroundColor;
+  position: relative;
+
+  .gradient {
+    background: @backgroundGradient;
+    opacity: @backgroundGradientOpacity;
+
+    .content {
+      padding: @mobileContentPadding;
+
+      .ui.grid {
+        align-items: end;
+      }
+
+      .title {
+        max-width: @titleMaxWidth;
+        margin: @mobileTitleMargin;
+        font-size: @mobileTitleFontSize;
+        font-weight: @titleFontWeight;
+        line-height: @mobileTitleLineHeight;
+      }
+
+      .metadata {
+        font-size: @mobileMetadataFontSize;
+        line-height: @mobileMetadataLineHeight;
+        font-weight: @metadataFontWeight;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: @mobileActionsAlignItems;
+
+        .action {
+          .ui.basic.inverted.button {
+            /* used basic inverted button for minimun overrides on box-shadow and active state background */
+            box-shadow: @bannerActionButtonBoxShadow !important;
+  
+            &:active {
+              background-color: @bannerActionButtonActiveBackgroundColor !important;
+            }
+
+            span {
+              font-size: @tabletBannerActionButtonFontSize;
+            }
+
+            i.icon {
+              opacity: @bannerActionButtonIconOpacity;
+              margin: @mobileBannerActionButtonMargin;
+              font-size: @mobileBannerActionButtonFontSize;
+            }
+          }
+        }
+      }
+    }
+  }
+  .image {
+    background-repeat: @imageBackgroundRepeat;
+    background-size: @imageBackgroundSize;
+    background-position: @imageBackgroundPosition;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media only screen and (min-width: @tabletBreakpoint) {
+  .eea-page-banner .gradient {
+    .content {
+      padding: @tabletContentPadding;
+
+      .title {
+        font-size: @tabletTitleFontSize;
+        font-weight: @titleFontWeight;
+        margin: @tabletTitleMargin;
+        line-height: @tabletTitleLineHeight;
+      }
+
+      .metadata {
+        font-size: @tabletMetadataFontSize;
+        line-height: @tabletMetadataLineHeight;
+      }
+
+      .actions {
+        align-items: @tabletActionsAlignItems;
+        flex-direction: @tabletActionsFlexDirection;
+
+        .action .ui.basic.inverted.button i.icon {
+          margin: @tabletBannerActionButtonMargin;
+          font-size: @tabletBannerActionButtonFontSize;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: @computerBreakpoint) {
+  .eea-page-banner .gradient {
+    .content {
+      padding: @computerContentPadding;
+
+      .title {
+        font-size: @computerTitleFontSize;
+        margin: @computerTitleMargin;
+        line-height: @computerTitleLineHeight;
+      }
+    }
+  }
+}
