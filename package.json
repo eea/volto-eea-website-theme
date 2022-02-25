@@ -12,6 +12,9 @@
     "plone",
     "react"
   ],
+  "addons": [
+    "@eeacms/volto-eea-design-system"
+  ],
   "repository": {
     "type": "git",
     "url": "git@github.com:eea/volto-eea-website-theme.git"
