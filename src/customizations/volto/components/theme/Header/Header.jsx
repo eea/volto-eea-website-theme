@@ -4,17 +4,27 @@
  */
 
 import React, { Component } from 'react';
-import { Container, Segment } from 'semantic-ui-react';
+
+import EEAHeader from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import config from '@plone/volto/registry';
+import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
+import { getNavigation } from '@plone/volto/actions';
 
-import {
-  Anontools,
-  LanguageSelector,
-  Logo,
-  Navigation,
-  SearchWidget,
-} from '@plone/volto/components';
+const linksDropdown = {
+  title: 'Environmental information systems',
+  links: [
+    { title: 'Biodiversity Information System for Europe', href: '/#' },
+    { title: 'Climate Adaptation Platform', href: '/#' },
+    { title: 'Copernicus in situ component', href: '/#' },
+    { title: 'European Industrial Emissions Portal', href: '/#' },
+    { title: 'Forest Information System for Europe', href: '/#' },
+    { title: 'Information Platform for Chemical Monitoring', href: '/#' },
+    { title: 'Marine Water Information System for Europe', href: '/#' },
+    { title: 'Fresh Water Information System for Europe', href: '/#' },
+  ],
+};
 
 /**
  * Header component class.
@@ -41,40 +51,53 @@ class Header extends Component {
     token: null,
   };
 
+  componentDidMount() {
+    const { settings } = config;
+    if (!hasApiExpander('navigation', getBaseUrl(this.props.pathname))) {
+      this.props.getNavigation(
+        getBaseUrl(this.props.pathname),
+        settings.navDepth,
+      );
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { settings } = config;
+    if (
+      prevProps.pathname !== this.props.pathname ||
+      prevProps.token !== this.props.token
+    ) {
+      if (!hasApiExpander('navigation', getBaseUrl(this.props.pathname))) {
+        this.props.getNavigation(
+          getBaseUrl(prevProps.pathname),
+          settings.navDepth,
+        );
+      }
+    }
+  }
+
   /**
    * Render method.
    * @method render
    * @returns {string} Markup for the component.
    */
   render() {
+    const menuItems = this.props.items;
     return (
-      <Segment basic className="header-wrapper" role="banner">
-        <Container>
-          <div className="header">
-            <div className="logo-nav-wrapper">
-              <div className="logo">
-                <Logo />
-              </div>
-              <Navigation pathname={this.props.pathname} />
-            </div>
-            <div className="tools-search-wrapper">
-              <LanguageSelector />
-              {!this.props.token && (
-                <div className="tools">
-                  <Anontools />
-                </div>
-              )}
-              <div className="search">
-                <SearchWidget />
-              </div>
-            </div>
-          </div>
-        </Container>
-      </Segment>
+      <EEAHeader
+        token={this.props.token}
+        pathname={this.props.pathname}
+        menuItems={menuItems}
+        linksDropdown={linksDropdown}
+      />
     );
   }
 }
 
-export default connect((state) => ({
-  token: state.userSession.token,
-}))(Header);
+export default connect(
+  (state) => ({
+    token: state.userSession.token,
+    items: state.navigation.items,
+  }),
+  { getNavigation },
+)(Header);
