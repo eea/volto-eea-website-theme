@@ -3,7 +3,7 @@
  * @module components/theme/Breadcrumbs/Breadcrumbs
  */
 
-import React from 'react';
+//import React from 'react';
 import { connect } from 'react-redux';
 //import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs.jsx';
 
