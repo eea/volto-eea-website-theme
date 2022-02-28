@@ -163,14 +163,17 @@ const Footer = (props) => {
             <Grid.Column mobile={6} tablet={5} computer={4}>
               <div className="item">
                 <EEAFooter.Contact contacts={defaultProps.contacts} />
-
                 <EEAFooter.Social social={defaultProps.social} />
               </div>
             </Grid.Column>
           </Grid>
-          <Grid.Row>
-            <EEAFooter.Actions actions={defaultProps.actions} />
-          </Grid.Row>
+          <Grid>
+            <Grid.Row>
+              <Grid.Column>
+                <EEAFooter.Actions actions={defaultProps.actions} />
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         </div>
       </EEAFooter.SubFooter>
     </EEAFooter>
