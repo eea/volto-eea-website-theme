@@ -3,12 +3,15 @@
  * @module components/theme/Breadcrumbs/Breadcrumbs
  */
 
-//import React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-//import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs.jsx';
+import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs.jsx';
 
+/**
+ * Breadcrumbs container method.
+ */
 const BreadcrumbsComponent = ({ pathname }) => {
-  return null;
+  return <EEABreadcrumbs pathname={pathname} />;
 };
 
 export default connect((state) => ({
