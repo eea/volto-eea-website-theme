@@ -33,12 +33,12 @@ const Footer = (props) => {
         copy: false,
       },
       {
-        link: '/privacy',
+        link: 'https://www.eea.europa.eu/legal/',
         title: 'Privacy',
         copy: false,
       },
       {
-        link: '/copyright',
+        link: 'https://www.eea.europa.eu/copyright',
         title: 'Copyright',
         copy: true,
       },
@@ -123,10 +123,12 @@ const Footer = (props) => {
         {
           icon: 'comment outline',
           text: 'Ask your question',
+          link: 'https://www.eea.europa.eu/contact-us',
         },
         {
           icon: 'envelope outline',
           text: 'Sign up to our newsletter',
+          link: 'https://www.eea.europa.eu/subscription/targeted-subscription',
         },
       ],
       address: 'Kongens Nytorv 6 1050 Copenhagen K (+45) 33 36 71 00',
@@ -144,12 +146,16 @@ const Footer = (props) => {
             <Grid.Column mobile={6} tablet={7} computer={8}>
               <div className="item">
                 <div className="site logo">
-                  <Image src={EEALogo} alt="EEA Logo"></Image>
+                  <a href="https://www.eea.europa.eu/">
+                    <Image src={EEALogo} alt="EEA Logo"></Image>
+                  </a>
                   <p className="description">An agency of the European Union</p>
                 </div>
 
                 <div className="eionet logo">
-                  <Image src={EIONETLogo} alt="EIONET Logo"></Image>
+                  <a href="https://www.eionet.europa.eu/">
+                    <Image src={EIONETLogo} alt="EIONET Logo"></Image>
+                  </a>
                   <p className="description">
                     European Environment
                     <br />
