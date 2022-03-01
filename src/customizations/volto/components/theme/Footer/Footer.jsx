@@ -6,6 +6,7 @@
 import React from 'react';
 import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
 import { Grid, Image } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 import EIONETLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/EIONETLogo.png';
 import EEALogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/EEA-Logo-white.svg';
@@ -26,9 +27,9 @@ const Footer = (props) => {
             <Grid.Column mobile={6} tablet={7} computer={8}>
               <div className="item">
                 <div className="site logo">
-                  <a href="https://www.eea.europa.eu/">
+                  <Link to="/">
                     <Image src={EEALogo} alt="EEA Logo"></Image>
-                  </a>
+                  </Link>
                   <p className="description">An agency of the European Union</p>
                 </div>
 

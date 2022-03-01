@@ -64,7 +64,7 @@ export const partnerWebsites = [
 
 export const globalActions = [
   {
-    link: 'https://www.eea.europa.eu/login_form',
+    link: '/login',
     title: 'CMS Login',
   },
   {
@@ -72,11 +72,11 @@ export const globalActions = [
     title: 'Sitemap',
   },
   {
-    link: 'https://www.eea.europa.eu/legal/',
+    link: '/privacy',
     title: 'Privacy',
   },
   {
-    link: 'https://www.eea.europa.eu/copyright',
+    link: '/copyright',
     title: '@Copyright',
   },
 ];
