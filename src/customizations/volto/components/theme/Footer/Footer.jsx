@@ -49,7 +49,10 @@ const Footer = (props) => {
             </Grid.Column>
             <Grid.Column mobile={6} tablet={5} computer={4}>
               <div className="item">
-                <EEAFooter.Contact contacts={eea.footerActions} />
+                <EEAFooter.Contact
+                  contacts={eea.footerActions}
+                  header="Contact Us"
+                />
                 <EEAFooter.Social social={eea.socialActions} />
               </div>
             </Grid.Column>
