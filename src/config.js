@@ -108,7 +108,7 @@ export const footerActions = [
   {
     icon: 'comment outline',
     text: 'Ask your question',
-    link: '/contact-form',
+    link: '/contact-us',
   },
   {
     icon: 'envelope outline',
