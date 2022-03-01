@@ -108,12 +108,12 @@ export const footerActions = [
   {
     icon: 'comment outline',
     text: 'Ask your question',
-    link: 'https://www.eea.europa.eu/contact-us',
+    link: '/contact-us',
   },
   {
     icon: 'envelope outline',
     text: 'Sign up to our newsletter',
-    link: 'https://www.eea.europa.eu/subscription/targeted-subscription',
+    link: '/newsletter',
   },
 ];
 
