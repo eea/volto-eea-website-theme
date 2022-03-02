@@ -5,12 +5,15 @@
 
 import React, { Component } from 'react';
 
-import EEAHeader from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import config from '@plone/volto/registry';
+
+import EEAHeader from '@eeacms/volto-eea-design-system/ui/Header/Header';
+
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
+
+import config from '@plone/volto/registry';
 
 const linksDropdown = {
   title: 'Environmental information systems',
