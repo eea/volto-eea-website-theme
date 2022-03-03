@@ -125,6 +125,7 @@ const EEAHeader = ({ pathname, token, items }) => {
         </Header.TopDropdownMenu>
       </Header.TopHeader>
       <Header.Main
+        pathname={pathname}
         logo={
           <Logo
             src={LogoImage}
