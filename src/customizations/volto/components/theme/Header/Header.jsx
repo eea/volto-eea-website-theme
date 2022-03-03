@@ -3,123 +3,141 @@
  * @module components/theme/Header/Header
  */
 
-import React, { Component } from 'react';
+import React from 'react';
+import { Dropdown, Image } from 'semantic-ui-react';
 
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
-import EEAHeader from '@eeacms/volto-eea-design-system/ui/Header/Header';
+import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
+import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
+
+import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
+import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
+import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
 
 import config from '@plone/volto/registry';
 
-const linksDropdown = {
-  title: 'Environmental information systems',
-  links: [
-    {
-      title: 'Biodiversity Information System for Europe',
-      href: 'https://biodiversity.europa.eu/',
-    },
-    {
-      title: 'Climate Adaptation Platform',
-      href: 'https://climate-adapt.eea.europa.eu/',
-    },
-    {
-      title: 'Copernicus in situ component',
-      href: 'https://insitu.copernicus.eu/',
-    },
-    {
-      title: 'European Industrial Emissions Portal',
-      href: 'https://industry.eea.europa.eu/',
-    },
-    {
-      title: 'Forest Information System for Europe',
-      href: 'https://forest.eea.europa.eu/',
-    },
-    {
-      title: 'Information Platform for Chemical Monitoring',
-      href: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
-    },
-    {
-      title: 'Marine Water Information System for Europe',
-      href: 'https://water.europa.eu/marine',
-    },
-    {
-      title: 'Fresh Water Information System for Europe',
-      href: 'https://water.europa.eu/freshwater',
-    },
-  ],
-};
-
 /**
- * Header component class.
- * @class Header
- * @extends Component
+ * EEA Specific Header component.
  */
-class Header extends Component {
-  /**
-   * Property types.
-   * @property {Object} propTypes Property types.
-   * @static
-   */
-  static propTypes = {
-    token: PropTypes.string,
-    pathname: PropTypes.string.isRequired,
-  };
+const EEAHeader = ({ pathname, token, items }) => {
+  const { eea } = config.settings;
+  const dispatch = useDispatch();
+  const previousToken = usePrevious(token);
+  const [language, setLanguage] = React.useState(eea.defaultLanguage);
 
-  /**
-   * Default properties.
-   * @property {Object} defaultProps Default properties.
-   * @static
-   */
-  static defaultProps = {
-    token: null,
-  };
-
-  componentDidMount() {
+  React.useEffect(() => {
     const { settings } = config;
-    if (!hasApiExpander('navigation', getBaseUrl(this.props.pathname))) {
-      this.props.getNavigation(
-        getBaseUrl(this.props.pathname),
-        settings.navDepth,
-      );
+    const base = getBaseUrl(pathname);
+    if (!hasApiExpander('navigation', base)) {
+      dispatch(getNavigation(base, settings.navDepth));
     }
-  }
+  }, [pathname, dispatch]);
 
-  componentDidUpdate(prevProps, prevState) {
-    const { settings } = config;
-    if (
-      prevProps.pathname !== this.props.pathname ||
-      prevProps.token !== this.props.token
-    ) {
-      if (!hasApiExpander('navigation', getBaseUrl(this.props.pathname))) {
-        this.props.getNavigation(
-          getBaseUrl(prevProps.pathname),
-          settings.navDepth,
-        );
+  React.useEffect(() => {
+    if (token !== previousToken) {
+      const { settings } = config;
+      const base = getBaseUrl(pathname);
+      if (!hasApiExpander('navigation', base)) {
+        dispatch(getNavigation(base, settings.navDepth));
       }
     }
-  }
+  }, [token, dispatch, pathname, previousToken]);
 
-  /**
-   * Render method.
-   * @method render
-   * @returns {string} Markup for the component.
-   */
-  render() {
-    const menuItems = this.props.items;
-    return (
-      <EEAHeader
-        token={this.props.token}
-        pathname={this.props.pathname}
-        menuItems={menuItems}
-        linksDropdown={linksDropdown}
-      />
-    );
-  }
-}
+  return (
+    <Header menuItems={items}>
+      <Header.TopHeader>
+        <Header.TopItem className="official-union">
+          <Image src={eeaFlag} alt="eea flag"></Image>
+          <Header.TopDropdownMenu
+            text="An official website of the European Union | How do you Know?"
+            mobileText="An official EU website"
+            icon="chevron down"
+            aria-label="dropdown"
+            className=""
+          >
+            <div className="content">
+              <p>
+                All official European Union website addresses are in the{' '}
+                <b>europa.eu</b> domain.
+              </p>
+              <a
+                href="https://europa.eu/european-union/contact/institutions-bodies_en"
+                target="_blank"
+                rel="noreferrer"
+                role="option"
+                aria-selected="false"
+              >
+                See all EU institutions and bodies
+              </a>
+            </div>
+          </Header.TopDropdownMenu>
+        </Header.TopItem>
+
+        <Header.TopItem>
+          <Header.TopDropdownMenu
+            id="theme-sites"
+            className="tablet or lower hidden"
+            text={eea.globalHeaderPartnerLinks.title}
+          >
+            <div className="wrapper">
+              {eea.globalHeaderPartnerLinks.links.map((item, index) => (
+                <Dropdown.Item key={index}>
+                  <a
+                    href={item.href}
+                    className="site"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.title}
+                  </a>
+                </Dropdown.Item>
+              ))}
+            </div>
+          </Header.TopDropdownMenu>
+        </Header.TopItem>
+
+        <Header.TopDropdownMenu
+          id="language-switcher"
+          className="item"
+          text={`${language.toUpperCase()}`}
+          icon={
+            <Image src={globeIcon} alt="language dropdown globe icon"></Image>
+          }
+        >
+          {eea.languages.map((item, index) => (
+            <Dropdown.Item
+              key={index}
+              text={
+                <span>
+                  {item.name}
+                  <span className="country-code">
+                    {item.code.toUpperCase()}
+                  </span>
+                </span>
+              }
+              onClick={() => setLanguage(item.code)}
+            ></Dropdown.Item>
+          ))}
+        </Header.TopDropdownMenu>
+      </Header.TopHeader>
+      <Header.Main
+        logo={
+          <Logo
+            src={LogoImage}
+            title={eea.websiteTitle}
+            alt={eea.organisationName}
+            url={eea.logoTargetUrl}
+          />
+        }
+        menuItems={items}
+      ></Header.Main>
+    </Header>
+  );
+};
 
 export default connect(
   (state) => ({
@@ -127,4 +145,4 @@ export default connect(
     items: state.navigation.items,
   }),
   { getNavigation },
-)(Header);
+)(EEAHeader);
