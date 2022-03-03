@@ -52,6 +52,7 @@ const Footer = (props) => {
                 <EEAFooter.Contact
                   contacts={eea.footerActions}
                   header="Contact Us"
+                  address={eea.address}
                 />
                 <EEAFooter.Social social={eea.socialActions} />
               </div>
