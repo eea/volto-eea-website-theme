@@ -5,8 +5,11 @@
 
 import React from 'react';
 import { Dropdown, Image } from 'semantic-ui-react';
-
 import { connect, useDispatch } from 'react-redux';
+
+import { UniversalLink } from '@plone/volto/components';
+import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
+import { getNavigation } from '@plone/volto/actions';
 
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
@@ -14,9 +17,6 @@ import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
-
-import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
-import { getNavigation } from '@plone/volto/actions';
 
 import config from '@plone/volto/registry';
 
@@ -134,6 +134,11 @@ const EEAHeader = ({ pathname, token, items }) => {
           />
         }
         menuItems={items}
+        renderMenuItem={(item) => (
+          <UniversalLink href={item.url || '/'} title={item.title}>
+            {item.title}
+          </UniversalLink>
+        )}
       ></Header.Main>
     </Header>
   );
