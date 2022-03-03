@@ -77,7 +77,8 @@ export const globalActions = [
   },
   {
     link: '/copyright',
-    title: '@Copyright',
+    title: 'Copyright',
+    copy: true,
   },
 ];
 
