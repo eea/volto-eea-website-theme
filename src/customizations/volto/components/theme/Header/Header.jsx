@@ -135,6 +135,18 @@ const EEAHeader = ({ pathname, token, items }) => {
           />
         }
         menuItems={items}
+        renderGlobalMenuItem={(item, { onClick }) => (
+          <a
+            href={item.url || '/'}
+            title={item.title}
+            onClick={(e) => {
+              e.preventDefault();
+              onClick(e, item);
+            }}
+          >
+            {item.title}
+          </a>
+        )}
         renderMenuItem={(item) => (
           <UniversalLink href={item.url || '/'} title={item.title}>
             {item.title}
