@@ -3,17 +3,37 @@
  * @module components/theme/Breadcrumbs/Breadcrumbs
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
+import { getBreadcrumbs } from '@plone/volto/actions';
 import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs.jsx';
 
-/**
- * Breadcrumbs container method.
- */
-const BreadcrumbsComponent = ({ pathname }) => {
-  return <EEABreadcrumbs pathname={pathname} />;
+const Breadcrumbs = ({ pathname }) => {
+  const dispatch = useDispatch();
+  const { items = [], root = '/' } = useSelector((state) => state?.breadcrumbs);
+
+  const sections = items.map((item) => ({
+    title: item.title,
+    href: item.url,
+    key: item.title,
+  }));
+
+  useEffect(() => {
+    if (!hasApiExpander('breadcrumbs', getBaseUrl(pathname))) {
+      dispatch(getBreadcrumbs(getBaseUrl(pathname)));
+    }
+  }, [dispatch, pathname]);
+
+  return (
+    <EEABreadcrumbs
+      pathname={pathname}
+      sections={sections}
+      root={root}
+      icon="right chevron"
+    />
+  );
 };
 
-export default connect((state) => ({
-  pathname: state.router?.location?.pathname,
-}))(BreadcrumbsComponent);
+export default Breadcrumbs;
