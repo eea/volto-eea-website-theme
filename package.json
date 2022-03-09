@@ -13,7 +13,8 @@
     "react"
   ],
   "addons": [
-    "@eeacms/volto-eea-design-system"
+    "@eeacms/volto-eea-design-system",
+    "volto-slate"
   ],
   "repository": {
     "type": "git",
@@ -21,7 +22,8 @@
   },
   "dependencies": {
     "@plone/scripts": "*",
-    "@eeacms/volto-eea-design-system": "*"
+    "@eeacms/volto-eea-design-system": "*",
+    "volto-slate": "*"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.5",

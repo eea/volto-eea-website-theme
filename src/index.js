@@ -1,5 +1,5 @@
 import * as eea from './config';
-import { Blockquote } from './components';
+import installBlockquote from './components/manage/SlatePlugins/Blockquote';
 
 const applyConfig = (config) => {
   config.settings.eea = {
@@ -11,12 +11,8 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'dropdown';
   }
-  // Apply blockquote slate customization
-  if (config.settings.slate) {
-    config.settings.slate.elements['blockquote'] = Blockquote;
-  }
 
-  return config;
+  return [installBlockquote].reduce((acc, apply) => apply(acc), config);
 };
 
 export default applyConfig;
