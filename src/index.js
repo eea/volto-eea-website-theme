@@ -1,5 +1,6 @@
 import * as eea from './config';
 import { Blockquote } from './components';
+import installBlocks from './components/manage/Blocks';
 
 const applyConfig = (config) => {
   config.settings.eea = {
@@ -16,7 +17,7 @@ const applyConfig = (config) => {
     config.settings.slate.elements['blockquote'] = Blockquote;
   }
 
-  return config;
+  return [installBlocks].reduce((acc, apply) => apply(acc), config);
 };
 
 export default applyConfig;
