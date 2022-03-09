@@ -27,6 +27,7 @@ export default (data) => {
       },
       position: {
         title: 'Position',
+        description: 'Takes effect only in view mode',
         choices: [
           ['left', 'Left'],
           ['right', 'Right'],
