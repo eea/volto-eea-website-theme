@@ -1,5 +1,6 @@
 import * as eea from './config';
 import { Blockquote } from './components';
+import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 
 const applyConfig = (config) => {
   config.settings.eea = {
@@ -15,7 +16,14 @@ const applyConfig = (config) => {
   if (config.settings.slate) {
     config.settings.slate.elements['blockquote'] = Blockquote;
   }
-
+  // apply inPage navigation
+  config.settings.appExtras = [
+    ...(config.settings.appExtras || []),
+    {
+      match: '/**',
+      component: InpageNavigation,
+    },
+  ];
   return config;
 };
 
