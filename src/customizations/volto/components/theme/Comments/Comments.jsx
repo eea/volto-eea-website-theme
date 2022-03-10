@@ -314,7 +314,7 @@ class Comments extends Component {
           color={getColor(comment.author_username)}
         />
         <Comment.Content>
-          <Comment.Author as="a">{comment.author_name}</Comment.Author>
+          <Comment.Author as="span">{comment.author_name}</Comment.Author>
           <Comment.Metadata>
             <span>
               {' '}
