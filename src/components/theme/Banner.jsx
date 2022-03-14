@@ -2,8 +2,6 @@ import React, { useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Container, Icon, Button, Grid } from 'semantic-ui-react';
-import { Image } from 'semantic-ui-react';
-import { flattenToAppURL } from '@plone/volto/helpers';
 import { Toast } from '@plone/volto/components';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 
