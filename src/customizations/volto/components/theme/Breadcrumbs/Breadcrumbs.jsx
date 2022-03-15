@@ -8,11 +8,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getBreadcrumbs } from '@plone/volto/actions';
-import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs.jsx';
+import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs';
+import Banner from '@eeacms/volto-eea-website-theme/components/theme/Banner';
 
-const Breadcrumbs = ({ pathname }) => {
+const Breadcrumbs = (props) => {
   const dispatch = useDispatch();
   const { items = [], root = '/' } = useSelector((state) => state?.breadcrumbs);
+  const { pathname } = props;
 
   const sections = items.map((item) => ({
     title: item.title,
@@ -27,12 +29,15 @@ const Breadcrumbs = ({ pathname }) => {
   }, [dispatch, pathname]);
 
   return (
-    <EEABreadcrumbs
-      pathname={pathname}
-      sections={sections}
-      root={root}
-      icon="right chevron"
-    />
+    <>
+      <EEABreadcrumbs
+        pathname={pathname}
+        sections={sections}
+        root={root}
+        icon="right chevron"
+      />
+      <Banner {...props} />
+    </>
   );
 };
 
