@@ -99,9 +99,7 @@ const Banner = ({ content, moment, toastify }) => {
               </>
             }
           >
-            <Banner.Title>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </Banner.Title>
+            <Banner.Title>{content['title']}</Banner.Title>
             <Banner.Metadata>
               <span>{content['@type']} | </span>
               {publishingDate && (
