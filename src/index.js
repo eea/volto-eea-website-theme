@@ -9,7 +9,7 @@ const applyConfig = (config) => {
 
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
-    config.blocks.blocksConfig.accordion.semanticIcon = 'dropdown';
+    config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
   }
   // apply inPage navigation
   config.settings.appExtras = [
