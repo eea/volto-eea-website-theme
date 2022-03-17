@@ -28,15 +28,15 @@ const Breadcrumbs = (props) => {
   }, [dispatch, pathname]);
 
   return (
-    <>
+    <React.Fragment>
+      <div id="page-header" />
       <EEABreadcrumbs
         pathname={pathname}
         sections={sections}
         root={root}
         icon="right chevron"
       />
-      <div id="page-header" />
-    </>
+    </React.Fragment>
   );
 };
 

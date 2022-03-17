@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Container } from 'semantic-ui-react';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
-import { getImageSource, ShareModal } from './Banner';
+import { getImageSource } from './Banner';
 
 const View = (props) => {
   const { content, moment } = props;
@@ -19,7 +19,6 @@ const View = (props) => {
     dateFormat,
     contentType,
   } = props.data;
-  const [share, setShare] = useState(false);
   const publishingDate = useMemo(
     () => (content['effective'] ? moment.default(content['effective']) : null),
     [content, moment],
@@ -42,17 +41,24 @@ const View = (props) => {
               <>
                 {!hideShareButton && (
                   <Banner.Action
-                    icon="share"
+                    icon="ri-share-fill"
                     title="Share"
                     className="share"
                     onClick={() => {
-                      setShare(true);
+                      const link = document.createElement('a');
+                      link.setAttribute(
+                        'href',
+                        `https://www.facebook.com/sharer.php?u=${content['@id']}`,
+                      );
+                      link.setAttribute('target', '_blank');
+                      link.setAttribute('rel', 'noreferrer');
+                      link.click();
                     }}
                   />
                 )}
                 {!hideDownloadButton && (
                   <Banner.Action
-                    icon="download"
+                    icon="ri-arrow-down-s-line"
                     title="Download"
                     className="download"
                     onClick={() => {
@@ -94,12 +100,6 @@ const View = (props) => {
                 />
               ))}
             </Banner.Metadata>
-            <ShareModal
-              open={share}
-              setOpen={setShare}
-              url={content['@id']}
-              title={content['title']}
-            />
           </Banner.Content>
         </Container>
       </div>

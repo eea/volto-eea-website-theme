@@ -15,7 +15,7 @@ import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import config from '@plone/volto/registry';
 
 import Banner from './Banner';
-import { getImageSource, ShareModal } from './Banner';
+import { getImageSource } from './Banner';
 
 const messages = defineMessages({
   title: {
@@ -86,14 +86,12 @@ class Edit extends Component {
       this.state = {
         editorState,
         focus: true,
-        share: false,
         publishingDate: null,
         modificationDate: null,
       };
     }
 
     this.onChange = this.onChange.bind(this);
-    this.setShare = this.setShare.bind(this);
   }
 
   /**
@@ -189,16 +187,6 @@ class Edit extends Component {
   }
 
   /**
-   * Set share value
-   * @method setShare
-   * @param {object} share Share value
-   * @returns {undefined}
-   */
-  setShare(share) {
-    this.setState({ share });
-  }
-
-  /**
    * Render method.
    * @method render
    * @returns {string} Markup for the component.
@@ -241,17 +229,24 @@ class Edit extends Component {
               <>
                 {!hideShareButton && (
                   <Banner.Action
-                    icon="share"
+                    icon="ri-share-fill"
                     title="Share"
                     className="share"
                     onClick={() => {
-                      this.setShare(true);
+                      const link = document.createElement('a');
+                      link.setAttribute(
+                        'href',
+                        `https://www.facebook.com/sharer.php?u=${properties['@id']}`,
+                      );
+                      link.setAttribute('target', '_blank');
+                      link.setAttribute('rel', 'noreferrer');
+                      link.click();
                     }}
                   />
                 )}
                 {!hideDownloadButton && (
                   <Banner.Action
-                    icon="download"
+                    icon="ri-arrow-down-s-line"
                     title="Download"
                     className="download"
                     onClick={() => {
@@ -346,12 +341,6 @@ class Edit extends Component {
                 />
               ))}
             </Banner.Metadata>
-            <ShareModal
-              open={this.state.share}
-              setOpen={this.setShare}
-              url={properties['@id']}
-              title={properties['title']}
-            />
           </Banner.Content>
         </div>
       </Banner>
