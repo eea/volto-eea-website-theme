@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Container } from 'semantic-ui-react';
+import { Container, Popup } from 'semantic-ui-react';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
-import { getImageSource } from './Banner';
+import { getImageSource, sharePage } from './Banner';
+
+import './styles.less';
 
 const View = (props) => {
   const { content, moment } = props;
@@ -28,6 +30,7 @@ const View = (props) => {
     [content, moment],
   );
   const image = getImageSource(content['image']);
+
   return (
     <Banner {...props}>
       <div
@@ -40,20 +43,46 @@ const View = (props) => {
             actions={
               <>
                 {!hideShareButton && (
-                  <Banner.Action
-                    icon="ri-share-fill"
-                    title="Share"
-                    className="share"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.setAttribute(
-                        'href',
-                        `https://www.facebook.com/sharer.php?u=${content['@id']}`,
-                      );
-                      link.setAttribute('target', '_blank');
-                      link.setAttribute('rel', 'noreferrer');
-                      link.click();
-                    }}
+                  <Popup
+                    className="share-popup"
+                    content={() => (
+                      <>
+                        <p>Share to:</p>
+                        <div className="actions">
+                          <Banner.Action
+                            icon="ri-facebook-fill"
+                            color="blue"
+                            onClick={() => {
+                              sharePage(content['@id'], 'facebook');
+                            }}
+                          />
+                          <Banner.Action
+                            icon="ri-twitter-fill"
+                            color="blue"
+                            onClick={() => {
+                              sharePage(content['@id'], 'twitter');
+                            }}
+                          />
+                          <Banner.Action
+                            icon="ri-linkedin-fill"
+                            color="blue"
+                            onClick={() => {
+                              sharePage(content['@id'], 'linkedin');
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
+                    position="top center"
+                    size="small"
+                    trigger={
+                      <Banner.Action
+                        icon="ri-share-fill"
+                        title="Share"
+                        className="share"
+                        onClick={() => {}}
+                      />
+                    }
                   />
                 )}
                 {!hideDownloadButton && (

@@ -1,7 +1,20 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Icon, Button, Grid, Modal, Segment } from 'semantic-ui-react';
+import { Icon, Button, Grid } from 'semantic-ui-react';
+
+const socialPlatforms = {
+  facebook: {
+    shareLink: (url) => `https://facebook.com/sharer.php?u=${url}`,
+  },
+  twitter: {
+    shareLink: (url) => `https://www.twitter.com/share?url=${url}`,
+  },
+  linkedin: {
+    shareLink: (url) =>
+      `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+  },
+};
 
 export const getImageSource = (image) => {
   if (image?.download) return image.download;
@@ -10,15 +23,24 @@ export const getImageSource = (image) => {
   return null;
 };
 
+export const sharePage = (url, platform) => {
+  if (!socialPlatforms[platform]) return;
+  const link = document.createElement('a');
+  link.setAttribute('href', socialPlatforms[platform].shareLink(url));
+  link.setAttribute('target', '_blank');
+  link.setAttribute('rel', 'noreferrer');
+  link.click();
+};
+
 const Banner = ({ children }) => {
   return <div className="eea banner">{children}</div>;
 };
 
-Banner.Action = ({ title, icon, onClick, className }) => {
+Banner.Action = ({ title, icon, color, onClick, className }) => {
   return (
     <div className="action">
       <Button className={className} basic inverted onClick={onClick}>
-        <Icon name={icon}></Icon>
+        <Icon name={icon} color={color}></Icon>
         <span className="mobile hidden">{title}</span>
       </Button>
     </div>
