@@ -25,8 +25,7 @@ export default {
       fields: [
         'hideContentType',
         'hidePublishingDate',
-        'hideModificationDate',
-        'hideReadingTime',
+        'hideCreationDate',
         'metadata',
       ],
     },
@@ -50,12 +49,8 @@ export default {
       title: 'Hide publishing date',
       type: 'boolean',
     },
-    hideModificationDate: {
-      title: 'Hide modification date',
-      type: 'boolean',
-    },
-    hideReadingTime: {
-      title: 'Hide reading time',
+    hideCreationDate: {
+      title: 'Hide creation date',
       type: 'boolean',
     },
     hideShareButton: {
@@ -76,22 +71,21 @@ export default {
       default: 'DD MMM YYYY',
       description: (
         <p>
-          This uses{' '}
+          See{' '}
           <a
             href="https://momentjs.com/docs/#/displaying/format/"
             target="_blank"
             rel="noreferrer"
           >
-            moment.js
+            more
           </a>{' '}
-          to format the dates.
+          date formats
         </p>
       ),
     },
     contentType: {
       title: 'Content type',
-      description:
-        "Set this only if you don't want to use the type of the page",
+      description: 'Customize content-type name',
     },
   },
   required: [],

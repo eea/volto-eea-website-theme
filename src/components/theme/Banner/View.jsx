@@ -14,8 +14,7 @@ const View = (props) => {
     metadata = [],
     hideContentType,
     hidePublishingDate,
-    hideModificationDate,
-    hideReadingTime,
+    hideCreationDate,
     hideShareButton,
     hideDownloadButton,
     dateFormat,
@@ -25,8 +24,8 @@ const View = (props) => {
     () => (content['effective'] ? moment.default(content['effective']) : null),
     [content, moment],
   );
-  const modificationDate = useMemo(
-    () => (content['modified'] ? moment.default(content['modified']) : null),
+  const creationDate = useMemo(
+    () => (content['created'] ? moment.default(content['created']) : null),
     [content, moment],
   );
   const image = getImageSource(content['image']);
@@ -105,22 +104,20 @@ const View = (props) => {
                 value={contentType || content['@type']}
               />
               <Banner.MetadataField
+                hidden={hideCreationDate}
+                type="date"
+                label="Created"
+                value={creationDate}
+                title="Created on {}"
+                format={dateFormat}
+              />
+              <Banner.MetadataField
                 hidden={hidePublishingDate}
                 type="date"
+                label="Published"
                 value={publishingDate}
                 title="Published on {}"
                 format={dateFormat}
-              />
-              <Banner.MetadataField
-                hidden={hideModificationDate}
-                type="date"
-                value={modificationDate}
-                title="Modified on {}"
-                format={dateFormat}
-              />
-              <Banner.MetadataField
-                hidden={hideReadingTime}
-                value={'5 min read'}
               />
               {metadata.map((item, index) => (
                 <Banner.MetadataField

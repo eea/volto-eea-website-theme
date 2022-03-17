@@ -90,7 +90,7 @@ class Edit extends Component {
         editorState,
         focus: true,
         publishingDate: null,
-        modificationDate: null,
+        creationDate: null,
       };
     }
 
@@ -113,8 +113,8 @@ class Edit extends Component {
       publishingDate: this.props.properties['effective']
         ? this.props.moment.default(this.props.properties['effective'])
         : null,
-      modificationDate: this.props.properties['modified']
-        ? this.props.moment.default(this.props.properties['modified'])
+      creationDate: this.props.properties['created']
+        ? this.props.moment.default(this.props.properties['created'])
         : null,
     });
   }
@@ -164,11 +164,11 @@ class Edit extends Component {
     }
 
     if (
-      this.props.properties?.['modified'] !== nextProps.properties?.['modified']
+      this.props.properties?.['created'] !== nextProps.properties?.['created']
     ) {
       this.setState({
-        modificationDate: nextProps['modified']
-          ? this.props.moment.default(nextProps['modified'])
+        creationDate: nextProps['created']
+          ? this.props.moment.default(nextProps['created'])
           : null,
       });
     }
@@ -200,8 +200,7 @@ class Edit extends Component {
       metadata = [],
       hideContentType,
       hidePublishingDate,
-      hideModificationDate,
-      hideReadingTime,
+      hideCreationDate,
       hideShareButton,
       hideDownloadButton,
       dateFormat,
@@ -346,22 +345,20 @@ class Edit extends Component {
                 value={contentType || properties['@type']}
               />
               <Banner.MetadataField
+                hidden={hideCreationDate}
+                type="date"
+                label="Created"
+                value={this.state.creationDate}
+                title="Created on {}"
+                format={dateFormat}
+              />
+              <Banner.MetadataField
                 hidden={hidePublishingDate}
                 type="date"
+                label="Published"
                 value={this.state.publishingDate}
                 title="Published on {}"
                 format={dateFormat}
-              />
-              <Banner.MetadataField
-                hidden={hideModificationDate}
-                type="date"
-                value={this.state.modificationDate}
-                title="Modified on {}"
-                format={dateFormat}
-              />
-              <Banner.MetadataField
-                hidden={hideReadingTime}
-                value={'5 min read'}
               />
               {metadata.map((item, index) => (
                 <Banner.MetadataField

@@ -67,6 +67,7 @@ Banner.Metadata = ({ children }) => <p className="metadata">{children}</p>;
 Banner.MetadataField = ({
   hidden,
   type = 'text',
+  label,
   value,
   title,
   format = 'DD MMM YYYY',
@@ -78,7 +79,7 @@ Banner.MetadataField = ({
         className="field"
         title={title.replace('{}', value.format('Do MMMM YYYY, h:mm:ss a'))}
       >
-        {value.format(format)}
+        {label} {value.format(format)}
       </span>
     );
   return <span className="field">{value}</span>;
