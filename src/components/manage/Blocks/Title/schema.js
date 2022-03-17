@@ -24,8 +24,8 @@ export default {
       title: 'Default',
       fields: [
         'hideContentType',
-        'hidePublishingDate',
         'hideCreationDate',
+        'hidePublishingDate',
         'metadata',
       ],
     },
@@ -45,12 +45,12 @@ export default {
       title: 'Hide content type',
       type: 'boolean',
     },
-    hidePublishingDate: {
-      title: 'Hide publishing date',
-      type: 'boolean',
-    },
     hideCreationDate: {
       title: 'Hide creation date',
+      type: 'boolean',
+    },
+    hidePublishingDate: {
+      title: 'Hide publishing date',
       type: 'boolean',
     },
     hideShareButton: {
