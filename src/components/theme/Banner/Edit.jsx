@@ -203,7 +203,6 @@ class Edit extends Component {
       hideCreationDate,
       hideShareButton,
       hideDownloadButton,
-      dateFormat,
       contentType,
     } = this.props.data;
 
@@ -350,7 +349,6 @@ class Edit extends Component {
                 label="Created"
                 value={this.state.creationDate}
                 title="Created on {}"
-                format={dateFormat}
               />
               <Banner.MetadataField
                 hidden={hidePublishingDate}
@@ -358,7 +356,6 @@ class Edit extends Component {
                 label="Published"
                 value={this.state.publishingDate}
                 title="Published on {}"
-                format={dateFormat}
               />
               {metadata.map((item, index) => (
                 <Banner.MetadataField

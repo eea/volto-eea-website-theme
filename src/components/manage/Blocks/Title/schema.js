@@ -37,7 +37,7 @@ export default {
     {
       id: 'advanced',
       title: 'Advanced options',
-      fields: ['dateFormat', 'contentType'],
+      fields: ['contentType'],
     },
   ],
   properties: {
@@ -66,26 +66,9 @@ export default {
       widget: 'object_list',
       schema: metadataSchema,
     },
-    dateFormat: {
-      title: 'Date format',
-      default: 'DD MMM YYYY',
-      description: (
-        <p>
-          See{' '}
-          <a
-            href="https://momentjs.com/docs/#/displaying/format/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            more
-          </a>{' '}
-          date formats
-        </p>
-      ),
-    },
     contentType: {
-      title: 'Content type',
-      description: 'Customize content-type name',
+      title: 'Type',
+      description: "Custom content-type's name",
     },
   },
   required: [],

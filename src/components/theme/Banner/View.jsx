@@ -17,7 +17,6 @@ const View = (props) => {
     hideCreationDate,
     hideShareButton,
     hideDownloadButton,
-    dateFormat,
     contentType,
   } = props.data;
   const publishingDate = useMemo(
@@ -109,7 +108,6 @@ const View = (props) => {
                 label="Created"
                 value={creationDate}
                 title="Created on {}"
-                format={dateFormat}
               />
               <Banner.MetadataField
                 hidden={hidePublishingDate}
@@ -117,7 +115,6 @@ const View = (props) => {
                 label="Published"
                 value={publishingDate}
                 title="Published on {}"
-                format={dateFormat}
               />
               {metadata.map((item, index) => (
                 <Banner.MetadataField

@@ -1,7 +1,9 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import { Icon, Button, Grid } from 'semantic-ui-react';
+import config from '@plone/volto/registry';
 
 const socialPlatforms = {
   facebook: {
@@ -64,22 +66,13 @@ Banner.Content = ({ children, actions, style }) => {
 
 Banner.Title = ({ children }) => <span className="title">{children}</span>;
 Banner.Metadata = ({ children }) => <p className="metadata">{children}</p>;
-Banner.MetadataField = ({
-  hidden,
-  type = 'text',
-  label,
-  value,
-  title,
-  format = 'DD MMM YYYY',
-}) => {
+Banner.MetadataField = ({ hidden, type = 'text', label, value, title }) => {
+  moment.locale(config.settings.dateLocale || 'en-gb');
   if (hidden || !value) return '';
   if (type === 'date' && value)
     return (
-      <span
-        className="field"
-        title={title.replace('{}', value.format('Do MMMM YYYY, h:mm:ss a'))}
-      >
-        {label} {value.format(format)}
+      <span className="field" title={title.replace('{}', value.format('lll'))}>
+        {label} {value.format('ll')}
       </span>
     );
   return <span className="field">{value}</span>;
