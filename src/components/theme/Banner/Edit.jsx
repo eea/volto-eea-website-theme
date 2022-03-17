@@ -5,7 +5,6 @@
 
 import React, { Component } from 'react';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { stateFromHTML } from 'draft-js-import-html';
 import { isEqual } from 'lodash';
@@ -16,7 +15,7 @@ import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import config from '@plone/volto/registry';
 
 import Banner from './Banner';
-import { addBookmark } from './Banner';
+import { getImageSource, ShareModal } from './Banner';
 
 const messages = defineMessages({
   title: {
@@ -87,12 +86,14 @@ class Edit extends Component {
       this.state = {
         editorState,
         focus: true,
+        share: false,
         publishingDate: null,
         modificationDate: null,
       };
     }
 
     this.onChange = this.onChange.bind(this);
+    this.setShare = this.setShare.bind(this);
   }
 
   /**
@@ -106,6 +107,15 @@ class Edit extends Component {
       this.node._onBlur = () => this.setState({ focus: false });
       this.node._onFocus = () => this.setState({ focus: true });
     }
+
+    this.setState({
+      publishingDate: this.props.properties['effective']
+        ? this.props.moment.default(this.props.properties['effective'])
+        : null,
+      modificationDate: this.props.properties['modified']
+        ? this.props.moment.default(this.props.properties['modified'])
+        : null,
+    });
   }
 
   /**
@@ -142,19 +152,22 @@ class Edit extends Component {
     }
 
     if (
-      this.props.content?.['effective'] !== nextProps.content?.['effective']
+      this.props.properties?.['effective'] !==
+      nextProps.properties?.['effective']
     ) {
       this.setState({
-        publishingDate: this.props.content['effective']
-          ? this.props.moment.default(this.props.content['effective'])
+        publishingDate: nextProps['effective']
+          ? this.props.moment.default(nextProps['effective'])
           : null,
       });
     }
 
-    if (this.props.content?.['modified'] !== nextProps.content?.['modified']) {
+    if (
+      this.props.properties?.['modified'] !== nextProps.properties?.['modified']
+    ) {
       this.setState({
-        modificationDate: this.props.content['modified']
-          ? this.props.moment.default(this.props.content['modified'])
+        modificationDate: nextProps['modified']
+          ? this.props.moment.default(nextProps['modified'])
           : null,
       });
     }
@@ -176,124 +189,174 @@ class Edit extends Component {
   }
 
   /**
+   * Set share value
+   * @method setShare
+   * @param {object} share Share value
+   * @returns {undefined}
+   */
+  setShare(share) {
+    this.setState({ share });
+  }
+
+  /**
    * Render method.
    * @method render
    * @returns {string} Markup for the component.
    */
   render() {
-    const { content, toastify } = this.props;
+    const { properties } = this.props;
+    const {
+      metadata = [],
+      hideContentType,
+      hidePublishingDate,
+      hideModificationDate,
+      hideReadingTime,
+      hideShareButton,
+      hideDownloadButton,
+      dateFormat,
+      contentType,
+    } = this.props.data;
 
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.title);
 
+    const image = getImageSource(properties['image']);
+
     return (
       <Banner {...this.props}>
-        <Banner.Content
-          actions={
-            <>
-              <Banner.Action
-                icon="bookmark outline"
-                title="Bookmark"
-                className="bookmark"
-                onClick={() => {
-                  addBookmark(content['@id'], content['title'], toastify.toast);
-                }}
-              />
-              <Banner.Action
-                icon="download"
-                title="Download"
-                className="download"
-                onClick={() => {
-                  window.print();
-                }}
-              />
-            </>
+        <div
+          className="image"
+          style={
+            image
+              ? {
+                  backgroundImage: `url(${image})`,
+                }
+              : {}
           }
-          style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-        >
-          <Banner.Title>
-            <Editor
-              readOnly={!this.props.editable}
-              onChange={this.onChange}
-              editorState={this.state.editorState}
-              blockRenderMap={extendedBlockRenderMap}
-              handleReturn={() => {
-                if (this.props.data.disableNewBlocks) {
+        ></div>
+        <div className="gradient">
+          <Banner.Content
+            actions={
+              <>
+                {!hideShareButton && (
+                  <Banner.Action
+                    icon="share"
+                    title="Share"
+                    className="share"
+                    onClick={() => {
+                      this.setShare(true);
+                    }}
+                  />
+                )}
+                {!hideDownloadButton && (
+                  <Banner.Action
+                    icon="download"
+                    title="Download"
+                    className="download"
+                    onClick={() => {
+                      window.print();
+                    }}
+                  />
+                )}
+              </>
+            }
+            style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+          >
+            <Banner.Title>
+              <Editor
+                readOnly={!this.props.editable}
+                onChange={this.onChange}
+                editorState={this.state.editorState}
+                blockRenderMap={extendedBlockRenderMap}
+                handleReturn={() => {
+                  if (this.props.data.disableNewBlocks) {
+                    return 'handled';
+                  }
+                  this.props.onSelectBlock(
+                    this.props.onAddBlock(
+                      config.settings.defaultBlockType,
+                      this.props.index + 1,
+                    ),
+                  );
                   return 'handled';
-                }
-                this.props.onSelectBlock(
-                  this.props.onAddBlock(
-                    config.settings.defaultBlockType,
-                    this.props.index + 1,
-                  ),
-                );
-                return 'handled';
-              }}
-              placeholder={placeholder}
-              onUpArrow={() => {
-                const selectionState = this.state.editorState.getSelection();
-                const { editorState } = this.state;
-                if (
-                  editorState
-                    .getCurrentContent()
-                    .getBlockMap()
-                    .first()
-                    .getKey() === selectionState.getFocusKey()
-                ) {
-                  this.props.onFocusPreviousBlock(this.props.block, this.node);
-                }
-              }}
-              onDownArrow={() => {
-                const selectionState = this.state.editorState.getSelection();
-                const { editorState } = this.state;
-                if (
-                  editorState
-                    .getCurrentContent()
-                    .getBlockMap()
-                    .last()
-                    .getKey() === selectionState.getFocusKey()
-                ) {
-                  this.props.onFocusNextBlock(this.props.block, this.node);
-                }
-              }}
-              ref={(node) => {
-                this.node = node;
-              }}
+                }}
+                placeholder={placeholder}
+                onUpArrow={() => {
+                  const selectionState = this.state.editorState.getSelection();
+                  const { editorState } = this.state;
+                  if (
+                    editorState
+                      .getCurrentContent()
+                      .getBlockMap()
+                      .first()
+                      .getKey() === selectionState.getFocusKey()
+                  ) {
+                    this.props.onFocusPreviousBlock(
+                      this.props.block,
+                      this.node,
+                    );
+                  }
+                }}
+                onDownArrow={() => {
+                  const selectionState = this.state.editorState.getSelection();
+                  const { editorState } = this.state;
+                  if (
+                    editorState
+                      .getCurrentContent()
+                      .getBlockMap()
+                      .last()
+                      .getKey() === selectionState.getFocusKey()
+                  ) {
+                    this.props.onFocusNextBlock(this.props.block, this.node);
+                  }
+                }}
+                ref={(node) => {
+                  this.node = node;
+                }}
+              />
+            </Banner.Title>
+            <Banner.Metadata>
+              <Banner.MetadataField
+                hidden={hideContentType}
+                value={contentType || properties['@type']}
+              />
+              <Banner.MetadataField
+                hidden={hidePublishingDate}
+                type="date"
+                value={this.state.publishingDate}
+                title="Published on {}"
+                format={dateFormat}
+              />
+              <Banner.MetadataField
+                hidden={hideModificationDate}
+                type="date"
+                value={this.state.modificationDate}
+                title="Modified on {}"
+                format={dateFormat}
+              />
+              <Banner.MetadataField
+                hidden={hideReadingTime}
+                value={'5 min read'}
+              />
+              {metadata.map((item, index) => (
+                <Banner.MetadataField
+                  key={`header-metadata-${index}`}
+                  value={item.description}
+                />
+              ))}
+            </Banner.Metadata>
+            <ShareModal
+              open={this.state.share}
+              setOpen={this.setShare}
+              url={properties['@id']}
+              title={properties['title']}
             />
-          </Banner.Title>
-          <Banner.Metadata>
-            <span>{content['@type']} | </span>
-            {this.state.publishingDate && (
-              <span
-                title={`Published on ${this.state.publishingDate.format(
-                  'dddd, MMMM Do YYYY, h:mm:ss a',
-                )}`}
-              >
-                {this.state.publishingDate.format('ddd hA')} |{' '}
-              </span>
-            )}
-            {this.state.modificationDate && (
-              <span
-                title={`Modified on ${this.state.modificationDate.format(
-                  'dddd, MMMM Do YYYY, h:mm:ss a',
-                )}`}
-              >
-                {this.state.modificationDate.format('ddd hA')} |{' '}
-              </span>
-            )}
-            <span>5 min read</span>
-          </Banner.Metadata>
-        </Banner.Content>
+          </Banner.Content>
+        </div>
       </Banner>
     );
   }
 }
 
-export default compose(
-  injectLazyLibs(['toastify', 'moment']),
-  injectIntl,
-  connect((state) => ({
-    content: state.content.data,
-  })),
-)(Edit);
+export default compose(injectLazyLibs(['moment']), injectIntl)(Edit);
