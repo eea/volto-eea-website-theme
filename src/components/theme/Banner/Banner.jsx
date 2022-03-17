@@ -49,7 +49,7 @@ Banner.MetadataField = ({
   title,
   format = 'DD MMM YYYY',
 }) => {
-  if (hidden) return '';
+  if (hidden || !value) return '';
   if (type === 'date' && value)
     return (
       <span
@@ -60,84 +60,6 @@ Banner.MetadataField = ({
       </span>
     );
   return <span className="field">{value}</span>;
-};
-
-export const ShareModal = ({ open, setOpen, url, title, text }) => {
-  const [coping, setCoping] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
-
-  React.useEffect(() => {
-    if (open && copied) {
-      setCopied(false);
-    }
-    /* eslint-disable-next-line */
-  }, [open]);
-
-  return (
-    <Modal onClose={() => setOpen(false)} open={open}>
-      <Modal.Header>
-        Share this page{' '}
-        <Icon
-          name="close"
-          style={{ float: 'right', cursor: 'pointer' }}
-          onClick={() => setOpen(false)}
-        />
-      </Modal.Header>
-      <Modal.Content>
-        <Modal.Description>
-          <Grid>
-            <Grid.Column mobile={12} tablet={12} computer={6}>
-              <Button
-                color="facebook"
-                icon="facebook"
-                content="Facebook"
-                fluid
-              />
-            </Grid.Column>
-            <Grid.Column mobile={12} tablet={12} computer={6}>
-              <Button color="twitter" icon="twitter" content="Twitter" fluid />
-            </Grid.Column>
-            <Grid.Column mobile={12} tablet={12} computer={6}>
-              <Button
-                color="linkedin"
-                icon="linkedin"
-                content="Linkedin"
-                fluid
-              />
-            </Grid.Column>
-            <Grid.Column mobile={12} tablet={12} computer={6}>
-              <Button color="mail" icon="mail" content="Mail" fluid />
-            </Grid.Column>
-            <Grid.Column mobile={12}>
-              <Segment secondary>
-                <button
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    if (navigator) {
-                      navigator.clipboard.writeText(url);
-                      setCoping(true);
-                      setCopied(false);
-                      setTimeout(() => {
-                        setCoping(false);
-                        setCopied(true);
-                      }, 500);
-                    }
-                  }}
-                >
-                  <span>{url}</span>{' '}
-                  {coping ? (
-                    <Icon name="spinner" size="small" loading />
-                  ) : (
-                    <Icon name={copied ? 'check' : 'copy'} size="small" />
-                  )}
-                </button>
-              </Segment>
-            </Grid.Column>
-          </Grid>
-        </Modal.Description>
-      </Modal.Content>
-    </Modal>
-  );
 };
 
 export default compose(
