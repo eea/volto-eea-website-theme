@@ -12,6 +12,17 @@ const ContainerWrapper = ({ fluid, children }) => {
   return <Container>{children}</Container>;
 };
 
+const Title = ({ config = {}, properties }) => {
+  const view = useMemo(() => {
+    return config.view;
+  }, [config.view]);
+
+  if (view) {
+    return view;
+  }
+  return <Banner.Title>{properties['title']}</Banner.Title>;
+};
+
 const View = (props) => {
   const { banner = {}, properties, moment, fluid } = props;
   const {
@@ -104,7 +115,7 @@ const View = (props) => {
               </>
             }
           >
-            <View.Title config={banner.title} properties={properties} />
+            <Title config={banner.title} properties={properties} />
             <Banner.Metadata>
               <Banner.MetadataField
                 hidden={hideContentType}
@@ -136,15 +147,6 @@ const View = (props) => {
       </div>
     </Banner>
   );
-};
-
-View.Title = ({ config = {}, properties }) => {
-  if (config.view) {
-    const BannerTitle = config.view;
-    return <BannerTitle />;
-  }
-
-  return <Banner.Title>{properties['title']}</Banner.Title>;
 };
 
 export default compose(injectLazyLibs(['moment']))(View);

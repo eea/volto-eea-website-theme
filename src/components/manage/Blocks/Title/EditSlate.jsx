@@ -85,7 +85,11 @@ export const TitleBlockEdit = (props) => {
     if (!prevSelected && selected) {
       if (editor.selection && Range.isCollapsed(editor.selection)) {
         // keep selection
-        ReactEditor.focus(editor);
+        setTimeout(() => {
+          try {
+            ReactEditor.focus(editor);
+          } catch {}
+        });
       } else {
         // nothing is selected, move focus to end
         // with this setTimeout uncommented, the focusing of other Volto-Slate
@@ -166,7 +170,7 @@ export const TitleBlockEdit = (props) => {
         {...props}
         banner={{
           title: {
-            view: () => (
+            view: (
               <Slate editor={editor} onChange={handleChange} value={val}>
                 <Editable
                   readOnly={!editable}

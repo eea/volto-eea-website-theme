@@ -1,4 +1,4 @@
-import Edit from './EditRichText';
+import Edit from './EditSlate';
 import View from './View';
 
 export default (config) => {
