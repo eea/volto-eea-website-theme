@@ -162,7 +162,7 @@ export const address = 'Kongens Nytorv 6 1050 Copenhagen K (+45) 33 36 71 00';
 export const languages = [
   { name: 'Albanian', code: 'sq' },
   { name: 'Български', code: 'bg' },
-  { name: 'Bosnian', code: 'bs' },
+  // { name: 'Bosanski', code: 'bs' },
   { name: 'čeština', code: 'cs' },
   { name: 'Hrvatski', code: 'hr' },
   { name: 'dansk', code: 'da' },
