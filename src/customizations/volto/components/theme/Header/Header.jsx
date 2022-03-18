@@ -104,6 +104,7 @@ const EEAHeader = ({ pathname, token, items }) => {
           id="language-switcher"
           className="item"
           text={`${language.toUpperCase()}`}
+          mobileText={`${language.toUpperCase()}`}
           icon={
             <Image src={globeIcon} alt="language dropdown globe icon"></Image>
           }
