@@ -1,4 +1,4 @@
-import Edit from './EditSlate';
+import Edit from './Edit';
 import View from './View';
 
 export default (config) => {
