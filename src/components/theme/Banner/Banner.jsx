@@ -49,9 +49,9 @@ Banner.Action = ({ title, icon, color, onClick, className }) => {
   );
 };
 
-Banner.Content = ({ children, actions, style }) => {
+Banner.Content = ({ children, actions }) => {
   return (
-    <div className="content" style={style}>
+    <div className="content">
       <Grid>
         <Grid.Column mobile={10} tablet={9} computer={9}>
           {children}
@@ -64,7 +64,9 @@ Banner.Content = ({ children, actions, style }) => {
   );
 };
 
-Banner.Title = ({ children }) => <span className="title">{children}</span>;
+Banner.Title = ({ children }) => (
+  <h1 className="documentFirstHeading">{children}</h1>
+);
 Banner.Metadata = ({ children }) => <p className="metadata">{children}</p>;
 Banner.MetadataField = ({ hidden, type = 'text', label, value, title }) => {
   moment.locale(config.settings.dateLocale || 'en-gb');

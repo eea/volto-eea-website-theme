@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
 import { Container, Popup } from 'semantic-ui-react';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
@@ -8,8 +7,13 @@ import { getImageSource, sharePage } from './Banner';
 
 import './styles.less';
 
+const ContainerWrapper = ({ fluid, children }) => {
+  if (fluid) return <React.Fragment>{children}</React.Fragment>;
+  return <Container>{children}</Container>;
+};
+
 const View = (props) => {
-  const { content, moment } = props;
+  const { banner = {}, properties, moment, fluid } = props;
   const {
     metadata = [],
     hideContentType,
@@ -19,15 +23,19 @@ const View = (props) => {
     hideDownloadButton,
     contentType,
   } = props.data;
+  // Set dates
   const publishingDate = useMemo(
-    () => (content['effective'] ? moment.default(content['effective']) : null),
-    [content, moment],
+    () =>
+      properties['effective'] ? moment.default(properties['effective']) : null,
+    [properties, moment],
   );
   const creationDate = useMemo(
-    () => (content['created'] ? moment.default(content['created']) : null),
-    [content, moment],
+    () =>
+      properties['created'] ? moment.default(properties['created']) : null,
+    [properties, moment],
   );
-  const image = getImageSource(content['image']);
+  // Set image source
+  const image = getImageSource(properties['image']);
 
   return (
     <Banner {...props}>
@@ -36,7 +44,7 @@ const View = (props) => {
         style={image ? { backgroundImage: `url(${image})` } : {}}
       ></div>
       <div className="gradient">
-        <Container>
+        <ContainerWrapper fluid={fluid}>
           <Banner.Content
             actions={
               <>
@@ -51,21 +59,21 @@ const View = (props) => {
                             icon="ri-facebook-fill"
                             color="blue"
                             onClick={() => {
-                              sharePage(content['@id'], 'facebook');
+                              sharePage(properties['@id'], 'facebook');
                             }}
                           />
                           <Banner.Action
                             icon="ri-twitter-fill"
                             color="blue"
                             onClick={() => {
-                              sharePage(content['@id'], 'twitter');
+                              sharePage(properties['@id'], 'twitter');
                             }}
                           />
                           <Banner.Action
                             icon="ri-linkedin-fill"
                             color="blue"
                             onClick={() => {
-                              sharePage(content['@id'], 'linkedin');
+                              sharePage(properties['@id'], 'linkedin');
                             }}
                           />
                         </div>
@@ -96,11 +104,11 @@ const View = (props) => {
               </>
             }
           >
-            <Banner.Title>{content['title']}</Banner.Title>
+            <View.Title config={banner.title} properties={properties} />
             <Banner.Metadata>
               <Banner.MetadataField
                 hidden={hideContentType}
-                value={contentType || content['@type']}
+                value={contentType || properties['@type']}
               />
               <Banner.MetadataField
                 hidden={hideCreationDate}
@@ -124,15 +132,19 @@ const View = (props) => {
               ))}
             </Banner.Metadata>
           </Banner.Content>
-        </Container>
+        </ContainerWrapper>
       </div>
     </Banner>
   );
 };
 
-export default compose(
-  injectLazyLibs(['moment']),
-  connect((state) => ({
-    content: state.content.data,
-  })),
-)(View);
+View.Title = ({ config = {}, properties }) => {
+  if (config.view) {
+    const BannerTitle = config.view;
+    return <BannerTitle />;
+  }
+
+  return <Banner.Title>{properties['title']}</Banner.Title>;
+};
+
+export default compose(injectLazyLibs(['moment']))(View);
