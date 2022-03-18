@@ -54,7 +54,6 @@ export const TitleBlockEdit = (props) => {
     onFocusNextBlock,
     block,
     blockNode,
-    className,
     properties,
     metadata,
     data,
@@ -148,12 +147,12 @@ export const TitleBlockEdit = (props) => {
   const renderElement = useCallback(
     ({ attributes, children, element }) => {
       return (
-        <Title {...attributes} className={className}>
+        <Title {...attributes} className="documentFirstHeading">
           {children}
         </Title>
       );
     },
-    [className], // eslint-disable-line react-hooks/exhaustive-deps
+    [], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   editor.children = val;
