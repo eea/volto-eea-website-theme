@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { compose } from 'redux';
+import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
+import qs from 'querystring';
 import { Container, Popup } from 'semantic-ui-react';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
@@ -56,8 +58,7 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
-  const { banner = {}, properties, moment, fluid, intl } = props;
-
+  const { banner = {}, properties, moment, fluid, intl, location } = props;
   const {
     metadata = [],
     hideContentType,
@@ -67,6 +68,11 @@ const View = (props) => {
     hideDownloadButton,
     contentType,
   } = props.data;
+  // Set query parameters
+  const parameters = useMemo(
+    () => qs.parse(location.search.replace('?', '')) || {},
+    [location],
+  );
   // Set dates
   const publishingDate = useMemo(
     () =>
@@ -152,7 +158,7 @@ const View = (props) => {
             <Banner.Metadata>
               <Banner.MetadataField
                 hidden={hideContentType}
-                value={contentType || properties['@type']}
+                value={contentType || properties['@type'] || parameters.type}
               />
               <Banner.MetadataField
                 hidden={hideCreationDate}
@@ -182,4 +188,7 @@ const View = (props) => {
   );
 };
 
-export default compose(injectIntl, injectLazyLibs(['moment']))(View);
+export default compose(
+  injectIntl,
+  injectLazyLibs(['moment']),
+)(withRouter(View));
