@@ -11,7 +11,6 @@ import { ReactEditor, Editable, Slate, withReact } from 'slate-react';
 import config from '@plone/volto/registry';
 import { SidebarPortal } from '@plone/volto/components';
 import InlineForm from '@plone/volto/components/manage/Form/InlineForm';
-import { P } from 'volto-slate/constants';
 import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
 import schema from './schema';
 
@@ -134,7 +133,7 @@ export const TitleBlockEdit = (props) => {
   const val = useMemo(() => {
     return [
       {
-        type: P,
+        type: 'p',
         children: [{ text }],
       },
     ];
