@@ -1,11 +1,43 @@
 import React, { useMemo } from 'react';
 import { compose } from 'redux';
+import { defineMessages, injectIntl } from 'react-intl';
 import { Container, Popup } from 'semantic-ui-react';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
 import { getImageSource, sharePage } from './Banner';
 
 import './styles.less';
+
+const messages = defineMessages({
+  share: {
+    id: 'Share',
+    defaultMessage: 'Share',
+  },
+  share_to: {
+    id: 'Share to',
+    defaultMessage: 'Share to',
+  },
+  download: {
+    id: 'Download',
+    defaultMessage: 'Download',
+  },
+  created: {
+    id: 'Created',
+    defaultMessage: 'Created',
+  },
+  created_on: {
+    id: 'Created on',
+    defaultMessage: 'Created on',
+  },
+  published: {
+    id: 'Published',
+    defaultMessage: 'Published',
+  },
+  published_on: {
+    id: 'Published on',
+    defaultMessage: 'Published on',
+  },
+});
 
 const ContainerWrapper = ({ fluid, children }) => {
   if (fluid) return <React.Fragment>{children}</React.Fragment>;
@@ -24,7 +56,8 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
-  const { banner = {}, properties, moment, fluid } = props;
+  const { banner = {}, properties, moment, fluid, intl } = props;
+
   const {
     metadata = [],
     hideContentType,
@@ -64,7 +97,7 @@ const View = (props) => {
                     className="share-popup"
                     content={() => (
                       <>
-                        <p>Share to:</p>
+                        <p>{intl.formatMessage(messages.share_to)}</p>
                         <div className="actions">
                           <Banner.Action
                             icon="ri-facebook-fill"
@@ -95,7 +128,7 @@ const View = (props) => {
                     trigger={
                       <Banner.Action
                         icon="ri-share-fill"
-                        title="Share"
+                        title={intl.formatMessage(messages.share)}
                         className="share"
                         onClick={() => {}}
                       />
@@ -105,7 +138,7 @@ const View = (props) => {
                 {!hideDownloadButton && (
                   <Banner.Action
                     icon="ri-arrow-down-s-line"
-                    title="Download"
+                    title={intl.formatMessage(messages.download)}
                     className="download"
                     onClick={() => {
                       window.print();
@@ -124,16 +157,16 @@ const View = (props) => {
               <Banner.MetadataField
                 hidden={hideCreationDate}
                 type="date"
-                label="Created"
+                label={intl.formatMessage(messages.created)}
                 value={creationDate}
-                title="Created on {}"
+                title={`${intl.formatMessage(messages.created_on)} {}`}
               />
               <Banner.MetadataField
                 hidden={hidePublishingDate}
                 type="date"
-                label="Published"
+                label={intl.formatMessage(messages.published)}
                 value={publishingDate}
-                title="Published on {}"
+                title={`${intl.formatMessage(messages.published_on)} {}`}
               />
               {metadata.map((item, index) => (
                 <Banner.MetadataField
@@ -149,4 +182,4 @@ const View = (props) => {
   );
 };
 
-export default compose(injectLazyLibs(['moment']))(View);
+export default compose(injectIntl, injectLazyLibs(['moment']))(View);
