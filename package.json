@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@plone/scripts": "*",
-    "@eeacms/volto-eea-design-system": "*"
+    "@eeacms/volto-eea-design-system": "*",
+    "slate": "^0.71.0",
+    "slate-react": "^0.71.0"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.5",

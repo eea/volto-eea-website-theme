@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getBreadcrumbs } from '@plone/volto/actions';
 import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs';
-import Banner from '@eeacms/volto-eea-website-theme/components/theme/Banner';
 
 const Breadcrumbs = (props) => {
   const dispatch = useDispatch();
@@ -29,15 +28,15 @@ const Breadcrumbs = (props) => {
   }, [dispatch, pathname]);
 
   return (
-    <>
+    <React.Fragment>
+      <div id="page-header" />
       <EEABreadcrumbs
         pathname={pathname}
         sections={sections}
         root={root}
         icon="right chevron"
       />
-      <Banner {...props} />
-    </>
+    </React.Fragment>
   );
 };
 

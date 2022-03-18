@@ -1,5 +1,6 @@
 import * as eea from './config';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
+import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 
 const applyConfig = (config) => {
   config.settings.eea = {
@@ -19,7 +20,8 @@ const applyConfig = (config) => {
       component: InpageNavigation,
     },
   ];
-  return config;
+
+  return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
 };
 
 export default applyConfig;
