@@ -143,7 +143,7 @@ const View = (props) => {
                 )}
                 {!hideDownloadButton && (
                   <Banner.Action
-                    icon="ri-arrow-down-s-line"
+                    icon="ri-download-2-fill"
                     title={intl.formatMessage(messages.download)}
                     className="download"
                     onClick={() => {
