@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Dropdown, Image } from 'semantic-ui-react';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
 import { UniversalLink } from '@plone/volto/components';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
@@ -25,6 +25,7 @@ import config from '@plone/volto/registry';
  */
 const EEAHeader = ({ pathname, token, items }) => {
   const { eea } = config.settings;
+  const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
   const [language, setLanguage] = React.useState(eea.defaultLanguage);
@@ -58,6 +59,7 @@ const EEAHeader = ({ pathname, token, items }) => {
             icon="chevron down"
             aria-label="dropdown"
             className=""
+            viewportWidth={width}
           >
             <div className="content">
               <p>
@@ -82,6 +84,7 @@ const EEAHeader = ({ pathname, token, items }) => {
             id="theme-sites"
             className="tablet or lower hidden"
             text={eea.globalHeaderPartnerLinks.title}
+            viewportWidth={width}
           >
             <div className="wrapper">
               {eea.globalHeaderPartnerLinks.links.map((item, index) => (
@@ -108,6 +111,7 @@ const EEAHeader = ({ pathname, token, items }) => {
           icon={
             <Image src={globeIcon} alt="language dropdown globe icon"></Image>
           }
+          viewportWidth={width}
         >
           {eea.languages.map((item, index) => (
             <Dropdown.Item
