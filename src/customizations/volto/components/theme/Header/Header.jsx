@@ -7,28 +7,40 @@ import React from 'react';
 import { Dropdown, Image } from 'semantic-ui-react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
+import { withRouter } from 'react-router-dom';
 import { UniversalLink } from '@plone/volto/components';
-import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
+import {
+  getBaseUrl,
+  hasApiExpander,
+  flattenToAppURL,
+} from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
-
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
-
+import { find } from 'lodash';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
 import config from '@plone/volto/registry';
+import { compose } from 'recompose';
 
 /**
  * EEA Specific Header component.
  */
-const EEAHeader = ({ pathname, token, items }) => {
+const EEAHeader = ({ pathname, token, items, history }) => {
+  const currentLang = useSelector((state) => state.intl.locale);
+  const translations = useSelector(
+    (state) => state.content.data?.['@components']?.translations?.items,
+  );
+
   const { eea } = config.settings;
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
-  const [language, setLanguage] = React.useState(eea.defaultLanguage);
+  const [language, setLanguage] = React.useState(
+    currentLang || eea.defaultLanguage,
+  );
 
   React.useEffect(() => {
     const { settings } = config;
@@ -118,13 +130,20 @@ const EEAHeader = ({ pathname, token, items }) => {
               key={index}
               text={
                 <span>
-                  {item.name}
+                  {item.name}{' '}
                   <span className="country-code">
                     {item.code.toUpperCase()}
                   </span>
                 </span>
               }
-              onClick={() => setLanguage(item.code)}
+              onClick={() => {
+                const translation = find(translations, { language: item.code });
+                const to = translation
+                  ? flattenToAppURL(translation['@id'])
+                  : `/${item.code}`;
+                setLanguage(item.code);
+                history.push(to);
+              }}
             ></Dropdown.Item>
           ))}
         </Header.TopDropdownMenu>
@@ -162,10 +181,13 @@ const EEAHeader = ({ pathname, token, items }) => {
   );
 };
 
-export default connect(
-  (state) => ({
-    token: state.userSession.token,
-    items: state.navigation.items,
-  }),
-  { getNavigation },
+export default compose(
+  withRouter,
+  connect(
+    (state) => ({
+      token: state.userSession.token,
+      items: state.navigation.items,
+    }),
+    { getNavigation },
+  ),
 )(EEAHeader);
