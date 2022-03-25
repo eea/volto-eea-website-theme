@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { Dropdown, Image } from 'semantic-ui-react';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
+
 import { withRouter } from 'react-router-dom';
 import { UniversalLink } from '@plone/volto/components';
 import {
@@ -16,7 +17,6 @@ import {
 import { getNavigation } from '@plone/volto/actions';
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
-import { useSelector } from 'react-redux';
 import { find } from 'lodash';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
@@ -35,6 +35,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
   );
 
   const { eea } = config.settings;
+  const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
   const [language, setLanguage] = React.useState(
@@ -70,6 +71,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
             icon="chevron down"
             aria-label="dropdown"
             className=""
+            viewportWidth={width}
           >
             <div className="content">
               <p>
@@ -94,6 +96,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
             id="theme-sites"
             className="tablet or lower hidden"
             text={eea.globalHeaderPartnerLinks.title}
+            viewportWidth={width}
           >
             <div className="wrapper">
               {eea.globalHeaderPartnerLinks.links.map((item, index) => (
@@ -120,6 +123,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
           icon={
             <Image src={globeIcon} alt="language dropdown globe icon"></Image>
           }
+          viewportWidth={width}
         >
           {eea.languages.map((item, index) => (
             <Dropdown.Item
