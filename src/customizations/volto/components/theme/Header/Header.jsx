@@ -173,7 +173,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
         )}
         renderMenuItem={(item) => (
           <UniversalLink href={item.url || '/'} title={item.title}>
-            {item.title}
+            <span className={'item'}>{item.title}</span>
           </UniversalLink>
         )}
       ></Header.Main>
