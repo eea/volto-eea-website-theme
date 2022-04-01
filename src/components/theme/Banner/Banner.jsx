@@ -42,7 +42,7 @@ Banner.Action = ({ title, icon, color, onClick, className }) => {
   return (
     <div className="action">
       <Button className={className} basic inverted onClick={onClick}>
-        <Icon name={icon} color={color}></Icon>
+        <Icon className={icon} color={color}></Icon>
         <span className="mobile hidden">{title}</span>
       </Button>
     </div>
