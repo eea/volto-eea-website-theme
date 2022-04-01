@@ -90,7 +90,7 @@ const View = (props) => {
   return (
     <Banner {...props}>
       <div
-        className="image"
+        className={image ? 'image' : ''}
         style={image ? { backgroundImage: `url(${image})` } : {}}
       >
         <div className="gradient">
@@ -157,6 +157,7 @@ const View = (props) => {
               <Title config={banner.title} properties={properties} />
               <Banner.Metadata>
                 <Banner.MetadataField
+                  type="type"
                   hidden={hideContentType}
                   value={contentType || properties['@type'] || parameters.type}
                 />
