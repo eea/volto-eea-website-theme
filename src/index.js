@@ -1,6 +1,8 @@
 import * as eea from './config';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
+import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
+import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 
 const applyConfig = (config) => {
   config.settings.eea = {
@@ -18,6 +20,20 @@ const applyConfig = (config) => {
     {
       match: '/**',
       component: InpageNavigation,
+    },
+  ];
+
+  const appExtras = config.settings.appExtras || [];
+
+  config.settings.appExtras = [
+    ...appExtras,
+    {
+      match: '',
+      component: CustomCSS,
+    },
+    {
+      match: '',
+      component: DraftBackground,
     },
   ];
 
