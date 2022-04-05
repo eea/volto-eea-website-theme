@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
 import qs from 'querystring';
 import { Container, Popup } from 'semantic-ui-react';
+import { flattenToAppURL } from '@plone/volto/helpers';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
 import { getImageSource, sharePage } from './Banner';
@@ -39,6 +41,14 @@ const messages = defineMessages({
     id: 'Published on',
     defaultMessage: 'Published on',
   },
+  modified: {
+    id: 'Modified',
+    defaultMessage: 'Modified',
+  },
+  modified_on: {
+    id: 'Modified on',
+    defaultMessage: 'Modified on',
+  },
 });
 
 const ContainerWrapper = ({ fluid, children }) => {
@@ -58,15 +68,24 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
-  const { banner = {}, properties, moment, fluid, intl, location } = props;
+  const {
+    banner = {},
+    properties,
+    moment,
+    fluid,
+    intl,
+    location,
+    types = [],
+  } = props;
   const {
     metadata = [],
     hideContentType,
-    hidePublishingDate,
     hideCreationDate,
+    hidePublishingDate,
+    hideModificationDate,
     hideShareButton,
     hideDownloadButton,
-    contentType,
+    // contentType,
   } = props.data;
   // Set query parameters
   const parameters = useMemo(
@@ -74,18 +93,41 @@ const View = (props) => {
     [location],
   );
   // Set dates
-  const publishingDate = useMemo(
-    () =>
-      properties['effective'] ? moment.default(properties['effective']) : null,
-    [properties, moment],
+  const getDate = useCallback(
+    (hidden, key) => {
+      return !hidden && properties[key]
+        ? moment.default(properties[key])
+        : null;
+    },
+    [moment, properties],
   );
-  const creationDate = useMemo(
-    () =>
-      properties['created'] ? moment.default(properties['created']) : null,
-    [properties, moment],
+  const creationDate = useMemo(() => getDate(hideCreationDate, 'created'), [
+    getDate,
+    hideCreationDate,
+  ]);
+  const publishingDate = useMemo(
+    () => getDate(hidePublishingDate, 'effective'),
+    [getDate, hidePublishingDate],
+  );
+  const modificationDate = useMemo(
+    () => getDate(hideModificationDate, 'modified'),
+    [getDate, hideModificationDate],
   );
   // Set image source
   const image = getImageSource(properties['image']);
+  // Get type
+  const type = useMemo(() => {
+    return (
+      types.filter(
+        (type) =>
+          flattenToAppURL(type['@id']) ===
+          `/@types/${properties['@type'] || parameters.type}`,
+      )[0]?.title ||
+      properties['type'] ||
+      properties['@type'] ||
+      parameters.type
+    );
+  }, [types, properties, parameters]);
 
   return (
     <Banner {...props}>
@@ -159,21 +201,26 @@ const View = (props) => {
                 <Banner.MetadataField
                   type="type"
                   hidden={hideContentType}
-                  value={contentType || properties['@type'] || parameters.type}
+                  // value={contentType || properties['@type'] || parameters.type}
+                  value={type}
                 />
                 <Banner.MetadataField
-                  hidden={hideCreationDate}
                   type="date"
                   label={intl.formatMessage(messages.created)}
                   value={creationDate}
                   title={`${intl.formatMessage(messages.created_on)} {}`}
                 />
                 <Banner.MetadataField
-                  hidden={hidePublishingDate}
                   type="date"
                   label={intl.formatMessage(messages.published)}
                   value={publishingDate}
                   title={`${intl.formatMessage(messages.published_on)} {}`}
+                />
+                <Banner.MetadataField
+                  type="date"
+                  label={intl.formatMessage(messages.modified)}
+                  value={modificationDate}
+                  title={`${intl.formatMessage(messages.modified_on)} {}`}
                 />
                 {metadata.map((item, index) => (
                   <Banner.MetadataField
@@ -193,4 +240,9 @@ const View = (props) => {
 export default compose(
   injectIntl,
   injectLazyLibs(['moment']),
+  connect((state) => {
+    return {
+      types: state.types.types,
+    };
+  }),
 )(withRouter(View));
