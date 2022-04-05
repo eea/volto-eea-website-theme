@@ -42,7 +42,7 @@ Banner.Action = ({ title, icon, color, onClick, className }) => {
   return (
     <div className="action">
       <Button className={className} basic inverted onClick={onClick}>
-        <Icon name={icon} color={color}></Icon>
+        <Icon className={icon} color={color}></Icon>
         <span className="mobile hidden">{title}</span>
       </Button>
     </div>
@@ -73,11 +73,14 @@ Banner.MetadataField = ({ hidden, type = 'text', label, value, title }) => {
   if (hidden || !value) return '';
   if (type === 'date' && value)
     return (
-      <span className="field" title={title.replace('{}', value.format('lll'))}>
+      <span
+        className={`field ${type}`}
+        title={title.replace('{}', value.format('lll'))}
+      >
         {label} {value.format('ll')}
       </span>
     );
-  return <span className="field">{value}</span>;
+  return <span className={`field ${type}`}>{value}</span>;
 };
 
 export default compose(

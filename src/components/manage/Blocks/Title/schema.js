@@ -26,6 +26,7 @@ export default {
         'hideContentType',
         'hideCreationDate',
         'hidePublishingDate',
+        'hideModificationDate',
         'metadata',
       ],
     },
@@ -34,11 +35,11 @@ export default {
       title: 'Actions',
       fields: ['hideShareButton', 'hideDownloadButton'],
     },
-    {
-      id: 'advanced',
-      title: 'Advanced options',
-      fields: ['contentType'],
-    },
+    // {
+    //   id: 'advanced',
+    //   title: 'Advanced options',
+    //   fields: ['contentType'],
+    // },
   ],
   properties: {
     hideContentType: {
@@ -51,6 +52,10 @@ export default {
     },
     hidePublishingDate: {
       title: 'Hide publishing date',
+      type: 'boolean',
+    },
+    hideModificationDate: {
+      title: 'Hide modification date',
       type: 'boolean',
     },
     hideShareButton: {
@@ -66,10 +71,10 @@ export default {
       widget: 'object_list',
       schema: metadataSchema,
     },
-    contentType: {
-      title: 'Type',
-      description: "Custom content-type's name",
-    },
+    // contentType: {
+    //   title: 'Type',
+    //   description: "Custom content-type's name",
+    // },
   },
   required: [],
 };

@@ -125,27 +125,31 @@ const EEAHeader = ({ pathname, token, items, history }) => {
           }
           viewportWidth={width}
         >
-          {eea.languages.map((item, index) => (
-            <Dropdown.Item
-              key={index}
-              text={
-                <span>
-                  {item.name}{' '}
-                  <span className="country-code">
-                    {item.code.toUpperCase()}
+          <div className="wrapper">
+            {eea.languages.map((item, index) => (
+              <Dropdown.Item
+                key={index}
+                text={
+                  <span>
+                    {item.name}
+                    <span className="country-code">
+                      {item.code.toUpperCase()}
+                    </span>
                   </span>
-                </span>
-              }
-              onClick={() => {
-                const translation = find(translations, { language: item.code });
-                const to = translation
-                  ? flattenToAppURL(translation['@id'])
-                  : `/${item.code}`;
-                setLanguage(item.code);
-                history.push(to);
-              }}
-            ></Dropdown.Item>
-          ))}
+                }
+                onClick={() => {
+                  const translation = find(translations, {
+                    language: item.code,
+                  });
+                  const to = translation
+                    ? flattenToAppURL(translation['@id'])
+                    : `/${item.code}`;
+                  setLanguage(item.code);
+                  history.push(to);
+                }}
+              ></Dropdown.Item>
+            ))}
+          </div>
         </Header.TopDropdownMenu>
       </Header.TopHeader>
       <Header.Main
@@ -173,7 +177,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
         )}
         renderMenuItem={(item) => (
           <UniversalLink href={item.url || '/'} title={item.title}>
-            {item.title}
+            <span className={'item'}>{item.title}</span>
           </UniversalLink>
         )}
       ></Header.Main>
