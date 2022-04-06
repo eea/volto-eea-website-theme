@@ -51,6 +51,12 @@ const messages = defineMessages({
   },
 });
 
+const friendlyId = (id) => {
+  if (typeof id !== 'string') return id;
+  let newId = id.replace('_', ' ');
+  return newId.charAt(0).toUpperCase() + newId.slice(1);
+};
+
 const ContainerWrapper = ({ fluid, children }) => {
   if (fluid) return <React.Fragment>{children}</React.Fragment>;
   return <Container>{children}</Container>;
@@ -123,7 +129,7 @@ const View = (props) => {
           flattenToAppURL(type['@id']) ===
           `/@types/${properties['@type'] || parameters.type}`,
       )[0]?.title ||
-      properties['type'] ||
+      friendlyId(properties['type']) ||
       properties['@type'] ||
       parameters.type
     );
