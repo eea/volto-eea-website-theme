@@ -53,7 +53,8 @@ const messages = defineMessages({
 
 const friendlyId = (id) => {
   if (typeof id !== 'string') return id;
-  let newId = id.replace('_', ' ');
+  const search = new RegExp('_', 'g');
+  let newId = id.replace(search, ' ');
   return newId.charAt(0).toUpperCase() + newId.slice(1);
 };
 
