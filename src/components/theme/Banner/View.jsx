@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
+import { startCase } from 'lodash';
 import qs from 'querystring';
 import { Container, Popup } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
@@ -50,6 +51,11 @@ const messages = defineMessages({
     defaultMessage: 'Modified on',
   },
 });
+
+const friendlyId = (id) => {
+  if (typeof id !== 'string') return id;
+  return startCase(id);
+};
 
 const ContainerWrapper = ({ fluid, children }) => {
   if (fluid) return <React.Fragment>{children}</React.Fragment>;
@@ -123,7 +129,7 @@ const View = (props) => {
           flattenToAppURL(type['@id']) ===
           `/@types/${properties['@type'] || parameters.type}`,
       )[0]?.title ||
-      properties['type'] ||
+      friendlyId(properties['@type']) ||
       properties['@type'] ||
       parameters.type
     );
