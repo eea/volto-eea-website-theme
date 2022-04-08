@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
+import { startCase } from 'lodash';
 import qs from 'querystring';
 import { Container, Popup } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
@@ -53,9 +54,7 @@ const messages = defineMessages({
 
 const friendlyId = (id) => {
   if (typeof id !== 'string') return id;
-  const search = new RegExp('_', 'g');
-  let newId = id.replace(search, ' ');
-  return newId.charAt(0).toUpperCase() + newId.slice(1);
+  return startCase(id);
 };
 
 const ContainerWrapper = ({ fluid, children }) => {
@@ -130,7 +129,7 @@ const View = (props) => {
           flattenToAppURL(type['@id']) ===
           `/@types/${properties['@type'] || parameters.type}`,
       )[0]?.title ||
-      friendlyId(properties['type']) ||
+      friendlyId(properties['@type']) ||
       properties['@type'] ||
       parameters.type
     );
