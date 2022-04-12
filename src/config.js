@@ -26,11 +26,11 @@ export const partnerWebsites = [
     src: insituLogo,
     alt: 'Copernicus in situ',
   },
-  {
-    link: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
-    src: ipchemLogo,
-    alt: 'Information platform for chemical monitoring',
-  },
+  // {
+  //   link: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
+  //   src: ipchemLogo,
+  //   alt: 'Information platform for chemical monitoring',
+  // },
   {
     link: 'https://water.europa.eu/freshwater',
     src: freshwaterLogo,
