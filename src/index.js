@@ -21,12 +21,6 @@ const applyConfig = (config) => {
       closeQuote: 'ri-double-quotes-r',
     };
   }
-  if (config.settings.slateQuote) {
-    config.settings.slateQuote.icons = {
-      openQuote: 'ri-double-quotes-l',
-      closeQuote: 'ri-double-quotes-r',
-    };
-  }
   // apply inPage navigation
   config.settings.appExtras = [
     ...(config.settings.appExtras || []),
