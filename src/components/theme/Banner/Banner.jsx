@@ -16,6 +16,9 @@ const socialPlatforms = {
     shareLink: (url) =>
       `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
   },
+  reddit: {
+    shareLink: (url, title) => `https://reddit.com/submit?url=${url}`,
+  },
 };
 
 export const getImageSource = (image) => {

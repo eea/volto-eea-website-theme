@@ -53,19 +53,18 @@ export const TitleBlockEdit = (props) => {
     onFocusNextBlock,
     block,
     blockNode,
-    properties,
-    metadata,
     data,
     detached,
     editable,
   } = props;
+  const metadata = props.metadata || props.properties;
 
   const editor = useMemo(() => withReact(createEditor()), []);
   const intl = useIntl();
 
   const disableNewBlocks = data.disableNewBlocks || detached;
 
-  const text = metadata?.['title'] || properties?.['title'] || '';
+  const text = metadata?.['title'] || '';
 
   const handleChange = useCallback(
     (value) => {
