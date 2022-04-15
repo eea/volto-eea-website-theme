@@ -322,9 +322,9 @@ export class ObjectBrowserWidgetComponent extends Component {
       mode === 'multiple' || items.length === 0
         ? this.showObjectBrowser
         : (e) => {
-          e.preventDefault();
-          onChange(id, this.props.return === 'single' ? null : []);
-        };
+            e.preventDefault();
+            onChange(id, this.props.return === 'single' ? null : []);
+          };
 
     return (
       <FormFieldWrapper
