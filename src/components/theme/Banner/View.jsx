@@ -74,17 +74,10 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
+  const { banner = {}, moment, fluid, intl, location, types = [] } = props;
+  const metadata = props.metadata || props.properties;
   const {
-    banner = {},
-    properties,
-    moment,
-    fluid,
-    intl,
-    location,
-    types = [],
-  } = props;
-  const {
-    metadata = [],
+    info = [],
     hideContentType,
     hideCreationDate,
     hidePublishingDate,
@@ -101,11 +94,9 @@ const View = (props) => {
   // Set dates
   const getDate = useCallback(
     (hidden, key) => {
-      return !hidden && properties[key]
-        ? moment.default(properties[key])
-        : null;
+      return !hidden && metadata[key] ? moment.default(metadata[key]) : null;
     },
-    [moment, properties],
+    [moment, metadata],
   );
   const creationDate = useMemo(() => getDate(hideCreationDate, 'created'), [
     getDate,
@@ -120,20 +111,20 @@ const View = (props) => {
     [getDate, hideModificationDate],
   );
   // Set image source
-  const image = getImageSource(properties['image']);
+  const image = getImageSource(metadata['image']);
   // Get type
   const type = useMemo(() => {
     return (
       types.filter(
         (type) =>
           flattenToAppURL(type['@id']) ===
-          `/@types/${properties['@type'] || parameters.type}`,
+          `/@types/${metadata['@type'] || parameters.type}`,
       )[0]?.title ||
-      friendlyId(properties['@type']) ||
-      properties['@type'] ||
+      friendlyId(metadata['@type']) ||
+      metadata['@type'] ||
       parameters.type
     );
-  }, [types, properties, parameters]);
+  }, [types, metadata, parameters]);
 
   return (
     <Banner {...props}>
@@ -155,25 +146,30 @@ const View = (props) => {
                           <div className="actions">
                             <Banner.Action
                               icon="ri-facebook-fill"
-                              color="blue"
                               onClick={() => {
-                                sharePage(properties['@id'], 'facebook');
+                                sharePage(metadata['@id'], 'facebook');
                               }}
                             />
                             <Banner.Action
                               icon="ri-twitter-fill"
-                              color="blue"
                               onClick={() => {
-                                sharePage(properties['@id'], 'twitter');
+                                sharePage(metadata['@id'], 'twitter');
                               }}
                             />
                             <Banner.Action
                               icon="ri-linkedin-fill"
-                              color="blue"
                               onClick={() => {
-                                sharePage(properties['@id'], 'linkedin');
+                                sharePage(metadata['@id'], 'linkedin');
                               }}
                             />
+                            <Banner.Action icon="blogger b" />
+                            <Banner.Action
+                              icon="ri-reddit-line"
+                              onClick={() => {
+                                sharePage(metadata['@id'], 'reddit');
+                              }}
+                            />
+                            <Banner.Action icon="stumbleupon circle" />
                           </div>
                         </>
                       )}
@@ -202,7 +198,7 @@ const View = (props) => {
                 </>
               }
             >
-              <Title config={banner.title} properties={properties} />
+              <Title config={banner.title} properties={metadata} />
               <Banner.Metadata>
                 <Banner.MetadataField
                   type="type"
@@ -228,9 +224,9 @@ const View = (props) => {
                   value={modificationDate}
                   title={`${intl.formatMessage(messages.modified_on)} {}`}
                 />
-                {metadata.map((item, index) => (
+                {info.map((item, index) => (
                   <Banner.MetadataField
-                    key={`header-metadata-${index}`}
+                    key={`header-info-${index}`}
                     value={item.description}
                   />
                 ))}

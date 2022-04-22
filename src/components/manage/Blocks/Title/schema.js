@@ -1,5 +1,5 @@
-const metadataSchema = {
-  title: 'Metadata',
+const infoSchema = {
+  title: 'Info',
   fieldsets: [
     {
       id: 'default',
@@ -27,7 +27,7 @@ export default {
         'hideCreationDate',
         'hidePublishingDate',
         'hideModificationDate',
-        'metadata',
+        'info',
       ],
     },
     {
@@ -66,10 +66,10 @@ export default {
       title: 'Hide download button',
       type: 'boolean',
     },
-    metadata: {
-      title: 'Extra metadata',
+    info: {
+      title: 'Extra info',
       widget: 'object_list',
-      schema: metadataSchema,
+      schema: infoSchema,
     },
     // contentType: {
     //   title: 'Type',
