@@ -1,3 +1,3 @@
-body:not(.wf-state-published) {
+body.view-viewview:not(.wf-state-published) {
   background-image: url('draft.png') !important;
 }
