@@ -44,7 +44,7 @@ const Banner = ({ children }) => {
 Banner.Action = ({ title, icon, color, onClick, className }) => {
   return (
     <div className="action">
-      <Button className={className} basic inverted onClick={onClick}>
+      <Button className={className} basic icon inverted onClick={onClick}>
         <Icon className={icon} color={color}></Icon>
         <span className="mobile hidden">{title}</span>
       </Button>
