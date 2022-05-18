@@ -15,12 +15,12 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
   }
   // Apply quote block customization
-  if (config.blocks.blocksConfig.quote) {
-    config.blocks.blocksConfig.quote.templates.default.icons = {
-      openQuote: 'ri-double-quotes-l',
-      closeQuote: 'ri-double-quotes-r',
-    };
-  }
+  // if (config.blocks.blocksConfig.quote) {
+  //   config.blocks.blocksConfig.quote.templates.default.icons = {
+  //     openQuote: 'ri-double-quotes-l',
+  //     closeQuote: 'ri-double-quotes-r',
+  //   };
+  // }
   // apply inPage navigation
   config.settings.appExtras = [
     ...(config.settings.appExtras || []),
