@@ -7,7 +7,6 @@ import { startCase } from 'lodash';
 import qs from 'querystring';
 import { Container, Popup } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
-import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import Banner from './Banner';
 import { getImageSource, sharePage } from './Banner';
 
@@ -74,7 +73,7 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
-  const { banner = {}, moment, fluid, intl, location, types = [] } = props;
+  const { banner = {}, fluid, intl, location, types = [] } = props;
   const metadata = props.metadata || props.properties;
   const {
     info = [],
@@ -94,9 +93,9 @@ const View = (props) => {
   // Set dates
   const getDate = useCallback(
     (hidden, key) => {
-      return !hidden && metadata[key] ? moment.default(metadata[key]) : null;
+      return !hidden && metadata[key] ? metadata[key] : null;
     },
-    [moment, metadata],
+    [metadata],
   );
   const creationDate = useMemo(() => getDate(hideCreationDate, 'created'), [
     getDate,
@@ -241,10 +240,10 @@ const View = (props) => {
 
 export default compose(
   injectIntl,
-  injectLazyLibs(['moment']),
+  withRouter,
   connect((state) => {
     return {
       types: state.types.types,
     };
   }),
-)(withRouter(View));
+)(View);

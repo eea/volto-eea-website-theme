@@ -15,7 +15,7 @@ import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/
  * @extends Component
  */
 const View = (props) => {
-  if (__SERVER__) return '';
+  if (__SERVER__) return <BannerView {...props} />;
   return (
     <Portal node={document.getElementById('page-header')}>
       <BannerView {...props} />

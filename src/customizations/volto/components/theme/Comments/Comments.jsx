@@ -18,8 +18,8 @@ import { Portal } from 'react-portal';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { Button, Comment, Container, Icon } from 'semantic-ui-react';
-import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
-// import { Button, Grid, Segment, Container } from 'semantic-ui-react';
+import { formatRelativeDate } from '@plone/volto/helpers/Utils/Date';
+import config from '@plone/volto/registry';
 
 const messages = defineMessages({
   comment: {
@@ -297,7 +297,6 @@ class Comments extends Component {
    */
   render() {
     const { items } = this.props;
-    const moment = this.props.moment.default;
     const { collapsedComments } = this.state;
     // object with comment ids, to easily verify if any comment has children
     const allCommentsWithCildren = this.addRepliesAsChildrenToComments(items);
@@ -318,8 +317,11 @@ class Comments extends Component {
           <Comment.Metadata>
             <span>
               {' '}
-              <span title={moment(comment.creation_date).format('LLLL')}>
-                {moment(comment.creation_date).fromNow()}
+              <span title={comment.creation_date}>
+                {formatRelativeDate({
+                  date: comment.creation_date,
+                  locale: config.settings.dateLocale || 'en-gb',
+                })}
               </span>
             </span>
           </Comment.Metadata>
@@ -472,7 +474,6 @@ class Comments extends Component {
 
 export default compose(
   injectIntl,
-  injectLazyLibs(['moment']),
   connect(
     (state) => ({
       items: state.comments.items,
