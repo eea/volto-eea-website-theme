@@ -1,8 +1,8 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import { Icon, Button, Grid } from 'semantic-ui-react';
+import { formatDate } from '@plone/volto/helpers/Utils/Date';
 import config from '@plone/volto/registry';
 
 const socialPlatforms = {
@@ -72,15 +72,21 @@ Banner.Title = ({ children }) => (
 );
 Banner.Metadata = ({ children }) => <p className="metadata">{children}</p>;
 Banner.MetadataField = ({ hidden, type = 'text', label, value, title }) => {
-  moment.locale(config.settings.dateLocale || 'en-gb');
+  const locale = config.settings.dateLocale || 'en-gb';
   if (hidden || !value) return '';
   if (type === 'date' && value)
     return (
-      <span
-        className={`field ${type}`}
-        title={title.replace('{}', value.format('lll'))}
-      >
-        {label} {value.format('ll')}
+      <span className={`field ${type}`} title={title.replace('{}', value)}>
+        {label}{' '}
+        {formatDate({
+          date: value,
+          format: {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+          },
+          locale: locale,
+        })}
       </span>
     );
   return <span className={`field ${type}`}>{value}</span>;
