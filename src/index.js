@@ -15,6 +15,10 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
   }
 
+  // Description block custom CSS
+  config.blocks.blocksConfig.description.className =
+    'documentDescription eea callout';
+
   // apply inPage navigation
   config.settings.appExtras = [
     ...(config.settings.appExtras || []),
