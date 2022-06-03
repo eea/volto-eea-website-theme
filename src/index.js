@@ -3,6 +3,7 @@ import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigatio
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
+import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 
 const applyConfig = (config) => {
   config.settings.eea = {
@@ -18,6 +19,10 @@ const applyConfig = (config) => {
   // Description block custom CSS
   config.blocks.blocksConfig.description.className =
     'documentDescription eea callout';
+
+  // Custom TokenWidget
+  config.widgets.views.id.subjects = TokenWidget;
+  config.widgets.views.widget.tags = TokenWidget;
 
   // apply inPage navigation
   config.settings.appExtras = [
