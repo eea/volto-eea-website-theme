@@ -21,8 +21,10 @@ const applyConfig = (config) => {
     'documentDescription eea callout';
 
   // Custom TokenWidget
-  config.widgets.views.id.subjects = TokenWidget;
-  config.widgets.views.widget.tags = TokenWidget;
+  if (config.widgets.views) {
+    config.widgets.views.id.subjects = TokenWidget;
+    config.widgets.views.widget.tags = TokenWidget;
+  }
 
   // apply inPage navigation
   config.settings.appExtras = [
