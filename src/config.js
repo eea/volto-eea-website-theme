@@ -8,60 +8,151 @@ import ccaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 import copernicusLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/copernicus.svg';
 import industryLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/industry.svg';
 import marineLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/marine.svg';
+import eionetLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eionet.svg';
+import eeaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea.svg';
 
 // TODO: to be consolidated with headerLinks
-export const partnerWebsites = [
-  {
-    link: 'https://biodiversity.europa.eu/',
-    src: biseLogo,
-    alt: 'Biodiversity',
-  },
-  {
-    link: 'https://climate-energy.eea.europa.eu/',
-    src: energyLogo,
-    alt: 'Climate and energy in the EU',
-  },
-  {
-    link: 'https://insitu.copernicus.eu/',
-    src: insituLogo,
-    alt: 'Copernicus in situ',
-  },
-  {
-    link: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
-    src: ipchemLogo,
-    alt: 'Information platform for chemical monitoring',
-  },
-  {
-    link: 'https://water.europa.eu/freshwater',
-    src: freshwaterLogo,
-    alt: 'WISE freshwater',
-  },
-  {
-    link: 'https://forest.eea.europa.eu/',
-    src: fiseLogo,
-    alt: 'Forest information system for europe',
-  },
-  {
-    link: 'https://climate-adapt.eea.europa.eu/',
-    src: ccaLogo,
-    alt: 'Climate adapt',
-  },
-  {
-    link: 'https://land.copernicus.eu/',
-    src: copernicusLogo,
-    alt: 'Copernicus land monitoring service',
-  },
-  {
-    link: 'https://industry.eea.europa.eu/',
-    src: industryLogo,
-    alt: 'European industrial emissions portal',
-  },
-  {
-    link: 'https://water.europa.eu/marine',
-    src: marineLogo,
-    alt: 'WISE marine',
-  },
-];
+// Footer.jsx config options
+export const footerOpts = {
+  header: 'EEA information systems',
+  logosHeader: 'Managed by',
+  contactHeader: 'Contact Us',
+  actions: [
+    {
+      title: 'Login',
+      link: '/login',
+    },
+    {
+      link: '/sitemap',
+      title: 'Sitemap',
+    },
+    {
+      link: '/privacy',
+      title: 'Privacy',
+    },
+    {
+      link: '/copyright',
+      title: 'Copyright',
+      copy: true,
+    },
+  ],
+  sites: [
+    {
+      link: 'https://biodiversity.europa.eu/',
+      src: biseLogo,
+      alt: 'Biodiversity',
+    },
+    {
+      link: 'https://climate-energy.eea.europa.eu/',
+      src: energyLogo,
+      alt: 'Climate and energy in the EU',
+    },
+    {
+      link: 'https://insitu.copernicus.eu/',
+      src: insituLogo,
+      alt: 'Copernicus in situ',
+    },
+    {
+      link: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
+      src: ipchemLogo,
+      alt: 'Information platform for chemical monitoring',
+    },
+    {
+      link: 'https://water.europa.eu/freshwater',
+      src: freshwaterLogo,
+      alt: 'WISE freshwater',
+    },
+    {
+      link: 'https://forest.eea.europa.eu/',
+      src: fiseLogo,
+      alt: 'Forest information system for europe',
+    },
+    {
+      link: 'https://climate-adapt.eea.europa.eu/',
+      src: ccaLogo,
+      alt: 'Climate adapt',
+    },
+    {
+      link: 'https://land.copernicus.eu/',
+      src: copernicusLogo,
+      alt: 'Copernicus land monitoring service',
+    },
+    {
+      link: 'https://industry.eea.europa.eu/',
+      src: industryLogo,
+      alt: 'European industrial emissions portal',
+    },
+    {
+      link: 'https://water.europa.eu/marine',
+      src: marineLogo,
+      alt: 'WISE marine',
+    },
+  ],
+  managedBy: [
+    {
+      link: 'https://www.eea.europa.eu/',
+      src: eeaLogo,
+      alt: 'EEA Logo',
+      className: 'site logo',
+      columnSize: {
+        mobile: 12,
+        tablet: 12,
+        computer: 5,
+      },
+    },
+    {
+      link: 'https://www.eionet.europa.eu/',
+      src: eionetLogo,
+      alt: 'EIONET Logo',
+      className: 'eionet logo',
+      columnSize: {
+        mobile: 12,
+        tablet: 12,
+        computer: 6,
+      },
+    },
+  ],
+  social: [
+    {
+      name: 'twitter',
+      icon: 'ri-twitter-fill',
+      link: 'https://twitter.com/euenvironment',
+    },
+    {
+      name: 'facebook',
+      icon: 'ri-facebook-box-fill',
+      link: 'https://www.facebook.com/European.Environment.Agency',
+    },
+    {
+      name: 'linkedin',
+      icon: 'ri-linkedin-fill',
+      link: 'https://www.linkedin.com/company/european-environment-agency',
+    },
+    {
+      name: 'youtube',
+      icon: 'ri-youtube-fill',
+      link: 'https://www.youtube.com/user/EEAvideos',
+    },
+    {
+      name: 'rss',
+      icon: 'ri-rss-fill',
+      link: '/subscription/news-feeds',
+    },
+  ],
+  contacts: [
+    {
+      icon: 'comment outline',
+      text: 'Ask your question',
+      link: '/contact-us',
+    },
+    {
+      icon: 'envelope outline',
+      text: 'Sign up to our newsletter',
+      link: '/newsletter',
+    },
+  ],
+  address: 'Kongens Nytorv 6 1050 Copenhagen K (+45) 33 36 71 00',
+};
 
 export const globalHeaderPartnerLinks = {
   title: 'Environmental information systems',
@@ -100,64 +191,6 @@ export const globalHeaderPartnerLinks = {
     },
   ],
 };
-
-export const globalActions = [
-  {
-    link: '/login',
-    title: 'CMS Login',
-  },
-  {
-    link: '/sitemap',
-    title: 'Sitemap',
-  },
-  {
-    link: '/privacy',
-    title: 'Privacy',
-  },
-  {
-    link: '/copyright',
-    title: 'Copyright',
-    copy: true,
-  },
-];
-
-export const socialActions = [
-  {
-    name: 'twitter',
-    link: 'https://twitter.com/euenvironment',
-  },
-  {
-    name: 'facebook',
-    link: 'https://www.facebook.com/European.Environment.Agency',
-  },
-  {
-    name: 'linkedin',
-    link: 'https://www.linkedin.com/company/european-environment-agency',
-  },
-  {
-    name: 'youtube',
-    link: 'https://www.youtube.com/user/EEAvideos',
-  },
-  {
-    name: 'rss',
-    link: '/subscription/news-feeds',
-  },
-];
-
-export const footerActions = [
-  {
-    icon: 'comment outline',
-    text: 'Ask your question',
-    link: '/contact-us',
-  },
-  {
-    icon: 'envelope outline',
-    text: 'Sign up to our newsletter',
-    link: '/newsletter',
-  },
-];
-
-export const address = 'Kongens Nytorv 6 1050 Copenhagen K (+45) 33 36 71 00';
 
 export const languages = [
   { name: 'Български', code: 'bg' },
