@@ -18,10 +18,12 @@ const applyConfig = (config) => {
 
   // Apply tabs block customization
   if (config.blocks.blocksConfig.tabs_block) {
-    config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
-      opened: 'ri-arrow-up-s-line',
-      closed: 'ri-arrow-down-s-line',
-    };
+    if (config.blocks.blocksConfig.tabs_block.templates.accordion) {
+      config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
+        opened: 'ri-arrow-up-s-line',
+        closed: 'ri-arrow-down-s-line',
+      };
+    }
   }
 
   // Description block custom CSS
