@@ -16,6 +16,14 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
   }
 
+  // Apply tabs block customization
+  if (config.blocks.blocksConfig.tabs_block) {
+    config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
+      opened: 'ri-arrow-up-s-line',
+      closed: 'ri-arrow-down-s-line',
+    };
+  }
+
   // Description block custom CSS
   config.blocks.blocksConfig.description.className =
     'documentDescription eea callout';
