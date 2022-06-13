@@ -21,6 +21,7 @@ import { find } from 'lodash';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
+import { BodyClass } from '@plone/volto/helpers';
 
 import config from '@plone/volto/registry';
 import { compose } from 'recompose';
@@ -33,6 +34,9 @@ const EEAHeader = ({ pathname, token, items, history }) => {
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
+  const isHomePage = useSelector((state) => {
+    return state.content?.data?.['@type'] === 'Plone Site';
+  });
 
   const { eea } = config.settings;
   const width = useSelector((state) => state.screen?.width);
@@ -62,6 +66,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
 
   return (
     <Header menuItems={items}>
+      {isHomePage && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
           <Image src={eeaFlag} alt="eea flag"></Image>
