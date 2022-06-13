@@ -28,7 +28,7 @@ const updatedEEAColorcheme = [
   // Black & White shades
   '#000000',
   '#323232',
-  '#808285',
+  '#67696b',
   '#BCBEC0',
   '#E6E7E8',
   '#F9F9F9',
