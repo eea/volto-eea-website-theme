@@ -1,33 +1,44 @@
 import React from 'react';
 import { Container, Input } from 'semantic-ui-react';
-
+import { withRouter } from 'react-router-dom';
 import { useClickOutside } from '@eeacms/volto-eea-design-system/helpers';
 
-function HeaderSearchPopUp({ onClose, triggerRefs = [] }) {
+function HeaderSearchPopUp({ history, onClose, triggerRefs = [] }) {
   const nodeRef = React.useRef();
+  const [text, setText] = React.useState('');
 
   useClickOutside({ targetRefs: [nodeRef, ...triggerRefs], callback: onClose });
 
+  const onChangeText = (event, { value }) => {
+    setText(value);
+    event.preventDefault();
+  };
+
+  const onSubmit = (event) => {
+    history.push(`/en/advanced-search?q=${text}`);
+    onClose();
+    event.preventDefault();
+  };
+
   return (
-    <div id="search-box" ref={nodeRef}>
+    <form id="search-box" ref={nodeRef} method="get" onSubmit={onSubmit}>
       <Container>
         <div className="wrapper">
           <Input
             className="search"
-            icon={{ className: 'ri-search-line', link: true }}
+            onChange={onChangeText}
+            icon={{
+              className: 'ri-search-line',
+              link: true,
+              onClick: onSubmit,
+            }}
             placeholder="Search..."
             fluid
           />
-          {/* <div className="action">
-            <Button icon labelPosition="left" className="search">
-              <Icon name="search" />
-              Advanced Search
-            </Button>
-          </div> */}
         </div>
       </Container>
-    </div>
+    </form>
   );
 }
 
-export default HeaderSearchPopUp;
+export default withRouter(HeaderSearchPopUp);
