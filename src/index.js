@@ -4,11 +4,17 @@ import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manag
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
+import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
+import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 
 const applyConfig = (config) => {
   config.settings.eea = {
     ...eea,
     ...(config.settings.eea || {}),
+  };
+  config.views.layoutViews = {
+    homepage_view: HomePageView,
+    homepage_inverse_view: HomePageInverseView,
   };
 
   // Apply accordion block customization

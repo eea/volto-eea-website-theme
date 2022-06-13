@@ -18,6 +18,7 @@ import { getNavigation } from '@plone/volto/actions';
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import { find } from 'lodash';
+import WhiteLogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea.svg';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
@@ -33,6 +34,9 @@ const EEAHeader = ({ pathname, token, items, history }) => {
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
+  const isHomePageInverse = useSelector((state) => {
+    return state.content?.data?.layout === 'homepage_inverse_view';
+  });
 
   const { eea } = config.settings;
   const width = useSelector((state) => state.screen?.width);
@@ -154,9 +158,11 @@ const EEAHeader = ({ pathname, token, items, history }) => {
       </Header.TopHeader>
       <Header.Main
         pathname={pathname}
+        inverted={isHomePageInverse ? true : false}
+        transparency={isHomePageInverse ? true : false}
         logo={
           <Logo
-            src={LogoImage}
+            src={isHomePageInverse ? WhiteLogoImage : LogoImage}
             title={eea.websiteTitle}
             alt={eea.organisationName}
             url={eea.logoTargetUrl}
