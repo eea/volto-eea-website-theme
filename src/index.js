@@ -8,10 +8,13 @@ import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homep
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 
 const applyConfig = (config) => {
+  // EEA specific settings
   config.settings.eea = {
     ...eea,
     ...(config.settings.eea || {}),
   };
+
+  // Homepage
   config.views.layoutViews = {
     homepage_view: HomePageView,
     homepage_inverse_view: HomePageInverseView,
@@ -51,8 +54,8 @@ const applyConfig = (config) => {
     },
   ];
 
+  // Custom CSS voltoCustom.css and Draft Background
   const appExtras = config.settings.appExtras || [];
-
   config.settings.appExtras = [
     ...appExtras,
     {
@@ -65,6 +68,64 @@ const applyConfig = (config) => {
     },
   ];
 
+  // Custom block styles
+  config.settings.pluggableStyles = [
+    ...(config.settings.pluggableStyles || []),
+    {
+      id: 'content-box-gray',
+      title: 'Content Box',
+      viewComponent: (props) => {
+        return (
+          <div className="content-box">
+            <div className="content-box-inner ui container">
+              {props.children}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'content-box-primary',
+      title: 'Content Box (primary)',
+      viewComponent: (props) => {
+        return (
+          <div className="content-box primary">
+            <div className="content-box-inner ui container">
+              {props.children}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'content-box-secondary',
+      title: 'Content Box (secondary)',
+      viewComponent: (props) => {
+        return (
+          <div className="content-box secondary">
+            <div className="content-box-inner ui container">
+              {props.children}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'content-box-tertiary',
+      title: 'Content Box (tertiary)',
+      viewComponent: (props) => {
+        return (
+          <div className="content-box tertiary">
+            <div className="content-box-inner ui container">
+              {props.children}
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
+  // Custom blocks
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
 };
 
