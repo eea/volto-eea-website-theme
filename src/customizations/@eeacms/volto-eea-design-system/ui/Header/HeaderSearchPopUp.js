@@ -16,6 +16,11 @@ function HeaderSearchPopUp({ history, onClose, triggerRefs = [] }) {
 
   const onSubmit = (event) => {
     history.push(`/en/advanced-search?q=${text}`);
+
+    if (window?.searchContext?.resetSearch) {
+      window.searchContext.resetSearch({ searchTerm: text });
+    }
+
     onClose();
     event.preventDefault();
   };

@@ -25,6 +25,7 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 
 import config from '@plone/volto/registry';
 import { compose } from 'recompose';
+import { BodyClass } from '@plone/volto/helpers';
 
 /**
  * EEA Specific Header component.
@@ -34,8 +35,18 @@ const EEAHeader = ({ pathname, token, items, history }) => {
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
+
+  const router_pathname = useSelector((state) => {
+    return state.router?.location?.pathname || '';
+  });
+
   const isHomePageInverse = useSelector((state) => {
-    return state.content?.data?.layout === 'homepage_inverse_view';
+    const layout = state.content?.data?.layout;
+    const has_home_layout = layout === 'homepage_inverse_view';
+    return (
+      has_home_layout &&
+      (pathname === router_pathname || router_pathname.endsWith('/edit'))
+    );
   });
 
   const { eea } = config.settings;
@@ -48,9 +59,9 @@ const EEAHeader = ({ pathname, token, items, history }) => {
 
   React.useEffect(() => {
     const { settings } = config;
-    const base = getBaseUrl(pathname);
-    if (!hasApiExpander('navigation', base)) {
-      dispatch(getNavigation(base, settings.navDepth));
+    const base_url = getBaseUrl(pathname);
+    if (!hasApiExpander('navigation', base_url)) {
+      dispatch(getNavigation(base_url, settings.navDepth));
     }
   }, [pathname, dispatch]);
 
@@ -66,6 +77,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
 
   return (
     <Header menuItems={items}>
+      {isHomePageInverse && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
           <Image src={eeaFlag} alt="eea flag"></Image>
