@@ -34,8 +34,15 @@ const EEAHeader = ({ pathname, token, items, history }) => {
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
+
+  const router_pathname = useSelector((state) => {
+    return state.router?.location?.pathname || '';
+  });
   const isHomePageInverse = useSelector((state) => {
-    return state.content?.data?.layout === 'homepage_inverse_view';
+    return (
+      state.content?.data?.layout === 'homepage_inverse_view' &&
+      pathname === router_pathname
+    );
   });
 
   const { eea } = config.settings;
@@ -48,9 +55,9 @@ const EEAHeader = ({ pathname, token, items, history }) => {
 
   React.useEffect(() => {
     const { settings } = config;
-    const base = getBaseUrl(pathname);
-    if (!hasApiExpander('navigation', base)) {
-      dispatch(getNavigation(base, settings.navDepth));
+    const base_url = getBaseUrl(pathname);
+    if (!hasApiExpander('navigation', base_url)) {
+      dispatch(getNavigation(base_url, settings.navDepth));
     }
   }, [pathname, dispatch]);
 
