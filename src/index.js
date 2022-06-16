@@ -83,9 +83,7 @@ const applyConfig = (config) => {
       viewComponent: (props) => {
         return (
           <div className="content-box">
-            <div className="content-box-inner ui container">
-              {props.children}
-            </div>
+            <div className="content-box-inner">{props.children}</div>
           </div>
         );
       },
@@ -99,9 +97,7 @@ const applyConfig = (config) => {
       viewComponent: (props) => {
         return (
           <div className="content-box primary">
-            <div className="content-box-inner ui container">
-              {props.children}
-            </div>
+            <div className="content-box-inner">{props.children}</div>
           </div>
         );
       },
@@ -115,9 +111,7 @@ const applyConfig = (config) => {
       viewComponent: (props) => {
         return (
           <div className="content-box secondary">
-            <div className="content-box-inner ui container">
-              {props.children}
-            </div>
+            <div className="content-box-inner">{props.children}</div>
           </div>
         );
       },
@@ -131,9 +125,7 @@ const applyConfig = (config) => {
       viewComponent: (props) => {
         return (
           <div className="content-box tertiary">
-            <div className="content-box-inner ui container">
-              {props.children}
-            </div>
+            <div className="content-box-inner">{props.children}</div>
           </div>
         );
       },
