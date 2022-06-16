@@ -69,6 +69,7 @@ const applyConfig = (config) => {
   ];
 
   // Custom block styles
+  config.settings.previewText = '';
   config.settings.pluggableStyles = [
     ...(config.settings.pluggableStyles || []),
     {
