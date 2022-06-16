@@ -6,6 +6,8 @@ import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/Dr
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
+import { Icon } from '@plone/volto/components';
+import contentBoxSVG from './icons/content-box.svg';
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -74,7 +76,10 @@ const applyConfig = (config) => {
     ...(config.settings.pluggableStyles || []),
     {
       id: 'content-box-gray',
-      title: 'Content Box',
+      title: 'Default',
+      previewComponent: () => (
+        <Icon name={contentBoxSVG} size="88px" className="default" />
+      ),
       viewComponent: (props) => {
         return (
           <div className="content-box">
@@ -87,7 +92,10 @@ const applyConfig = (config) => {
     },
     {
       id: 'content-box-primary',
-      title: 'Content Box (primary)',
+      title: 'Primary',
+      previewComponent: () => (
+        <Icon name={contentBoxSVG} size="88px" className="primary" />
+      ),
       viewComponent: (props) => {
         return (
           <div className="content-box primary">
@@ -100,7 +108,10 @@ const applyConfig = (config) => {
     },
     {
       id: 'content-box-secondary',
-      title: 'Content Box (secondary)',
+      title: 'Secondary',
+      previewComponent: () => (
+        <Icon name={contentBoxSVG} size="88px" className="secondary" />
+      ),
       viewComponent: (props) => {
         return (
           <div className="content-box secondary">
@@ -113,7 +124,10 @@ const applyConfig = (config) => {
     },
     {
       id: 'content-box-tertiary',
-      title: 'Content Box (tertiary)',
+      title: 'Tertiary',
+      previewComponent: () => (
+        <Icon name={contentBoxSVG} size="88px" className="tertiary" />
+      ),
       viewComponent: (props) => {
         return (
           <div className="content-box tertiary">
