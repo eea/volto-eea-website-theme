@@ -1,7 +1,6 @@
 import biseLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/bise.svg';
 import energyLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/energy.svg';
 import insituLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/insitu.svg';
-import ipchemLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/ipchem.svg';
 import freshwaterLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/freshwater.svg';
 import fiseLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/fise.svg';
 import ccaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/cca.svg';
@@ -10,6 +9,7 @@ import industryLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/as
 import marineLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/marine.svg';
 import eionetLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eionet.svg';
 import eeaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea.svg';
+import climateLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/climate-health.svg';
 
 // TODO: to be consolidated with headerLinks
 // Footer.jsx config options
@@ -38,24 +38,29 @@ export const footerOpts = {
   ],
   sites: [
     {
+      link: 'https://water.europa.eu/marine',
+      src: marineLogo,
+      alt: 'WISE marine',
+    },
+    {
       link: 'https://biodiversity.europa.eu/',
       src: biseLogo,
       alt: 'Biodiversity',
     },
     {
-      link: 'https://climate-energy.eea.europa.eu/',
-      src: energyLogo,
-      alt: 'Climate and energy in the EU',
+      link: 'https://climate-adapt.eea.europa.eu/observatory',
+      src: climateLogo,
+      alt: 'European Climate and Health Observatory',
+    },
+    {
+      link: 'https://industry.eea.europa.eu/',
+      src: industryLogo,
+      alt: 'European industrial emissions portal',
     },
     {
       link: 'https://insitu.copernicus.eu/',
       src: insituLogo,
       alt: 'Copernicus in situ',
-    },
-    {
-      link: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
-      src: ipchemLogo,
-      alt: 'Information platform for chemical monitoring',
     },
     {
       link: 'https://water.europa.eu/freshwater',
@@ -73,19 +78,14 @@ export const footerOpts = {
       alt: 'Climate adapt',
     },
     {
+      link: 'https://climate-energy.eea.europa.eu/',
+      src: energyLogo,
+      alt: 'Climate and energy in the EU',
+    },
+    {
       link: 'https://land.copernicus.eu/',
       src: copernicusLogo,
       alt: 'Copernicus land monitoring service',
-    },
-    {
-      link: 'https://industry.eea.europa.eu/',
-      src: industryLogo,
-      alt: 'European industrial emissions portal',
-    },
-    {
-      link: 'https://water.europa.eu/marine',
-      src: marineLogo,
-      alt: 'WISE marine',
     },
   ],
   managedBy: [
