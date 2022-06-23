@@ -45,42 +45,15 @@ const EventView = (props) => {
   return (
     <div id="page-document" className="ui container viewwrapper event-view">
       <Grid>
-        <Grid.Column width={7} className="mobile hidden">
+        <Grid.Column mobile={12} tablet={7} computer={7}>
           {hasBlocksData(content) ? (
             <RenderBlocks {...props} />
           ) : (
             <EventTextfieldView {...props} />
           )}
         </Grid.Column>
-        <Grid.Column width={5} className="mobile hidden">
+        <Grid.Column mobile={12} tablet={5} computer={5}>
           <EventDetails content={content} />
-        </Grid.Column>
-        <Grid.Column width={12} only="mobile">
-          {hasBlocksData(content) ? (
-            <>
-              <RenderBlocks
-                {...props}
-                content={{
-                  ...content,
-                  blocks_layout: {
-                    items: props.content.blocks_layout.items.slice(0, 1),
-                  },
-                }}
-              />
-              <EventDetails content={content} display_as="div" />
-              <RenderBlocks
-                {...props}
-                content={{
-                  ...content,
-                  blocks_layout: {
-                    items: props.content.blocks_layout.items.slice(1),
-                  },
-                }}
-              />
-            </>
-          ) : (
-            <EventTextfieldView {...props} />
-          )}
         </Grid.Column>
       </Grid>
     </div>
