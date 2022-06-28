@@ -83,7 +83,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
           <Image src={eeaFlag} alt="eea flag"></Image>
           <Header.TopDropdownMenu
             text="An official website of the European Union | How do you Know?"
-            mobileText="An official EU website"
+            mobileText=" "
             icon="chevron down"
             aria-label="dropdown"
             className=""
@@ -110,7 +110,6 @@ const EEAHeader = ({ pathname, token, items, history }) => {
         <Header.TopItem>
           <Header.TopDropdownMenu
             id="theme-sites"
-            className="tablet or lower hidden"
             text={eea.globalHeaderPartnerLinks.title}
             viewportWidth={width}
           >
