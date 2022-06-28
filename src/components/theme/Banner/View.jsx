@@ -164,7 +164,7 @@ const View = (props) => {
                           </div>
                         </>
                       )}
-                      position="top center"
+                      position="bottom center"
                       size="small"
                       trigger={
                         <Banner.Action
