@@ -161,18 +161,10 @@ const View = (props) => {
                                 sharePage(metadata['@id'], 'linkedin');
                               }}
                             />
-                            <Banner.Action icon="blogger b" />
-                            <Banner.Action
-                              icon="ri-reddit-line"
-                              onClick={() => {
-                                sharePage(metadata['@id'], 'reddit');
-                              }}
-                            />
-                            <Banner.Action icon="stumbleupon circle" />
                           </div>
                         </>
                       )}
-                      position="top center"
+                      position="bottom center"
                       size="small"
                       trigger={
                         <Banner.Action
