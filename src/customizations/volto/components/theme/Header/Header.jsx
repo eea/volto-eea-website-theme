@@ -18,7 +18,7 @@ import { getNavigation } from '@plone/volto/actions';
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import { find } from 'lodash';
-import WhiteLogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea.svg';
+import WhiteLogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-white.svg';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
