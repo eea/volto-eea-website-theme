@@ -27,6 +27,8 @@ import config from '@plone/volto/registry';
 import { compose } from 'recompose';
 import { BodyClass } from '@plone/volto/helpers';
 
+import cx from 'classnames';
+
 /**
  * EEA Specific Header component.
  */
@@ -192,9 +194,17 @@ const EEAHeader = ({ pathname, token, items, history }) => {
             {item.title}
           </a>
         )}
-        renderMenuItem={(item) => (
-          <UniversalLink href={item.url || '/'} title={item.title}>
-            <span className={'item'}>{item.title}</span>
+        renderMenuItem={(item, options, props) => (
+          <UniversalLink
+            href={item.url || '/'}
+            title={item.title}
+            {...(options || {})}
+            className={cx(options?.className, {
+              active: item.url === router_pathname,
+            })}
+          >
+            {props?.children}
+            <span>{item.title}</span>
           </UniversalLink>
         )}
       ></Header.Main>
