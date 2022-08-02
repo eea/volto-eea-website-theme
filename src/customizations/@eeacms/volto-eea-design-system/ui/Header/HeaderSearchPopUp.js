@@ -3,7 +3,12 @@ import { Container, Input } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import { useClickOutside } from '@eeacms/volto-eea-design-system/helpers';
 
-function HeaderSearchPopUp({ history, onClose, triggerRefs = [] }) {
+function HeaderSearchPopUp({
+  history,
+  onClose,
+  searchInputRef,
+  triggerRefs = [],
+}) {
   const nodeRef = React.useRef();
   const [text, setText] = React.useState('');
 
@@ -30,6 +35,7 @@ function HeaderSearchPopUp({ history, onClose, triggerRefs = [] }) {
       <Container>
         <div className="wrapper">
           <Input
+            ref={searchInputRef}
             className="search"
             onChange={onChangeText}
             icon={{
