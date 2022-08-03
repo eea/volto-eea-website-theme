@@ -203,8 +203,9 @@ const EEAHeader = ({ pathname, token, items, history }) => {
               active: item.url === router_pathname,
             })}
           >
-            {props?.children}
+            {props?.iconPosition !== 'right' && props?.children}
             <span>{item.title}</span>
+            {props?.iconPosition === 'right' && props?.children}
           </UniversalLink>
         )}
       ></Header.Main>
