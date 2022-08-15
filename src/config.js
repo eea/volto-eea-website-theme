@@ -14,26 +14,27 @@ import climateLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/ass
 // TODO: to be consolidated with headerLinks
 // Footer.jsx config options
 export const footerOpts = {
-  header: 'EEA information systems',
+  header: 'Thematic information platforms',
   logosHeader: 'Managed by',
   contactHeader: 'Contact Us',
   actions: [
     {
-      title: 'Login',
-      link: '/login',
+      title: 'Privacy',
+      link: '/privacy',
     },
     {
       link: '/sitemap',
       title: 'Sitemap',
     },
     {
-      link: '/privacy',
-      title: 'Privacy',
+      link: '/login',
+      title: 'CMS Login',
     },
+  ],
+  copyright: [
     {
       link: '/copyright',
-      title: 'Copyright',
-      copy: true,
+      site: 'EEA',
     },
   ],
   sites: [
@@ -43,29 +44,14 @@ export const footerOpts = {
       alt: 'WISE marine',
     },
     {
-      link: 'https://biodiversity.europa.eu/',
-      src: biseLogo,
-      alt: 'Biodiversity',
-    },
-    {
-      link: 'https://climate-adapt.eea.europa.eu/observatory',
-      src: climateLogo,
-      alt: 'European Climate and Health Observatory',
-    },
-    {
-      link: 'https://industry.eea.europa.eu/',
-      src: industryLogo,
-      alt: 'European industrial emissions portal',
-    },
-    {
-      link: 'https://insitu.copernicus.eu/',
-      src: insituLogo,
-      alt: 'Copernicus in situ',
-    },
-    {
       link: 'https://water.europa.eu/freshwater',
       src: freshwaterLogo,
       alt: 'WISE freshwater',
+    },
+    {
+      link: 'https://biodiversity.europa.eu/',
+      src: biseLogo,
+      alt: 'Biodiversity',
     },
     {
       link: 'https://forest.eea.europa.eu/',
@@ -73,9 +59,19 @@ export const footerOpts = {
       alt: 'Forest information system for europe',
     },
     {
+      link: 'https://climate-adapt.eea.europa.eu/observatory',
+      src: climateLogo,
+      alt: 'European Climate and Health Observatory',
+    },
+    {
       link: 'https://climate-adapt.eea.europa.eu/',
       src: ccaLogo,
       alt: 'Climate adapt',
+    },
+    {
+      link: 'https://industry.eea.europa.eu/',
+      src: industryLogo,
+      alt: 'European industrial emissions portal',
     },
     {
       link: 'https://climate-energy.eea.europa.eu/',
@@ -87,6 +83,11 @@ export const footerOpts = {
       src: copernicusLogo,
       alt: 'Copernicus land monitoring service',
     },
+    {
+      link: 'https://insitu.copernicus.eu/',
+      src: insituLogo,
+      alt: 'Copernicus in situ',
+    },
   ],
   managedBy: [
     {
@@ -97,7 +98,7 @@ export const footerOpts = {
       columnSize: {
         mobile: 6,
         tablet: 12,
-        computer: 5,
+        computer: 4,
       },
     },
     {
@@ -108,7 +109,7 @@ export const footerOpts = {
       columnSize: {
         mobile: 6,
         tablet: 12,
-        computer: 6,
+        computer: 4,
       },
     },
   ],
@@ -134,6 +135,11 @@ export const footerOpts = {
       link: 'https://www.youtube.com/user/EEAvideos',
     },
     {
+      name: 'instagram',
+      icon: 'ri-instagram-fill',
+      link: 'https://www.instagram.com/ourplanet_eu',
+    },
+    {
       name: 'rss',
       icon: 'ri-rss-fill',
       link: '/subscription/news-feeds',
@@ -142,7 +148,22 @@ export const footerOpts = {
   contacts: [
     {
       icon: 'comment outline',
-      text: 'Ask your question',
+      text: 'About us',
+      link: '/about',
+      children: [
+        {
+          link: '/faq',
+          text: 'FAQs',
+        },
+        {
+          link: '/careers',
+          text: 'Careers',
+        },
+      ],
+    },
+    {
+      icon: 'comment outline',
+      text: 'Contact us',
       link: '/contact-us',
     },
     {

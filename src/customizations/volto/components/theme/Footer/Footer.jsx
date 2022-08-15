@@ -11,9 +11,13 @@ const Footer = (props) => {
   const { eea } = config.settings;
   return (
     <EEAFooter>
+      <EEAFooter.SubFooter {...eea.footerOpts} />
       <EEAFooter.Header>{eea.footerOpts.header}</EEAFooter.Header>
       <EEAFooter.Sites sites={eea.footerOpts.sites} />
-      <EEAFooter.SubFooter {...eea.footerOpts} />
+      <EEAFooter.Actions
+        actions={eea.footerOpts.actions}
+        copyright={eea.footerOpts.copyright}
+      />
     </EEAFooter>
   );
 };
