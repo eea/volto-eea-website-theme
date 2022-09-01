@@ -16,9 +16,9 @@ const applyConfig = (config) => {
     ...(config.settings.eea || {}),
   };
 
-  // Homepage
+  // Custom Homepage layouts
   config.views.layoutViews = {
-    ...config.views.layoutViews,
+    ...(config.views.layoutViews || {}),
     homepage_view: HomePageView,
     homepage_inverse_view: HomePageInverseView,
   };
@@ -48,19 +48,13 @@ const applyConfig = (config) => {
     config.widgets.views.widget.tags = TokenWidget;
   }
 
-  // apply inPage navigation
+  // InPage navigation, Custom CSS voltoCustom.css and Draft Background
   config.settings.appExtras = [
     ...(config.settings.appExtras || []),
     {
       match: '/**',
       component: InpageNavigation,
     },
-  ];
-
-  // Custom CSS voltoCustom.css and Draft Background
-  const appExtras = config.settings.appExtras || [];
-  config.settings.appExtras = [
-    ...appExtras,
     {
       match: '',
       component: CustomCSS,
