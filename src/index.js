@@ -18,6 +18,7 @@ const applyConfig = (config) => {
 
   // Homepage
   config.views.layoutViews = {
+    ...config.views.layoutViews,
     homepage_view: HomePageView,
     homepage_inverse_view: HomePageInverseView,
   };
