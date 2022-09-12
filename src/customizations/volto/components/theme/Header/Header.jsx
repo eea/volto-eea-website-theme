@@ -142,9 +142,14 @@ const EEAHeader = ({ pathname, token, items, history }) => {
           }
           viewportWidth={width}
         >
-          <div className="wrapper">
+          <ul
+            className="wrapper language-list"
+            role="listbox"
+            aria-label="language switcher"
+          >
             {eea.languages.map((item, index) => (
               <Dropdown.Item
+                as="li"
                 key={index}
                 text={
                   <span>
@@ -166,7 +171,7 @@ const EEAHeader = ({ pathname, token, items, history }) => {
                 }}
               ></Dropdown.Item>
             ))}
-          </div>
+          </ul>
         </Header.TopDropdownMenu>
       </Header.TopHeader>
       <Header.Main
