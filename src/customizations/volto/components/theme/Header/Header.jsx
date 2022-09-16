@@ -84,14 +84,21 @@ const EEAHeader = ({ pathname, token, items, history }) => {
         <Header.TopItem className="official-union">
           <Image src={eeaFlag} alt="eea flag"></Image>
           <Header.TopDropdownMenu
-            text="An official website of the European Union | How do you know?"
+            text="An official website of the European Union | How do you Know?"
+            tabletText="EEA information systems"
             mobileText=" "
             icon="chevron down"
             aria-label="dropdown"
             className=""
             viewportWidth={width}
           >
-            <div className="content">
+            <div
+              className="content"
+              role="menu"
+              tabIndex="0"
+              onClick={(evt) => evt.stopPropagation()}
+              onKeyDown={(evt) => evt.stopPropagation()}
+            >
               <p>
                 All official European Union website addresses are in the{' '}
                 <b>europa.eu</b> domain.
