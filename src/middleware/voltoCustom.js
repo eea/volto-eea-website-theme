@@ -1,4 +1,4 @@
-import { getAPIResourceWithAuth } from '@plone/volto/helpers';
+import { getBackendResourceWithAuth } from '@eeacms/volto-eea-website-theme/helpers';
 
 const HEADERS = [
   'Accept-Ranges',
@@ -9,7 +9,7 @@ const HEADERS = [
 ];
 
 function voltoCustomMiddleware(req, res, next) {
-  getAPIResourceWithAuth(req)
+  getBackendResourceWithAuth(req)
     .then((resource) => {
       // Just forward the headers that we need
       HEADERS.forEach((header) => {
@@ -20,7 +20,12 @@ function voltoCustomMiddleware(req, res, next) {
       res.status(resource.statusCode);
       res.send(resource.body);
     })
-    .catch(next);
+    .catch(() => {
+      res.status(200);
+      res.send(
+        '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
+      );
+    });
 }
 
 export default function (express) {
