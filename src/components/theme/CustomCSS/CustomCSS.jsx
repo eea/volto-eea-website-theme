@@ -1,9 +1,13 @@
 import React from 'react';
-import { expandToBackendURL } from '@plone/volto/helpers';
+
+import config from '@plone/volto/registry';
 
 const CustomCSS = (props) => {
   return (
-    <link rel={'stylesheet'} href={expandToBackendURL('voltoCustom.css')} />
+    <link
+      rel={'stylesheet'}
+      href={`${config.settings.apiPath}/voltoCustom.css`}
+    />
   );
 };
 export default CustomCSS;
