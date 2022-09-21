@@ -20,7 +20,12 @@ function voltoCustomMiddleware(req, res, next) {
       res.status(resource.statusCode);
       res.send(resource.body);
     })
-    .catch(() => {
+    .catch((resource) => {
+      HEADERS.forEach((header) => {
+        if (resource.get(header)) {
+          res.set(header, resource.get(header));
+        }
+      });
       res.status(200);
       res.send(
         '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
