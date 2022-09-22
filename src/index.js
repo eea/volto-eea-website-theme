@@ -9,6 +9,7 @@ import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/them
 import { Icon } from '@plone/volto/components';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
+import voltoCustomMiddleware from './middleware/voltoCustom';
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -47,6 +48,15 @@ const applyConfig = (config) => {
   if (config.widgets.views) {
     config.widgets.views.id.subjects = TokenWidget;
     config.widgets.views.widget.tags = TokenWidget;
+  }
+
+  // voltoCustom.css express-middleware
+  if (__SERVER__) {
+    const express = require('express');
+    config.settings.expressMiddleware = [
+      ...(config.settings.expressMiddleware || []),
+      voltoCustomMiddleware(express),
+    ];
   }
 
   // InPage navigation, Custom CSS voltoCustom.css and Draft Background
