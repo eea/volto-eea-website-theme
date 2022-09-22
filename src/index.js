@@ -7,7 +7,9 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
+import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
+import voltoCustomMiddleware from './middleware/voltoCustom';
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -48,6 +50,15 @@ const applyConfig = (config) => {
     config.widgets.views.widget.tags = TokenWidget;
   }
 
+  // voltoCustom.css express-middleware
+  if (__SERVER__) {
+    const express = require('express');
+    config.settings.expressMiddleware = [
+      ...(config.settings.expressMiddleware || []),
+      voltoCustomMiddleware(express),
+    ];
+  }
+
   // InPage navigation, Custom CSS voltoCustom.css and Draft Background
   config.settings.appExtras = [
     ...(config.settings.appExtras || []),
@@ -64,6 +75,35 @@ const applyConfig = (config) => {
       component: DraftBackground,
     },
   ];
+
+  // Slate StyleMenu configuration
+  if (config.settings.slate) {
+    config.settings.slate.styleMenu = {
+      ...(config.settings.slate.styleMenu || {}),
+      blockStyles: [
+        {
+          cssClass: 'primary',
+          label: 'Primary',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+        {
+          cssClass: 'secondary',
+          label: 'Secondary',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+        {
+          cssClass: 'tertiary',
+          label: 'Tertiary',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+        {
+          cssClass: 'bordered',
+          label: 'Bordered',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+      ],
+    };
+  }
 
   // Custom block styles
   config.settings.previewText = '';
