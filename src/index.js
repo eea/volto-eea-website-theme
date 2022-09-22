@@ -77,31 +77,33 @@ const applyConfig = (config) => {
   ];
 
   // Slate StyleMenu configuration
-  config.settings.slate.styleMenu = {
-    ...(config.settings.slate.styleMenu || {}),
-    blockStyles: [
-      {
-        cssClass: 'primary',
-        label: 'Primary',
-        icon: () => <Icon name={paintSVG} size="18px" />,
-      },
-      {
-        cssClass: 'secondary',
-        label: 'Secondary',
-        icon: () => <Icon name={paintSVG} size="18px" />,
-      },
-      {
-        cssClass: 'tertiary',
-        label: 'Tertiary',
-        icon: () => <Icon name={paintSVG} size="18px" />,
-      },
-      {
-        cssClass: 'bordered',
-        label: 'Bordered',
-        icon: () => <Icon name={paintSVG} size="18px" />,
-      },
-    ],
-  };
+  if (config.settings.slate) {
+    config.settings.slate.styleMenu = {
+      ...(config.settings.slate.styleMenu || {}),
+      blockStyles: [
+        {
+          cssClass: 'primary',
+          label: 'Primary',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+        {
+          cssClass: 'secondary',
+          label: 'Secondary',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+        {
+          cssClass: 'tertiary',
+          label: 'Tertiary',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+        {
+          cssClass: 'bordered',
+          label: 'Bordered',
+          icon: () => <Icon name={paintSVG} size="18px" />,
+        },
+      ],
+    };
+  }
 
   // Custom block styles
   config.settings.previewText = '';
