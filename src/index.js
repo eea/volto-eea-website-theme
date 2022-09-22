@@ -7,6 +7,7 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
+import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
 
 const applyConfig = (config) => {
@@ -64,6 +65,33 @@ const applyConfig = (config) => {
       component: DraftBackground,
     },
   ];
+
+  // Slate StyleMenu configuration
+  config.settings.slate.styleMenu = {
+    ...(config.settings.slate.styleMenu || {}),
+    blockStyles: [
+      {
+        cssClass: 'primary',
+        label: 'Primary',
+        icon: () => <Icon name={paintSVG} size="18px" />,
+      },
+      {
+        cssClass: 'secondary',
+        label: 'Secondary',
+        icon: () => <Icon name={paintSVG} size="18px" />,
+      },
+      {
+        cssClass: 'tertiary',
+        label: 'Tertiary',
+        icon: () => <Icon name={paintSVG} size="18px" />,
+      },
+      {
+        cssClass: 'bordered',
+        label: 'Bordered',
+        icon: () => <Icon name={paintSVG} size="18px" />,
+      },
+    ],
+  };
 
   // Custom block styles
   config.settings.previewText = '';
