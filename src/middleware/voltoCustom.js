@@ -13,7 +13,7 @@ function voltoCustomMiddleware(req, res, next) {
     .then((resource) => {
       // Just forward the headers that we need
       HEADERS.forEach((header) => {
-        if (resource.get(header)) {
+        if (resource?.get?.(header)) {
           res.set(header, resource.get(header));
         }
       });
@@ -22,7 +22,7 @@ function voltoCustomMiddleware(req, res, next) {
     })
     .catch((resource) => {
       HEADERS.forEach((header) => {
-        if (resource.get(header)) {
+        if (resource?.get?.(header)) {
           res.set(header, resource.get(header));
         }
       });
