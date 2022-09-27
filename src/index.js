@@ -105,6 +105,9 @@ const applyConfig = (config) => {
     };
   }
 
+  // Custom block-style colors
+  config.settings.available_colors = eea.colors;
+
   // Custom block styles
   config.settings.previewText = '';
   config.settings.pluggableStyles = [
