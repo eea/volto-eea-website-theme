@@ -28,6 +28,8 @@ const applyConfig = (config) => {
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
+    config.blocks.blocksConfig.accordion.options = {};
+    config.blocks.blocksConfig.accordion.defaults.theme = 'secondary';
   }
 
   // Apply tabs block customization
