@@ -10,6 +10,7 @@ import { Icon } from '@plone/volto/components';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
+import { List } from 'semantic-ui-react';
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -28,6 +29,8 @@ const applyConfig = (config) => {
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
+    config.blocks.blocksConfig.accordion.options = {};
+    config.blocks.blocksConfig.accordion.defaults.theme = 'secondary';
   }
 
   // Apply tabs block customization
@@ -76,8 +79,27 @@ const applyConfig = (config) => {
     },
   ];
 
-  // Slate StyleMenu configuration
   if (config.settings.slate) {
+    // Align Slate Lists to EEA Design System
+    config.settings.slate.elements.ul = ({ attributes, children }) => (
+      <List bulleted as="ul" {...attributes}>
+        {children}
+      </List>
+    );
+
+    config.settings.slate.elements.ol = ({ attributes, children }) => (
+      <List ordered as="ol" {...attributes}>
+        {children}
+      </List>
+    );
+
+    config.settings.slate.elements.li = ({ attributes, children }) => (
+      <List.Item as="li" {...attributes}>
+        {children}
+      </List.Item>
+    );
+
+    // Slate StyleMenu configuration
     config.settings.slate.styleMenu = {
       ...(config.settings.slate.styleMenu || {}),
       blockStyles: [
