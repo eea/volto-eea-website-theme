@@ -248,19 +248,20 @@ export const websiteTitle = 'Site';
 export const organisationName = 'European Environment Agency';
 export const logoTargetUrl = '/';
 
-export const headerSearchBox = {
-  globalSearch: {
+export const headerSearchBox = [
+  {
+    isDefault: true,
     path: '/en/advanced-search',
     placeholder: 'Search...',
   },
-  datahub: {
+  {
     path: '/en/datahub',
     placeholder: 'Search Datahub...',
+    description:
+      'Looking for more information? Try searching the full EEA website content',
+    buttonTitle: 'Go to full site search',
   },
-  advancedSearchDescription:
-    'Looking for more information? Try searching the full EEA website content',
-  advancedSearchButtonTitle: 'Go to full site search',
-};
+];
 
 export const colors = [
   // Primary & shades

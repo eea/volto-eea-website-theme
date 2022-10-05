@@ -13,14 +13,13 @@ function HeaderSearchPopUp({
 }) {
   const nodeRef = React.useRef();
   const { eea } = config.settings;
-  const {
-    datahub,
-    globalSearch,
-    advancedSearchDescription,
-    advancedSearchButtonTitle,
-  } = eea.headerSearchBox;
+  const defaultView = eea.headerSearchBox.filter((v) => v.isDefault);
+  const localView = eea.headerSearchBox.filter((v) =>
+    location.pathname.includes(v.path),
+  );
+  const activeView = localView.length > 0 ? localView[0] : defaultView[0];
+
   const [text, setText] = React.useState('');
-  const isDatahub = location.pathname.includes(datahub.path);
 
   useClickOutside({ targetRefs: [nodeRef, ...triggerRefs], callback: onClose });
 
@@ -30,7 +29,7 @@ function HeaderSearchPopUp({
   };
 
   const onSubmit = (event) => {
-    history.push(`${isDatahub ? datahub.path : globalSearch.path}?q=${text}`);
+    history.push(`${activeView.path}?q=${text}`);
 
     if (window?.searchContext?.resetSearch) {
       window.searchContext.resetSearch({ searchTerm: text });
@@ -54,24 +53,22 @@ function HeaderSearchPopUp({
                 link: true,
                 onClick: onSubmit,
               }}
-              placeholder={
-                isDatahub ? datahub.placeholder : globalSearch.placeholder
-              }
+              placeholder={activeView.placeholder}
               fluid
             />
           </div>
         </Container>
       </form>
-      {isDatahub && (
+      {(activeView.description || activeView.buttonTitle) && (
         <div className="advanced-search">
           <Container>
-            <p>{advancedSearchDescription}</p>
+            <p>{activeView.description}</p>
             <a
-              href={globalSearch.path}
+              href={'/en/advanced-search'}
               className="ui button white inverted"
               title="Advanced search"
             >
-              {advancedSearchButtonTitle}
+              {activeView.buttonTitle}
             </a>
           </Container>
         </div>
