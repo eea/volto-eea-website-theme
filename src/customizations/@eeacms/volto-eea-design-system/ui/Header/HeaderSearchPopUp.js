@@ -64,7 +64,7 @@ function HeaderSearchPopUp({
           <Container>
             <p>{activeView.description}</p>
             <a
-              href={'/en/advanced-search'}
+              href={defaultView[0].path}
               className="ui button white inverted"
               title="Advanced search"
             >
