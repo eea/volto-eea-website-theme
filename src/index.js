@@ -25,7 +25,11 @@ const applyConfig = (config) => {
     homepage_view: HomePageView,
     homepage_inverse_view: HomePageInverseView,
   };
-
+  config.views.layoutViewsNamesMapping = {
+    ...(config.views.layoutViewsNamesMapping || {}),
+    homepage_view: 'Homepage view',
+    homepage_inverse_view: 'Homepage white view',
+  };
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
