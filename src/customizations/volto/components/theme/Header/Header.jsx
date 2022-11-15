@@ -32,7 +32,8 @@ import cx from 'classnames';
 /**
  * EEA Specific Header component.
  */
-const EEAHeader = ({ pathname, token, items, history }) => {
+const EEAHeader = ({ pathname, token, items, history, subsite }) => {
+  console.log('subsite', subsite);
   const currentLang = useSelector((state) => state.intl.locale);
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
@@ -186,12 +187,21 @@ const EEAHeader = ({ pathname, token, items, history }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <Logo
-            src={isHomePageInverse ? WhiteLogoImage : LogoImage}
-            title={eea.websiteTitle}
-            alt={eea.organisationName}
-            url={eea.logoTargetUrl}
-          />
+          <>
+            <UniversalLink href="/">
+              <Logo
+                src={isHomePageInverse ? WhiteLogoImage : LogoImage}
+                title={eea.websiteTitle}
+                alt={eea.organisationName}
+                url={eea.logoTargetUrl}
+              />
+            </UniversalLink>
+            {!!subsite && (
+              <>
+                |<UniversalLink item={subsite}>{subsite.title}</UniversalLink>
+              </>
+            )}
+          </>
         }
         menuItems={items}
         renderGlobalMenuItem={(item, { onClick }) => (
@@ -231,6 +241,7 @@ export default compose(
     (state) => ({
       token: state.userSession.token,
       items: state.navigation.items,
+      subsite: state.content.data?.['@components']?.subsite,
     }),
     { getNavigation },
   ),
