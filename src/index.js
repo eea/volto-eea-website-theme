@@ -4,6 +4,7 @@ import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manag
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
+import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
@@ -80,6 +81,10 @@ const applyConfig = (config) => {
     {
       match: '',
       component: DraftBackground,
+    },
+    {
+      match: '',
+      component: SubsiteClass,
     },
   ];
 
