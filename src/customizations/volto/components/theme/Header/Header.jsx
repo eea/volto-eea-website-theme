@@ -43,7 +43,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     return state.router?.location?.pathname || '';
   });
 
-  const isSubsite = subsite['@type'] === 'Subsite';
+  const isSubsite = subsite?.['@type'] === 'Subsite';
 
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
