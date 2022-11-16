@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@eeacms/volto-eea-design-system": "*",
-    "volto-subsites": "4.0.0"
+    "volto-subsites": "*"
   },
   "devDependencies": {
     "@plone/scripts": "*",
