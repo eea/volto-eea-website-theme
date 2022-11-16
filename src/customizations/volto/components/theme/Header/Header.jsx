@@ -35,7 +35,6 @@ function removeTrailingSlash(path) {
  * EEA Specific Header component.
  */
 const EEAHeader = ({ pathname, token, items, history, subsite }) => {
-  console.log('subsite', subsite);
   const currentLang = useSelector((state) => state.intl.locale);
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
