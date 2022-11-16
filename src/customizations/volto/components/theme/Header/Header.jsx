@@ -43,6 +43,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     return state.router?.location?.pathname || '';
   });
 
+  const isSubsite = subsite['@type'] === 'Subsite';
+
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
     const has_home_layout = layout === 'homepage_inverse_view';
@@ -187,21 +189,20 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <>
-            <UniversalLink href="/">
-              <Logo
-                src={isHomePageInverse ? WhiteLogoImage : LogoImage}
-                title={eea.websiteTitle}
-                alt={eea.organisationName}
-                url={eea.logoTargetUrl}
-              />
-            </UniversalLink>
-            {!!subsite && (
-              <>
-                |<UniversalLink item={subsite}>{subsite.title}</UniversalLink>
-              </>
+          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
+            <Logo
+              src={isHomePageInverse ? WhiteLogoImage : LogoImage}
+              title={eea.websiteTitle}
+              alt={eea.organisationName}
+              url={eea.logoTargetUrl}
+            />
+
+            {!!subsite && subsite.title && (
+              <UniversalLink item={subsite} className="subsite-logo">
+                {subsite.title}
+              </UniversalLink>
             )}
-          </>
+          </div>
         }
         menuItems={items}
         renderGlobalMenuItem={(item, { onClick }) => (
