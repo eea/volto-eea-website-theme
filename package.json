@@ -14,14 +14,16 @@
     "react"
   ],
   "addons": [
-    "@eeacms/volto-eea-design-system"
+    "@eeacms/volto-eea-design-system",
+    "volto-subsites"
   ],
   "repository": {
     "type": "git",
     "url": "git@github.com:eea/volto-eea-website-theme.git"
   },
   "dependencies": {
-    "@eeacms/volto-eea-design-system": "*"
+    "@eeacms/volto-eea-design-system": "*",
+    "volto-subsites": "4.0.0"
   },
   "devDependencies": {
     "@plone/scripts": "*",

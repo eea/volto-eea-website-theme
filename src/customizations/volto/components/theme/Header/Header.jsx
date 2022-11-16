@@ -34,7 +34,7 @@ function removeTrailingSlash(path) {
 /**
  * EEA Specific Header component.
  */
-const EEAHeader = ({ pathname, token, items, history }) => {
+const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const currentLang = useSelector((state) => state.intl.locale);
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
@@ -43,6 +43,8 @@ const EEAHeader = ({ pathname, token, items, history }) => {
   const router_pathname = useSelector((state) => {
     return removeTrailingSlash(state.router?.location?.pathname) || '';
   });
+
+  const isSubsite = subsite?.['@type'] === 'Subsite';
 
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
@@ -196,12 +198,20 @@ const EEAHeader = ({ pathname, token, items, history }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <Logo
-            src={isHomePageInverse ? logoWhite : logo}
-            title={eea.websiteTitle}
-            alt={eea.organisationName}
-            url={eea.logoTargetUrl}
-          />
+          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
+            <Logo
+              src={isHomePageInverse ? logoWhite : logo}
+              title={eea.websiteTitle}
+              alt={eea.organisationName}
+              url={eea.logoTargetUrl}
+            />
+
+            {!!subsite && subsite.title && (
+              <UniversalLink item={subsite} className="subsite-logo">
+                {subsite.title}
+              </UniversalLink>
+            )}
+          </div>
         }
         menuItems={items}
         renderGlobalMenuItem={(item, { onClick }) => (
@@ -241,6 +251,7 @@ export default compose(
     (state) => ({
       token: state.userSession.token,
       items: state.navigation.items,
+      subsite: state.content.data?.['@components']?.subsite,
     }),
     { getNavigation },
   ),
