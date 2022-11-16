@@ -8,7 +8,8 @@ import copernicusLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/
 import industryLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/industry.svg';
 import marineLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/marine.svg';
 import eionetLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eionet.svg';
-import eeaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-white.svg';
+import eeaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
+import eeaWhiteLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-white.svg';
 import climateLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/climate-health.svg';
 
 // TODO: to be consolidated with headerLinks
@@ -92,7 +93,7 @@ export const footerOpts = {
   managedBy: [
     {
       link: 'https://www.eea.europa.eu/',
-      src: eeaLogo,
+      src: eeaWhiteLogo,
       alt: 'EEA Logo',
       className: 'site logo',
       columnSize: {
@@ -175,42 +176,47 @@ export const footerOpts = {
   address: 'Kongens Nytorv 6 1050 Copenhagen K (+45) 33 36 71 00',
 };
 
-export const globalHeaderPartnerLinks = {
-  title: 'Environmental information systems',
-  links: [
-    {
-      title: 'Biodiversity Information System for Europe',
-      href: 'https://biodiversity.europa.eu/',
-    },
-    {
-      title: 'Climate Adaptation Platform',
-      href: 'https://climate-adapt.eea.europa.eu/',
-    },
-    {
-      title: 'Copernicus in situ component',
-      href: 'https://insitu.copernicus.eu/',
-    },
-    {
-      title: 'European Industrial Emissions Portal',
-      href: 'https://industry.eea.europa.eu/',
-    },
-    {
-      title: 'Forest Information System for Europe',
-      href: 'https://forest.eea.europa.eu/',
-    },
-    {
-      title: 'Information Platform for Chemical Monitoring',
-      href: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
-    },
-    {
-      title: 'Marine Water Information System for Europe',
-      href: 'https://water.europa.eu/marine',
-    },
-    {
-      title: 'Fresh Water Information System for Europe',
-      href: 'https://water.europa.eu/freshwater',
-    },
-  ],
+// Header.jsx config options
+export const headerOpts = {
+  logo: eeaLogo,
+  logoWhite: eeaWhiteLogo,
+  partnerLinks: {
+    title: 'Environmental information systems',
+    links: [
+      {
+        title: 'Biodiversity Information System for Europe',
+        href: 'https://biodiversity.europa.eu/',
+      },
+      {
+        title: 'Climate Adaptation Platform',
+        href: 'https://climate-adapt.eea.europa.eu/',
+      },
+      {
+        title: 'Copernicus in situ component',
+        href: 'https://insitu.copernicus.eu/',
+      },
+      {
+        title: 'European Industrial Emissions Portal',
+        href: 'https://industry.eea.europa.eu/',
+      },
+      {
+        title: 'Forest Information System for Europe',
+        href: 'https://forest.eea.europa.eu/',
+      },
+      {
+        title: 'Information Platform for Chemical Monitoring',
+        href: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
+      },
+      {
+        title: 'Marine Water Information System for Europe',
+        href: 'https://water.europa.eu/marine',
+      },
+      {
+        title: 'Fresh Water Information System for Europe',
+        href: 'https://water.europa.eu/freshwater',
+      },
+    ],
+  },
 };
 
 export const languages = [

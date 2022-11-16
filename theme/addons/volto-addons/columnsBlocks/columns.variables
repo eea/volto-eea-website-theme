@@ -1,0 +1,7 @@
+@columnBlocksWrapperPaddingTop: 0;
+@columnBlocksWrapperPaddingBottom: 0;
+
+
+// Column grid
+@columnGridMarginTop: 1rem;
+@columnGridMarginBottom: 1rem;
