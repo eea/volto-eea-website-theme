@@ -92,7 +92,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         <Header.TopItem className="official-union">
           <Image src={eeaFlag} alt="eea flag"></Image>
           <Header.TopDropdownMenu
-            text="An official website of the European Union | How do you Know?"
+            text="An official website of the European Union | How do you know?"
             tabletText="EEA information systems"
             mobileText=" "
             icon="chevron down"
