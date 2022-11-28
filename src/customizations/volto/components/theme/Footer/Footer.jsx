@@ -16,12 +16,14 @@ const Footer = () => {
     copyrightActions = [],
     socialActions = [],
     contactActions = [],
+    contactExtraActions = [],
   } = useSelector(
     (state) => ({
       footerActions: state.actions?.actions?.footer_actions,
       copyrightActions: state.actions?.actions?.copyright_actions,
       socialActions: state.actions?.actions?.social_actions,
       contactActions: state.actions?.actions?.contact_actions,
+      contactExtraActions: state.actions?.actions?.contact_extra_actions,
     }),
     shallowEqual,
   );
@@ -53,10 +55,18 @@ const Footer = () => {
 
   // ZMI > portal_actions > contact_actions
   const contacts = contactActions.length
-    ? contactActions.map((action) => ({
+    ? contactActions.map((action, idx) => ({
         text: action.title,
         icon: action.icon,
         link: flattenToAppURL(action.url),
+        children:
+          idx === 0
+            ? contactExtraActions.map((child) => ({
+                text: child.title,
+                icon: child.icon,
+                link: flattenToAppURL(child.url),
+              }))
+            : [],
       }))
     : eea.footerOpts.contacts;
 
