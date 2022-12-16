@@ -4,18 +4,24 @@ const plugins = (defaultPlugins) => {
 };
 const modify = (config, { target, dev }, webpack) => {
   const themeConfigPath = `${__dirname}/theme/theme.config`;
-  config.resolve.alias['../../theme.config$'] = themeConfigPath;
-  config.resolve.alias['../../theme.config'] = themeConfigPath;
-  const projectRootPath = path.resolve('.');
-  const themeLessPath = `${projectRootPath}/node_modules/@eeacms/volto-eea-design-system/theme`;
+  const { alias } = config.resolve;
+  alias['../../theme.config$'] = themeConfigPath;
+  alias['../../theme.config'] = themeConfigPath;
 
-  config.resolve.alias['eea-design-system-theme'] = dev
-    ? `${projectRootPath}/src/addons/volto-eea-design-system/theme/themes/eea`
-    : `${themeLessPath}/themes/eea`;
+  const designSystem = '@eeacms/volto-eea-design-system';
+  const designSystemPath =
+    config.resolve.alias[designSystem] ||
+    path.dirname(require.resolve(designSystem));
 
-  const semanticLessPath = `${projectRootPath}/node_modules/semantic-ui-less`;
-  const hasDesignSystemInstalled = config.resolve.alias['eea-volto-themes'];
-  config.resolve.alias['eea-volto-theme-folder'] = hasDesignSystemInstalled
+  const themeLessPath = path.resolve(`${designSystemPath}/../theme`);
+
+  alias['eea-design-system-theme'] = `${themeLessPath}/themes/eea`;
+
+  const semanticLessPath = path.dirname(
+    require.resolve('semantic-ui-less/package.json'),
+  );
+
+  alias['eea-volto-theme-folder'] = alias['eea-volto-themes']
     ? themeLessPath
     : semanticLessPath;
 
