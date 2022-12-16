@@ -226,13 +226,15 @@ const View = (props) => {
                   />
                 ))}
               </Banner.Metadata>
-              {copyright && (
+              {copyright ? (
                 <Copyright copyrightPosition={copyrightPosition}>
                   <Copyright.Icon>
                     <Icon className={copyrightIcon} />
                   </Copyright.Icon>
                   <Copyright.Text>{copyright}</Copyright.Text>
                 </Copyright>
+              ) : (
+                ''
               )}
             </Banner.Content>
           </ContainerWrapper>
