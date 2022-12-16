@@ -81,6 +81,8 @@ export default {
     copyrightPosition: {
       title: 'Align',
       widget: 'align',
+      actions: ['left', 'right'],
+      defaultValue: 'left',
     },
   },
   required: [],
