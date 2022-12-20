@@ -66,7 +66,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const [language, setLanguage] = React.useState(
     currentLang || eea.defaultLanguage,
   );
-
+  const hasLanguageDropdown = eea.hasLanguageDropdown;
   React.useEffect(() => {
     const { settings } = config;
     const base_url = getBaseUrl(pathname);
@@ -152,6 +152,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         {config.settings.isMultilingual && (
           <Header.TopDropdownMenu
             id="language-switcher"
+            hasLanguageDropdown={hasLanguageDropdown}
             className="item"
             text={`${language.toUpperCase()}`}
             mobileText={`${language.toUpperCase()}`}

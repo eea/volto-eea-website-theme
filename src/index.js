@@ -47,7 +47,8 @@ const applyConfig = (config) => {
       };
     }
   }
-
+  config.settings.eea.hasLanguageDropdown =
+    config.settings.supportedLanguages.length > 1;
   // Description block custom CSS
   config.blocks.blocksConfig.description.className =
     'documentDescription eea callout';
