@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
 import { startCase } from 'lodash';
 import qs from 'querystring';
-import { Container, Popup, Icon } from 'semantic-ui-react';
+import { Popup, Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import { sharePage } from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
