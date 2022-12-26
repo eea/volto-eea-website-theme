@@ -7,8 +7,8 @@ import { startCase } from 'lodash';
 import qs from 'querystring';
 import { Container, Popup, Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
-import Banner from './Banner';
-import { getImageSource, sharePage } from './Banner';
+import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
+import { sharePage } from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 import './styles.less';
@@ -59,7 +59,7 @@ const friendlyId = (id) => {
 
 const ContainerWrapper = ({ fluid, children }) => {
   if (fluid) return <React.Fragment>{children}</React.Fragment>;
-  return <Container>{children}</Container>;
+  return children;
 };
 
 const Title = ({ config = {}, properties }) => {
@@ -113,8 +113,7 @@ const View = (props) => {
     () => getDate(hideModificationDate, 'modified'),
     [getDate, hideModificationDate],
   );
-  // Set image source
-  const image = getImageSource(metadata['image']);
+
   // Get type
   const type = useMemo(() => {
     return (
@@ -130,116 +129,109 @@ const View = (props) => {
   }, [types, metadata, parameters]);
 
   return (
-    <Banner {...props}>
-      <div
-        className={image ? 'image' : ''}
-        style={image ? { backgroundImage: `url(${image})` } : {}}
-      >
-        <div className="gradient">
-          <ContainerWrapper fluid={fluid}>
-            <Banner.Content
-              actions={
-                <>
-                  {!hideShareButton && (
-                    <Popup
-                      className="share-popup"
-                      content={() => (
-                        <>
-                          <p>{intl.formatMessage(messages.share_to)}</p>
-                          <div className="actions">
-                            <Banner.Action
-                              icon="ri-facebook-fill"
-                              onClick={() => {
-                                sharePage(metadata['@id'], 'facebook');
-                              }}
-                            />
-                            <Banner.Action
-                              icon="ri-twitter-fill"
-                              onClick={() => {
-                                sharePage(metadata['@id'], 'twitter');
-                              }}
-                            />
-                            <Banner.Action
-                              icon="ri-linkedin-fill"
-                              onClick={() => {
-                                sharePage(metadata['@id'], 'linkedin');
-                              }}
-                            />
-                          </div>
-                        </>
-                      )}
-                      position="bottom center"
-                      size="small"
-                      trigger={
+    <Banner {...props} image>
+      <ContainerWrapper fluid={fluid}>
+        <Banner.Content
+          actions={
+            <>
+              {!hideShareButton && (
+                <Popup
+                  className="share-popup"
+                  content={() => (
+                    <>
+                      <p>{intl.formatMessage(messages.share_to)}</p>
+                      <div className="actions">
                         <Banner.Action
-                          icon="ri-share-fill"
-                          title={intl.formatMessage(messages.share)}
-                          className="share"
-                          onClick={() => {}}
+                          icon="ri-facebook-fill"
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'facebook');
+                          }}
                         />
-                      }
-                    />
+                        <Banner.Action
+                          icon="ri-twitter-fill"
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'twitter');
+                          }}
+                        />
+                        <Banner.Action
+                          icon="ri-linkedin-fill"
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'linkedin');
+                          }}
+                        />
+                      </div>
+                    </>
                   )}
-                  {!hideDownloadButton && (
+                  position="bottom center"
+                  size="small"
+                  trigger={
                     <Banner.Action
-                      icon="ri-download-2-fill"
-                      title={intl.formatMessage(messages.download)}
-                      className="download"
-                      onClick={() => {
-                        window.print();
-                      }}
+                      icon="ri-share-fill"
+                      title={intl.formatMessage(messages.share)}
+                      className="share"
+                      onClick={() => {}}
                     />
-                  )}
-                </>
-              }
-            >
-              <Title config={banner.title} properties={metadata} />
-              <Banner.Metadata>
-                <Banner.MetadataField
-                  type="type"
-                  hidden={hideContentType}
-                  // value={contentType || properties['@type'] || parameters.type}
-                  value={type}
+                  }
                 />
-                <Banner.MetadataField
-                  type="date"
-                  label={intl.formatMessage(messages.created)}
-                  value={creationDate}
-                  title={`${intl.formatMessage(messages.created_on)} {}`}
-                />
-                <Banner.MetadataField
-                  type="date"
-                  label={intl.formatMessage(messages.published)}
-                  value={publishingDate}
-                  title={`${intl.formatMessage(messages.published_on)} {}`}
-                />
-                <Banner.MetadataField
-                  type="date"
-                  label={intl.formatMessage(messages.modified)}
-                  value={modificationDate}
-                  title={`${intl.formatMessage(messages.modified_on)} {}`}
-                />
-                {info.map((item, index) => (
-                  <Banner.MetadataField
-                    key={`header-info-${index}`}
-                    value={item.description}
-                  />
-                ))}
-              </Banner.Metadata>
-              {copyright ? (
-                <Copyright copyrightPosition={copyrightPosition}>
-                  <Copyright.Icon>
-                    <Icon className={copyrightIcon} />
-                  </Copyright.Icon>
-                  <Copyright.Text>{copyright}</Copyright.Text>
-                </Copyright>
-              ) : (
-                ''
               )}
-            </Banner.Content>
-          </ContainerWrapper>
-        </div>
-      </div>
+              {!hideDownloadButton && (
+                <Banner.Action
+                  icon="ri-download-2-fill"
+                  title={intl.formatMessage(messages.download)}
+                  className="download"
+                  onClick={() => {
+                    window.print();
+                  }}
+                />
+              )}
+            </>
+          }
+        >
+          <Title config={banner.title} properties={metadata} />
+          <Banner.Metadata>
+            <Banner.MetadataField
+              type="type"
+              hidden={hideContentType}
+              // value={contentType || properties['@type'] || parameters.type}
+              value={type}
+            />
+            <Banner.MetadataField
+              type="date"
+              label={intl.formatMessage(messages.created)}
+              value={creationDate}
+              title={`${intl.formatMessage(messages.created_on)} {}`}
+            />
+            <Banner.MetadataField
+              type="date"
+              label={intl.formatMessage(messages.published)}
+              value={publishingDate}
+              title={`${intl.formatMessage(messages.published_on)} {}`}
+            />
+            <Banner.MetadataField
+              type="date"
+              label={intl.formatMessage(messages.modified)}
+              value={modificationDate}
+              title={`${intl.formatMessage(messages.modified_on)} {}`}
+            />
+            {info.map((item, index) => (
+              <Banner.MetadataField
+                key={`header-info-${index}`}
+                value={item.description}
+              />
+            ))}
+          </Banner.Metadata>
+          {copyright ? (
+            <Copyright copyrightPosition={copyrightPosition}>
+              <Copyright.Icon>
+                <Icon className={copyrightIcon} />
+              </Copyright.Icon>
+              <Copyright.Text>{copyright}</Copyright.Text>
+            </Copyright>
+          ) : (
+            ''
+          )}
+        </Banner.Content>
+      </ContainerWrapper>
     </Banner>
   );
 };
