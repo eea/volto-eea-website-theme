@@ -11,6 +11,7 @@ import cx from 'classnames';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import './style.less';
 /**
  * View image block class.
  * @class View
@@ -34,7 +35,7 @@ export const View = ({ data, detached }) => {
         <>
           {(() => {
             const image = (
-              <div className="container-image" style={{ position: 'relative' }}>
+              <div className="image-block">
                 <img
                   className={cx({
                     'full-width': data.align === 'full',
@@ -65,16 +66,7 @@ export const View = ({ data, detached }) => {
                   alt={data.alt || ''}
                   loading="lazy"
                 />
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '90%',
-                    zIndex: '1000',
-                    width: '100%',
-                    paddingRight: '10px',
-                    paddingLeft: '10px',
-                  }}
-                >
+                <div className="copyright-image">
                   {copyright ? (
                     <Copyright copyrightPosition={copyrightPosition}>
                       <Copyright.Icon>
