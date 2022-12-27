@@ -8,8 +8,8 @@ import copernicusLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/
 import industryLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/industry.svg';
 import marineLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/marine.svg';
 import eionetLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eionet.svg';
-import eeaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
-import eeaWhiteLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-white.svg';
+import eeaLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-logo.svg';
+import eeaWhiteLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-logo-white.svg';
 import climateLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/climate-health.svg';
 
 // TODO: to be consolidated with headerLinks

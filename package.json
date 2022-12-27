@@ -22,7 +22,7 @@
     "url": "git@github.com:eea/volto-eea-website-theme.git"
   },
   "dependencies": {
-    "@eeacms/volto-eea-design-system": "*",
+    "@eeacms/volto-eea-design-system": "^1.0.0-alpha.8",
     "volto-subsites": "*"
   },
   "devDependencies": {
