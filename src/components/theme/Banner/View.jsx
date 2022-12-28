@@ -5,10 +5,11 @@ import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
 import { startCase } from 'lodash';
 import qs from 'querystring';
-import { Container, Popup } from 'semantic-ui-react';
+import { Container, Popup, Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import Banner from './Banner';
 import { getImageSource, sharePage } from './Banner';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 import './styles.less';
 
@@ -83,6 +84,9 @@ const View = (props) => {
     hideModificationDate,
     hideShareButton,
     hideDownloadButton,
+    copyright,
+    copyrightIcon,
+    copyrightPosition,
     // contentType,
   } = props.data;
   // Set query parameters
@@ -222,6 +226,16 @@ const View = (props) => {
                   />
                 ))}
               </Banner.Metadata>
+              {copyright ? (
+                <Copyright copyrightPosition={copyrightPosition}>
+                  <Copyright.Icon>
+                    <Icon className={copyrightIcon} />
+                  </Copyright.Icon>
+                  <Copyright.Text>{copyright}</Copyright.Text>
+                </Copyright>
+              ) : (
+                ''
+              )}
             </Banner.Content>
           </ContainerWrapper>
         </div>
