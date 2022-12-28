@@ -35,11 +35,11 @@ export default {
       title: 'Actions',
       fields: ['hideShareButton', 'hideDownloadButton'],
     },
-    // {
-    //   id: 'advanced',
-    //   title: 'Advanced options',
-    //   fields: ['contentType'],
-    // },
+    {
+      id: 'copyright',
+      title: 'Copyright',
+      fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
+    },
   ],
   properties: {
     hideContentType: {
@@ -71,10 +71,19 @@ export default {
       widget: 'object_list',
       schema: infoSchema,
     },
-    // contentType: {
-    //   title: 'Type',
-    //   description: "Custom content-type's name",
-    // },
+    copyright: {
+      title: 'Text',
+    },
+    copyrightIcon: {
+      title: 'Icon',
+      default: 'ri-copyright-line',
+    },
+    copyrightPosition: {
+      title: 'Align',
+      widget: 'align',
+      actions: ['left', 'right'],
+      defaultValue: 'left',
+    },
   },
   required: [],
 };

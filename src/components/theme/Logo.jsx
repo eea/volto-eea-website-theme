@@ -3,7 +3,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
 import { Logo } from '@eeacms/volto-eea-design-system/ui';
-import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea-logo.svg';
+import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-logo.svg';
 
 const messages = defineMessages({
   site: {
