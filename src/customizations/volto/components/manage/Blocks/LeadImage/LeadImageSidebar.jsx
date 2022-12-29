@@ -87,7 +87,7 @@ const LeadImageSidebar = ({
         ...data,
         copyrightPosition: defaultValueCopyrightPosition,
       });
-  }, []);
+  }, [block, data, onChangeBlock]);
 
   return (
     <Segment.Group raised>
