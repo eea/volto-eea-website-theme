@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'semantic-ui-react';
 import { Accordion, Grid, Segment } from 'semantic-ui-react';
@@ -6,6 +6,7 @@ import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 import { CheckboxWidget, Icon, TextWidget } from '@plone/volto/components';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import AlignBlock from '@plone/volto/components/manage/Sidebar/AlignBlock';
+import AlignChooser from './AlignChooser';
 
 import imageSVG from '@plone/volto/icons/image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -67,13 +68,26 @@ const LeadImageSidebar = ({
   intl,
 }) => {
   const [activeAccIndex, setActiveAccIndex] = useState(0);
-
+  const defaultValueCopyrightIcon = 'ri-copyright-line';
+  const defaultValueCopyrightPosition = 'left';
   function handleAccClick(e, titleProps) {
     const { index } = titleProps;
     const newIndex = activeAccIndex === index ? -1 : index;
-
     setActiveAccIndex(newIndex);
   }
+
+  useEffect(() => {
+    if (data.copyrightIcon === '' || data.copyrightIcon === undefined)
+      onChangeBlock(block, {
+        ...data,
+        copyrightIcon: defaultValueCopyrightIcon,
+      });
+    if (data.copyrightPosition === '' || data.copyrightPosition === undefined)
+      onChangeBlock(block, {
+        ...data,
+        copyrightPosition: defaultValueCopyrightPosition,
+      });
+  }, []);
 
   return (
     <Segment.Group raised>
@@ -230,7 +244,7 @@ const LeadImageSidebar = ({
                   value={data.copyrightIcon}
                   icon={data.copyrightIcon ? clearSVG : null}
                   iconAction={() => onChangeField('copyrightIcon', '')}
-                  onChangeBlock={(name, value) => {
+                  onChange={(name, value) => {
                     onChangeBlock(block, {
                       ...data,
                       copyrightIcon: value,
@@ -251,14 +265,10 @@ const LeadImageSidebar = ({
                         </div>
                       </Grid.Column>
                       <Grid.Column width="8" className="align-tools">
-                        <AlignBlock
+                        <AlignChooser
                           align={data.copyrightPosition}
-                          onChange={(name, value) => {
-                            onChangeBlock(block, {
-                              ...data,
-                              copyrightPosition: value,
-                            });
-                          }}
+                          actions={['left', 'right']}
+                          onChangeBlock={onChangeBlock}
                           block={block}
                           data={data}
                         />
