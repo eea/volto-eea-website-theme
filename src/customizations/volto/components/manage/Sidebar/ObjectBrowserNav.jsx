@@ -6,7 +6,7 @@ import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { flattenToAppURL, getContentIcon } from '@plone/volto/helpers';
 import { Image } from 'semantic-ui-react';
 import config from '@plone/volto/registry';
-import '../../../../../../theme/site/imageicons/imageicons.less';
+import '@eeacms/volto-eea-website-theme/../theme/site/imageicons/imageicons.less';
 
 import rightArrowSVG from '@plone/volto/icons/right-key.svg';
 import homeSVG from '@plone/volto/icons/home.svg';
