@@ -6,7 +6,6 @@ import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { flattenToAppURL, getContentIcon } from '@plone/volto/helpers';
 import { Image } from 'semantic-ui-react';
 import config from '@plone/volto/registry';
-import '@eeacms/volto-eea-website-theme/../theme/site/imageicons/imageicons.less';
 
 import rightArrowSVG from '@plone/volto/icons/right-key.svg';
 import homeSVG from '@plone/volto/icons/home.svg';
@@ -84,7 +83,11 @@ const ObjectBrowserNav = ({
                     {item['@type'] === 'Image' ? (
                       <Image
                         src={`${item?.getURL}/@@images/image`}
-                        className="sidebar-image-icon"
+                        style={{
+                          marginRight: '10px',
+                          maxHeight: '24px',
+                          maxWidth: '24px',
+                        }}
                       />
                     ) : (
                       <Icon
