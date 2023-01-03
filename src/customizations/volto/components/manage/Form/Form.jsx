@@ -200,8 +200,9 @@ class Form extends Component {
       errors: {},
       selected: selectedBlock,
       multiSelected: [],
-      inFocus: {},
       isClient: false,
+      // Ensure focus remain in field after change
+      inFocus: {},
     };
     this.onChangeField = this.onChangeField.bind(this);
     this.onSelectBlock = this.onSelectBlock.bind(this);
@@ -449,7 +450,11 @@ class Form extends Component {
         () => {
           Object.keys(errors).forEach((err) =>
             toast.error(
-              <Toast error title={err} content={errors[err].join(', ')} />,
+              <Toast
+                error
+                title={this.props.schema.properties[err].title || err}
+                content={errors[err].join(', ')}
+              />,
             ),
           );
         },
@@ -741,7 +746,6 @@ class Form extends Component {
                   {onSubmit && (
                     <Button
                       basic
-                      icon
                       primary
                       floated="right"
                       type="submit"
@@ -763,7 +767,6 @@ class Form extends Component {
                   {onCancel && (
                     <Button
                       basic
-                      icon
                       secondary
                       aria-label={this.props.intl.formatMessage(
                         messages.cancel,
