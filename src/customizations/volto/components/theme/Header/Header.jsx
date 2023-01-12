@@ -53,7 +53,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
     return (
       has_home_layout &&
-      (pathname === router_pathname || router_pathname.endsWith('/edit'))
+      (removeTrailingSlash(pathname) === router_pathname ||
+        router_pathname.endsWith('/edit'))
     );
   });
 
