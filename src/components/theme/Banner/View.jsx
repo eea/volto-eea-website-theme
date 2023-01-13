@@ -249,7 +249,7 @@ export default compose(
   withRouter,
   connect((state) => {
     return {
-      types: state.types.types,
+      types: state?.types?.types || [],
     };
   }),
 )(View);
