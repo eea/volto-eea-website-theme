@@ -117,16 +117,16 @@ const View = (props) => {
   const image = getImageSource(metadata['image']);
   // Get type
   const type = useMemo(() => {
-    return (
-      types.filter(
-        (type) =>
-          flattenToAppURL(type['@id']) ===
-          `/@types/${metadata['@type'] || parameters.type}`,
-      )[0]?.title ||
-      friendlyId(metadata['@type']) ||
-      metadata['@type'] ||
-      parameters.type
-    );
+    return types
+      ? types.filter(
+          (type) =>
+            flattenToAppURL(type['@id']) ===
+            `/@types/${metadata['@type'] || parameters.type}`,
+        )[0]?.title ||
+          friendlyId(metadata['@type']) ||
+          metadata['@type'] ||
+          parameters.type
+      : metadata['@type'];
   }, [types, metadata, parameters]);
 
   return (
@@ -249,7 +249,7 @@ export default compose(
   withRouter,
   connect((state) => {
     return {
-      types: state?.types?.types || [],
+      types: state.types.types,
     };
   }),
 )(View);
