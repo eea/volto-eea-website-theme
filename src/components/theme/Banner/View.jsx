@@ -122,7 +122,7 @@ const View = (props) => {
   // Get type
   const type = useMemo(() => {
     return (
-      types.filter(
+      types?.filter?.(
         (type) =>
           flattenToAppURL(type['@id']) ===
           `/@types/${metadata['@type'] || parameters.type}`,
