@@ -8,7 +8,10 @@ import qs from 'querystring';
 import { Popup, Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
-import { sharePage } from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
+import {
+  getImageSource,
+  sharePage,
+} from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 import './styles.less';
@@ -114,6 +117,8 @@ const View = (props) => {
     [getDate, hideModificationDate],
   );
 
+  // Set image source
+  const image = getImageSource(metadata['image']);
   // Get type
   const type = useMemo(() => {
     return (
@@ -129,7 +134,7 @@ const View = (props) => {
   }, [types, metadata, parameters]);
 
   return (
-    <Banner {...props} image>
+    <Banner {...props} image={image}>
       <ContainerWrapper fluid={fluid}>
         <Banner.Content
           actions={
@@ -192,7 +197,6 @@ const View = (props) => {
             <Banner.MetadataField
               type="type"
               hidden={hideContentType}
-              // value={contentType || properties['@type'] || parameters.type}
               value={type}
             />
             <Banner.MetadataField
