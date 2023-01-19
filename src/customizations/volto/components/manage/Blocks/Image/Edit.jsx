@@ -240,7 +240,6 @@ class Edit extends Component {
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
     const { copyright, copyrightIcon, copyrightPosition } = data;
-    console.log(data.align);
     return (
       <div
         className={cx(
