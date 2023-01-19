@@ -240,6 +240,7 @@ class Edit extends Component {
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
     const { copyright, copyrightIcon, copyrightPosition } = data;
+    console.log(data.align);
     return (
       <div
         className={cx(
@@ -249,6 +250,7 @@ class Edit extends Component {
           },
           data.align,
         )}
+        style={{ display: 'flex' }}
       >
         {data.url ? (
           <div className="image-block">
@@ -259,6 +261,7 @@ class Edit extends Component {
                 medium: data.size === 'm',
                 small: data.size === 's',
               })}
+              style={{ margin: 'unset', padding: 'unset' }}
               src={
                 isInternalURL(data.url)
                   ? // Backwards compat in the case that the block is storing the full server URL
@@ -279,7 +282,11 @@ class Edit extends Component {
               }
               alt={data.alt || ''}
             />
-            <div className="copyright-image">
+            <div
+              className={cx('copyright-image ', {
+                right: data.align === 'right',
+              })}
+            >
               {copyright ? (
                 <Copyright copyrightPosition={copyrightPosition}>
                   <Copyright.Icon>
