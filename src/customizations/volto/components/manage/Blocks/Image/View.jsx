@@ -19,56 +19,70 @@ import './style.less';
  */
 export const View = ({ data, detached }) => {
   const href = data?.href?.[0]?.['@id'] || '';
-  const { copyright, copyrightIcon, copyrightPosition } = data;
+  const {
+    copyright,
+    copyrightIcon,
+    copyrightPosition,
+    align,
+    url,
+    size,
+    alt,
+  } = data;
   return (
     <p
       className={cx(
         'block image align',
         {
-          center: !Boolean(data.align),
+          center: !Boolean(align),
           detached,
         },
-        data.align,
+        align,
       )}
     >
-      {data.url && (
+      {url && (
         <>
           {(() => {
             const image = (
               <div className="image-block">
                 <img
                   className={cx({
-                    'full-width': data.align === 'full',
-                    large: data.size === 'l',
-                    medium: data.size === 'm',
-                    small: data.size === 's',
+                    'full-width': align === 'full',
+                    large: size === 'l',
+                    medium: size === 'm',
+                    small: size === 's',
                   })}
                   src={
-                    isInternalURL(data.url)
+                    isInternalURL(url)
                       ? // Backwards compat in the case that the block is storing the full server URL
                         (() => {
-                          if (data.size === 'l')
+                          if (size === 'l')
+                            return `${flattenToAppURL(url)}/@@images/image`;
+                          if (size === 'm')
                             return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image`;
-                          if (data.size === 'm')
-                            return `${flattenToAppURL(
-                              data.url,
+                              url,
                             )}/@@images/image/preview`;
-                          if (data.size === 's')
+                          if (size === 's')
                             return `${flattenToAppURL(
-                              data.url,
+                              url,
                             )}/@@images/image/mini`;
-                          return `${flattenToAppURL(data.url)}/@@images/image`;
+                          return `${flattenToAppURL(url)}/@@images/image`;
                         })()
-                      : data.url
+                      : url
                   }
-                  alt={data.alt || ''}
+                  alt={alt || ''}
                   loading="lazy"
                 />
-                <div className="copyright-image">
-                  {copyright ? (
-                    <Copyright copyrightPosition={copyrightPosition}>
+                <div className="copyright-image-block">
+                  {copyright && size === 'l' ? (
+                    <Copyright
+                      copyrightPosition={
+                        align === 'right'
+                          ? align
+                          : align === 'left'
+                          ? 'left'
+                          : copyrightPosition
+                      }
+                    >
                       <Copyright.Icon>
                         <Icon className={copyrightIcon} />
                       </Copyright.Icon>

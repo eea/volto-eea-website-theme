@@ -239,7 +239,16 @@ class Edit extends Component {
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
-    const { copyright, copyrightIcon, copyrightPosition } = data;
+    const {
+      copyright,
+      copyrightIcon,
+      copyrightPosition,
+      size = 'l',
+      url,
+      align,
+      alt,
+    } = data;
+
     return (
       <div
         className={cx(
@@ -249,45 +258,48 @@ class Edit extends Component {
           },
           data.align,
         )}
-        style={{ display: 'flex' }}
       >
         {data.url ? (
           <div className="image-block">
             <img
               className={cx({
                 'full-width': data.align === 'full',
-                large: data.size === 'l',
-                medium: data.size === 'm',
-                small: data.size === 's',
+                large: size === 'l',
+                medium: size === 'm',
+                small: size === 's',
               })}
               style={{ margin: 'unset', padding: 'unset' }}
               src={
                 isInternalURL(data.url)
                   ? // Backwards compat in the case that the block is storing the full server URL
                     (() => {
-                      if (data.size === 'l')
-                        return `${flattenToAppURL(data.url)}/@@images/image`;
-                      if (data.size === 'm')
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/preview`;
-                      if (data.size === 's')
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/mini`;
-                      return `${flattenToAppURL(data.url)}/@@images/image`;
+                      if (size === 'l')
+                        return `${flattenToAppURL(url)}/@@images/image`;
+                      if (size === 'm')
+                        return `${flattenToAppURL(url)}/@@images/image/preview`;
+                      if (size === 's')
+                        return `${flattenToAppURL(url)}/@@images/image/mini`;
+                      return `${flattenToAppURL(url)}/@@images/image`;
                     })()
-                  : data.url
+                  : url
               }
-              alt={data.alt || ''}
+              alt={alt || ''}
             />
             <div
-              className={cx('copyright-image ', {
-                right: data.align === 'right',
+              className={cx('copyright-image-block ', {
+                right: align === 'right',
               })}
             >
-              {copyright ? (
-                <Copyright copyrightPosition={copyrightPosition}>
+              {copyright && size === 'l' ? (
+                <Copyright
+                  copyrightPosition={
+                    align === 'right'
+                      ? align
+                      : align === 'left'
+                      ? 'left'
+                      : copyrightPosition
+                  }
+                >
                   <Copyright.Icon>
                     <IconSemantic name={copyrightIcon} />
                   </Copyright.Icon>
