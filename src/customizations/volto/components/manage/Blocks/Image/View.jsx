@@ -28,6 +28,11 @@ export const View = ({ data, detached }) => {
     size,
     alt,
   } = data;
+
+  const showCopyrightHovering = copyright?.length > 50;
+
+  const [hovering, setHovering] = React.useState(false);
+
   return (
     <p
       className={cx(
@@ -46,13 +51,14 @@ export const View = ({ data, detached }) => {
               <div className="image-block">
                 <img
                   className={cx({
-                    'full-width': align === 'full',
+                    'full-width': data.align === 'full',
                     large: size === 'l',
                     medium: size === 'm',
                     small: size === 's',
                   })}
+                  style={{ margin: 'unset', padding: 'unset' }}
                   src={
-                    isInternalURL(url)
+                    isInternalURL(data.url)
                       ? // Backwards compat in the case that the block is storing the full server URL
                         (() => {
                           if (size === 'l')
@@ -70,9 +76,12 @@ export const View = ({ data, detached }) => {
                       : url
                   }
                   alt={alt || ''}
-                  loading="lazy"
                 />
-                <div className="copyright-image-block">
+                <div
+                  className={cx('copyright-image-block ', {
+                    right: align === 'right',
+                  })}
+                >
                   {copyright && size === 'l' ? (
                     <Copyright
                       copyrightPosition={
@@ -83,10 +92,36 @@ export const View = ({ data, detached }) => {
                           : copyrightPosition
                       }
                     >
-                      <Copyright.Icon>
-                        <Icon className={copyrightIcon} />
+                      <Copyright.Icon
+                        onMouseEnter={() =>
+                          showCopyrightHovering ? setHovering(true) : ''
+                        }
+                        onMouseLeave={() =>
+                          showCopyrightHovering ? setHovering(false) : ''
+                        }
+                        id="copyright-icon-hoverable"
+                      >
+                        <Icon size="large" name={copyrightIcon} />
                       </Copyright.Icon>
-                      <Copyright.Text>{copyright}</Copyright.Text>
+                      {showCopyrightHovering ? (
+                        <Copyright.Text
+                          id={`copyright-hovering-text-${
+                            hovering ? 'active' : 'inactive'
+                          }-${
+                            align === 'right'
+                              ? align
+                              : align === 'left'
+                              ? 'left'
+                              : copyrightPosition
+                          }`}
+                        >
+                          {copyright}
+                        </Copyright.Text>
+                      ) : (
+                        <Copyright.Text id={'copyright-text'}>
+                          {copyright}
+                        </Copyright.Text>
+                      )}
                     </Copyright>
                   ) : (
                     ''

@@ -77,6 +77,7 @@ class Edit extends Component {
     uploading: false,
     url: '',
     dragging: false,
+    hovering: false,
   };
 
   /**
@@ -227,6 +228,14 @@ class Edit extends Component {
     this.setState({ dragging: false });
   };
 
+  handleHoverEnter = () => {
+    this.setState({ hovering: true });
+  };
+
+  handleHoverLeave = () => {
+    this.setState({ hovering: false });
+  };
+
   node = React.createRef();
 
   /**
@@ -248,6 +257,8 @@ class Edit extends Component {
       align,
       alt,
     } = data;
+
+    const showCopyrightHovering = copyright?.length > 50;
 
     return (
       <div
@@ -300,10 +311,36 @@ class Edit extends Component {
                       : copyrightPosition
                   }
                 >
-                  <Copyright.Icon>
-                    <IconSemantic name={copyrightIcon} />
+                  <Copyright.Icon
+                    onMouseEnter={() =>
+                      showCopyrightHovering ? this.handleHoverEnter() : ''
+                    }
+                    onMouseLeave={() =>
+                      showCopyrightHovering ? this.handleHoverLeave() : ''
+                    }
+                    id="copyright-icon-hoverable"
+                  >
+                    <IconSemantic size="large" name={copyrightIcon} />
                   </Copyright.Icon>
-                  <Copyright.Text>{copyright}</Copyright.Text>
+                  {showCopyrightHovering ? (
+                    <Copyright.Text
+                      id={`copyright-hovering-text-${
+                        this.state.hovering ? 'active' : 'inactive'
+                      }-${
+                        align === 'right'
+                          ? align
+                          : align === 'left'
+                          ? 'left'
+                          : copyrightPosition
+                      }`}
+                    >
+                      {copyright}
+                    </Copyright.Text>
+                  ) : (
+                    <Copyright.Text id={'copyright-text'}>
+                      {copyright}
+                    </Copyright.Text>
+                  )}
                 </Copyright>
               ) : (
                 ''
