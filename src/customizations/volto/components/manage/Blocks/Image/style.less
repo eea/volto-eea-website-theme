@@ -2,6 +2,16 @@
   position: relative;
   z-index: 4;
   width: unset !important;
+
+  @media screen and (max-width: 767px) {
+    img {
+      position: relative;
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      float: none !important;
+    }
+  }
 }
 
 .copyright-image-block {
@@ -9,6 +19,10 @@
   z-index: 1000;
   top: 95%;
   width: 100%;
+
+  @media screen and (max-width: 767px) {
+    top: 90%;
+  }
 }
 
 #copyright-hovering-text-inactive-right {
