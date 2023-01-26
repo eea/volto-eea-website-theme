@@ -367,7 +367,11 @@ class Edit extends Component {
                         </Dimmer>
                       )}
                       <div className="no-image-wrapper">
-                        <img src={imageBlockSVG} alt="" />
+                        <img
+                          src={imageBlockSVG}
+                          alt="preview"
+                          id="preview-image-block"
+                        />
                         <div className="toolbar-inner">
                           <Button.Group>
                             <Button
