@@ -139,6 +139,15 @@ const applyConfig = (config) => {
   // Custom block-style colors
   config.settings.available_colors = eea.colors;
 
+  // Site theme colors
+
+  config.settings.themeColors = [
+    { value: 'default', title: 'Default' },
+    { value: 'primary', title: 'Primary' },
+    { value: 'secondary', title: 'Secondary' },
+    { value: 'tertiary', title: 'Tertiary' },
+  ];
+
   // Custom block styles
   config.settings.previewText = '';
   config.settings.pluggableStyles = [
