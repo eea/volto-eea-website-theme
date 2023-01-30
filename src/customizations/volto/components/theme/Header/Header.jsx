@@ -231,14 +231,14 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         renderMenuItem={(item, options, props) => (
           <UniversalLink
             href={item.url || '/'}
-            title={item.title}
+            title={item.nav_title || item.title}
             {...(options || {})}
             className={cx(options?.className, {
               active: item.url === router_pathname,
             })}
           >
             {props?.iconPosition !== 'right' && props?.children}
-            <span>{item.title}</span>
+            <span>{item.nav_title || item.title}</span>
             {props?.iconPosition === 'right' && props?.children}
           </UniversalLink>
         )}
