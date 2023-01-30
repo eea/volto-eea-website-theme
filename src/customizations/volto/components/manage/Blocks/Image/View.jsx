@@ -25,14 +25,13 @@ export const View = ({ data, detached }) => {
     copyrightPosition,
     align,
     url,
-    size,
+    size = 'l',
     alt,
   } = data;
 
   const showCopyrightHovering = copyright?.length > 50;
 
   const [hovering, setHovering] = React.useState(false);
-
   return (
     <p
       className={cx(
