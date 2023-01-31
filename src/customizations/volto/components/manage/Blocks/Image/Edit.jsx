@@ -32,6 +32,7 @@ import navTreeSVG from '@plone/volto/icons/nav.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
 import './style.less';
+import { CopyrightContent, Image } from './components';
 const Dropzone = loadable(() => import('react-dropzone'));
 
 const messages = defineMessages({
@@ -268,85 +269,33 @@ class Edit extends Component {
             center: !Boolean(data.align),
           },
           data.align,
+          `image-block`,
         )}
       >
         {data.url ? (
-          <div className="image-block">
-            <img
-              className={cx({
-                'full-width': data.align === 'full',
-                large: size === 'l',
-                medium: size === 'm',
-                small: size === 's',
-              })}
-              style={{ margin: 'unset', padding: 'unset' }}
-              src={
-                isInternalURL(data.url)
-                  ? // Backwards compat in the case that the block is storing the full server URL
-                    (() => {
-                      if (size === 'l')
-                        return `${flattenToAppURL(url)}/@@images/image`;
-                      if (size === 'm')
-                        return `${flattenToAppURL(url)}/@@images/image/preview`;
-                      if (size === 's')
-                        return `${flattenToAppURL(url)}/@@images/image/mini`;
-                      return `${flattenToAppURL(url)}/@@images/image`;
-                    })()
-                  : url
-              }
-              alt={alt || ''}
-            />
+          <Image url={url} size={size} align={align}>
             <div
               className={cx('copyright-image-block ', {
                 right: align === 'right',
               })}
             >
               {copyright && size === 'l' ? (
-                <Copyright
-                  copyrightPosition={
-                    align === 'right'
-                      ? align
-                      : align === 'left'
-                      ? 'left'
-                      : copyrightPosition
+                <CopyrightContent
+                  align={align}
+                  copyrightPosition={copyrightPosition}
+                  showCopyrightHovering={showCopyrightHovering}
+                  setHovering={(hovSet) =>
+                    hovSet ? this.handleHoverEnter() : this.handleHoverLeave()
                   }
-                >
-                  <Copyright.Icon
-                    onMouseEnter={() =>
-                      showCopyrightHovering ? this.handleHoverEnter() : ''
-                    }
-                    onMouseLeave={() =>
-                      showCopyrightHovering ? this.handleHoverLeave() : ''
-                    }
-                    id="copyright-icon-hoverable"
-                  >
-                    <IconSemantic size="large" name={copyrightIcon} />
-                  </Copyright.Icon>
-                  {showCopyrightHovering ? (
-                    <Copyright.Text
-                      id={`copyright-hovering-text-${
-                        this.state.hovering ? 'active' : 'inactive'
-                      }-${
-                        align === 'right'
-                          ? align
-                          : align === 'left'
-                          ? 'left'
-                          : copyrightPosition
-                      }`}
-                    >
-                      {copyright}
-                    </Copyright.Text>
-                  ) : (
-                    <Copyright.Text id={'copyright-text'}>
-                      {copyright}
-                    </Copyright.Text>
-                  )}
-                </Copyright>
+                  copyrightIcon={copyrightIcon}
+                  hovering={this.state.hovering}
+                  copyright={copyright}
+                />
               ) : (
                 ''
               )}
             </div>
-          </div>
+          </Image>
         ) : (
           <div>
             {this.props.editable && (

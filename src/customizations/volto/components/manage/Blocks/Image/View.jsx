@@ -12,6 +12,8 @@ import { withBlockExtensions } from '@plone/volto/helpers';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import './style.less';
+import { CopyrightContent, Image } from './components';
+
 /**
  * View image block class.
  * @class View
@@ -31,6 +33,8 @@ export const View = ({ data, detached }) => {
 
   const showCopyrightHovering = copyright?.length > 50;
 
+  console.log(data, 'data');
+
   const [hovering, setHovering] = React.useState(false);
   return (
     <p
@@ -48,84 +52,27 @@ export const View = ({ data, detached }) => {
           {(() => {
             const image = (
               <div className="image-block">
-                <img
-                  className={cx({
-                    'full-width': data.align === 'full',
-                    large: size === 'l',
-                    medium: size === 'm',
-                    small: size === 's',
-                  })}
-                  style={{ margin: 'unset', padding: 'unset' }}
-                  src={
-                    isInternalURL(data.url)
-                      ? // Backwards compat in the case that the block is storing the full server URL
-                        (() => {
-                          if (size === 'l')
-                            return `${flattenToAppURL(url)}/@@images/image`;
-                          if (size === 'm')
-                            return `${flattenToAppURL(
-                              url,
-                            )}/@@images/image/preview`;
-                          if (size === 's')
-                            return `${flattenToAppURL(
-                              url,
-                            )}/@@images/image/mini`;
-                          return `${flattenToAppURL(url)}/@@images/image`;
-                        })()
-                      : url
-                  }
-                  alt={alt || ''}
-                />
-                <div
-                  className={cx('copyright-image-block ', {
-                    right: align === 'right',
-                  })}
-                >
-                  {copyright && size === 'l' ? (
-                    <Copyright
-                      copyrightPosition={
-                        align === 'right'
-                          ? align
-                          : align === 'left'
-                          ? 'left'
-                          : copyrightPosition
-                      }
-                    >
-                      <Copyright.Icon
-                        onMouseEnter={() =>
-                          showCopyrightHovering ? setHovering(true) : ''
-                        }
-                        onMouseLeave={() =>
-                          showCopyrightHovering ? setHovering(false) : ''
-                        }
-                        id="copyright-icon-hoverable"
-                      >
-                        <Icon size="large" name={copyrightIcon} />
-                      </Copyright.Icon>
-                      {showCopyrightHovering ? (
-                        <Copyright.Text
-                          id={`copyright-hovering-text-${
-                            hovering ? 'active' : 'inactive'
-                          }-${
-                            align === 'right'
-                              ? align
-                              : align === 'left'
-                              ? 'left'
-                              : copyrightPosition
-                          }`}
-                        >
-                          {copyright}
-                        </Copyright.Text>
-                      ) : (
-                        <Copyright.Text id={'copyright-text'}>
-                          {copyright}
-                        </Copyright.Text>
-                      )}
-                    </Copyright>
-                  ) : (
-                    ''
-                  )}
-                </div>
+                <Image url={url} size={size} align={align}>
+                  <div
+                    className={cx('copyright-image-block ', {
+                      right: align === 'right',
+                    })}
+                  >
+                    {copyright && size === 'l' ? (
+                      <CopyrightContent
+                        align={align}
+                        copyrightPosition={copyrightPosition}
+                        showCopyrightHovering={showCopyrightHovering}
+                        setHovering={setHovering}
+                        copyrightIcon={copyrightIcon}
+                        hovering={hovering}
+                        copyright={copyright}
+                      />
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                </Image>
               </div>
             );
             if (href) {
