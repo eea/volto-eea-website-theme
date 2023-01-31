@@ -27,6 +27,8 @@ import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
 import './style.less';
 import { CopyrightContent, Image } from './components';
+import { getContent } from '@plone/volto/actions';
+
 const Dropzone = loadable(() => import('react-dropzone'));
 
 const messages = defineMessages({
@@ -96,6 +98,14 @@ class Edit extends Component {
         alt: '',
       });
     }
+  }
+
+  componentDidMount() {
+    this.props.getContent(
+      flattenToAppURL(this.props.data.url),
+      null,
+      this.props.id,
+    );
   }
 
   /**
@@ -239,7 +249,7 @@ class Edit extends Component {
    * @returns {string} Markup for the component.
    */
   render() {
-    const { data } = this.props;
+    const { data, content } = this.props;
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
@@ -251,9 +261,10 @@ class Edit extends Component {
       url,
       align,
     } = data;
+    const { image = {} } = content || {};
 
     const showCopyrightHovering = copyright?.length > 50;
-    console.log(this.props, 'props');
+
     return (
       <div
         className={cx(
@@ -266,7 +277,7 @@ class Edit extends Component {
       >
         {data.url ? (
           <>
-            <Image url={url} size={size} align={align}>
+            <Image url={url} size={size} align={align} content={image}>
               <div
                 className={cx(
                   'copyright-image-block',
@@ -424,6 +435,6 @@ export default compose(
       request: state.content.subrequests[ownProps.block] || {},
       content: state.content.subrequests[ownProps.block]?.data,
     }),
-    { createContent },
+    { createContent, getContent },
   ),
 )(Edit);

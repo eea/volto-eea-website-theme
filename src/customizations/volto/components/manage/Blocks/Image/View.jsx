@@ -10,13 +10,20 @@ import cx from 'classnames';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import './style.less';
 import { CopyrightContent, Image } from './components';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+
+import { injectIntl } from 'react-intl';
+
+import { getContent } from '@plone/volto/actions';
+import { flattenToAppURL } from '@plone/volto/helpers';
 
 /**
  * View image block class.
  * @class View
  * @extends Component
  */
-export const View = ({ data, detached }) => {
+export const View = ({ data, detached, getContent, id, content }) => {
   const href = data?.href?.[0]?.['@id'] || '';
   const {
     copyright,
@@ -26,6 +33,10 @@ export const View = ({ data, detached }) => {
     url,
     size = 'l',
   } = data;
+
+  React.useEffect(() => {
+    getContent(flattenToAppURL(url), null, id);
+  }, [url, id]);
 
   const showCopyrightHovering = copyright?.length > 50;
 
@@ -46,7 +57,12 @@ export const View = ({ data, detached }) => {
           {(() => {
             const image = (
               <div className={`image-block ${align}`}>
-                <Image url={url} size={size} align={align}>
+                <Image
+                  url={url}
+                  size={size}
+                  align={align}
+                  content={content?.image}
+                >
                   <div
                     className={cx(
                       'copyright-image-block ',
@@ -116,4 +132,13 @@ View.propTypes = {
   data: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default withBlockExtensions(View);
+export default compose(
+  injectIntl,
+  withBlockExtensions,
+  connect(
+    (state, ownProps) => ({
+      content: state.content.subrequests[ownProps.id]?.data,
+    }),
+    { getContent },
+  ),
+)(View);

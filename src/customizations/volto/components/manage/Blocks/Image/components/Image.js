@@ -11,16 +11,14 @@ const imageSizePicker = (url, size) => {
   }
 };
 
-const Image = ({ url, size, align, children }) => {
-  const styles = {
-    zIndex: 4,
-    position: 'relative',
-    backgroundImage: `url(${imageSizePicker(url, size)})`,
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-  };
+const selectScale = (size) => {
+  if (size === 'l') return 'large';
+  if (size === 'm') return 'preview';
+  if (size === 's') return 'mini';
+  return 'large';
+};
 
+const Image = ({ url, size, align, children, content }) => {
   const classes = cx({
     imageElement: true,
     'full-width': align === 'full',
@@ -28,6 +26,19 @@ const Image = ({ url, size, align, children }) => {
     medium: size === 'm',
     small: size === 's',
   });
+
+  const imageContent = content?.scales?.[selectScale(size)];
+
+  const styles = {
+    zIndex: 4,
+    position: 'relative',
+    backgroundImage: `url(${imageSizePicker(url, size)})`,
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    height: imageContent?.height ? `${imageContent.height}px` : '500px',
+    width: imageContent?.width ? `${imageContent.width}px` : '100%',
+  };
 
   return (
     <div className={classes} style={styles}>
