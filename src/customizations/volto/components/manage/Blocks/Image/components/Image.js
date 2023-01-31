@@ -1,11 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { UniversalLink } from '@plone/volto/components';
-import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
-import { withBlockExtensions } from '@plone/volto/helpers';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import '../style.less';
 
 const imageSizePicker = (url, size) => {
@@ -19,6 +13,7 @@ const imageSizePicker = (url, size) => {
 
 const Image = ({ url, size, align, children }) => {
   const styles = {
+    zIndex: 4,
     position: 'relative',
     backgroundImage: `url(${imageSizePicker(url, size)})`,
     backgroundPosition: 'center',

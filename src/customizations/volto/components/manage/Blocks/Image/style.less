@@ -1,7 +1,10 @@
 .image-block {
   position: relative;
-  z-index: 4;
   width: unset !important;
+
+  .edit {
+    min-height: 70px;
+  }
 
   .large {
     min-height: 500px;
@@ -30,6 +33,15 @@
   float: right;
   margin-left: 1em;
   margin-right: 0;
+}
+
+.block.align {
+  .medium {
+    width: 50%;
+  }
+  .small {
+    width: 25%;
+  }
 }
 
 .block.align.right .large {

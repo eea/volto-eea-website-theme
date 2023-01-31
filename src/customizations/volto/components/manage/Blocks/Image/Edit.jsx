@@ -15,16 +15,10 @@ import cx from 'classnames';
 import { isEqual } from 'lodash';
 
 import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
-import { Icon as IconSemantic } from 'semantic-ui-react';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import { createContent } from '@plone/volto/actions';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
-import {
-  flattenToAppURL,
-  getBaseUrl,
-  isInternalURL,
-} from '@plone/volto/helpers';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -256,7 +250,6 @@ class Edit extends Component {
       size = 'l',
       url,
       align,
-      alt,
     } = data;
 
     const showCopyrightHovering = copyright?.length > 50;
@@ -264,12 +257,11 @@ class Edit extends Component {
     return (
       <div
         className={cx(
-          'block image align',
+          'block image align image-block edit',
           {
             center: !Boolean(data.align),
           },
           data.align,
-          `image-block`,
         )}
       >
         {data.url ? (
