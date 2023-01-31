@@ -23,9 +23,9 @@ const CopyrightContent = ({
       </Copyright.Icon>
       {showCopyrightHovering ? (
         <Copyright.Text
-          id={`copyright-hovering-text-${
-            hovering ? 'active' : 'inactive'
-          }-${copyrightPosition}`}
+          id={`copyright-hovering-text-${hovering ? 'active' : 'inactive'}-${
+            copyrightPosition ? copyrightPosition : 'left'
+          }`}
         >
           {copyright}
         </Copyright.Text>
