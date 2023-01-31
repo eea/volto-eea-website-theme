@@ -265,29 +265,50 @@ class Edit extends Component {
         )}
       >
         {data.url ? (
-          <Image url={url} size={size} align={align}>
-            <div
-              className={cx('copyright-image-block ', {
-                right: align === 'right',
-              })}
-            >
-              {copyright && size === 'l' ? (
-                <CopyrightContent
-                  align={align}
-                  copyrightPosition={copyrightPosition}
-                  showCopyrightHovering={showCopyrightHovering}
-                  setHovering={(hovSet) =>
-                    hovSet ? this.handleHoverEnter() : this.handleHoverLeave()
-                  }
-                  copyrightIcon={copyrightIcon}
-                  hovering={this.state.hovering}
-                  copyright={copyright}
-                />
-              ) : (
-                ''
-              )}
-            </div>
-          </Image>
+          <>
+            <Image url={url} size={size} align={align}>
+              <div
+                className={cx(
+                  'copyright-image-block',
+                  `copyright-${copyrightPosition ? copyrightPosition : 'left'}`,
+                  {
+                    right: align === 'right',
+                  },
+                )}
+              >
+                {copyright && size === 'l' && align !== 'full' ? (
+                  <CopyrightContent
+                    align={align}
+                    copyrightPosition={copyrightPosition}
+                    showCopyrightHovering={showCopyrightHovering}
+                    setHovering={(hovSet) =>
+                      hovSet ? this.handleHoverEnter() : this.handleHoverLeave()
+                    }
+                    copyrightIcon={copyrightIcon}
+                    hovering={this.state.hovering}
+                    copyright={copyright}
+                  />
+                ) : (
+                  ''
+                )}
+              </div>
+            </Image>
+            {copyright && size === 'l' && align === 'full' ? (
+              <CopyrightContent
+                align={align}
+                copyrightPosition={copyrightPosition}
+                showCopyrightHovering={showCopyrightHovering}
+                setHovering={(hovSet) =>
+                  hovSet ? this.handleHoverEnter() : this.handleHoverLeave()
+                }
+                copyrightIcon={copyrightIcon}
+                hovering={this.state.hovering}
+                copyright={copyright}
+              />
+            ) : (
+              ''
+            )}
+          </>
         ) : (
           <div>
             {this.props.editable && (

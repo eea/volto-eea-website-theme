@@ -45,14 +45,20 @@ export const View = ({ data, detached }) => {
         <>
           {(() => {
             const image = (
-              <div className="image-block">
+              <div className={`image-block ${align}`}>
                 <Image url={url} size={size} align={align}>
                   <div
-                    className={cx('copyright-image-block ', {
-                      right: align === 'right',
-                    })}
+                    className={cx(
+                      'copyright-image-block ',
+                      `copyright-${
+                        copyrightPosition ? copyrightPosition : 'left'
+                      }`,
+                      {
+                        right: align === 'right',
+                      },
+                    )}
                   >
-                    {copyright && size === 'l' ? (
+                    {copyright && size === 'l' && align !== 'full' ? (
                       <CopyrightContent
                         align={align}
                         copyrightPosition={copyrightPosition}
@@ -67,6 +73,19 @@ export const View = ({ data, detached }) => {
                     )}
                   </div>
                 </Image>
+                {copyright && size === 'l' && align === 'full' ? (
+                  <CopyrightContent
+                    align={align}
+                    copyrightPosition={copyrightPosition}
+                    showCopyrightHovering={showCopyrightHovering}
+                    setHovering={setHovering}
+                    copyrightIcon={copyrightIcon}
+                    hovering={hovering}
+                    copyright={copyright}
+                  />
+                ) : (
+                  ''
+                )}
               </div>
             );
             if (href) {
