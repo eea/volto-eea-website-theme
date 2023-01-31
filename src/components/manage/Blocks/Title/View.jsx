@@ -9,19 +9,27 @@ import PropTypes from 'prop-types';
 
 import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
 
+function IsomorphicPortal({ children }) {
+  const [isClient, setIsClient] = React.useState();
+  React.useEffect(() => setIsClient(true), []);
+
+  return isClient ? (
+    <Portal node={document.getElementById('page-header')}>{children}</Portal>
+  ) : (
+    children
+  );
+}
+
 /**
  * View title block class.
  * @class View
  * @extends Component
  */
-const View = (props) => {
-  if (__SERVER__) return <BannerView {...props} />;
-  return (
-    <Portal node={document.getElementById('page-header')}>
-      <BannerView {...props} />
-    </Portal>
-  );
-};
+const View = (props) => (
+  <IsomorphicPortal>
+    <BannerView {...props} />
+  </IsomorphicPortal>
+);
 
 /**
  * Property types.
