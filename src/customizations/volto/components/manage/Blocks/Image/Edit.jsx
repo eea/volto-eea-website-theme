@@ -253,7 +253,7 @@ class Edit extends Component {
     } = data;
 
     const showCopyrightHovering = copyright?.length > 50;
-
+    console.log(this.props, 'props');
     return (
       <div
         className={cx(
