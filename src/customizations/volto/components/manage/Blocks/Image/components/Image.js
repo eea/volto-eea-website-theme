@@ -4,7 +4,7 @@ import '../style.less';
 
 const imageSizePicker = (url, size) => {
   if (url) {
-    if (size === 'l') return `${url}/@@images/image`;
+    if (size === 'l') return `${url}/@@images/image/large`;
     if (size === 'm') return `${url}/@@images/image/preview`;
     if (size === 's') return `${url}/@@images/image/mini`;
     return `${url}/@@images/image`;
@@ -14,7 +14,7 @@ const imageSizePicker = (url, size) => {
 const selectScale = (size) => {
   if (size === 'l') return 'large';
   if (size === 'm') return 'preview';
-  if (size === 's') return 'mini';
+  if (size === 's') return 'small';
   return 'large';
 };
 
