@@ -20,6 +20,11 @@ import './style.less';
 export const View = ({ data, detached }) => {
   const href = data?.href?.[0]?.['@id'] || '';
   const { copyright, copyrightIcon, copyrightPosition } = data;
+
+  const showCopyrightHovering = copyright?.length > 50;
+
+  const [hovering, setHovering] = React.useState(false);
+
   return (
     <p
       className={cx(
@@ -66,13 +71,31 @@ export const View = ({ data, detached }) => {
                   alt={data.alt || ''}
                   loading="lazy"
                 />
-                <div className={`copyright-image ${copyrightPosition}`}>
+                <div
+                  onMouseEnter={() =>
+                    showCopyrightHovering ? setHovering(true) : ''
+                  }
+                  onMouseLeave={() =>
+                    showCopyrightHovering ? setHovering(false) : ''
+                  }
+                  className={`copyright-image ${copyrightPosition}`}
+                >
                   {copyright ? (
                     <Copyright copyrightPosition={copyrightPosition}>
                       <Copyright.Icon>
                         <Icon className={copyrightIcon} />
                       </Copyright.Icon>
-                      <Copyright.Text>{copyright}</Copyright.Text>
+                      {showCopyrightHovering ? (
+                        <>
+                          {hovering && (
+                            <div className="copyright-hover-container">
+                              <Copyright.Text>{copyright}</Copyright.Text>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <Copyright.Text>{copyright}</Copyright.Text>
+                      )}
                     </Copyright>
                   ) : (
                     ''
