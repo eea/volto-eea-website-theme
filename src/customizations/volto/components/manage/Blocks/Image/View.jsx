@@ -35,7 +35,7 @@ export const View = ({ data, detached }) => {
         <>
           {(() => {
             const image = (
-              <div className="image-block">
+              <>
                 <img
                   className={cx({
                     'full-width': data.align === 'full',
@@ -66,7 +66,7 @@ export const View = ({ data, detached }) => {
                   alt={data.alt || ''}
                   loading="lazy"
                 />
-                <div className="copyright-image">
+                <div className={`copyright-image ${copyrightPosition}`}>
                   {copyright ? (
                     <Copyright copyrightPosition={copyrightPosition}>
                       <Copyright.Icon>
@@ -78,7 +78,7 @@ export const View = ({ data, detached }) => {
                     ''
                   )}
                 </div>
-              </div>
+              </>
             );
             if (href) {
               return (

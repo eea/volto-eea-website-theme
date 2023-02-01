@@ -2,11 +2,51 @@
   position: relative;
 }
 
+.block.image.align.right {
+  .copyright-image.right {
+    left: 0;
+  }
+}
+
+.block.image.align.left {
+  .copyright-image.left {
+    right: 0;
+  }
+}
+
+.copyright-image.right {
+  left: -1rem;
+}
+
+.copyright-image.left {
+  right: -1rem;
+}
+
 .copyright-image {
   position: absolute;
   z-index: 1000;
-  top: 90%;
   width: 100%;
   padding-right: 10px;
   padding-left: 10px;
+  bottom: 2rem;
+}
+
+.block.image.align.right {
+  float: right;
+  display: block;
+  max-width: 50%;
+}
+
+.block.image.align.left {
+  float: left;
+  display: block;
+  max-width: 50%;
+}
+
+.block.align.right img {
+  max-width: 96% !important;
+}
+
+.block.align.left img {
+  max-width: 96% !important;
 }

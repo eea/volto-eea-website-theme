@@ -251,7 +251,7 @@ class Edit extends Component {
         )}
       >
         {data.url ? (
-          <div className="image-block">
+          <>
             <img
               className={cx({
                 'full-width': data.align === 'full',
@@ -264,7 +264,9 @@ class Edit extends Component {
                   ? // Backwards compat in the case that the block is storing the full server URL
                     (() => {
                       if (data.size === 'l')
-                        return `${flattenToAppURL(data.url)}/@@images/image`;
+                        return `${flattenToAppURL(
+                          data.url,
+                        )}/@@images/image/large`;
                       if (data.size === 'm')
                         return `${flattenToAppURL(
                           data.url,
@@ -279,7 +281,7 @@ class Edit extends Component {
               }
               alt={data.alt || ''}
             />
-            <div className="copyright-image">
+            <div className={`copyright-image ${copyrightPosition}`}>
               {copyright ? (
                 <Copyright copyrightPosition={copyrightPosition}>
                   <Copyright.Icon>
@@ -291,7 +293,7 @@ class Edit extends Component {
                 ''
               )}
             </div>
-          </div>
+          </>
         ) : (
           <div>
             {this.props.editable && (
