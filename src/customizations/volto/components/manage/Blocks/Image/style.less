@@ -2,43 +2,53 @@
   position: relative;
 }
 
+.block.image.align.right {
+  .copyright-image.right {
+    left: 0;
+  }
+}
 
+.block.image.align.left {
+  .copyright-image.left {
+    right: 0;
+  }
+}
 
 .copyright-image.right {
-  left: 0;
+  left: -1rem;
 }
 
 .copyright-image.left {
-  right: 0;
+  right: -1rem;
 }
 
 .copyright-image {
   position: absolute;
   z-index: 1000;
   bottom: 2rem;
-  width: 96%;
+  width: 100%;
   padding-right: 10px;
   padding-left: 10px;
 }
 
 .block.image.align.right {
   display: block;
-  max-width: 50%;
-  float: right;
+  // max-width: 50% !important;
+  // float: right;
+
+  // img {
+  //   float: none !important;
+  // }
 }
 
 .block.image.align.left {
   display: block;
-  max-width: 50%;
-  float: left;
-}
+  // max-width: 50% !important;
+  // float: left;
 
-.block.align.right img {
-  max-width: 96% !important;
-}
-
-.block.align.left img {
-  max-width: 96% !important;
+  // img {
+  //   float: none !important;
+  // }
 }
 
 .copyright-hover-container {
