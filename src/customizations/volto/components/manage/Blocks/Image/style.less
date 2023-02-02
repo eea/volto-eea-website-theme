@@ -43,6 +43,7 @@
   img {
     max-width: 100% !important;
     float: none !important;
+    margin-left: 0 !important;
   }
 }
 
@@ -56,17 +57,28 @@
 }
 
 .image-block-container {
-  max-width: 50%;
-  padding-right: 1rem;
+  max-width: 100%;
   position: relative;
 }
 
 .image-block-container.left {
+  max-width: 50%;
+  padding-right: 1rem;
   float: left;
+
+  .copyright-hover-container {
+    width: 92%;
+  }
 }
 
 .image-block-container.right {
+  max-width: 50%;
+  padding-left: 1rem;
   float: right;
+
+  .copyright-hover-container {
+    width: 92%;
+  }
 }
 
 .copyright-hover-container {

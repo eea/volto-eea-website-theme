@@ -240,6 +240,9 @@ class Edit extends Component {
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
     const { copyright, copyrightIcon, copyrightPosition } = data;
+
+    const showCopyright = data?.size === 'l' || !data.size;
+
     return (
       <div
         className={cx(
@@ -251,9 +254,7 @@ class Edit extends Component {
         )}
       >
         <div
-          className={`image-block-container ${
-            data?.align ? data?.align : 'left'
-          }`}
+          className={`image-block-container ${data?.align ? data?.align : ''}`}
         >
           {data.url ? (
             <>
@@ -287,7 +288,7 @@ class Edit extends Component {
                 alt={data.alt || ''}
               />
               <div className={`copyright-image ${copyrightPosition}`}>
-                {copyright ? (
+                {copyright && showCopyright ? (
                   <Copyright copyrightPosition={copyrightPosition}>
                     <Copyright.Icon>
                       <IconSemantic name={copyrightIcon} />

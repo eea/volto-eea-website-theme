@@ -25,6 +25,8 @@ export const View = ({ data, detached }) => {
 
   const [hovering, setHovering] = React.useState(false);
 
+  const showCopyright = data?.size === 'l' || !data.size;
+
   return (
     <p
       className={cx(
@@ -37,9 +39,7 @@ export const View = ({ data, detached }) => {
       )}
     >
       <div
-        className={`image-block-container ${
-          data?.align ? data?.align : 'left'
-        }`}
+        className={`image-block-container ${data?.align ? data?.align : ''}`}
       >
         {data.url && (
           <>
@@ -89,7 +89,7 @@ export const View = ({ data, detached }) => {
                       copyrightPosition ? copyrightPosition : 'left'
                     }`}
                   >
-                    {copyright ? (
+                    {copyright && showCopyright ? (
                       <Copyright copyrightPosition={copyrightPosition}>
                         <Copyright.Icon>
                           <Icon className={copyrightIcon} />
