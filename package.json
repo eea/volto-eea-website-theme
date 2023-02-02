@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@eeacms/volto-eea-design-system": "^1.0.0-alpha.12",
+    "postcss-less": "6.0.0",
     "volto-subsites": "*"
   },
   "devDependencies": {
