@@ -36,88 +36,98 @@ export const View = ({ data, detached }) => {
         data.align,
       )}
     >
-      {data.url && (
-        <>
-          {(() => {
-            const image = (
-              <>
-                <img
-                  className={cx({
-                    'full-width': data.align === 'full',
-                    large: data.size === 'l',
-                    medium: data.size === 'm',
-                    small: data.size === 's',
-                  })}
-                  src={
-                    isInternalURL(data.url)
-                      ? // Backwards compat in the case that the block is storing the full server URL
-                        (() => {
-                          if (data.size === 'l')
+      <div
+        className={`image-block-container ${
+          data?.align ? data?.align : 'left'
+        }`}
+      >
+        {data.url && (
+          <>
+            {(() => {
+              const image = (
+                <>
+                  <img
+                    className={cx({
+                      'full-width': data.align === 'full',
+                      large: data.size === 'l',
+                      medium: data.size === 'm',
+                      small: data.size === 's',
+                    })}
+                    src={
+                      isInternalURL(data.url)
+                        ? // Backwards compat in the case that the block is storing the full server URL
+                          (() => {
+                            if (data.size === 'l')
+                              return `${flattenToAppURL(
+                                data.url,
+                              )}/@@images/image`;
+                            if (data.size === 'm')
+                              return `${flattenToAppURL(
+                                data.url,
+                              )}/@@images/image/preview`;
+                            if (data.size === 's')
+                              return `${flattenToAppURL(
+                                data.url,
+                              )}/@@images/image/mini`;
                             return `${flattenToAppURL(
                               data.url,
                             )}/@@images/image`;
-                          if (data.size === 'm')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/preview`;
-                          if (data.size === 's')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/mini`;
-                          return `${flattenToAppURL(data.url)}/@@images/image`;
-                        })()
-                      : data.url
-                  }
-                  alt={data.alt || ''}
-                  loading="lazy"
-                />
-                <div
-                  onMouseEnter={() =>
-                    showCopyrightHovering ? setHovering(true) : ''
-                  }
-                  onMouseLeave={() =>
-                    showCopyrightHovering ? setHovering(false) : ''
-                  }
-                  className={`copyright-image ${copyrightPosition}`}
-                >
-                  {copyright ? (
-                    <Copyright copyrightPosition={copyrightPosition}>
-                      <Copyright.Icon>
-                        <Icon className={copyrightIcon} />
-                      </Copyright.Icon>
-                      {showCopyrightHovering ? (
-                        <>
-                          {hovering && (
-                            <div className="copyright-hover-container">
-                              <Copyright.Text>{copyright}</Copyright.Text>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <Copyright.Text>{copyright}</Copyright.Text>
-                      )}
-                    </Copyright>
-                  ) : (
-                    ''
-                  )}
-                </div>
-              </>
-            );
-            if (href) {
-              return (
-                <UniversalLink
-                  href={href}
-                  openLinkInNewTab={data.openLinkInNewTab}
-                >
-                  {image}
-                </UniversalLink>
+                          })()
+                        : data.url
+                    }
+                    alt={data.alt || ''}
+                    loading="lazy"
+                  />
+                  <div
+                    onMouseEnter={() =>
+                      showCopyrightHovering ? setHovering(true) : ''
+                    }
+                    onMouseLeave={() =>
+                      showCopyrightHovering ? setHovering(false) : ''
+                    }
+                    className={`copyright-image ${
+                      copyrightPosition ? copyrightPosition : 'left'
+                    }`}
+                  >
+                    {copyright ? (
+                      <Copyright copyrightPosition={copyrightPosition}>
+                        <Copyright.Icon>
+                          <Icon className={copyrightIcon} />
+                        </Copyright.Icon>
+                        {showCopyrightHovering ? (
+                          <>
+                            {hovering && (
+                              <div className="copyright-hover-container">
+                                <Copyright.Text>{copyright}</Copyright.Text>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <Copyright.Text>{copyright}</Copyright.Text>
+                        )}
+                      </Copyright>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                </>
               );
-            } else {
-              return image;
-            }
-          })()}
-        </>
-      )}
+              if (href) {
+                return (
+                  <UniversalLink
+                    href={href}
+                    openLinkInNewTab={data.openLinkInNewTab}
+                  >
+                    {image}
+                  </UniversalLink>
+                );
+              } else {
+                return image;
+              }
+            })()}
+          </>
+        )}
+      </div>
     </p>
   );
 };

@@ -250,145 +250,151 @@ class Edit extends Component {
           data.align,
         )}
       >
-        {data.url ? (
-          <>
-            <img
-              className={cx({
-                'full-width': data.align === 'full',
-                large: data.size === 'l',
-                medium: data.size === 'm',
-                small: data.size === 's',
-              })}
-              src={
-                isInternalURL(data.url)
-                  ? // Backwards compat in the case that the block is storing the full server URL
-                    (() => {
-                      if (data.size === 'l')
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/large`;
-                      if (data.size === 'm')
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/preview`;
-                      if (data.size === 's')
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/mini`;
-                      return `${flattenToAppURL(data.url)}/@@images/image`;
-                    })()
-                  : data.url
-              }
-              alt={data.alt || ''}
-            />
-            <div className={`copyright-image ${copyrightPosition}`}>
-              {copyright ? (
-                <Copyright copyrightPosition={copyrightPosition}>
-                  <Copyright.Icon>
-                    <IconSemantic name={copyrightIcon} />
-                  </Copyright.Icon>
-                  <Copyright.Text>{copyright}</Copyright.Text>
-                </Copyright>
-              ) : (
-                ''
-              )}
-            </div>
-          </>
-        ) : (
-          <div>
-            {this.props.editable && (
-              <Dropzone
-                noClick
-                onDrop={this.onDrop}
-                onDragEnter={this.onDragEnter}
-                onDragLeave={this.onDragLeave}
-                className="dropzone"
-              >
-                {({ getRootProps, getInputProps }) => (
-                  <div {...getRootProps()}>
-                    <Message>
-                      {this.state.dragging && <Dimmer active></Dimmer>}
-                      {this.state.uploading && (
-                        <Dimmer active>
-                          <Loader indeterminate>Uploading image</Loader>
-                        </Dimmer>
-                      )}
-                      <div className="no-image-wrapper">
-                        <img src={imageBlockSVG} alt="" />
-                        <div className="toolbar-inner">
-                          <Button.Group>
-                            <Button
-                              basic
-                              icon
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                this.props.openObjectBrowser();
-                              }}
-                            >
-                              <Icon name={navTreeSVG} size="24px" />
-                            </Button>
-                          </Button.Group>
-                          <Button.Group>
-                            <label className="ui button basic icon">
-                              <Icon name={uploadSVG} size="24px" />
-                              <input
-                                {...getInputProps({
-                                  type: 'file',
-                                  onChange: this.onUploadImage,
-                                  style: { display: 'none' },
-                                })}
-                              />
-                            </label>
-                          </Button.Group>
-                          <Input
-                            onKeyDown={this.onKeyDownVariantMenuForm}
-                            onChange={this.onChangeUrl}
-                            placeholder={placeholder}
-                            value={this.state.url}
-                            onClick={(e) => {
-                              e.target.focus();
-                            }}
-                            onFocus={(e) => {
-                              this.props.onSelectBlock(this.props.id);
-                            }}
-                          />
-                          {this.state.url && (
+        <div
+          className={`image-block-container ${
+            data?.align ? data?.align : 'left'
+          }`}
+        >
+          {data.url ? (
+            <>
+              <img
+                className={cx({
+                  'full-width': data.align === 'full',
+                  large: data.size === 'l',
+                  medium: data.size === 'm',
+                  small: data.size === 's',
+                })}
+                src={
+                  isInternalURL(data.url)
+                    ? // Backwards compat in the case that the block is storing the full server URL
+                      (() => {
+                        if (data.size === 'l')
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/large`;
+                        if (data.size === 'm')
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/preview`;
+                        if (data.size === 's')
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/mini`;
+                        return `${flattenToAppURL(data.url)}/@@images/image`;
+                      })()
+                    : data.url
+                }
+                alt={data.alt || ''}
+              />
+              <div className={`copyright-image ${copyrightPosition}`}>
+                {copyright ? (
+                  <Copyright copyrightPosition={copyrightPosition}>
+                    <Copyright.Icon>
+                      <IconSemantic name={copyrightIcon} />
+                    </Copyright.Icon>
+                    <Copyright.Text>{copyright}</Copyright.Text>
+                  </Copyright>
+                ) : (
+                  ''
+                )}
+              </div>
+            </>
+          ) : (
+            <div>
+              {this.props.editable && (
+                <Dropzone
+                  noClick
+                  onDrop={this.onDrop}
+                  onDragEnter={this.onDragEnter}
+                  onDragLeave={this.onDragLeave}
+                  className="dropzone"
+                >
+                  {({ getRootProps, getInputProps }) => (
+                    <div {...getRootProps()}>
+                      <Message>
+                        {this.state.dragging && <Dimmer active></Dimmer>}
+                        {this.state.uploading && (
+                          <Dimmer active>
+                            <Loader indeterminate>Uploading image</Loader>
+                          </Dimmer>
+                        )}
+                        <div className="no-image-wrapper">
+                          <img src={imageBlockSVG} alt="" />
+                          <div className="toolbar-inner">
                             <Button.Group>
                               <Button
                                 basic
-                                className="cancel"
+                                icon
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  this.setState({ url: '' });
+                                  e.preventDefault();
+                                  this.props.openObjectBrowser();
                                 }}
                               >
-                                <Icon name={clearSVG} size="30px" />
+                                <Icon name={navTreeSVG} size="24px" />
                               </Button>
                             </Button.Group>
-                          )}
-                          <Button.Group>
-                            <Button
-                              basic
-                              primary
-                              disabled={!this.state.url}
+                            <Button.Group>
+                              <label className="ui button basic icon">
+                                <Icon name={uploadSVG} size="24px" />
+                                <input
+                                  {...getInputProps({
+                                    type: 'file',
+                                    onChange: this.onUploadImage,
+                                    style: { display: 'none' },
+                                  })}
+                                />
+                              </label>
+                            </Button.Group>
+                            <Input
+                              onKeyDown={this.onKeyDownVariantMenuForm}
+                              onChange={this.onChangeUrl}
+                              placeholder={placeholder}
+                              value={this.state.url}
                               onClick={(e) => {
-                                e.stopPropagation();
-                                this.onSubmitUrl();
+                                e.target.focus();
                               }}
-                            >
-                              <Icon name={aheadSVG} size="30px" />
-                            </Button>
-                          </Button.Group>
+                              onFocus={(e) => {
+                                this.props.onSelectBlock(this.props.id);
+                              }}
+                            />
+                            {this.state.url && (
+                              <Button.Group>
+                                <Button
+                                  basic
+                                  className="cancel"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    this.setState({ url: '' });
+                                  }}
+                                >
+                                  <Icon name={clearSVG} size="30px" />
+                                </Button>
+                              </Button.Group>
+                            )}
+                            <Button.Group>
+                              <Button
+                                basic
+                                primary
+                                disabled={!this.state.url}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  this.onSubmitUrl();
+                                }}
+                              >
+                                <Icon name={aheadSVG} size="30px" />
+                              </Button>
+                            </Button.Group>
+                          </div>
                         </div>
-                      </div>
-                    </Message>
-                  </div>
-                )}
-              </Dropzone>
-            )}
-          </div>
-        )}
+                      </Message>
+                    </div>
+                  )}
+                </Dropzone>
+              )}
+            </div>
+          )}
+        </div>
         <SidebarPortal selected={this.props.selected}>
           <ImageSidebar {...this.props} />
         </SidebarPortal>
