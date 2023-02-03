@@ -168,7 +168,7 @@ const applyConfig = (config) => {
 
   // Site theme colors
   config.settings.themeColors = [
-    { value: undefined, title: 'No theme' },
+    { value: 'default', title: 'Default' },
     { value: 'primary', title: 'Primary' },
     { value: 'secondary', title: 'Secondary' },
     { value: 'tertiary', title: 'Tertiary' },
