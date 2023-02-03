@@ -22,3 +22,50 @@
   margin-right: 0;
   float: right;
 }
+
+.copyright-image.right {
+  right: 0rem;
+}
+
+.copyright-image.left {
+  left: 0rem;
+}
+
+.block.image.align.right {
+  .copyright-image.right {
+    left: 0;
+  }
+
+  .copyright-image.left {
+    left: 1rem;
+  }
+}
+
+.block.image.align.left {
+  .copyright-image.left {
+    right: 0;
+  }
+
+  .copyright-image.right {
+    right: 1rem;
+  }
+}
+
+.block.image.align.right {
+  display: block;
+
+  img {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    float: none !important;
+  }
+}
+
+.block.image.align.left {
+  display: block;
+
+  img {
+    max-width: 100% !important;
+    float: none !important;
+  }
+}
