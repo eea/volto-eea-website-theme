@@ -97,39 +97,43 @@ class Edit extends Component {
           data.align,
         )}
       >
-        {!properties.image && (
-          <Message>
-            <center>
-              <img src={imageBlockSVG} alt="" />
-              <div className="message-text">{placeholder}</div>
-            </center>
-          </Message>
-        )}
-        {properties.image && (
-          <div className="image-block">
-            <img
-              className={cx({ 'full-width': data.align === 'full' })}
-              src={
-                properties.image.data
-                  ? `data:${properties.image['content-type']};base64,${properties.image.data}`
-                  : flattenToAppURL(properties.image.download)
-              }
-              alt={data.image_caption || ''}
-            />
-            <div className="copyright-image">
-              {copyright ? (
-                <Copyright copyrightPosition={copyrightPosition}>
-                  <Copyright.Icon>
-                    <Icon className={copyrightIcon} />
-                  </Copyright.Icon>
-                  <Copyright.Text>{copyright}</Copyright.Text>
-                </Copyright>
-              ) : (
-                ''
-              )}
+        <div
+          className={`image-block-container ${data?.align ? data?.align : ''}`}
+        >
+          {!properties.image && (
+            <Message>
+              <center>
+                <img src={imageBlockSVG} alt="" />
+                <div className="message-text">{placeholder}</div>
+              </center>
+            </Message>
+          )}
+          {properties.image && (
+            <div className="image-block">
+              <img
+                className={cx({ 'full-width': data.align === 'full' })}
+                src={
+                  properties.image.data
+                    ? `data:${properties.image['content-type']};base64,${properties.image.data}`
+                    : flattenToAppURL(properties.image.download)
+                }
+                alt={data.image_caption || ''}
+              />
+              <div className="copyright-image">
+                {copyright ? (
+                  <Copyright copyrightPosition={copyrightPosition}>
+                    <Copyright.Icon>
+                      <Icon className={copyrightIcon} />
+                    </Copyright.Icon>
+                    <Copyright.Text>{copyright}</Copyright.Text>
+                  </Copyright>
+                ) : (
+                  ''
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         <SidebarPortal selected={this.props.selected}>
           <LeadImageSidebar {...this.props} />
         </SidebarPortal>
