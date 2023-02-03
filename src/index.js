@@ -8,6 +8,7 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
+import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
@@ -19,6 +20,24 @@ const applyConfig = (config) => {
     ...eea,
     ...(config.settings.eea || {}),
   };
+
+  // Insert scripts on Error pages
+  if (config.settings?.serverConfig?.extractScripts) {
+    config.settings.serverConfig.extractScripts.errorPages = true;
+  }
+
+  // Disable tags on View
+  config.settings.showTags = false;
+
+  // Enable Title block
+  config.blocks.blocksConfig.title.restricted = false;
+
+  // Enable description block (also for cypress)
+  config.blocks.blocksConfig.description.restricted = false;
+  config.blocks.requiredBlocks = [];
+
+  // Date format for EU
+  config.settings.dateLocale = 'en-gb';
 
   // Custom Homepage layouts
   config.views.layoutViews = {
@@ -89,6 +108,14 @@ const applyConfig = (config) => {
   ];
 
   if (config.settings.slate) {
+    // Callout slate button
+    config = installCallout(config);
+
+    // Remove blockquote slate button
+    config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
+      (item) => item !== 'blockquote',
+    );
+
     // Align Slate Lists to EEA Design System
     config.settings.slate.elements.ul = ({ attributes, children }) => (
       <List bulleted as="ul" {...attributes}>
@@ -140,9 +167,8 @@ const applyConfig = (config) => {
   config.settings.available_colors = eea.colors;
 
   // Site theme colors
-
   config.settings.themeColors = [
-    { value: 'default', title: 'Default' },
+    { value: undefined, title: 'No theme' },
     { value: 'primary', title: 'Primary' },
     { value: 'secondary', title: 'Secondary' },
     { value: 'tertiary', title: 'Tertiary' },
