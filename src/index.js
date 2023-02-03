@@ -127,11 +127,6 @@ const applyConfig = (config) => {
           label: 'Tertiary',
           icon: () => <Icon name={paintSVG} size="18px" />,
         },
-        {
-          cssClass: 'bordered',
-          label: 'Bordered',
-          icon: () => <Icon name={paintSVG} size="18px" />,
-        },
       ],
     };
   }
