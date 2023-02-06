@@ -119,6 +119,14 @@ const applyConfig = (config) => {
       (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
     );
 
+    // Remove 'underline' and 'italic' hotkeys
+    config.settings.slate.hotkeys = Object.keys(config.settings.slate.hotkeys)
+      .filter((item) => !['mod+u', 'mod+i'].includes(item))
+      .reduce((out, key) => {
+        out[key] = config.settings.slate.hotkeys[key];
+        return out;
+      }, {});
+
     // Small button
     if (!config.settings.slate.toolbarButtons.includes('small')) {
       config.settings.slate.elements.small = ({ children }) => (
@@ -144,6 +152,11 @@ const applyConfig = (config) => {
         'small',
         ...config.settings.slate.toolbarButtons.slice(1),
       ];
+
+      config.settings.slate.hotkeys['mod+s'] = {
+        format: 'small',
+        type: 'inline',
+      };
     }
 
     // Light button
@@ -171,6 +184,11 @@ const applyConfig = (config) => {
         'light',
         ...config.settings.slate.toolbarButtons.slice(1),
       ];
+
+      config.settings.slate.hotkeys['mod+l'] = {
+        format: 'light',
+        type: 'inline',
+      };
     }
 
     // Clear formatting
