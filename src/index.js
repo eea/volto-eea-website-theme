@@ -8,9 +8,12 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
+import { MarkElementButton } from '@plone/volto-slate/editor/ui';
 import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
+import lightIcon from './icons/light.svg';
+import smallIcon from './icons/small.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import { List } from 'semantic-ui-react';
 
@@ -113,8 +116,70 @@ const applyConfig = (config) => {
 
     // Remove blockquote slate button
     config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
-      (item) => item !== 'blockquote',
+      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
     );
+
+    // Small button
+    if (!config.settings.slate.toolbarButtons.includes('small')) {
+      config.settings.slate.elements.small = ({ children }) => (
+        <small>{children}</small>
+      );
+
+      config.settings.slate.buttons.small = (props) => (
+        <MarkElementButton
+          title="Small"
+          format="small"
+          icon={smallIcon}
+          {...props}
+        />
+      );
+
+      config.settings.slate.inlineElements = [
+        ...config.settings.slate.inlineElements,
+        'small',
+      ];
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons.slice(0, 1),
+        'small',
+        ...config.settings.slate.toolbarButtons.slice(1),
+      ];
+    }
+
+    // Light button
+    if (!config.settings.slate.toolbarButtons.includes('light')) {
+      config.settings.slate.elements.light = ({ children }) => (
+        <span className="fw-light">{children}</span>
+      );
+
+      config.settings.slate.buttons.light = (props) => (
+        <MarkElementButton
+          title="Light"
+          format="light"
+          icon={lightIcon}
+          {...props}
+        />
+      );
+
+      config.settings.slate.inlineElements = [
+        ...config.settings.slate.inlineElements,
+        'light',
+      ];
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons.slice(0, 1),
+        'light',
+        ...config.settings.slate.toolbarButtons.slice(1),
+      ];
+    }
+
+    // Clear formatting
+    if (!config.settings.slate.toolbarButtons.includes('clearformatting')) {
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'clearformatting',
+      ];
+    }
 
     // Align Slate Lists to EEA Design System
     config.settings.slate.elements.ul = ({ attributes, children }) => (
