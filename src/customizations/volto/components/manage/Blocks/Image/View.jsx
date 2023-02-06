@@ -12,7 +12,7 @@ import { compose } from 'redux';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
-import withDeviceSize from '../imageHocs/withDeviceSize';
+import withDeviceSize from '@eeacms/volto-eea-website-theme/hocs/withDeviceSize';
 import './style.less';
 
 /**

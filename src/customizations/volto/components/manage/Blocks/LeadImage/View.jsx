@@ -12,7 +12,7 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import './style.less';
 import { Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
-import withDeviceSize from '../imageHocs/withDeviceSize';
+import withDeviceSize from '@eeacms/volto-eea-website-theme/hocs/withDeviceSize';
 
 /**
  * View image block class.
