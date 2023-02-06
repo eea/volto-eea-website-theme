@@ -59,7 +59,7 @@ function HeaderSearchPopUp({
           </div>
         </Container>
       </form>
-      {(activeView.description || activeView.buttonTitle) && (
+      {activeView.buttonTitle && (
         <div className="advanced-search">
           <Container>
             <p>{activeView.description}</p>

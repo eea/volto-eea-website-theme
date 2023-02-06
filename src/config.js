@@ -259,6 +259,9 @@ export const headerSearchBox = [
     isDefault: true,
     path: '/en/advanced-search',
     placeholder: 'Search...',
+    description:
+      'Looking for more information? Try searching the full EEA website content',
+    buttonTitle: 'Go to full site search',
   },
   {
     path: '/en/datahub',
