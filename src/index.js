@@ -53,6 +53,7 @@ const applyConfig = (config) => {
     homepage_view: 'Homepage view',
     homepage_inverse_view: 'Homepage white view',
   };
+
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
@@ -114,8 +115,13 @@ const applyConfig = (config) => {
     // Callout slate button
     config = installCallout(config);
 
-    // Remove blockquote slate button
+    // Remove blockquote, italic, strikethrough slate button from toolbarButtons
     config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
+      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+    );
+
+    // Remove blockquote, italic, strikethrough slate button from expandedToolbarButtons
+    config.settings.slate.expandedToolbarButtons = config.settings.slate.expandedToolbarButtons.filter(
       (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
     );
 
@@ -252,7 +258,7 @@ const applyConfig = (config) => {
     { value: 'tertiary', title: 'Tertiary' },
   ];
 
-  // Custom block styles
+  // Custom preset styles - content-box
   config.settings.previewText = '';
   config.settings.pluggableStyles = [
     ...(config.settings.pluggableStyles || []),
@@ -314,7 +320,7 @@ const applyConfig = (config) => {
     },
   ];
 
-  // Custom blocks
+  // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
 };
 
