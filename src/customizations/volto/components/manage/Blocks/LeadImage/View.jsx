@@ -7,19 +7,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { UniversalLink } from '@plone/volto/components';
 import cx from 'classnames';
+import { compose } from 'redux';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import './style.less';
 import { Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
+import withDeviceSize from '../imageHocs/withDeviceSize';
 
 /**
  * View image block class.
  * @class View
  * @extends Component
  */
-const View = ({ data, properties }) => {
+const View = (props) => {
+  const { data, properties } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const showCopyrightHovering = copyright?.length > 50;
+  const device = React.useMemo(() => props.device || {}, [props.device]);
+  const showCopyrightHovering = copyright?.length > 50 || device === 'mobile';
 
   const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);
@@ -121,4 +125,4 @@ View.propTypes = {
   properties: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default View;
+export default compose(withDeviceSize)(React.memo(View));
