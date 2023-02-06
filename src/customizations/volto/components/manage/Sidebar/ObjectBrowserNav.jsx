@@ -74,7 +74,17 @@ const ObjectBrowserNav = ({
                 key={item['@id']}
                 content={
                   <>
-                    <Icon name={homeSVG} size="18px" />{' '}
+                    {item['@type'] === 'Image' && (
+                      <Image
+                        style={{
+                          marginLeft: 'auto',
+                          marginRight: 'auto',
+                          marginBottom: '5px',
+                        }}
+                        src={`${item?.getURL}/@@images/image/mini`}
+                      />
+                    )}
+                    <Icon name={homeSVG} size="18px" />
                     {flattenToAppURL(item['@id'])} ( {item['@type']})
                   </>
                 }
@@ -82,7 +92,7 @@ const ObjectBrowserNav = ({
                   <span>
                     {item['@type'] === 'Image' ? (
                       <Image
-                        src={`${item?.getURL}/@@images/image`}
+                        src={`${item?.getURL}/@@images/image/icon`}
                         style={{
                           marginRight: '10px',
                           maxHeight: '24px',
