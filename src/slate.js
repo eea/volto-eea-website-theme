@@ -5,8 +5,8 @@ import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import { Icon } from '@plone/volto/components';
 import { Editor, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
-import { isBlockActive } from '@plone/volto-slate/utils';
 
+import formatClearIcon from '@plone/volto/icons/format-clear.svg';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import alignLeftIcon from '@plone/volto/icons/align-left.svg';
 import alignRightIcon from '@plone/volto/icons/align-right.svg';
@@ -18,15 +18,26 @@ import smallIcon from './icons/small.svg';
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
   const [, [, path]] = levels;
-  Transforms.setNodes(editor, { styleName: format }, { at: path });
-  console.log(editor.children);
+  Transforms.setNodes(
+    editor,
+    { styleName: format },
+    {
+      at: path,
+    },
+  );
   return;
+};
+
+const isBlockClassActive = (editor, format) => {
+  const levels = Array.from(Editor.levels(editor, editor.selection));
+  const [, [node]] = levels;
+  return node.styleName === format;
 };
 
 function BlockClassButton({ format, icon, ...props }) {
   const editor = useSlate();
 
-  const isActive = isBlockActive(editor, format);
+  const isActive = isBlockClassActive(editor, format);
 
   const handleMouseDown = React.useCallback(
     (event) => {
@@ -46,10 +57,40 @@ function BlockClassButton({ format, icon, ...props }) {
   );
 }
 
+const clearFormatting = (editor) => {
+  Transforms.setNodes(editor, {
+    type: 'p',
+    styleName: null,
+  });
+  Transforms.unwrapNodes(editor, {
+    match: (n) => n.type && n.type !== 'p',
+    mode: 'all',
+    split: false,
+  });
+};
+
+const ClearFormattingButton = ({ icon, ...props }) => {
+  const editor = useSlate();
+
+  const handleMouseDown = React.useCallback(
+    (event) => {
+      event.preventDefault();
+      clearFormatting(editor);
+    },
+    [editor],
+  );
+
+  return <ToolbarButton {...props} onMouseDown={handleMouseDown} icon={icon} />;
+};
+
 export default function installSlate(config) {
   if (config.settings.slate) {
     // Callout slate button
     config = installCallout(config);
+
+    config.settings.slate.buttons.clearformatting = (props) => (
+      <ClearFormattingButton title="Clear formatting" icon={formatClearIcon} />
+    );
 
     // Remove blockquote, italic, strikethrough slate button from toolbarButtons
     config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
