@@ -8,8 +8,12 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
+import { MarkElementButton } from '@plone/volto-slate/editor/ui';
+import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import contentBoxSVG from './icons/content-box.svg';
+import lightIcon from './icons/light.svg';
+import smallIcon from './icons/small.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import { List } from 'semantic-ui-react';
 
@@ -19,6 +23,24 @@ const applyConfig = (config) => {
     ...eea,
     ...(config.settings.eea || {}),
   };
+
+  // Insert scripts on Error pages
+  if (config.settings?.serverConfig?.extractScripts) {
+    config.settings.serverConfig.extractScripts.errorPages = true;
+  }
+
+  // Disable tags on View
+  config.settings.showTags = false;
+
+  // Enable Title block
+  config.blocks.blocksConfig.title.restricted = false;
+
+  // Enable description block (also for cypress)
+  config.blocks.blocksConfig.description.restricted = false;
+  config.blocks.requiredBlocks = [];
+
+  // Date format for EU
+  config.settings.dateLocale = 'en-gb';
 
   // Custom Homepage layouts
   config.views.layoutViews = {
@@ -31,6 +53,7 @@ const applyConfig = (config) => {
     homepage_view: 'Homepage view',
     homepage_inverse_view: 'Homepage white view',
   };
+
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
@@ -89,6 +112,99 @@ const applyConfig = (config) => {
   ];
 
   if (config.settings.slate) {
+    // Callout slate button
+    config = installCallout(config);
+
+    // Remove blockquote, italic, strikethrough slate button from toolbarButtons
+    config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
+      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+    );
+
+    // Remove blockquote, italic, strikethrough slate button from expandedToolbarButtons
+    config.settings.slate.expandedToolbarButtons = config.settings.slate.expandedToolbarButtons.filter(
+      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+    );
+
+    // Remove 'underline' and 'italic' hotkeys
+    config.settings.slate.hotkeys = Object.keys(config.settings.slate.hotkeys)
+      .filter((item) => !['mod+u', 'mod+i'].includes(item))
+      .reduce((out, key) => {
+        out[key] = config.settings.slate.hotkeys[key];
+        return out;
+      }, {});
+
+    // Small button
+    if (!config.settings.slate.toolbarButtons.includes('small')) {
+      config.settings.slate.elements.small = ({ children }) => (
+        <small>{children}</small>
+      );
+
+      config.settings.slate.buttons.small = (props) => (
+        <MarkElementButton
+          title="Small"
+          format="small"
+          icon={smallIcon}
+          {...props}
+        />
+      );
+
+      config.settings.slate.inlineElements = [
+        ...config.settings.slate.inlineElements,
+        'small',
+      ];
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons.slice(0, 1),
+        'small',
+        ...config.settings.slate.toolbarButtons.slice(1),
+      ];
+
+      config.settings.slate.hotkeys['mod+s'] = {
+        format: 'small',
+        type: 'inline',
+      };
+    }
+
+    // Light button
+    if (!config.settings.slate.toolbarButtons.includes('light')) {
+      config.settings.slate.elements.light = ({ children }) => (
+        <span className="fw-light">{children}</span>
+      );
+
+      config.settings.slate.buttons.light = (props) => (
+        <MarkElementButton
+          title="Light"
+          format="light"
+          icon={lightIcon}
+          {...props}
+        />
+      );
+
+      config.settings.slate.inlineElements = [
+        ...config.settings.slate.inlineElements,
+        'light',
+      ];
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons.slice(0, 1),
+        'light',
+        ...config.settings.slate.toolbarButtons.slice(1),
+      ];
+
+      config.settings.slate.hotkeys['mod+l'] = {
+        format: 'light',
+        type: 'inline',
+      };
+    }
+
+    // Clear formatting
+    if (!config.settings.slate.toolbarButtons.includes('clearformatting')) {
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'clearformatting',
+      ];
+    }
+
     // Align Slate Lists to EEA Design System
     config.settings.slate.elements.ul = ({ attributes, children }) => (
       <List bulleted as="ul" {...attributes}>
@@ -127,11 +243,6 @@ const applyConfig = (config) => {
           label: 'Tertiary',
           icon: () => <Icon name={paintSVG} size="18px" />,
         },
-        {
-          cssClass: 'bordered',
-          label: 'Bordered',
-          icon: () => <Icon name={paintSVG} size="18px" />,
-        },
       ],
     };
   }
@@ -140,15 +251,14 @@ const applyConfig = (config) => {
   config.settings.available_colors = eea.colors;
 
   // Site theme colors
-
   config.settings.themeColors = [
-    { value: 'default', title: 'Default' },
+    { value: undefined, title: 'No theme' },
     { value: 'primary', title: 'Primary' },
     { value: 'secondary', title: 'Secondary' },
     { value: 'tertiary', title: 'Tertiary' },
   ];
 
-  // Custom block styles
+  // Custom preset styles - content-box
   config.settings.previewText = '';
   config.settings.pluggableStyles = [
     ...(config.settings.pluggableStyles || []),
@@ -210,7 +320,7 @@ const applyConfig = (config) => {
     },
   ];
 
-  // Custom blocks
+  // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
 };
 
