@@ -6,7 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { hasBlocksData, flattenHTMLToAppURL } from '@plone/volto/helpers';
-import { Image, Grid } from 'semantic-ui-react';
+import { Image } from 'semantic-ui-react';
 import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
 import { EventDetails } from '@plone/volto/components';
 import './style.less';
