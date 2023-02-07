@@ -8,9 +8,13 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import { Icon } from '@plone/volto/components';
-import { MarkElementButton } from '@plone/volto-slate/editor/ui';
+import { MarkElementButton, BlockButton } from '@plone/volto-slate/editor/ui';
 import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import paintSVG from '@plone/volto/icons/paint.svg';
+import alignLeftIcon from '@plone/volto/icons/align-left.svg';
+import alignRightIcon from '@plone/volto/icons/align-right.svg';
+import alignCenterIcon from '@plone/volto/icons/align-center.svg';
+import alignJustifyIcon from '@plone/volto/icons/align-justify.svg';
 import contentBoxSVG from './icons/content-box.svg';
 import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
@@ -197,14 +201,6 @@ const applyConfig = (config) => {
       };
     }
 
-    // Clear formatting
-    if (!config.settings.slate.toolbarButtons.includes('clearformatting')) {
-      config.settings.slate.toolbarButtons = [
-        ...config.settings.slate.toolbarButtons,
-        'clearformatting',
-      ];
-    }
-
     // Align Slate Lists to EEA Design System
     config.settings.slate.elements.ul = ({ attributes, children }) => (
       <List bulleted as="ul" {...attributes}>
@@ -245,6 +241,141 @@ const applyConfig = (config) => {
         },
       ],
     };
+
+    // Text Align buttons
+
+    // Align left
+    if (!config.settings.slate.toolbarButtons.includes('alignLeft')) {
+      config.settings.slate.elements.alignLeft = ({ attributes, children }) => (
+        <p {...attributes} className="text-left">
+          {children}
+        </p>
+      );
+
+      config.settings.slate.buttons.alignLeft = (props) => (
+        <BlockButton
+          format="alignLeft"
+          icon={alignLeftIcon}
+          title="Align left"
+          {...props}
+        />
+      );
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'separator',
+        'alignLeft',
+      ];
+
+      config.settings.slate.expandedToolbarButtons = [
+        ...config.settings.slate.expandedToolbarButtons,
+        'separator',
+        'alignLeft',
+      ];
+    }
+
+    // Align center
+    if (!config.settings.slate.toolbarButtons.includes('alignCenter')) {
+      config.settings.slate.elements.alignCenter = ({
+        attributes,
+        children,
+      }) => (
+        <p {...attributes} className="text-center">
+          {children}
+        </p>
+      );
+
+      config.settings.slate.buttons.alignCenter = (props) => (
+        <BlockButton
+          format="alignCenter"
+          icon={alignCenterIcon}
+          title="Align center"
+          {...props}
+        />
+      );
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'alignCenter',
+      ];
+
+      config.settings.slate.expandedToolbarButtons = [
+        ...config.settings.slate.expandedToolbarButtons,
+        'alignCenter',
+      ];
+    }
+
+    // Align right
+    if (!config.settings.slate.toolbarButtons.includes('alignRight')) {
+      config.settings.slate.elements.alignRight = ({
+        attributes,
+        children,
+      }) => (
+        <p {...attributes} className="text-right">
+          {children}
+        </p>
+      );
+
+      config.settings.slate.buttons.alignRight = (props) => (
+        <BlockButton
+          format="alignRight"
+          icon={alignRightIcon}
+          title="Align right"
+          {...props}
+        />
+      );
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'alignRight',
+      ];
+
+      config.settings.slate.expandedToolbarButtons = [
+        ...config.settings.slate.expandedToolbarButtons,
+        'alignRight',
+      ];
+    }
+
+    // Align justify
+    if (!config.settings.slate.toolbarButtons.includes('alignJustify')) {
+      config.settings.slate.elements.alignJustify = ({
+        attributes,
+        children,
+      }) => (
+        <p {...attributes} className="text-justify">
+          {children}
+        </p>
+      );
+
+      config.settings.slate.buttons.alignJustify = (props) => (
+        <BlockButton
+          format="alignJustify"
+          icon={alignJustifyIcon}
+          title="Align justify"
+          {...props}
+        />
+      );
+
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'alignJustify',
+        'separator',
+      ];
+
+      config.settings.slate.expandedToolbarButtons = [
+        ...config.settings.slate.expandedToolbarButtons,
+        'alignJustify',
+        'separator',
+      ];
+    }
+
+    // Clear formatting
+    if (!config.settings.slate.toolbarButtons.includes('clearformatting')) {
+      config.settings.slate.toolbarButtons = [
+        ...config.settings.slate.toolbarButtons,
+        'clearformatting',
+      ];
+    }
   }
 
   // Custom block-style colors
