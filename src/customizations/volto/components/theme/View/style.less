@@ -1,5 +1,17 @@
+@type: 'extra';
+@element: 'custom';
+
+@import (multiple, reference, optional) '../../theme.config';
+
 .event-view-box {
   position: relative;
   top: -5vh;
   right: 0vw;
+}
+
+@media only screen and (max-width: @largestMobileScreen) {
+  .event-view-box aside {
+    float: none !important;
+    margin-left: 0 !important;
+  }
 }
