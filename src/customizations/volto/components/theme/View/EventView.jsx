@@ -10,6 +10,7 @@ import { Image } from 'semantic-ui-react';
 import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
 import { EventDetails } from '@plone/volto/components';
 import './style.less';
+
 const EventTextfieldView = ({ content }) => (
   <React.Fragment>
     {content.title && <h1 className="documentFirstHeading">{content.title}</h1>}
