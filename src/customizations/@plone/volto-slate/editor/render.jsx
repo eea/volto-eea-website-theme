@@ -14,6 +14,7 @@ export const Element = ({ element, attributes = {}, extras, ...rest }) => {
   const { elements } = slate;
   const El = elements[element.type] || elements['default'];
 
+  // CUSTOMIZATION Code fix
   const attrs = Object.keys(attributes || {}).reduce(
     (acc, k) => {
       if (!isEmpty(attributes[k])) {
@@ -27,6 +28,7 @@ export const Element = ({ element, attributes = {}, extras, ...rest }) => {
     },
     element.styleName ? { className: element.styleName } : {},
   );
+  // END CUSTOMIZATION
 
   attrs.ref = attributes?.ref; // never remove the ref
 

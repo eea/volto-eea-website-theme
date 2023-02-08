@@ -29,6 +29,7 @@ const toggleBlockClassFormat = (editor, format) => {
 };
 
 const isBlockClassActive = (editor, format) => {
+  if (!editor.selection) return false;
   const levels = Array.from(Editor.levels(editor, editor.selection));
   const [, [node]] = levels;
   return node.styleName === format;
