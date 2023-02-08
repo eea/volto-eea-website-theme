@@ -258,7 +258,7 @@ export const headerSearchBox = [
   {
     isDefault: true,
     path: '/en/advanced-search',
-    placeholder: 'Search...',
+    placeholder: 'Search or ask your question...',
     description: 'For more search options',
     buttonTitle: 'Go to advanced search',
   },
