@@ -10,7 +10,7 @@ import { compose } from 'redux';
  * will apear on pages that shouldn't have it.
  * For example, if the current page is /datatable (that has the draft background) and then we go to Content Types page,
  * the review_state and id will be the same as the ones from /datatable, so the draft background will still be present. By checking
- * if the pathname from (from withRouter) is different than 'login' or 'controlpanel', we decide if the draft backgound is present or not.
+ * if the pathname from (from withRouter) is different than 'login' or 'controlpanel', we decide if the draft backgound can be present or not.
  * @param {Object} props
  * @returns
  */
