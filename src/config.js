@@ -259,16 +259,15 @@ export const headerSearchBox = [
     isDefault: true,
     path: '/en/advanced-search',
     placeholder: 'Search...',
-    description:
-      'Looking for more information? Try searching the full EEA website content',
-    buttonTitle: 'Go to full site search',
+    description: 'For more search options',
+    buttonTitle: 'Go to advanced search',
   },
   {
     path: '/en/datahub',
     placeholder: 'Search Datahub...',
     description:
-      'Looking for more information? Try searching the full EEA website content',
-    buttonTitle: 'Go to full site search',
+      'Looking for more information?',
+    buttonTitle: 'Go to advanced search',
   },
 ];
 
