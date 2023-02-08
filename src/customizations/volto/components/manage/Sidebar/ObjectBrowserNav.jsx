@@ -71,6 +71,7 @@ const ObjectBrowserNav = ({
           >
             <span title={`${item['@id']} (${item['@type']})`}>
               <Popup
+                hoverable
                 key={item['@id']}
                 content={
                   <>
