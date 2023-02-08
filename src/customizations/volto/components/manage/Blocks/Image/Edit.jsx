@@ -3,24 +3,37 @@
  * @module components/manage/Blocks/Image/Edit
  */
 
+<<<<<<< HEAD
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+=======
+import React from 'react';
+>>>>>>> prepare alt image mandatory
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { readAsDataURL } from 'promise-file-reader';
-import { Button, Dimmer, Input, Loader, Message } from 'semantic-ui-react';
+import {
+  Button,
+  Dimmer,
+  Input,
+  Loader,
+  Message,
+  Icon as IconSemantic,
+} from 'semantic-ui-react';
 import { defineMessages, injectIntl } from 'react-intl';
 import loadable from '@loadable/component';
 import cx from 'classnames';
-import { isEqual } from 'lodash';
 
 import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
-import { Icon as IconSemantic } from 'semantic-ui-react';
-import { withBlockExtensions } from '@plone/volto/helpers';
 import { createContent, getContent } from '@plone/volto/actions';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
-import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers';
+import {
+  flattenToAppURL,
+  getBaseUrl,
+  withBlockExtensions,
+} from '@plone/volto/helpers';
+import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
 
 import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
@@ -30,6 +43,11 @@ import clearSVG from '@plone/volto/icons/clear.svg';
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
+<<<<<<< HEAD
+=======
+
+import './style.less';
+>>>>>>> prepare alt image mandatory
 
 const Dropzone = loadable(() => import('react-dropzone'));
 
