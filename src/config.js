@@ -265,8 +265,7 @@ export const headerSearchBox = [
   {
     path: '/en/datahub',
     placeholder: 'Search Datahub...',
-    description:
-      'Looking for more information?',
+    description: 'Looking for more information?',
     buttonTitle: 'Go to advanced search',
   },
 ];
