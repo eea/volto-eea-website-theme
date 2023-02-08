@@ -260,15 +260,28 @@ export const headerSearchBox = [
     path: '/en/advanced-search',
     placeholder: 'Search...',
     description:
-      'Looking for more information? Try searching the full EEA website content',
-    buttonTitle: 'Go to full site search',
+      'Looking for more information? Try searching the EEA Advanced Search',
+    buttonTitle: 'Go to EEA Advanced Search',
+    searchSuggestions: {
+      suggestionsTitle: 'Try our suggestions',
+      suggestions: [
+        'What is PFAS?',
+        'Which transport mode has the lowest pollution?',
+        'Which countries use most renewable energy?',
+        'How many premature deaths are attributed to PM2.5?',
+        'How many premature deaths are attributed to air pollution?',
+        'How much have new cars co2 emissions decreased?',
+        'What countries had the highest land take in the EEA-39?',
+        'How many people are exposed to air pollution?',
+      ],
+    },
   },
   {
     path: '/en/datahub',
     placeholder: 'Search Datahub...',
     description:
-      'Looking for more information? Try searching the full EEA website content',
-    buttonTitle: 'Go to full site search',
+      'Looking for more information? Try searching the EEA Advanced Search',
+    buttonTitle: 'Go to EEA Advanced Search',
   },
 ];
 
