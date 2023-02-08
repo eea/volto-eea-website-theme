@@ -219,16 +219,10 @@ export default function installSlate(config) {
     // Text Align buttons
 
     // Align left
-    if (!config.settings.slate.toolbarButtons.includes('alignLeft')) {
-      // config.settings.slate.elements.alignLeft = ({ attributes, children }) => (
-      //   <p {...attributes} className="text-left">
-      //     {children}
-      //   </p>
-      // );
-
-      config.settings.slate.buttons.alignLeft = (props) => (
+    if (!config.settings.slate.toolbarButtons.includes('text-left')) {
+      config.settings.slate.buttons['text-left'] = (props) => (
         <BlockClassButton
-          format="alignLeft"
+          format="text-left"
           icon={alignLeftIcon}
           title="Align left"
           {...props}
@@ -238,30 +232,21 @@ export default function installSlate(config) {
       config.settings.slate.toolbarButtons = [
         ...config.settings.slate.toolbarButtons,
         'separator',
-        'alignLeft',
+        'text-left',
       ];
 
       config.settings.slate.expandedToolbarButtons = [
         ...config.settings.slate.expandedToolbarButtons,
         'separator',
-        'alignLeft',
+        'text-left',
       ];
     }
 
     // Align center
-    if (!config.settings.slate.toolbarButtons.includes('alignCenter')) {
-      // config.settings.slate.elements.alignCenter = ({
-      //   attributes,
-      //   children,
-      // }) => (
-      //   <p {...attributes} className="text-center">
-      //     {children}
-      //   </p>
-      // );
-
-      config.settings.slate.buttons.alignCenter = (props) => (
+    if (!config.settings.slate.toolbarButtons.includes('text-center')) {
+      config.settings.slate.buttons['text-center'] = (props) => (
         <BlockClassButton
-          format="alignCenter"
+          format="text-center"
           icon={alignCenterIcon}
           title="Align center"
           {...props}
@@ -270,29 +255,20 @@ export default function installSlate(config) {
 
       config.settings.slate.toolbarButtons = [
         ...config.settings.slate.toolbarButtons,
-        'alignCenter',
+        'text-center',
       ];
 
       config.settings.slate.expandedToolbarButtons = [
         ...config.settings.slate.expandedToolbarButtons,
-        'alignCenter',
+        'text-center',
       ];
     }
 
     // Align right
-    if (!config.settings.slate.toolbarButtons.includes('alignRight')) {
-      // config.settings.slate.elements.alignRight = ({
-      //   attributes,
-      //   children,
-      // }) => (
-      //   <p {...attributes} className="text-right">
-      //     {children}
-      //   </p>
-      // );
-
-      config.settings.slate.buttons.alignRight = (props) => (
+    if (!config.settings.slate.toolbarButtons.includes('text-right')) {
+      config.settings.slate.buttons['text-right'] = (props) => (
         <BlockClassButton
-          format="alignRight"
+          format="text-right"
           icon={alignRightIcon}
           title="Align right"
           {...props}
@@ -301,29 +277,20 @@ export default function installSlate(config) {
 
       config.settings.slate.toolbarButtons = [
         ...config.settings.slate.toolbarButtons,
-        'alignRight',
+        'text-right',
       ];
 
       config.settings.slate.expandedToolbarButtons = [
         ...config.settings.slate.expandedToolbarButtons,
-        'alignRight',
+        'text-right',
       ];
     }
 
     // Align justify
-    if (!config.settings.slate.toolbarButtons.includes('alignJustify')) {
-      // config.settings.slate.elements.alignJustify = ({
-      //   attributes,
-      //   children,
-      // }) => (
-      //   <p {...attributes} className="text-justify">
-      //     {children}
-      //   </p>
-      // );
-
-      config.settings.slate.buttons.alignJustify = (props) => (
+    if (!config.settings.slate.toolbarButtons.includes('text-justify')) {
+      config.settings.slate.buttons['text-justify'] = (props) => (
         <BlockClassButton
-          format="alignJustify"
+          format="text-justify"
           icon={alignJustifyIcon}
           title="Align justify"
           {...props}
@@ -332,13 +299,13 @@ export default function installSlate(config) {
 
       config.settings.slate.toolbarButtons = [
         ...config.settings.slate.toolbarButtons,
-        'alignJustify',
+        'text-justify',
         'separator',
       ];
 
       config.settings.slate.expandedToolbarButtons = [
         ...config.settings.slate.expandedToolbarButtons,
-        'alignJustify',
+        'text-justify',
         'separator',
       ];
     }
