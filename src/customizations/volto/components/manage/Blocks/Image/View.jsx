@@ -10,20 +10,46 @@ import { UniversalLink } from '@plone/volto/components';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
 import { withBlockExtensions } from '@plone/volto/helpers';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { getContent } from '@plone/volto/actions';
+import { flattenToAppURL } from '@plone/volto/helpers';
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 /**
  * View image block class.
  * @class View
  * @extends Component
  */
-export const View = (props) => {
-  const { data, detached } = props;
+export const View = ({ data, detached, id, getContent, scales }) => {
+  const [viewLoaded, setViewLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (data.url) {
+      getContent(flattenToAppURL(data.url), null, id);
+    }
+  }, [data.url]);
+
+  React.useEffect(() => {
+    // using this method because the image is not loaded
+    // correctly on a fresh render of the page
+    // volto loses the parent container of
+    // the image and the image is thrown randomly in the page
+    // not happening if navigating to the page from routes (not fresh render)
+    setViewLoaded(true);
+  }, []);
+
+  const { size = 'l', align = 'center', alt = '' } = data;
+
+  const scaledImage = data?.url
+    ? setImageSize(data?.url, scales, align === 'full' ? 'h' : size)
+    : '';
+
   const href = data?.href?.[0]?.['@id'] || '';
   const { copyright, copyrightIcon, copyrightPosition } = data;
   // const [hovering, setHovering] = React.useState(false);
-  const [viewLoaded, setViewLoaded] = React.useState(false);
 
   const showCopyright = data?.size === 'l' || !data.size;
 
@@ -60,42 +86,19 @@ export const View = (props) => {
                 {(() => {
                   const image = (
                     <>
-                      <img
-                        className={cx({
-                          'full-width': data.align === 'full',
-                          large: data.size === 'l',
-                          medium: data.size === 'm',
-                          small: data.size === 's',
-                        })}
-                        src={
-                          isInternalURL(data.url)
-                            ? // Backwards compat in the case that the block is storing the full server URL
-                              (() => {
-                                if (data.align === 'full')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/huge`;
-                                if (data.size === 'l')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/great`;
-                                if (data.size === 'm')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/preview`;
-                                if (data.size === 's')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/mini`;
-                                return `${flattenToAppURL(
-                                  data.url,
-                                )}/@@images/image/great`;
-                              })()
-                            : data.url
-                        }
-                        alt={data.alt || ''}
-                        loading="lazy"
-                      />
+                      <LazyLoadComponent>
+                        <img
+                          className={cx({
+                            'full-width': data.align === 'full',
+                            large: data.size === 'l',
+                            medium: data.size === 'm',
+                            small: data.size === 's',
+                          })}
+                          src={scaledImage?.download}
+                          alt={data.alt || ''}
+                          loading="lazy"
+                        />
+                      </LazyLoadComponent>
                       <div
                         // onMouseEnter={() => setHovering(true)}
                         // onMouseLeave={() => setHovering(false)}
@@ -154,4 +157,13 @@ View.propTypes = {
   data: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default withBlockExtensions(React.memo(View));
+export default compose(
+  withBlockExtensions,
+  connect(
+    (state, ownProps) => ({
+      request: state.content.subrequests[ownProps.id] || {},
+      scales: state.content.subrequests[ownProps.id]?.data?.image?.scales,
+    }),
+    { getContent },
+  ),
+)(View);

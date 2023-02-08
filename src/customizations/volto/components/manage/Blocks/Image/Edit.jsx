@@ -17,20 +17,20 @@ import { isEqual } from 'lodash';
 import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
 import { Icon as IconSemantic } from 'semantic-ui-react';
 import { withBlockExtensions } from '@plone/volto/helpers';
-import { createContent } from '@plone/volto/actions';
+import { createContent, getContent } from '@plone/volto/actions';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
-import {
-  flattenToAppURL,
-  getBaseUrl,
-  isInternalURL,
-} from '@plone/volto/helpers';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers';
+
+import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
+
 const Dropzone = loadable(() => import('react-dropzone'));
 
 const messages = defineMessages({
@@ -98,6 +98,13 @@ class Edit extends Component {
         url: nextProps.content['@id'],
         alt: '',
       });
+    }
+    if (this.props?.data?.url !== nextProps?.data?.url) {
+      this.props.getContent(
+        flattenToAppURL(nextProps.data.url),
+        null,
+        nextProps.block,
+      );
     }
   }
 
@@ -234,7 +241,7 @@ class Edit extends Component {
    * @returns {string} Markup for the component.
    */
   render() {
-    const { data } = this.props;
+    const { data, scales } = this.props;
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
@@ -242,6 +249,9 @@ class Edit extends Component {
 
     const showCopyright = data?.size === 'l' || !data.size;
 
+    const scaledImage = data?.url
+      ? setImageSize(data?.url, scales, data.align === 'full' ? 'h' : data.size)
+      : '';
     return (
       <div
         className={cx(
@@ -249,7 +259,7 @@ class Edit extends Component {
           {
             center: !Boolean(data.align),
           },
-          data.align,
+          data.align && scaledImage ? data.align : 'center',
         )}
       >
         <div
@@ -260,46 +270,31 @@ class Edit extends Component {
               medium: data.size === 'm',
               small: data.size === 's',
             },
-            data?.align ? data?.align : '',
+            data?.align && scaledImage ? data?.align : 'center',
           )}
         >
-          {data.url ? (
+          {!data.alt && scaledImage && (
+            <span className="alt-text-warning">
+              Alt text not set. It will default to 'image-block'. Please add Alt
+              text if you want a specific one.
+            </span>
+          )}
+          {scaledImage ? (
             <>
-              <img
-                className={cx({
-                  'full-width': data.align === 'full',
-                  large: data.size === 'l',
-                  medium: data.size === 'm',
-                  small: data.size === 's',
-                })}
-                src={
-                  isInternalURL(data.url)
-                    ? // Backwards compat in the case that the block is storing the full server URL
-                      (() => {
-                        if (data.align === 'full')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/huge`;
-                        if (data.size === 'l')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/great`;
-                        if (data.size === 'm')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/preview`;
-                        if (data.size === 's')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/mini`;
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/great`;
-                      })()
-                    : data.url
-                }
-                alt={data.alt || ''}
-              />
+              <LazyLoadComponent>
+                <img
+                  height={'auto'}
+                  width={data.align === 'center' ? '100%' : scaledImage?.width}
+                  className={cx({
+                    'full-width': data.align === 'full',
+                    large: data.size === 'l',
+                    medium: data.size === 'm',
+                    small: data.size === 's',
+                  })}
+                  src={scaledImage?.download}
+                  alt={data.alt || ''}
+                />
+              </LazyLoadComponent>
               <div className={`copyright-wrapper ${copyrightPosition}`}>
                 {copyright && showCopyright ? (
                   <Copyright copyrightPosition={copyrightPosition}>
@@ -424,7 +419,8 @@ export default compose(
     (state, ownProps) => ({
       request: state.content.subrequests[ownProps.block] || {},
       content: state.content.subrequests[ownProps.block]?.data,
+      scales: state.content.subrequests[ownProps.id]?.data?.image?.scales,
     }),
-    { createContent },
+    { createContent, getContent },
   ),
 )(Edit);
