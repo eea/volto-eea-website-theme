@@ -33,7 +33,9 @@ function HeaderSearchPopUp({
   } = activeView;
   const { suggestionsTitle, suggestions, maxToShow } = searchSuggestions || {};
   const [text, setText] = React.useState('');
-  const visibleSuggestions = getRandomItems(suggestions, maxToShow);
+  const visibleSuggestions = suggestions
+    ? getRandomItems(suggestions, maxToShow)
+    : [];
 
   useClickOutside({ targetRefs: [nodeRef, ...triggerRefs], callback: onClose });
 
