@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/mouse-events-have-key-events */
 /**
  * View image block.
  * @module components/manage/Blocks/Image/View
@@ -8,11 +9,9 @@ import PropTypes from 'prop-types';
 import { UniversalLink } from '@plone/volto/components';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
-import { compose } from 'redux';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
-import withDeviceSize from '@eeacms/volto-eea-website-theme/hocs/withDeviceSize';
 import './style.less';
 
 /**
@@ -24,20 +23,12 @@ export const View = (props) => {
   const { data, detached } = props;
   const href = data?.href?.[0]?.['@id'] || '';
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const device = React.useMemo(() => props.device || {}, [props.device]);
-  const showCopyrightHovering = copyright?.length > 50 || device === 'mobile';
-
   const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);
 
   const showCopyright = data?.size === 'l' || !data.size;
 
   React.useEffect(() => {
-    // using this method because the image is not loaded
-    // correctly on a fresh render of the page
-    // volto loses the parent container of
-    // the image and the image is thrown randomly in the page
-    // not happening if navigating to the page from routes (not fresh render)
     setViewLoaded(true);
   }, []);
 
@@ -97,12 +88,8 @@ export const View = (props) => {
                         loading="lazy"
                       />
                       <div
-                        onMouseEnter={() =>
-                          showCopyrightHovering ? setHovering(true) : ''
-                        }
-                        onMouseLeave={() =>
-                          showCopyrightHovering ? setHovering(false) : ''
-                        }
+                        onMouseEnter={() => setHovering(true)}
+                        onMouseLeave={() => setHovering(false)}
                         className={`copyright-image ${
                           copyrightPosition ? copyrightPosition : 'left'
                         }`}
@@ -112,16 +99,10 @@ export const View = (props) => {
                             <Copyright.Icon>
                               <Icon className={copyrightIcon} />
                             </Copyright.Icon>
-                            {showCopyrightHovering ? (
-                              <>
-                                {hovering && (
-                                  <div className="copyright-hover-container">
-                                    <Copyright.Text>{copyright}</Copyright.Text>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <Copyright.Text>{copyright}</Copyright.Text>
+                            {hovering && (
+                              <div className="copyright-hover-container">
+                                <Copyright.Text>{copyright}</Copyright.Text>
+                              </div>
                             )}
                           </Copyright>
                         ) : (
@@ -161,4 +142,4 @@ View.propTypes = {
   data: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default compose(withDeviceSize, withBlockExtensions)(React.memo(View));
+export default withBlockExtensions(React.memo(View));

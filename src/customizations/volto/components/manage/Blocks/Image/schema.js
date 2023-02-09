@@ -47,12 +47,17 @@ export function ImageSchema({ formData, intl }) {
         title: 'Default',
         fields: [...(formData.url ? ['url', 'alt', 'align', 'size'] : [])],
       },
-      {
-        id: 'copyright',
-        title: 'Copyright',
-        fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
-      },
-      ...(formData.url
+
+      ...(!formData?.size || formData?.size === 'l'
+        ? [
+            {
+              id: 'copyright',
+              title: 'Copyright',
+              fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
+            },
+          ]
+        : []),
+      ...(formData?.url
         ? [
             {
               id: 'link_settings',
