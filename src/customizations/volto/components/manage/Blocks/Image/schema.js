@@ -130,6 +130,6 @@ export function ImageSchema({ formData, intl }) {
         defaultValue: 'left',
       },
     },
-    required: [''],
+    required: ['alt'],
   };
 }
