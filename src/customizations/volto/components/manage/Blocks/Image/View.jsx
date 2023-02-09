@@ -78,19 +78,6 @@ export const View = ({ data, detached, id, getContent, scales }) => {
                         loading="lazy"
                       />
                     </LazyLoadComponent>
-                    {/* <LazyLoadImage
-                      className={cx({
-                        'full-width': align === 'full',
-                        large: size === 'l',
-                        medium: size === 'm',
-                        small: size === 's',
-                      })}
-                      alt={alt || ''}
-                      effect="blur"
-                      height={'auto'}
-                      src={scaledImage?.download} // use normal <img> attributes as props
-                      width={align === 'center' ? '100%' : scaledImage?.width}
-                    /> */}
                     <div className="copyright-image">
                       {copyright ? (
                         <Copyright copyrightPosition={copyrightPosition}>
