@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getContent } from '@plone/volto/actions';
 import { flattenToAppURL } from '@plone/volto/helpers';
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 /**
  * View image block class.
@@ -33,11 +34,6 @@ export const View = ({ data, detached, id, getContent, scales }) => {
   }, [data.url]);
 
   React.useEffect(() => {
-    // using this method because the image is not loaded
-    // correctly on a fresh render of the page
-    // volto loses the parent container of
-    // the image and the image is thrown randomly in the page
-    // not happening if navigating to the page from routes (not fresh render)
     setViewLoaded(true);
   }, []);
 
@@ -67,11 +63,22 @@ export const View = ({ data, detached, id, getContent, scales }) => {
               {(() => {
                 const image = (
                   <div className="image-block">
-                    <img
-                      style={{
-                        height: 'auto',
-                        width: align === 'center' ? '100%' : scaledImage?.width,
-                      }}
+                    <LazyLoadComponent>
+                      <img
+                        height={'auto'}
+                        width={align === 'center' ? '100%' : scaledImage?.width}
+                        className={cx({
+                          'full-width': align === 'full',
+                          large: size === 'l',
+                          medium: size === 'm',
+                          small: size === 's',
+                        })}
+                        alt={alt || ''}
+                        src={scaledImage?.download}
+                        loading="lazy"
+                      />
+                    </LazyLoadComponent>
+                    {/* <LazyLoadImage
                       className={cx({
                         'full-width': align === 'full',
                         large: size === 'l',
@@ -79,9 +86,11 @@ export const View = ({ data, detached, id, getContent, scales }) => {
                         small: size === 's',
                       })}
                       alt={alt || ''}
-                      src={scaledImage?.download}
-                      loading="lazy"
-                    />
+                      effect="blur"
+                      height={'auto'}
+                      src={scaledImage?.download} // use normal <img> attributes as props
+                      width={align === 'center' ? '100%' : scaledImage?.width}
+                    /> */}
                     <div className="copyright-image">
                       {copyright ? (
                         <Copyright copyrightPosition={copyrightPosition}>

@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@eeacms/volto-eea-design-system": "^1.0.0-alpha.15",
+    "react-lazy-load-image-component": "1.5.6",
     "volto-subsites": "*"
   },
   "devDependencies": {

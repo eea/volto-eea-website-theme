@@ -30,6 +30,7 @@ import {
   withBlockExtensions,
 } from '@plone/volto/helpers';
 import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -84,20 +85,12 @@ const Edit = (props) => {
   }, [props.scales, props.data.url]);
 
   React.useEffect(() => {
-    // using this method because the image is not loaded
-    // correctly on a fresh render of the page
-    // volto loses the parent container of
-    // the image and the image is thrown randomly in the page
-    // not happening if navigating to the page from routes (not fresh render)
     setViewLoaded(true);
   }, []);
 
   const onUploadImage = (e) => {
     e.stopPropagation();
     const file = e.target.files[0];
-    // setState({
-    //   uploading: true,
-    // });
     setUploading(true);
 
     readAsDataURL(file).then((data) => {
@@ -152,14 +145,6 @@ const Edit = (props) => {
     });
   };
 
-  // /**
-  //  * Keydown handler on Variant Menu Form
-  //  * This is required since the ENTER key is already mapped to a onKeyDown
-  //  * event and needs to be overriden with a child onKeyDown.
-  //  * @method onKeyDownVariantMenuForm
-  //  * @param {Object} e Event object
-  //  * @returns {undefined}
-  //  */
   const onKeyDownVariantMenuForm = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -207,21 +192,21 @@ const Edit = (props) => {
         >
           {scaledImage ? (
             <div className="image-block">
-              <img
-                style={{
-                  height: 'auto',
-                  width: align === 'center' ? '100%' : scaledImage?.width,
-                }}
-                className={cx({
-                  'full-width': align === 'full',
-                  large: size === 'l',
-                  medium: size === 'm',
-                  small: size === 's',
-                })}
-                src={scaledImage?.download}
-                alt={alt || ''}
-                loading="lazy"
-              />
+              <LazyLoadComponent>
+                <img
+                  height={'auto'}
+                  width={align === 'center' ? '100%' : scaledImage?.width}
+                  className={cx({
+                    'full-width': align === 'full',
+                    large: size === 'l',
+                    medium: size === 'm',
+                    small: size === 's',
+                  })}
+                  src={scaledImage?.download}
+                  alt={alt || ''}
+                  loading="lazy" //even if lazy is used, it's not working properly. That's why we use the LazyLoadComponent
+                />
+              </LazyLoadComponent>
               <div className="copyright-image">
                 {copyright ? (
                   <Copyright copyrightPosition={copyrightPosition}>
