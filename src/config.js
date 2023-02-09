@@ -262,6 +262,7 @@ export const headerSearchBox = [
     description: 'For more search options',
     buttonTitle: 'Go to advanced search',
     searchSuggestions: {
+      maxToShow: 6,
       suggestionsTitle: 'Try our suggestions',
       suggestions: [
         'What is PFAS?',
@@ -270,6 +271,8 @@ export const headerSearchBox = [
         'How many premature deaths are attributed to PM2.5?',
         'How many premature deaths are attributed to air pollution?',
         'How much have new cars co2 emissions decreased?',
+        'What countries had the highest land take in the EEA-39?',
+        'How many people are exposed to air pollution?',
       ],
     },
   },

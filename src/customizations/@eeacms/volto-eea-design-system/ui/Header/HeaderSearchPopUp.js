@@ -4,6 +4,12 @@ import { withRouter } from 'react-router-dom';
 import { useClickOutside } from '@eeacms/volto-eea-design-system/helpers';
 import config from '@plone/volto/registry';
 
+const getRandomItems = (arr, max) => {
+  return arr.slice(0, max).map(function () {
+    return this.splice(Math.floor(Math.random() * this.length), 1)[0];
+  }, arr.slice());
+};
+
 function HeaderSearchPopUp({
   history,
   location,
@@ -25,9 +31,9 @@ function HeaderSearchPopUp({
     description,
     searchSuggestions,
   } = activeView;
-  const { suggestionsTitle, suggestions } = searchSuggestions || {};
-
+  const { suggestionsTitle, suggestions, maxToShow } = searchSuggestions || {};
   const [text, setText] = React.useState('');
+  const visibleSuggestions = getRandomItems(suggestions, maxToShow);
 
   useClickOutside({ targetRefs: [nodeRef, ...triggerRefs], callback: onClose });
 
@@ -80,7 +86,7 @@ function HeaderSearchPopUp({
               {suggestionsTitle && <h4>{suggestionsTitle}</h4>}
 
               <List>
-                {suggestions.map((item, i) => {
+                {visibleSuggestions.map((item, i) => {
                   return (
                     <List.Item key={i} onClick={() => onClickHandler(item)}>
                       {item}
