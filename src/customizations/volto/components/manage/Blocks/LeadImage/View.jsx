@@ -7,12 +7,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { UniversalLink } from '@plone/volto/components';
 import cx from 'classnames';
-import { compose } from 'redux';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import './style.less';
 import { Icon } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
-import withDeviceSize from '@eeacms/volto-eea-website-theme/hocs/withDeviceSize';
 
 /**
  * View image block class.
@@ -22,8 +20,6 @@ import withDeviceSize from '@eeacms/volto-eea-website-theme/hocs/withDeviceSize'
 const View = (props) => {
   const { data, properties } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const device = React.useMemo(() => props.device || {}, [props.device]);
-  const showCopyrightHovering = copyright?.length > 50 || device === 'mobile';
 
   const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);
@@ -60,12 +56,8 @@ const View = (props) => {
                         alt={properties.image_caption || ''}
                       />
                       <div
-                        onMouseEnter={() =>
-                          showCopyrightHovering ? setHovering(true) : ''
-                        }
-                        onMouseLeave={() =>
-                          showCopyrightHovering ? setHovering(false) : ''
-                        }
+                        onMouseEnter={() => setHovering(true)}
+                        onMouseLeave={() => setHovering(false)}
                         className={`copyright-image ${
                           copyrightPosition ? copyrightPosition : 'left'
                         }`}
@@ -75,16 +67,10 @@ const View = (props) => {
                             <Copyright.Icon>
                               <Icon className={copyrightIcon} />
                             </Copyright.Icon>
-                            {showCopyrightHovering ? (
-                              <>
-                                {hovering && (
-                                  <div className="copyright-hover-container">
-                                    <Copyright.Text>{copyright}</Copyright.Text>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <Copyright.Text>{copyright}</Copyright.Text>
+                            {hovering && (
+                              <div className="copyright-hover-container">
+                                <Copyright.Text>{copyright}</Copyright.Text>
+                              </div>
                             )}
                           </Copyright>
                         ) : (
@@ -125,4 +111,4 @@ View.propTypes = {
   properties: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default compose(withDeviceSize)(React.memo(View));
+export default React.memo(View);
