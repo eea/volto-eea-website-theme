@@ -70,6 +70,7 @@ export function ImageSchema({ formData, intl }) {
       },
       alt: {
         title: intl.formatMessage(messages.AltText),
+        default: 'image block',
         description: (
           <>
             <a
@@ -128,6 +129,6 @@ export function ImageSchema({ formData, intl }) {
         defaultValue: 'left',
       },
     },
-    required: ['alt'],
+    required: [''],
   };
 }
