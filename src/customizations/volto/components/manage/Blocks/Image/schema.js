@@ -70,7 +70,11 @@ export function ImageSchema({ formData, intl }) {
       },
       alt: {
         title: intl.formatMessage(messages.AltText),
+<<<<<<< HEAD
         default: 'image-block',
+=======
+        default: 'image block',
+>>>>>>> proper lazyload img
         description: (
           <>
             <a
@@ -130,6 +134,6 @@ export function ImageSchema({ formData, intl }) {
         defaultValue: 'left',
       },
     },
-    required: ['alt'],
+    required: [''],
   };
 }
