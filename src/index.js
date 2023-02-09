@@ -2,6 +2,7 @@ import * as eea from './config';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
+import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import SubsiteClass from './components/theme/SubsiteClass';
@@ -48,7 +49,10 @@ const applyConfig = (config) => {
     homepage_view: 'Homepage view',
     homepage_inverse_view: 'Homepage white view',
   };
-
+  config.views.errorViews = {
+    ...config.views.errorViews,
+    '404': NotFound,
+  };
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';

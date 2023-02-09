@@ -261,12 +261,25 @@ export const headerSearchBox = [
     placeholder: 'Search or ask your question...',
     description: 'For more search options',
     buttonTitle: 'Go to advanced search',
+    searchSuggestions: {
+      maxToShow: 6,
+      suggestionsTitle: 'Try our suggestions',
+      suggestions: [
+        'What is PFAS?',
+        'Which transport mode has the lowest pollution?',
+        'Which countries use most renewable energy?',
+        'How many premature deaths are attributed to PM2.5?',
+        'How many premature deaths are attributed to air pollution?',
+        'How much have new cars co2 emissions decreased?',
+        'What countries had the highest land take in the EEA-39?',
+        'How many people are exposed to air pollution?',
+      ],
+    },
   },
   {
     path: '/en/datahub',
     placeholder: 'Search Datahub...',
-    description:
-      'Looking for more information?',
+    description: 'Looking for more information?',
     buttonTitle: 'Go to advanced search',
   },
 ];
