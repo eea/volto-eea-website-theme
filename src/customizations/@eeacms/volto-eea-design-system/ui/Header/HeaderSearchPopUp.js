@@ -5,9 +5,11 @@ import { useClickOutside } from '@eeacms/volto-eea-design-system/helpers';
 import config from '@plone/volto/registry';
 
 const getRandomItems = (arr, max) => {
-  return arr?.slice(0, max).map(function () {
-    return this.splice(Math.floor(Math.random() * this.length), 1)[0];
-  }, arr.slice());
+  return (
+    arr?.slice(0, max).map(function () {
+      return this.splice(Math.floor(Math.random() * this.length), 1)[0];
+    }, arr.slice()) || []
+  );
 };
 
 function HeaderSearchPopUp({
