@@ -23,7 +23,6 @@ const DraftBackground = (props) => {
   const draftClass = `wf-state-${props.review_state}`;
   const razzleDraft =
     runtimeConfig['RAZZLE_DISABLE_DRAFT_WATERMARK'] || 'default';
-  console.log({ razzleDraft });
   const isReviewableStateComponent =
     props.review_state &&
     !props.pathname.match('login') &&
