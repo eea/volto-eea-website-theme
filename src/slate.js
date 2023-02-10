@@ -6,7 +6,6 @@ import { Icon } from '@plone/volto/components';
 import { Editor, Transforms, Text } from 'slate';
 import { useSlate } from 'slate-react';
 
-import formatClearIcon from '@plone/volto/icons/format-clear.svg';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import alignLeftIcon from '@plone/volto/icons/align-left.svg';
 import alignRightIcon from '@plone/volto/icons/align-right.svg';
@@ -14,6 +13,7 @@ import alignCenterIcon from '@plone/volto/icons/align-center.svg';
 import alignJustifyIcon from '@plone/volto/icons/align-justify.svg';
 import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
+import clearIcon from './icons/eraser.svg';
 
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
@@ -66,7 +66,7 @@ const clearFormatting = (editor) => {
         // console.log('node', n, p);
         return Text.isText(n);
       },
-      // at: [0],   // uncomment if you want everything to be cleared
+      at: [0], // uncomment if you want everything to be cleared
     }),
   );
 
@@ -111,7 +111,7 @@ export default function installSlate(config) {
     config = installCallout(config);
 
     config.settings.slate.buttons.clearformatting = (props) => (
-      <ClearFormattingButton title="Clear formatting" icon={formatClearIcon} />
+      <ClearFormattingButton title="Clear formatting" icon={clearIcon} />
     );
 
     // Remove blockquote, italic, strikethrough slate button from toolbarButtons
