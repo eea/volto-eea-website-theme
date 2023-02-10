@@ -4,6 +4,7 @@ import './draft.css';
 import { BodyClass } from '@plone/volto/helpers';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
+import { runtimeConfig } from '@plone/volto/runtime_config';
 
 /**
  * The review_state and id don't change everytime the page is changed and because of that the draft background
@@ -20,7 +21,9 @@ import { compose } from 'redux';
  */
 const DraftBackground = (props) => {
   const draftClass = `wf-state-${props.review_state}`;
-  const razzleDraft = process.env.RAZZLE_DISABLE_DRAFT_WATERMARK || 'default';
+  const razzleDraft =
+    runtimeConfig['RAZZLE_DISABLE_DRAFT_WATERMARK'] || 'default';
+  console.log({ razzleDraft });
   const isReviewableStateComponent =
     props.review_state &&
     !props.pathname.match('login') &&
