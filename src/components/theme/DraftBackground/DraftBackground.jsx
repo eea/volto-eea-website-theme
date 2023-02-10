@@ -26,7 +26,7 @@ const DraftBackground = (props) => {
     !props.pathname.match('login') &&
     !props.pathname.match('controlpanel');
 
-  const obj = {
+  const draftOptions = {
     'Hide-All': 'wf-state-published',
     'Hide-No-Workflow': isReviewableStateComponent
       ? draftClass
@@ -34,7 +34,7 @@ const DraftBackground = (props) => {
     default: draftClass,
   };
 
-  return <BodyClass className={obj[razzleDraft]} />;
+  return <BodyClass className={draftOptions[razzleDraft]} />;
 };
 
 export default compose(
