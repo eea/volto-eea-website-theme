@@ -3,7 +3,7 @@ import { List } from 'semantic-ui-react';
 import { MarkElementButton, ToolbarButton } from '@plone/volto-slate/editor/ui';
 import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import { Icon } from '@plone/volto/components';
-import { Editor, Transforms } from 'slate';
+import { Editor, Transforms, Text } from 'slate';
 import { useSlate } from 'slate-react';
 
 import formatClearIcon from '@plone/volto/icons/format-clear.svg';
@@ -59,6 +59,27 @@ function BlockClassButton({ format, icon, ...props }) {
 }
 
 const clearFormatting = (editor) => {
+  const sn = Array.from(
+    Editor.nodes(editor, {
+      mode: 'lowest',
+      match: (n, p) => {
+        // console.log('node', n, p);
+        return Text.isText(n);
+      },
+      // at: [0],   // uncomment if you want everything to be cleared
+    }),
+  );
+
+  // console.log('sn', sn);
+
+  sn.forEach(([n, at]) => {
+    const toRemove = Object.keys(n).filter((k) => k.startsWith('style-'));
+    if (toRemove.length) {
+      Transforms.unsetNodes(editor, toRemove, { at });
+      // console.log('unset', n, at, toRemove);
+    }
+  });
+
   Transforms.setNodes(editor, {
     type: 'p',
     styleName: null,
