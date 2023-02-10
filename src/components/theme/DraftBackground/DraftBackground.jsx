@@ -7,6 +7,10 @@ import { compose } from 'redux';
 import { runtimeConfig } from '@plone/volto/runtime_config';
 import { flattenToAppURL } from '@plone/volto/helpers';
 
+const removeTrailingSlash = (str) => {
+  return str.replace(/\/+$/, '');
+};
+
 /**
  * The review_state and id don't change everytime the page is changed and because of that the draft background
  * will apear on pages that shouldn't have it. The RAZZLE_DISABLE_DRAFT_WATERMARK varible from ENV file should have two possible values:
@@ -25,9 +29,9 @@ const DraftBackground = (props) => {
   const razzleDraft =
     runtimeConfig['RAZZLE_DISABLE_DRAFT_WATERMARK'] || 'default';
   const isReviewableStateComponent =
-    props.review_state && props.contentId === props.pathname;
+    props.review_state &&
+    props.contentId === removeTrailingSlash(props.pathname);
 
-  console.log(props.contentId, props.pathname);
   const draftOptions = {
     'Hide-All': 'wf-state-published',
     'Hide-No-Workflow': isReviewableStateComponent
