@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Input, List } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import { useClickOutside } from '@eeacms/volto-eea-design-system/helpers';
 import config from '@plone/volto/registry';
 
 const getRandomItems = (arr, max) => {
-  return arr.slice(0, max).map(function () {
-    return this.splice(Math.floor(Math.random() * this.length), 1)[0];
-  }, arr.slice());
+  return (
+    arr?.slice(0, max).map(function () {
+      return this.splice(Math.floor(Math.random() * this.length), 1)[0];
+    }, arr.slice()) || []
+  );
 };
 
 function HeaderSearchPopUp({
@@ -32,10 +34,15 @@ function HeaderSearchPopUp({
     searchSuggestions,
   } = activeView;
   const { suggestionsTitle, suggestions, maxToShow } = searchSuggestions || {};
+
   const [text, setText] = React.useState('');
-  const visibleSuggestions = suggestions
-    ? getRandomItems(suggestions, maxToShow)
-    : [];
+  const [visibleSuggestions, setVisibileSuggestions] = React.useState(
+    getRandomItems(suggestions, maxToShow),
+  );
+
+  useEffect(() => {
+    setVisibileSuggestions(getRandomItems(suggestions, maxToShow));
+  }, [maxToShow, suggestions]);
 
   useClickOutside({ targetRefs: [nodeRef, ...triggerRefs], callback: onClose });
 
