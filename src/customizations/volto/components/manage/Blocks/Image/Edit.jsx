@@ -192,6 +192,12 @@ const Edit = (props) => {
         >
           {scaledImage ? (
             <div className="image-block">
+              {!alt && (
+                <span className="alt-text-warning">
+                  Alt text not set. It will default to 'image-block'. Please add
+                  Alt text if you want a specific one.
+                </span>
+              )}
               <LazyLoadComponent>
                 <img
                   height={'auto'}
@@ -203,7 +209,7 @@ const Edit = (props) => {
                     small: size === 's',
                   })}
                   src={scaledImage?.download}
-                  alt={alt || ''}
+                  alt={alt || 'image-block'}
                   loading="lazy" //even if lazy is used, it's not working properly. That's why we use the LazyLoadComponent
                 />
               </LazyLoadComponent>
