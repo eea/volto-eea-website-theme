@@ -3,10 +3,9 @@ import { List } from 'semantic-ui-react';
 import { MarkElementButton, ToolbarButton } from '@plone/volto-slate/editor/ui';
 import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import { Icon } from '@plone/volto/components';
-import { Editor, Transforms } from 'slate';
+import { Editor, Transforms, Text } from 'slate';
 import { useSlate } from 'slate-react';
 
-import formatClearIcon from '@plone/volto/icons/format-clear.svg';
 import paintSVG from '@plone/volto/icons/paint.svg';
 import alignLeftIcon from '@plone/volto/icons/align-left.svg';
 import alignRightIcon from '@plone/volto/icons/align-right.svg';
@@ -14,6 +13,7 @@ import alignCenterIcon from '@plone/volto/icons/align-center.svg';
 import alignJustifyIcon from '@plone/volto/icons/align-justify.svg';
 import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
+import clearIcon from './icons/eraser.svg';
 
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
@@ -59,6 +59,27 @@ function BlockClassButton({ format, icon, ...props }) {
 }
 
 const clearFormatting = (editor) => {
+  const sn = Array.from(
+    Editor.nodes(editor, {
+      mode: 'lowest',
+      match: (n, p) => {
+        // console.log('node', n, p);
+        return Text.isText(n);
+      },
+      at: [0], // uncomment if you want everything to be cleared
+    }),
+  );
+
+  // console.log('sn', sn);
+
+  sn.forEach(([n, at]) => {
+    const toRemove = Object.keys(n).filter((k) => k.startsWith('style-'));
+    if (toRemove.length) {
+      Transforms.unsetNodes(editor, toRemove, { at });
+      // console.log('unset', n, at, toRemove);
+    }
+  });
+
   Transforms.setNodes(editor, {
     type: 'p',
     styleName: null,
@@ -90,7 +111,7 @@ export default function installSlate(config) {
     config = installCallout(config);
 
     config.settings.slate.buttons.clearformatting = (props) => (
-      <ClearFormattingButton title="Clear formatting" icon={formatClearIcon} />
+      <ClearFormattingButton title="Clear formatting" icon={clearIcon} />
     );
 
     // Remove blockquote, italic, strikethrough slate button from toolbarButtons
