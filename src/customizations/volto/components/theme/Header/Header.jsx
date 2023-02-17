@@ -101,10 +101,9 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
             className=""
             viewportWidth={width}
           >
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
               className="content"
-              role="menu"
-              tabIndex="0"
               onClick={(evt) => evt.stopPropagation()}
               onKeyDown={(evt) => evt.stopPropagation()}
             >
@@ -116,8 +115,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
                 href="https://europa.eu/european-union/contact/institutions-bodies_en"
                 target="_blank"
                 rel="noreferrer"
-                role="option"
-                aria-selected="false"
+                onKeyDown={(evt) => evt.stopPropagation()}
               >
                 See all EU institutions and bodies
               </a>
@@ -140,6 +138,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
                       className="site"
                       target="_blank"
                       rel="noreferrer"
+                      onKeyDown={(evt) => evt.stopPropagation()}
                     >
                       {item.title}
                     </a>
