@@ -210,7 +210,14 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
             {!!subsite && subsite.title && (
               <UniversalLink item={subsite} className="subsite-logo">
-                {subsite.title}
+                {subsite.subsite_logo ? (
+                  <Image
+                    src={subsite.subsite_logo.scales.mini.download}
+                    alt={subsite.title}
+                  />
+                ) : (
+                  subsite.title
+                )}
               </UniversalLink>
             )}
           </div>
