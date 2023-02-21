@@ -118,6 +118,9 @@ const applyConfig = (config) => {
   // Custom block-style colors
   config.settings.available_colors = eea.colors;
 
+  // hide language dropdown by default
+  config.settings.hasLanguageDropdown = false;
+
   // Site theme colors
   config.settings.themeColors = [
     { value: undefined, title: 'No theme' },

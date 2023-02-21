@@ -153,7 +153,10 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           <Header.TopDropdownMenu
             id="language-switcher"
             className="item"
-            hasLanguageDropdown={config.settings.supportedLanguages.length > 1}
+            hasLanguageDropdown={
+              config.settings.supportedLanguages.length > 1 &&
+              config.settings.hasLanguageDropdown
+            }
             text={`${language.toUpperCase()}`}
             mobileText={`${language.toUpperCase()}`}
             icon={
