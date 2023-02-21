@@ -20,6 +20,9 @@ const applyConfig = (config) => {
     ...(config.settings.eea || {}),
   };
 
+  // #160689 Redirect contact-form to contact-us
+  config.settings.contactForm = '/contact';
+
   // Insert scripts on Error pages
   if (config.settings?.serverConfig?.extractScripts) {
     config.settings.serverConfig.extractScripts.errorPages = true;
@@ -114,6 +117,9 @@ const applyConfig = (config) => {
 
   // Custom block-style colors
   config.settings.available_colors = eea.colors;
+
+  // hide language dropdown by default
+  config.settings.hasLanguageDropdown = false;
 
   // Site theme colors
   config.settings.themeColors = [
