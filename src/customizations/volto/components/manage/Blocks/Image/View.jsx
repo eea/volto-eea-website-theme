@@ -101,7 +101,7 @@ export const View = (props) => {
                             <div
                               className={cx(
                                 'copyright-hover-container',
-                                !hovering ? 'visualHidden' : '',
+                                !hovering ? 'hiddenStructure' : '',
                               )}
                             >
                               <Copyright.Text>{copyright}</Copyright.Text>
