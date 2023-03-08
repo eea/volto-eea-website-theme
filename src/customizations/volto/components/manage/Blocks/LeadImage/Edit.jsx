@@ -11,7 +11,6 @@ import cx from 'classnames';
 import { Message } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
-import './style.less';
 import { Icon } from 'semantic-ui-react';
 import { LeadImageSidebar, SidebarPortal } from '@plone/volto/components';
 import { flattenToAppURL } from '@plone/volto/helpers';

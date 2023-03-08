@@ -31,7 +31,6 @@ import clearSVG from '@plone/volto/icons/clear.svg';
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
-import './style.less';
 const Dropzone = loadable(() => import('react-dropzone'));
 
 const messages = defineMessages({

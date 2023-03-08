@@ -12,7 +12,6 @@ import cx from 'classnames';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
-import './style.less';
 
 /**
  * View image block class.
@@ -99,11 +98,14 @@ export const View = (props) => {
                             <Copyright.Icon>
                               <Icon className={copyrightIcon} />
                             </Copyright.Icon>
-                            {hovering && (
-                              <div className="copyright-hover-container">
-                                <Copyright.Text>{copyright}</Copyright.Text>
-                              </div>
-                            )}
+                            <div
+                              className={cx(
+                                'copyright-hover-container',
+                                !hovering ? 'visualHidden' : '',
+                              )}
+                            >
+                              <Copyright.Text>{copyright}</Copyright.Text>
+                            </div>
                           </Copyright>
                         ) : (
                           ''
