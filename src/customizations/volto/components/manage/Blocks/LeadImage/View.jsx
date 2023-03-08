@@ -57,7 +57,7 @@ const View = (props) => {
                       <div
                         onMouseEnter={() => setHovering(true)}
                         onMouseLeave={() => setHovering(false)}
-                        className={`copyright-image ${
+                        className={`copyright-wrapper ${
                           copyrightPosition ? copyrightPosition : 'left'
                         }`}
                       >

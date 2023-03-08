@@ -118,7 +118,7 @@ class Edit extends Component {
                 }
                 alt={data.image_caption || ''}
               />
-              <div className="copyright-image">
+              <div className="copyright-wrapper">
                 {copyright ? (
                   <Copyright copyrightPosition={copyrightPosition}>
                     <Copyright.Icon>
