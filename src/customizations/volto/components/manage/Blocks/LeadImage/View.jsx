@@ -20,7 +20,7 @@ const View = (props) => {
   const { data, properties } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
 
-  const [hovering, setHovering] = React.useState(false);
+  // const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);
 
   React.useEffect(() => {
@@ -55,8 +55,8 @@ const View = (props) => {
                         alt={properties.image_caption || ''}
                       />
                       <div
-                        onMouseEnter={() => setHovering(true)}
-                        onMouseLeave={() => setHovering(false)}
+                        // onMouseEnter={() => setHovering(true)}
+                        // onMouseLeave={() => setHovering(false)}
                         className={`copyright-wrapper ${
                           copyrightPosition ? copyrightPosition : 'left'
                         }`}
@@ -66,14 +66,14 @@ const View = (props) => {
                             <Copyright.Icon>
                               <Icon className={copyrightIcon} />
                             </Copyright.Icon>
-                            <div
-                              className={cx(
-                                'copyright-hover-container',
-                                !hovering ? 'hiddenStructure' : '',
-                              )}
-                            >
-                              <Copyright.Text>{copyright}</Copyright.Text>
-                            </div>
+                            {/*<div*/}
+                            {/*  className={cx(*/}
+                            {/*    'copyright-hover-container',*/}
+                            {/*    !hovering ? 'hiddenStructure' : '',*/}
+                            {/*  )}*/}
+                            {/*>*/}
+                            <Copyright.Text>{copyright}</Copyright.Text>
+                            {/*</div>*/}
                           </Copyright>
                         ) : (
                           ''

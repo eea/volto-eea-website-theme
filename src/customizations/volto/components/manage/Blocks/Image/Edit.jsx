@@ -253,25 +253,34 @@ class Edit extends Component {
         )}
       >
         <div
-          className={`image-block-container ${data?.align ? data?.align : ''}`}
+          className={cx(
+            'image-block-container',
+            {
+              large: data.size === 'l',
+              medium: data.size === 'm',
+              small: data.size === 's',
+            },
+            data?.align ? data?.align : '',
+          )}
         >
           {data.url ? (
             <>
               <img
                 className={cx({
                   'full-width': data.align === 'full',
-                  large: data.size === 'l',
-                  medium: data.size === 'm',
-                  small: data.size === 's',
                 })}
                 src={
                   isInternalURL(data.url)
                     ? // Backwards compat in the case that the block is storing the full server URL
                       (() => {
+                        if (data.align === 'full')
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/huge`;
                         if (data.size === 'l')
                           return `${flattenToAppURL(
                             data.url,
-                          )}/@@images/image/large`;
+                          )}/@@images/image/great`;
                         if (data.size === 'm')
                           return `${flattenToAppURL(
                             data.url,
@@ -280,7 +289,9 @@ class Edit extends Component {
                           return `${flattenToAppURL(
                             data.url,
                           )}/@@images/image/mini`;
-                        return `${flattenToAppURL(data.url)}/@@images/image`;
+                        return `${flattenToAppURL(
+                          data.url,
+                        )}/@@images/image/great`;
                       })()
                     : data.url
                 }

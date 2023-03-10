@@ -22,7 +22,7 @@ export const View = (props) => {
   const { data, detached } = props;
   const href = data?.href?.[0]?.['@id'] || '';
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const [hovering, setHovering] = React.useState(false);
+  // const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);
 
   const showCopyright = data?.size === 'l' || !data.size;
@@ -34,7 +34,7 @@ export const View = (props) => {
   return (
     <>
       {viewLoaded && (
-        <p
+        <div
           className={cx(
             'block image align',
             {
@@ -45,9 +45,15 @@ export const View = (props) => {
           )}
         >
           <div
-            className={`image-block-container ${
-              data?.align ? data?.align : ''
-            }`}
+            className={cx(
+              'image-block-container',
+              {
+                large: data.size === 'l',
+                medium: data.size === 'm',
+                small: data.size === 's',
+              },
+              data?.align ? data?.align : '',
+            )}
           >
             {data.url && (
               <>
@@ -57,18 +63,19 @@ export const View = (props) => {
                       <img
                         className={cx({
                           'full-width': data.align === 'full',
-                          large: data.size === 'l',
-                          medium: data.size === 'm',
-                          small: data.size === 's',
                         })}
                         src={
                           isInternalURL(data.url)
                             ? // Backwards compat in the case that the block is storing the full server URL
                               (() => {
+                                if (data.align === 'full')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/huge`;
                                 if (data.size === 'l')
                                   return `${flattenToAppURL(
                                     data.url,
-                                  )}/@@images/image`;
+                                  )}/@@images/image/great`;
                                 if (data.size === 'm')
                                   return `${flattenToAppURL(
                                     data.url,
@@ -79,7 +86,7 @@ export const View = (props) => {
                                   )}/@@images/image/mini`;
                                 return `${flattenToAppURL(
                                   data.url,
-                                )}/@@images/image`;
+                                )}/@@images/image/great`;
                               })()
                             : data.url
                         }
@@ -87,8 +94,8 @@ export const View = (props) => {
                         loading="lazy"
                       />
                       <div
-                        onMouseEnter={() => setHovering(true)}
-                        onMouseLeave={() => setHovering(false)}
+                        // onMouseEnter={() => setHovering(true)}
+                        // onMouseLeave={() => setHovering(false)}
                         className={`copyright-wrapper ${
                           copyrightPosition ? copyrightPosition : 'left'
                         }`}
@@ -98,14 +105,14 @@ export const View = (props) => {
                             <Copyright.Icon>
                               <Icon className={copyrightIcon} />
                             </Copyright.Icon>
-                            <div
-                              className={cx(
-                                'copyright-hover-container',
-                                !hovering ? 'hiddenStructure' : '',
-                              )}
-                            >
-                              <Copyright.Text>{copyright}</Copyright.Text>
-                            </div>
+                            {/*<div*/}
+                            {/*  className={cx(*/}
+                            {/*    'copyright-hover-container',*/}
+                            {/*    !hovering ? 'hiddenStructure' : '',*/}
+                            {/*  )}*/}
+                            {/*>*/}
+                            <Copyright.Text>{copyright}</Copyright.Text>
+                            {/*</div>*/}
                           </Copyright>
                         ) : (
                           ''
@@ -129,7 +136,7 @@ export const View = (props) => {
               </>
             )}
           </div>
-        </p>
+        </div>
       )}
     </>
   );
