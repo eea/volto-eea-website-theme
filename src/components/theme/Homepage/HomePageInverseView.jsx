@@ -5,7 +5,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import { DefaultView } from '@plone/volto/components/';
 
 import { BodyClass } from '@plone/volto/helpers';
@@ -22,6 +21,7 @@ const HomePageInverseView = ({ content }) => {
   return hasBlocksData(content) ? (
     <>
       <BodyClass className="homepage homepage-inverse" />
+      <h1 className="hiddenStructure">{content.title}</h1>
       <DefaultView content={content} />
     </>
   ) : null;
