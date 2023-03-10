@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Container, Input, List } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { useClickOutside } from '@eeacms/volto-eea-design-system/helpers';
 import config from '@plone/volto/registry';
 
@@ -63,8 +63,6 @@ function HeaderSearchPopUp({
   };
 
   const onClickHandler = (suggestion) => {
-    history.push(`${path}?q=${suggestion}`);
-
     if (window?.searchContext?.resetSearch) {
       window.searchContext.resetSearch({ searchTerm: suggestion });
     }
@@ -97,8 +95,13 @@ function HeaderSearchPopUp({
               <List>
                 {visibleSuggestions.map((item, i) => {
                   return (
-                    <List.Item key={i} onClick={() => onClickHandler(item)}>
-                      {item}
+                    <List.Item key={i}>
+                      <Link
+                        to={`${path}?q=${item}`}
+                        onClick={() => onClickHandler(item)}
+                      >
+                        {item}
+                      </Link>
                     </List.Item>
                   );
                 })}
