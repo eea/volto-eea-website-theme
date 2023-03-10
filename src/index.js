@@ -11,6 +11,7 @@ import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/them
 import { Icon } from '@plone/volto/components';
 import contentBoxSVG from './icons/content-box.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
+import okMiddleware from './middleware/ok';
 import installSlate from './slate';
 
 const applyConfig = (config) => {
@@ -83,12 +84,14 @@ const applyConfig = (config) => {
     config.widgets.views.widget.tags = TokenWidget;
   }
 
-  // voltoCustom.css express-middleware
+  // /voltoCustom.css express-middleware
+  // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
   if (__SERVER__) {
     const express = require('express');
     config.settings.expressMiddleware = [
       ...(config.settings.expressMiddleware || []),
       voltoCustomMiddleware(express),
+      okMiddleware(express),
     ];
   }
 
