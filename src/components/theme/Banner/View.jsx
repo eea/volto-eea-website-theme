@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -74,6 +74,7 @@ const Title = ({ config = {}, properties }) => {
 const View = (props) => {
   const { banner = {}, intl, location, types = [] } = props;
   const metadata = props.metadata || props.properties;
+  const popupRef = useRef(null);
   const {
     info = [],
     hideContentType,
@@ -135,11 +136,14 @@ const View = (props) => {
           <>
             {!hideShareButton && (
               <Popup
+                onMount={() => {
+                  popupRef.current.focus();
+                }}
                 className="share-popup"
                 content={() => (
                   <>
                     <p>{intl.formatMessage(messages.share_to)}</p>
-                    <div className="actions">
+                    <div tabIndex={0} className="actions" ref={popupRef}>
                       <Banner.Action
                         icon="ri-facebook-fill"
                         onClick={() => {
