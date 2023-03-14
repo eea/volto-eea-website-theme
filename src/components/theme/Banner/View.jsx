@@ -144,7 +144,7 @@ const View = (props) => {
                 content={() => (
                   <>
                     <p>{intl.formatMessage(messages.share_to)}</p>
-                    <div className="actions" ref={popupRef} id="popup-content">
+                    <div className="actions" ref={popupRef}>
                       <Banner.Action
                         icon="ri-facebook-fill"
                         onClick={() => {
