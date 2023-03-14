@@ -137,13 +137,14 @@ const View = (props) => {
             {!hideShareButton && (
               <Popup
                 onMount={() => {
-                  popupRef.current.focus();
+                  if (popupRef.current?.firstChild?.firstChild)
+                    popupRef.current.firstChild.firstChild.focus();
                 }}
                 className="share-popup"
                 content={() => (
                   <>
                     <p>{intl.formatMessage(messages.share_to)}</p>
-                    <div tabIndex={0} className="actions" ref={popupRef}>
+                    <div className="actions" ref={popupRef} id="popup-content">
                       <Banner.Action
                         icon="ri-facebook-fill"
                         onClick={() => {
