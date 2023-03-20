@@ -33,25 +33,13 @@ const messages = defineMessages({
     id: 'Created',
     defaultMessage: 'Created',
   },
-  created_on: {
-    id: 'Created on',
-    defaultMessage: 'Created on',
-  },
   published: {
     id: 'Published',
     defaultMessage: 'Published',
   },
-  published_on: {
-    id: 'Published on',
-    defaultMessage: 'Published on',
-  },
   modified: {
     id: 'Modified',
     defaultMessage: 'Modified',
-  },
-  modified_on: {
-    id: 'Modified on',
-    defaultMessage: 'Modified on',
   },
 });
 
@@ -202,19 +190,16 @@ const View = (props) => {
             type="date"
             label={intl.formatMessage(messages.created)}
             value={creationDate}
-            title={`${intl.formatMessage(messages.created_on)} {}`}
           />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.published)}
             value={publishingDate}
-            title={`${intl.formatMessage(messages.published_on)} {}`}
           />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.modified)}
             value={modificationDate}
-            title={`${intl.formatMessage(messages.modified_on)} {}`}
           />
           {info.map((item, index) => (
             <Banner.MetadataField
