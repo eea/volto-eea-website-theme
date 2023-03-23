@@ -5,7 +5,8 @@ import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
 import { startCase } from 'lodash';
 import qs from 'querystring';
-import { Popup, Icon } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
+import Popup from '@eeacms/volto-eea-design-system/ui/Popup/Popup';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import {
@@ -123,48 +124,47 @@ const View = (props) => {
         actions={
           <>
             {!hideShareButton && (
-              <Popup
-                onMount={() => {
-                  if (popupRef.current?.firstChild?.firstChild)
-                    popupRef.current.firstChild.firstChild.focus();
-                }}
-                className="share-popup"
-                content={() => (
-                  <>
-                    <p>{intl.formatMessage(messages.share_to)}</p>
-                    <div className="actions" ref={popupRef}>
-                      <Banner.Action
-                        icon="ri-facebook-fill"
-                        onClick={() => {
-                          sharePage(metadata['@id'], 'facebook');
-                        }}
-                      />
-                      <Banner.Action
-                        icon="ri-twitter-fill"
-                        onClick={() => {
-                          sharePage(metadata['@id'], 'twitter');
-                        }}
-                      />
-                      <Banner.Action
-                        icon="ri-linkedin-fill"
-                        onClick={() => {
-                          sharePage(metadata['@id'], 'linkedin');
-                        }}
-                      />
-                    </div>
-                  </>
-                )}
-                position="bottom center"
-                size="small"
-                trigger={
-                  <Banner.Action
-                    icon="ri-share-fill"
-                    title={intl.formatMessage(messages.share)}
-                    className="share"
-                    onClick={() => {}}
-                  />
-                }
-              />
+              <>
+                <Popup
+                  className={'share-popup'}
+                  trigger={
+                    <Banner.Action
+                      icon="ri-share-fill"
+                      title={intl.formatMessage(messages.share)}
+                      className="share"
+                      onClick={() => {}}
+                    />
+                  }
+                  content={
+                    <>
+                      <p>{intl.formatMessage(messages.share_to)}</p>
+                      <div className="actions" ref={popupRef}>
+                        <Banner.Action
+                          icon="ri-facebook-fill"
+                          title={'Facebook'}
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'facebook');
+                          }}
+                        />
+                        <Banner.Action
+                          icon="ri-twitter-fill"
+                          title={'Twitter'}
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'twitter');
+                          }}
+                        />
+                        <Banner.Action
+                          icon="ri-linkedin-fill"
+                          title={'Linked in'}
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'linkedin');
+                          }}
+                        />
+                      </div>
+                    </>
+                  }
+                />
+              </>
             )}
             {!hideDownloadButton && (
               <Banner.Action
