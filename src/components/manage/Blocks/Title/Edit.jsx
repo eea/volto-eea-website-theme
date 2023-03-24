@@ -10,6 +10,7 @@ import { Editor, createEditor, Transforms, Node, Range } from 'slate';
 import { ReactEditor, Editable, Slate, withReact } from 'slate-react';
 import config from '@plone/volto/registry';
 import { SidebarPortal } from '@plone/volto/components';
+import { BodyClass } from '@plone/volto/helpers';
 import InlineForm from '@plone/volto/components/manage/Form/InlineForm';
 import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
 import schema from './schema';
@@ -163,6 +164,7 @@ export const TitleBlockEdit = (props) => {
 
   return (
     <React.Fragment>
+      <BodyClass className="with-title-block" />
       <BannerView
         {...props}
         banner={{
