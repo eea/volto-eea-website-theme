@@ -141,21 +141,24 @@ const View = (props) => {
                       <div className="actions" ref={popupRef}>
                         <Banner.Action
                           icon="ri-facebook-fill"
-                          title={'Facebook'}
+                          title={'Share page to Facebook'}
+                          titleClass={'hiddenStructure'}
                           onClick={() => {
                             sharePage(metadata['@id'], 'facebook');
                           }}
                         />
                         <Banner.Action
                           icon="ri-twitter-fill"
-                          title={'Twitter'}
+                          title={'Share page to Twitter'}
+                          titleClass={'hiddenStructure'}
                           onClick={() => {
                             sharePage(metadata['@id'], 'twitter');
                           }}
                         />
                         <Banner.Action
                           icon="ri-linkedin-fill"
-                          title={'Linked in'}
+                          title={'Share page to Linkedin'}
+                          titleClass={'hiddenStructure'}
                           onClick={() => {
                             sharePage(metadata['@id'], 'linkedin');
                           }}
