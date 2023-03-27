@@ -8,6 +8,7 @@ import qs from 'querystring';
 import { Icon } from 'semantic-ui-react';
 import Popup from '@eeacms/volto-eea-design-system/ui/Popup/Popup';
 import { flattenToAppURL } from '@plone/volto/helpers';
+import config from '@plone/volto/registry';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import {
   getImageSource,
@@ -77,6 +78,9 @@ const View = (props) => {
     copyrightPosition,
     // contentType,
   } = props.data;
+  const copyrightPrefix =
+    config.blocks.blocksConfig.title.copyrightPrefix || '';
+
   // Set query parameters
   const parameters = useMemo(
     () => qs.parse(location.search.replace('?', '')) || {},
@@ -213,6 +217,7 @@ const View = (props) => {
         </Banner.Metadata>
         {copyright ? (
           <Copyright copyrightPosition={copyrightPosition}>
+            <Copyright.Prefix>{copyrightPrefix}</Copyright.Prefix>
             <Copyright.Icon>
               <Icon className={copyrightIcon} />
             </Copyright.Icon>
