@@ -78,6 +78,11 @@ const applyConfig = (config) => {
   config.blocks.blocksConfig.description.className =
     'documentDescription eea callout';
 
+  // Hero block copyright prefix
+  if (config.blocks.blocksConfig.hero) {
+    config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
+  }
+
   // Custom TokenWidget
   if (config.widgets.views) {
     config.widgets.views.id.subjects = TokenWidget;
