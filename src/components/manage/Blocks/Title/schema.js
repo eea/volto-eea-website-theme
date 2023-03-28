@@ -76,6 +76,18 @@ export default {
     },
     copyrightIcon: {
       title: 'Icon',
+      description: (
+        <>
+          Ex. ri-copyright-line. See{' '}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://remixicon.com/"
+          >
+            Remix Icon set
+          </a>
+        </>
+      ),
       default: 'ri-copyright-line',
     },
     copyrightPosition: {
