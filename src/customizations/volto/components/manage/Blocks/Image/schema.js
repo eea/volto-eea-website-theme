@@ -118,7 +118,7 @@ export function ImageSchema({ formData, intl }) {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://remixicon.com/"
+              href="https://eea.github.io/volto-eea-design-system/docs/webdev/Guidelines/iconography/#icon-set"
             >
               Remix Icon set
             </a>
