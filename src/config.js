@@ -15,7 +15,7 @@ import climateLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/ass
 // TODO: to be consolidated with headerLinks
 // Footer.jsx config options
 export const footerOpts = {
-  header: 'Thematic information platforms',
+  header: 'Environmental information systems',
   logosHeader: 'Managed by',
   contactHeader: 'Contact Us',
   actions: [
@@ -289,10 +289,10 @@ export const colors = [
   '#007B6C',
   '#005248',
   '#007B6C',
-  '#00A390',
-  '#00CCB4',
-  '#00F5D8',
-  '#85FFF1',
+  '#289588',
+  '#50B0A4',
+  '#78CAC0',
+  '#A0E5DC',
   '#C8FFF8',
   // Secondary & shades
   '#004B7F',
@@ -308,13 +308,13 @@ export const colors = [
   '#3D5265',
   '#4C677F',
   '#6989A5',
-  '#8EA6C2',
+  '#87A7C3',
   '#ACCAE5',
   '#DAE8F4',
   // Black & White shades
   '#000000',
   '#323232',
-  '#67696b',
+  '#747678',
   '#BCBEC0',
   '#E6E7E8',
   '#F9F9F9',

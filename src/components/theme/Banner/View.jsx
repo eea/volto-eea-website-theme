@@ -1,12 +1,14 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
 import { startCase } from 'lodash';
 import qs from 'querystring';
-import { Popup, Icon } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
+import Popup from '@eeacms/volto-eea-design-system/ui/Popup/Popup';
 import { flattenToAppURL } from '@plone/volto/helpers';
+import config from '@plone/volto/registry';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import {
   getImageSource,
@@ -33,25 +35,13 @@ const messages = defineMessages({
     id: 'Created',
     defaultMessage: 'Created',
   },
-  created_on: {
-    id: 'Created on',
-    defaultMessage: 'Created on',
-  },
   published: {
     id: 'Published',
     defaultMessage: 'Published',
   },
-  published_on: {
-    id: 'Published on',
-    defaultMessage: 'Published on',
-  },
   modified: {
     id: 'Modified',
     defaultMessage: 'Modified',
-  },
-  modified_on: {
-    id: 'Modified on',
-    defaultMessage: 'Modified on',
   },
 });
 
@@ -74,6 +64,7 @@ const Title = ({ config = {}, properties }) => {
 const View = (props) => {
   const { banner = {}, intl, location, types = [] } = props;
   const metadata = props.metadata || props.properties;
+  const popupRef = useRef(null);
   const {
     info = [],
     hideContentType,
@@ -87,6 +78,9 @@ const View = (props) => {
     copyrightPosition,
     // contentType,
   } = props.data;
+  const copyrightPrefix =
+    config.blocks.blocksConfig.title.copyrightPrefix || '';
+
   // Set query parameters
   const parameters = useMemo(
     () => qs.parse(location.search.replace('?', '')) || {},
@@ -134,44 +128,50 @@ const View = (props) => {
         actions={
           <>
             {!hideShareButton && (
-              <Popup
-                className="share-popup"
-                content={() => (
-                  <>
-                    <p>{intl.formatMessage(messages.share_to)}</p>
-                    <div className="actions">
-                      <Banner.Action
-                        icon="ri-facebook-fill"
-                        onClick={() => {
-                          sharePage(metadata['@id'], 'facebook');
-                        }}
-                      />
-                      <Banner.Action
-                        icon="ri-twitter-fill"
-                        onClick={() => {
-                          sharePage(metadata['@id'], 'twitter');
-                        }}
-                      />
-                      <Banner.Action
-                        icon="ri-linkedin-fill"
-                        onClick={() => {
-                          sharePage(metadata['@id'], 'linkedin');
-                        }}
-                      />
-                    </div>
-                  </>
-                )}
-                position="bottom center"
-                size="small"
-                trigger={
-                  <Banner.Action
-                    icon="ri-share-fill"
-                    title={intl.formatMessage(messages.share)}
-                    className="share"
-                    onClick={() => {}}
-                  />
-                }
-              />
+              <>
+                <Popup
+                  className={'share-popup'}
+                  trigger={
+                    <Banner.Action
+                      icon="ri-share-fill"
+                      title={intl.formatMessage(messages.share)}
+                      className="share"
+                      onClick={() => {}}
+                    />
+                  }
+                  content={
+                    <>
+                      <p>{intl.formatMessage(messages.share_to)}</p>
+                      <div className="actions" ref={popupRef}>
+                        <Banner.Action
+                          icon="ri-facebook-fill"
+                          title={'Share page to Facebook'}
+                          titleClass={'hiddenStructure'}
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'facebook');
+                          }}
+                        />
+                        <Banner.Action
+                          icon="ri-twitter-fill"
+                          title={'Share page to Twitter'}
+                          titleClass={'hiddenStructure'}
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'twitter');
+                          }}
+                        />
+                        <Banner.Action
+                          icon="ri-linkedin-fill"
+                          title={'Share page to Linkedin'}
+                          titleClass={'hiddenStructure'}
+                          onClick={() => {
+                            sharePage(metadata['@id'], 'linkedin');
+                          }}
+                        />
+                      </div>
+                    </>
+                  }
+                />
+              </>
             )}
             {!hideDownloadButton && (
               <Banner.Action
@@ -197,19 +197,16 @@ const View = (props) => {
             type="date"
             label={intl.formatMessage(messages.created)}
             value={creationDate}
-            title={`${intl.formatMessage(messages.created_on)} {}`}
           />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.published)}
             value={publishingDate}
-            title={`${intl.formatMessage(messages.published_on)} {}`}
           />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.modified)}
             value={modificationDate}
-            title={`${intl.formatMessage(messages.modified_on)} {}`}
           />
           {info.map((item, index) => (
             <Banner.MetadataField
@@ -220,6 +217,7 @@ const View = (props) => {
         </Banner.Metadata>
         {copyright ? (
           <Copyright copyrightPosition={copyrightPosition}>
+            <Copyright.Prefix>{copyrightPrefix}</Copyright.Prefix>
             <Copyright.Icon>
               <Icon className={copyrightIcon} />
             </Copyright.Icon>

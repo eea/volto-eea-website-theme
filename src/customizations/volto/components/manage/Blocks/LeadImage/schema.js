@@ -1,25 +1,29 @@
 import { defineMessages } from 'react-intl';
 
 const messages = defineMessages({
-  Source: {
-    id: 'Source',
-    defaultMessage: 'Source',
-  },
   Image: {
     id: 'Image',
     defaultMessage: 'Image',
+  },
+  Origin: {
+    id: 'Origin',
+    defaultMessage: 'Origin',
   },
   AltText: {
     id: 'Alt text',
     defaultMessage: 'Alt text',
   },
+  Copyright: {
+    id: 'Text',
+    defaultMessage: 'Text',
+  },
+  CopyrightIcon: {
+    id: 'Icon',
+    defaultMessage: 'Icon',
+  },
   Align: {
     id: 'Alignment',
     defaultMessage: 'Alignment',
-  },
-  size: {
-    id: 'Image size',
-    defaultMessage: 'Image size',
   },
   LinkTo: {
     id: 'Link to',
@@ -29,31 +33,26 @@ const messages = defineMessages({
     id: 'Open in a new tab',
     defaultMessage: 'Open in a new tab',
   },
-  AltTextHintLinkText: {
-    id: 'Alt text hint link text',
-    defaultMessage: 'Describe the purpose of the image.',
+  NoImageSelected: {
+    id: 'No image set in image content field',
+    defaultMessage: 'No image set in image content field',
+  },
+  externalURL: {
+    id: 'External URL',
+    defaultMessage: 'External URL',
   },
 });
 
-export function ImageSchema({ formData, intl }) {
+export function LeadImageSchema({ formData, intl }) {
   return {
     fieldsets: [
       {
         id: 'default',
         title: 'Default',
-        fields: [...(formData.url ? ['url', 'alt', 'align', 'size'] : [])],
+        fields: [...(formData.image ? ['alt', 'align'] : [])],
       },
 
-      ...(!formData?.size || formData?.size === 'l'
-        ? [
-            {
-              id: 'copyright',
-              title: 'Copyright',
-              fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
-            },
-          ]
-        : []),
-      ...(formData?.url
+      ...(formData.image
         ? [
             {
               id: 'link_settings',
@@ -62,35 +61,19 @@ export function ImageSchema({ formData, intl }) {
             },
           ]
         : []),
+      {
+        id: 'copyright',
+        title: 'Copyright',
+        fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
+      },
     ],
     properties: {
-      url: {
-        title: intl.formatMessage(messages.Source),
-        widget: 'url',
-      },
       alt: {
         title: intl.formatMessage(messages.AltText),
-        default: 'image block',
-        description: (
-          <>
-            <a
-              href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
-              title={intl.formatMessage(messages.openLinkInNewTab)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {intl.formatMessage(messages.AltTextHintLinkText)}
-            </a>
-          </>
-        ),
       },
       align: {
         title: intl.formatMessage(messages.Align),
         widget: 'align',
-      },
-      size: {
-        title: intl.formatMessage(messages.size),
-        widget: 'image_size',
       },
       href: {
         title: intl.formatMessage(messages.LinkTo),
@@ -117,6 +100,6 @@ export function ImageSchema({ formData, intl }) {
         defaultValue: 'left',
       },
     },
-    required: ['alt'],
+    required: [],
   };
 }

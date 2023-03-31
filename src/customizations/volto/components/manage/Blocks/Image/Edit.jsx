@@ -1,33 +1,29 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Edit image block.
  * @module components/manage/Blocks/Image/Edit
  */
 
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { readAsDataURL } from 'promise-file-reader';
-import {
-  Button,
-  Dimmer,
-  Input,
-  Loader,
-  Message,
-  Icon as IconSemantic,
-} from 'semantic-ui-react';
+import { Button, Dimmer, Input, Loader, Message } from 'semantic-ui-react';
 import { defineMessages, injectIntl } from 'react-intl';
 import loadable from '@loadable/component';
 import cx from 'classnames';
+import { isEqual } from 'lodash';
 
 import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
-import { createContent, getContent } from '@plone/volto/actions';
+import { Icon as IconSemantic } from 'semantic-ui-react';
+import { withBlockExtensions } from '@plone/volto/helpers';
+import { createContent } from '@plone/volto/actions';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
 import {
   flattenToAppURL,
   getBaseUrl,
-  withBlockExtensions,
+  isInternalURL,
 } from '@plone/volto/helpers';
 import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
@@ -37,9 +33,6 @@ import clearSVG from '@plone/volto/icons/clear.svg';
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
-
-import './style.less';
-
 const Dropzone = loadable(() => import('react-dropzone'));
 
 const messages = defineMessages({
@@ -49,54 +42,96 @@ const messages = defineMessages({
   },
 });
 
-const Edit = (props) => {
-  const [uploading, setUploading] = React.useState(false);
-  const [url, setUrl] = React.useState('');
-  const [dragging, setDragging] = React.useState(false);
-  const [scaledImage, setScaledImage] = React.useState('');
-  const [viewLoaded, setViewLoaded] = React.useState(false);
+/**
+ * Edit image block class.
+ * @class Edit
+ * @extends Component
+ */
+class Edit extends Component {
+  /**
+   * Property types.
+   * @property {Object} propTypes Property types.
+   * @static
+   */
+  static propTypes = {
+    selected: PropTypes.bool.isRequired,
+    block: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
+    data: PropTypes.objectOf(PropTypes.any).isRequired,
+    content: PropTypes.objectOf(PropTypes.any).isRequired,
+    request: PropTypes.shape({
+      loading: PropTypes.bool,
+      loaded: PropTypes.bool,
+    }).isRequired,
+    pathname: PropTypes.string.isRequired,
+    onChangeBlock: PropTypes.func.isRequired,
+    onSelectBlock: PropTypes.func.isRequired,
+    onDeleteBlock: PropTypes.func.isRequired,
+    onFocusPreviousBlock: PropTypes.func.isRequired,
+    onFocusNextBlock: PropTypes.func.isRequired,
+    handleKeyDown: PropTypes.func.isRequired,
+    createContent: PropTypes.func.isRequired,
+    openObjectBrowser: PropTypes.func.isRequired,
+  };
 
-  React.useEffect(() => {
-    if (props.request.loading && props.request.loaded && uploading) {
-      setUploading(false);
-      props.onChangeBlock(props.block, {
-        ...props.data,
-        url: props.content['@id'],
+  state = {
+    uploading: false,
+    url: '',
+    dragging: false,
+  };
+
+  /**
+   * Component will receive props
+   * @method componentWillReceiveProps
+   * @param {Object} nextProps Next properties
+   * @returns {undefined}
+   */
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (
+      this.props.request.loading &&
+      nextProps.request.loaded &&
+      this.state.uploading
+    ) {
+      this.setState({
+        uploading: false,
+      });
+      this.props.onChangeBlock(this.props.block, {
+        ...this.props.data,
+        url: nextProps.content['@id'],
         alt: '',
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.request.loading, props.request.loaded, uploading]);
+  }
 
-  React.useEffect(() => {
-    if (props.data.url) {
-      props.getContent(flattenToAppURL(props.data.url), null, props.block);
-    }
-  }, [props.data.url, props.block]);
+  /**
+   * @param {*} nextProps
+   * @returns {boolean}
+   * @memberof Edit
+   */
+  shouldComponentUpdate(nextProps) {
+    return (
+      this.props.selected ||
+      nextProps.selected ||
+      !isEqual(this.props.data, nextProps.data)
+    );
+  }
 
-  React.useEffect(() => {
-    if (props.scales) {
-      const scaledImage = data?.url
-        ? setImageSize(data?.url, scales, align === 'full' ? 'h' : size)
-        : '';
-
-      setScaledImage(scaledImage);
-    }
-  }, [props.scales, props.data.url]);
-
-  React.useEffect(() => {
-    setViewLoaded(true);
-  }, []);
-
-  const onUploadImage = (e) => {
+  /**
+   * Upload image handler (not used), but useful in case that we want a button
+   * not powered by react-dropzone
+   * @method onUploadImage
+   * @returns {undefined}
+   */
+  onUploadImage = (e) => {
     e.stopPropagation();
     const file = e.target.files[0];
-    setUploading(true);
-
+    this.setState({
+      uploading: true,
+    });
     readAsDataURL(file).then((data) => {
       const fields = data.match(/^data:(.*);(.*),(.*)$/);
-      props.createContent(
-        getBaseUrl(props.pathname),
+      this.props.createContent(
+        getBaseUrl(this.props.pathname),
         {
           '@type': 'Image',
           title: file.name,
@@ -107,29 +142,51 @@ const Edit = (props) => {
             filename: file.name,
           },
         },
-        props.block,
+        this.props.block,
       );
     });
   };
 
-  const onChangeUrl = ({ target }) => {
-    setUrl(target.value);
-  };
-
-  const onSubmitUrl = () => {
-    props.onChangeBlock(props.block, {
-      ...props.data,
-      url: flattenToAppURL(url),
+  /**
+   * Change url handler
+   * @method onChangeUrl
+   * @param {Object} target Target object
+   * @returns {undefined}
+   */
+  onChangeUrl = ({ target }) => {
+    this.setState({
+      url: target.value,
     });
   };
 
-  const onDrop = (file) => {
-    setUploading(true);
+  /**
+   * Submit url handler
+   * @method onSubmitUrl
+   * @param {object} e Event
+   * @returns {undefined}
+   */
+  onSubmitUrl = () => {
+    this.props.onChangeBlock(this.props.block, {
+      ...this.props.data,
+      url: flattenToAppURL(this.state.url),
+    });
+  };
+
+  /**
+   * Drop handler
+   * @method onDrop
+   * @param {array} files File objects
+   * @returns {undefined}
+   */
+  onDrop = (file) => {
+    this.setState({
+      uploading: true,
+    });
 
     readAsDataURL(file[0]).then((data) => {
       const fields = data.match(/^data:(.*);(.*),(.*)$/);
-      props.createContent(
-        getBaseUrl(props.pathname),
+      this.props.createContent(
+        getBaseUrl(this.props.pathname),
         {
           '@type': 'Image',
           title: file[0].name,
@@ -140,81 +197,131 @@ const Edit = (props) => {
             filename: file[0].name,
           },
         },
-        props.block,
+        this.props.block,
       );
     });
   };
 
-  const onKeyDownVariantMenuForm = (e) => {
+  /**
+   * Keydown handler on Variant Menu Form
+   * This is required since the ENTER key is already mapped to a onKeyDown
+   * event and needs to be overriden with a child onKeyDown.
+   * @method onKeyDownVariantMenuForm
+   * @param {Object} e Event object
+   * @returns {undefined}
+   */
+  onKeyDownVariantMenuForm = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
-      onSubmitUrl();
+      this.onSubmitUrl();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
-      //   TODO: Do something on ESC key
+      // TODO: Do something on ESC key
     }
   };
-  const onDragEnter = () => {
-    setDragging(true);
+  onDragEnter = () => {
+    this.setState({ dragging: true });
   };
-  const onDragLeave = () => {
-    setDragging(false);
+  onDragLeave = () => {
+    this.setState({ dragging: false });
   };
 
-  const { data = {}, scales = {} } = props;
+  node = React.createRef();
 
-  const {
-    size = 'l',
-    align = 'center',
-    copyright,
-    copyrightIcon,
-    copyrightPosition,
-    alt,
-  } = data;
+  /**
+   * Render method.
+   * @method render
+   * @returns {string} Markup for the component.
+   */
+  render() {
+    const { data } = this.props;
+    const placeholder =
+      this.props.data.placeholder ||
+      this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
+    const { copyright, copyrightIcon, copyrightPosition } = data;
 
-  const placeholder =
-    props.data.placeholder ||
-    props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
+    const showCopyright = data?.size === 'l' || !data.size;
 
-  return (
-    <>
-      {viewLoaded && (
+    const scaledImage = data?.url
+      ? setImageSize(
+          data?.url,
+          data?.image?.scales,
+          data.align === 'full' ? 'h' : data.size,
+        )
+      : '';
+
+    return (
+      <div
+        className={cx(
+          'block image align',
+          {
+            center: !Boolean(data.align),
+          },
+          data.align,
+        )}
+      >
         <div
           className={cx(
-            'block image align',
+            'image-block-container',
             {
-              center: !Boolean(align),
+              large: data.size === 'l',
+              medium: data.size === 'm',
+              small: data.size === 's',
             },
-            align,
+            data?.align ? data?.align : '',
           )}
         >
-          {scaledImage ? (
-            <div className="image-block">
-              {!alt && (
-                <span className="alt-text-warning">
-                  Alt text not set. It will default to 'image-block'. Please add
-                  Alt text if you want a specific one.
-                </span>
-              )}
+          {!data.alt && (
+            <span className="alt-text-warning">
+              Alt text not set. It will default to 'image-block'. Please add Alt
+              text if you want a specific one.
+            </span>
+          )}
+          {data.url ? (
+            <>
               <LazyLoadComponent>
                 <img
                   height={'auto'}
-                  width={align === 'center' ? '100%' : scaledImage?.width}
+                  width={data.align === 'center' ? '100%' : scaledImage?.width}
                   className={cx({
-                    'full-width': align === 'full',
-                    large: size === 'l',
-                    medium: size === 'm',
-                    small: size === 's',
+                    'full-width': data.align === 'full',
+                    large: data.size === 'l',
+                    medium: data.size === 'm',
+                    small: data.size === 's',
                   })}
-                  src={scaledImage?.download}
-                  alt={alt || 'image-block'}
-                  loading="lazy" //even if lazy is used, it's not working properly. That's why we use the LazyLoadComponent
+                  src={
+                    isInternalURL(data.url)
+                      ? // Backwards compat in the case that the block is storing the full server URL
+                        (() => {
+                          if (data.align === 'full')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/huge`;
+                          if (data.size === 'l')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/great`;
+                          if (data.size === 'm')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/preview`;
+                          if (data.size === 's')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/mini`;
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/great`;
+                        })()
+                      : data.url
+                  }
+                  alt={data.alt || ''}
                 />
               </LazyLoadComponent>
-              <div className="copyright-image">
-                {copyright ? (
+              <div className={`copyright-wrapper ${copyrightPosition}`}>
+                {copyright && showCopyright ? (
                   <Copyright copyrightPosition={copyrightPosition}>
                     <Copyright.Icon>
                       <IconSemantic name={copyrightIcon} />
@@ -225,22 +332,22 @@ const Edit = (props) => {
                   ''
                 )}
               </div>
-            </div>
+            </>
           ) : (
             <div>
-              {props.editable && (
+              {this.props.editable && (
                 <Dropzone
                   noClick
-                  onDrop={onDrop}
-                  onDragEnter={onDragEnter}
-                  onDragLeave={onDragLeave}
+                  onDrop={this.onDrop}
+                  onDragEnter={this.onDragEnter}
+                  onDragLeave={this.onDragLeave}
                   className="dropzone"
                 >
                   {({ getRootProps, getInputProps }) => (
                     <div {...getRootProps()}>
                       <Message>
-                        {dragging && <Dimmer active></Dimmer>}
-                        {uploading && (
+                        {this.state.dragging && <Dimmer active></Dimmer>}
+                        {this.state.uploading && (
                           <Dimmer active>
                             <Loader indeterminate>Uploading image</Loader>
                           </Dimmer>
@@ -255,7 +362,7 @@ const Edit = (props) => {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
-                                  props.openObjectBrowser();
+                                  this.props.openObjectBrowser();
                                 }}
                               >
                                 <Icon name={navTreeSVG} size="24px" />
@@ -267,32 +374,32 @@ const Edit = (props) => {
                                 <input
                                   {...getInputProps({
                                     type: 'file',
-                                    onChange: onUploadImage,
+                                    onChange: this.onUploadImage,
                                     style: { display: 'none' },
                                   })}
                                 />
                               </label>
                             </Button.Group>
                             <Input
-                              onKeyDown={onKeyDownVariantMenuForm}
-                              onChange={onChangeUrl}
+                              onKeyDown={this.onKeyDownVariantMenuForm}
+                              onChange={this.onChangeUrl}
                               placeholder={placeholder}
-                              value={url}
+                              value={this.state.url}
                               onClick={(e) => {
                                 e.target.focus();
                               }}
                               onFocus={(e) => {
-                                props.onSelectBlock(props.id);
+                                this.props.onSelectBlock(this.props.id);
                               }}
                             />
-                            {url && (
+                            {this.state.url && (
                               <Button.Group>
                                 <Button
                                   basic
                                   className="cancel"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setUrl('');
+                                    this.setState({ url: '' });
                                   }}
                                 >
                                   <Icon name={clearSVG} size="30px" />
@@ -303,10 +410,10 @@ const Edit = (props) => {
                               <Button
                                 basic
                                 primary
-                                disabled={!url}
+                                disabled={!this.state.url}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onSubmitUrl();
+                                  this.onSubmitUrl();
                                 }}
                               >
                                 <Icon name={aheadSVG} size="30px" />
@@ -321,14 +428,14 @@ const Edit = (props) => {
               )}
             </div>
           )}
-          <SidebarPortal selected={props.selected}>
-            <ImageSidebar {...props} />
-          </SidebarPortal>
         </div>
-      )}
-    </>
-  );
-};
+        <SidebarPortal selected={this.props.selected}>
+          <ImageSidebar {...this.props} />
+        </SidebarPortal>
+      </div>
+    );
+  }
+}
 
 export default compose(
   injectIntl,
@@ -336,8 +443,8 @@ export default compose(
   connect(
     (state, ownProps) => ({
       request: state.content.subrequests[ownProps.block] || {},
-      scales: state.content.subrequests[ownProps.block]?.data?.image?.scales,
+      content: state.content.subrequests[ownProps.block]?.data,
     }),
-    { createContent, getContent },
+    { createContent },
   ),
 )(Edit);

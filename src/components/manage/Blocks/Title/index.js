@@ -6,6 +6,7 @@ export default (config) => {
     ...config.blocks.blocksConfig.title,
     edit: Edit,
     view: View,
+    copyrightPrefix: 'Image',
     sidebarTab: 1,
   };
 
