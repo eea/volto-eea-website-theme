@@ -25,7 +25,14 @@ const removeTrailingSlash = (str) => {
  * @returns
  */
 const DraftBackground = (props) => {
-  const draftClass = `wf-state-${props.review_state}`;
+  let draftClass = 'wf-state-';
+  if (
+    props.review_state === null &&
+    props.content.parent.review_state === 'published'
+  ) {
+    draftClass += 'published';
+  } else draftClass += `${props.review_state}`;
+
   const razzleDraft =
     runtimeConfig['RAZZLE_DISABLE_DRAFT_WATERMARK'] || 'default';
   const isReviewableStateComponent =
