@@ -8,6 +8,9 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
+import ItemGroupFlex from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/ItemGroup/ItemGroupFlex';
+import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
+
 import { Icon } from '@plone/volto/components';
 import contentBoxSVG from './icons/content-box.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
@@ -72,6 +75,24 @@ const applyConfig = (config) => {
         closed: 'ri-arrow-down-s-line',
       };
     }
+  }
+  //Group block flex variation
+  if (config.blocks.blocksConfig.group) {
+    config.blocks.blocksConfig.group.variations = [
+      ...config.blocks.blocksConfig.group.variations,
+      {
+        id: 'item group',
+        isDefault: false,
+        title: 'Item Group',
+        template: ItemGroupFlex,
+      },
+      {
+        id: 'flex group',
+        isDefault: false,
+        title: 'Flex Group',
+        template: FlexGroup,
+      },
+    ];
   }
 
   // Description block custom CSS
