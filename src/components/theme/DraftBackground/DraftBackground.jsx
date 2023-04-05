@@ -17,7 +17,6 @@ const checkIfNullOrUndefined = (value) => {
 
 const DraftBackground = (props) => {
   let draftClass = 'wf-state-is-draft';
-
   if (
     (checkIfNullOrUndefined(props?.review_state) &&
       props?.content?.parent?.review_state === 'published') ||
