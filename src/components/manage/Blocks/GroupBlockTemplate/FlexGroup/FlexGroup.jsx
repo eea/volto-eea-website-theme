@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { Icon } from '@plone/volto/components';
 import FlexBlocksForm from './FlexBlocksForm';
-import EditBlockWrapper from './EditBlockWrapper';
+import EditBlockWrapper from '@eeacms/volto-group-block/components/manage/Blocks/Group/EditBlockWrapper';
 import RenderBlocks from './RenderBlocks';
 
 import helpSVG from '@plone/volto/icons/help.svg';
@@ -67,33 +67,37 @@ const FlexGroup = (props) => {
         pathname={pathname}
       >
         {({ draginfo }, editBlock, blockProps) => (
-          <EditBlockWrapper
-            draginfo={draginfo}
-            blockProps={blockProps}
-            disabled={data.disableInnerButtons}
-            extraControls={
-              <>
-                {instructions && (
+          <div className="item">
+            <div className="item-wrapper">
+              <EditBlockWrapper
+                draginfo={draginfo}
+                blockProps={blockProps}
+                disabled={data.disableInnerButtons}
+                extraControls={
                   <>
-                    <Button
-                      icon
-                      basic
-                      title="Section help"
-                      onClick={() => {
-                        setSelectedBlock();
-                        const tab = manage ? 0 : 1;
-                        props.setSidebarTab(tab);
-                      }}
-                    >
-                      <Icon name={helpSVG} className="" size="19px" />
-                    </Button>
+                    {instructions && (
+                      <>
+                        <Button
+                          icon
+                          basic
+                          title="Section help"
+                          onClick={() => {
+                            setSelectedBlock();
+                            const tab = manage ? 0 : 1;
+                            props.setSidebarTab(tab);
+                          }}
+                        >
+                          <Icon name={helpSVG} className="" size="19px" />
+                        </Button>
+                      </>
+                    )}
                   </>
-                )}
-              </>
-            }
-          >
-            {editBlock}
-          </EditBlockWrapper>
+                }
+              >
+                {editBlock}
+              </EditBlockWrapper>
+            </div>
+          </div>
         )}
       </FlexBlocksForm>
     </div>
