@@ -10,13 +10,19 @@ import { flattenToAppURL } from '@plone/volto/helpers';
  * @param {Object} props
  * @returns
  */
+
+const checkIfNullOrUndefined = (value) => {
+  return value === undefined || value === null;
+};
+
 const DraftBackground = (props) => {
   let draftClass = 'wf-state-is-draft';
+
   if (
-    (props?.review_state === null &&
+    (checkIfNullOrUndefined(props?.review_state) &&
       props?.content?.parent?.review_state === 'published') ||
     props?.review_state === 'published' ||
-    (props?.review_state === null &&
+    (checkIfNullOrUndefined(props?.review_state) &&
       Object.keys(props?.content?.parent || {}).length === 0)
   ) {
     draftClass = '';
