@@ -74,6 +74,11 @@ const applyConfig = (config) => {
     }
   }
 
+  // Apply columns block customization
+  if (config.blocks.blocksConfig.columnsBlock) {
+    config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
+  }
+
   // Description block custom CSS
   config.blocks.blocksConfig.description.className =
     'documentDescription eea callout';
