@@ -79,7 +79,7 @@ const applyConfig = (config) => {
   //Group block flex variation
   if (config.blocks.blocksConfig.group) {
     config.blocks.blocksConfig.group.variations = [
-      ...config.blocks.blocksConfig.group.variations,
+      ...(config.blocks.blocksConfig.group.variations || []),
       {
         id: 'item group',
         isDefault: false,
