@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button } from 'semantic-ui-react';
-import { Icon } from '@plone/volto/components';
-import FlexBlocksForm from './FlexBlocksForm';
+import { Icon, BlocksForm } from '@plone/volto/components';
 import EditBlockWrapper from '@eeacms/volto-group-block/components/manage/Blocks/Group/EditBlockWrapper';
 import RenderBlocks from './RenderBlocks';
 
@@ -26,6 +25,14 @@ const FlexGroup = (props) => {
   const metadata = props.metadata || props.properties;
   const blockState = {};
 
+  React.useEffect(() => {
+    const dragDropList = document?.querySelector(
+      '.flex-blocks-form [data-rbd-droppable-id]',
+    );
+    if (dragDropList)
+      dragDropList.setAttribute('class', 'ui items row flex-items-wrapper');
+  }, []);
+
   // Get editing instructions from block settings or props
   let instructions = data?.instructions?.data || data?.instructions;
   if (!instructions || instructions === '<p><br/></p>') {
@@ -33,7 +40,7 @@ const FlexGroup = (props) => {
   }
   return isEditMode ? (
     <div className="flex-blocks-form">
-      <FlexBlocksForm
+      <BlocksForm
         metadata={metadata}
         properties={childBlocksForm}
         manage={manage}
@@ -99,7 +106,7 @@ const FlexGroup = (props) => {
             </div>
           </div>
         )}
-      </FlexBlocksForm>
+      </BlocksForm>
     </div>
   ) : (
     <div className="ui items row flex-items-wrapper">
