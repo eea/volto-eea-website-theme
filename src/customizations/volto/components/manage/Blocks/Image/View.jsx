@@ -17,6 +17,7 @@ import { compose } from 'redux';
 import { getContent } from '@plone/volto/actions';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
+import './style.less';
 
 /**
  * View image block class.
