@@ -70,7 +70,7 @@ export function ImageSchema({ formData, intl }) {
       },
       alt: {
         title: intl.formatMessage(messages.AltText),
-        default: 'image block',
+        default: 'image-block',
         description: (
           <>
             <a
@@ -91,6 +91,7 @@ export function ImageSchema({ formData, intl }) {
       size: {
         title: intl.formatMessage(messages.size),
         widget: 'image_size',
+        default: 'l',
       },
       href: {
         title: intl.formatMessage(messages.LinkTo),
