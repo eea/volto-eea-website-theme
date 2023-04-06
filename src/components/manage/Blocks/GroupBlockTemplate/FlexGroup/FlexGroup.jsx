@@ -17,7 +17,9 @@ const FlexGroup = (props) => {
     pathname,
     selected,
     selectedBlock,
+    onSelectBlock,
     setSelectedBlock,
+    multiSelected,
     manage,
     childBlocksForm,
     formDescription,
@@ -61,8 +63,11 @@ const FlexGroup = (props) => {
           allowedBlocks={data.allowedBlocks}
           title={data.placeholder}
           description={instructions}
-          onSelectBlock={(id) => {
-            setSelectedBlock(id);
+          onSelectBlock={(id, l, e) => {
+            const isMultipleSelection = e
+              ? e.shiftKey || e.ctrlKey || e.metaKey
+              : false;
+            onSelectBlock(id, isMultipleSelection, e, selectedBlock);
           }}
           onChangeFormData={(newFormData) => {
             onChangeBlock(block, {
@@ -113,6 +118,7 @@ const FlexGroup = (props) => {
                       )}
                     </>
                   }
+                  multiSelected={multiSelected.includes(blockProps.block)}
                 >
                   {editBlock}
                 </EditBlockWrapper>
