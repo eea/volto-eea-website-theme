@@ -21,7 +21,10 @@ import { createContent, getContent } from '@plone/volto/actions';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
 import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers';
+<<<<<<< HEAD
 
+=======
+>>>>>>> fix: image scales and empty image input align
 import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
@@ -99,6 +102,10 @@ class Edit extends Component {
         alt: '',
       });
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> fix: image scales and empty image input align
     if (this.props?.data?.url !== nextProps?.data?.url) {
       this.props.getContent(
         flattenToAppURL(nextProps.data.url),
@@ -259,6 +266,10 @@ class Edit extends Component {
           {
             center: !Boolean(data.align),
           },
+<<<<<<< HEAD
+=======
+          // no need to align the image input
+>>>>>>> fix: image scales and empty image input align
           data.align && scaledImage ? data.align : 'center',
         )}
       >
