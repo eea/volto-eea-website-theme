@@ -90,28 +90,7 @@ export const View = (props) => {
                             medium: data.size === 'm',
                             small: data.size === 's',
                           })}
-                          src={
-                            isInternalURL(data.url)
-                              ? // Backwards compat in the case that the block is storing the full server URL
-                                (() => {
-                                  if (data.size === 'l')
-                                    return `${flattenToAppURL(
-                                      data.url,
-                                    )}/@@images/image`;
-                                  if (data.size === 'm')
-                                    return `${flattenToAppURL(
-                                      data.url,
-                                    )}/@@images/image/preview`;
-                                  if (data.size === 's')
-                                    return `${flattenToAppURL(
-                                      data.url,
-                                    )}/@@images/image/mini`;
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image`;
-                                })()
-                              : data.url
-                          }
+                          src={scaledImage?.download}
                           alt={alt || ''}
                           loading="lazy"
                         />
