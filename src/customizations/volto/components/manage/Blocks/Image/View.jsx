@@ -96,11 +96,7 @@ export const View = ({ data, detached, id, getContent, scales }) => {
                             small: data.size === 's',
                           })}
                           src={scaledImage?.download}
-<<<<<<< HEAD
                           alt={data.alt || ''}
-=======
-                          alt={alt || ''}
->>>>>>> fix: image scales and empty image input align
                           loading="lazy"
                         />
                       </LazyLoadComponent>
