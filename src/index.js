@@ -84,6 +84,20 @@ const applyConfig = (config) => {
         isDefault: false,
         title: 'Flex Group',
         template: FlexGroup,
+        schemaEnhancer: ({ schema, formData, intl }) => {
+          schema.fieldsets[0].fields.push('no_of_columns');
+          schema.properties.no_of_columns = {
+            title: 'No. of columns',
+            description: 'Choose the number of flex columns',
+            choices: [
+              [2, 2],
+              [3, 3],
+              [4, 4],
+              [5, 5],
+            ],
+          };
+          return schema;
+        },
       },
     ];
   }

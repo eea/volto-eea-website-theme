@@ -23,7 +23,7 @@ const messages = defineMessages({
 });
 
 const RenderBlocks = (props) => {
-  const { content, intl, location, metadata } = props;
+  const { content, intl, location, metadata, flexClass } = props;
   const blocksFieldname = getBlocksFieldname(content);
   const blocksLayoutFieldname = getBlocksLayoutFieldname(content);
   const blocksConfig = props.blocksConfig || config.blocks.blocksConfig;
@@ -45,7 +45,7 @@ const RenderBlocks = (props) => {
 
         return Block ? (
           <StyleWrapper key={block} id={block}>
-            <div className="item">
+            <div className={flexClass}>
               <Block
                 id={block}
                 metadata={metadata}
