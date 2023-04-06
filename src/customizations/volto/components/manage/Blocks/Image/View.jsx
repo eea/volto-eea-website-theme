@@ -10,7 +10,7 @@ import { UniversalLink } from '@plone/volto/components';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
 import { withBlockExtensions } from '@plone/volto/helpers';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
+import { flattenToAppURL } from '@plone/volto/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
 import { connect } from 'react-redux';
