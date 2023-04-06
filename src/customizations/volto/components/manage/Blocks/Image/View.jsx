@@ -30,6 +30,7 @@ export const View = ({ data, detached, id, getContent, scales }) => {
     if (data.url) {
       getContent(flattenToAppURL(data.url), null, id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.url]);
 
   React.useEffect(() => {
@@ -41,7 +42,7 @@ export const View = ({ data, detached, id, getContent, scales }) => {
     setViewLoaded(true);
   }, []);
 
-  const { size = 'l', align = 'center', alt = '' } = data;
+  const { size = 'l', align = 'center' } = data;
 
   const scaledImage = data?.url
     ? setImageSize(data?.url, scales, align === 'full' ? 'h' : size)
