@@ -18,4 +18,4 @@
 @altTextFontSize: 12px;
 
 //image block container variables
-@imageBlockContainerWidth: 100%
+@imageBlockContainerWidth: 100%;
