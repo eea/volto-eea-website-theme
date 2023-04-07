@@ -23,7 +23,6 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers';
 import { setImageSize } from '@eeacms/volto-eea-website-theme/helpers';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
-import './style.less';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';

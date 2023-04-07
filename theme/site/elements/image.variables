@@ -1,0 +1,21 @@
+
+/*******************************
+            Image
+*******************************/
+
+/*-------------------
+       Element
+--------------------*/
+
+// copyright image variables
+@copyrightImageTopPosition: 90%;
+@copyrightImageWidth: 100%;
+@copyrightImageSidePadding: 10px;
+@copyrightImageZIndex: 1000;
+
+//alt-text variables
+@altTextColor: red;
+@altTextFontSize: 12px;
+
+//image block container variables
+@imageBlockContainerWidth: 100%
