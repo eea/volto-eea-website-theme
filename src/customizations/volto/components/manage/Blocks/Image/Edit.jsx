@@ -75,6 +75,7 @@ class Edit extends Component {
     uploading: false,
     url: '',
     dragging: false,
+    scaledImage: '',
   };
 
   /**
@@ -98,11 +99,37 @@ class Edit extends Component {
         alt: '',
       });
     }
+
     if (this.props?.data?.url !== nextProps?.data?.url) {
       this.props.getContent(
         flattenToAppURL(nextProps.data.url),
         null,
         nextProps.block,
+      );
+    }
+
+    if (this.props?.scales !== nextProps?.scales) {
+      const scaledImage =
+        this.props?.data?.url && nextProps?.scales
+          ? setImageSize(
+              this.props?.data?.url,
+              nextProps.scales,
+              this.props?.data?.align === 'full' ? 'h' : this.props?.data?.size,
+            )
+          : '';
+      this.setState({
+        scaledImage,
+      });
+    }
+  }
+
+  componentDidMount() {
+    if (this.props?.data?.url) {
+      //ensure first load of image on fresh /edit load
+      this.props.getContent(
+        flattenToAppURL(this.props.data.url),
+        null,
+        this.props.block,
       );
     }
   }
@@ -112,11 +139,12 @@ class Edit extends Component {
    * @returns {boolean}
    * @memberof Edit
    */
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.selected ||
       nextProps.selected ||
-      !isEqual(this.props.data, nextProps.data)
+      !isEqual(this.props.data, nextProps.data) ||
+      !isEqual(this.state.scaledImage, nextState.scaledImage)
     );
   }
 
@@ -240,7 +268,8 @@ class Edit extends Component {
    * @returns {string} Markup for the component.
    */
   render() {
-    const { data, scales } = this.props;
+    const { data } = this.props;
+    const { scaledImage } = this.state;
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
@@ -248,9 +277,6 @@ class Edit extends Component {
 
     const showCopyright = data?.size === 'l' || !data.size;
 
-    const scaledImage = data?.url
-      ? setImageSize(data?.url, scales, data.align === 'full' ? 'h' : data.size)
-      : '';
     return (
       <div
         className={cx(
