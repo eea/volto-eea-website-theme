@@ -44,16 +44,18 @@ const RenderBlocks = (props) => {
         });
 
         return Block ? (
-          <StyleWrapper key={block} id={block}>
-            <Block
-              id={block}
-              metadata={metadata}
-              properties={content}
-              data={blockData}
-              path={getBaseUrl(location?.pathname || '')}
-              blocksConfig={blocksConfig}
-            />
-          </StyleWrapper>
+          <div className="item">
+            <StyleWrapper key={block} id={block}>
+              <Block
+                id={block}
+                metadata={metadata}
+                properties={content}
+                data={blockData}
+                path={getBaseUrl(location?.pathname || '')}
+                blocksConfig={blocksConfig}
+              />
+            </StyleWrapper>
+          </div>
         ) : blockData ? (
           <div key={block}>
             {intl.formatMessage(messages.unknownBlock, {

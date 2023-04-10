@@ -1,11 +1,10 @@
 import React from 'react';
 import { Button } from 'semantic-ui-react';
-import cx from 'classnames';
 import { Icon, BlocksForm } from '@plone/volto/components';
 import EditBlockWrapper from '@eeacms/volto-group-block/components/manage/Blocks/Group/EditBlockWrapper';
-import RenderBlocks from './RenderBlocks';
 
 import helpSVG from '@plone/volto/icons/help.svg';
+import RenderBlocks from './RenderBlocks';
 import './editor-flex.less';
 
 const FlexGroup = (props) => {
@@ -35,7 +34,7 @@ const FlexGroup = (props) => {
       `.flex-blocks-form[data-block="${block}"] [data-rbd-droppable-id]`,
     );
     if (dragDropList) dragDropList.setAttribute('class', flexClassNames);
-  }, [flexClassNames, block]);
+  }, [flexClassNames, block, isEditMode]);
 
   // Get editing instructions from block settings or props
   let instructions = data?.instructions?.data || data?.instructions;
@@ -119,11 +118,7 @@ const FlexGroup = (props) => {
         </BlocksForm>
       ) : (
         <div className={flexClassNames}>
-          <RenderBlocks
-            metadata={metadata}
-            content={data?.data || {}}
-            blockId={block}
-          />
+          <RenderBlocks metadata={metadata} content={data?.data || {}} />
         </div>
       )}
     </div>

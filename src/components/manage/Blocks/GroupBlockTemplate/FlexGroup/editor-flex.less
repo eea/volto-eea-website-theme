@@ -4,30 +4,20 @@
     width: 100%;
   }
 
-  .ui.items.flex-items-wrapper.items-2-columns > * {
+  .ui.items.flex-items-wrapper.items-2-columns > .item {
     width: 49%;
   }
 
-  .ui.items.flex-items-wrapper.items-3-columns > * {
+  .ui.items.flex-items-wrapper.items-3-columns > .item {
     width: 33%;
   }
 
-  .ui.items.flex-items-wrapper.items-4-columns > * {
+  .ui.items.flex-items-wrapper.items-4-columns > .item {
     width: 25%;
   }
 
-  .ui.items.row > * {
-    margin: 2rem 0;
-  }
-
-  .ui.items.flex-items-wrapper > * {
-    display: flex;
-    min-height: 0px;
-    padding: 0em;
-    border: none;
-    background: transparent;
-    border-radius: 0rem;
-    box-shadow: none;
-    transition: box-shadow 0.1s ease;
+  //override item block image width
+  .ui.items.flex-items-wrapper > .item > .image:not(.ui) {
+    width: 100%;
   }
 }
