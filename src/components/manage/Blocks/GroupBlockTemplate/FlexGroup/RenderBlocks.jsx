@@ -23,7 +23,7 @@ const messages = defineMessages({
 });
 
 const RenderBlocks = (props) => {
-  const { content, intl, location, metadata, flexClass } = props;
+  const { content, intl, location, metadata } = props;
   const blocksFieldname = getBlocksFieldname(content);
   const blocksLayoutFieldname = getBlocksLayoutFieldname(content);
   const blocksConfig = props.blocksConfig || config.blocks.blocksConfig;
@@ -45,16 +45,14 @@ const RenderBlocks = (props) => {
 
         return Block ? (
           <StyleWrapper key={block} id={block}>
-            <div className={flexClass}>
-              <Block
-                id={block}
-                metadata={metadata}
-                properties={content}
-                data={blockData}
-                path={getBaseUrl(location?.pathname || '')}
-                blocksConfig={blocksConfig}
-              />
-            </div>
+            <Block
+              id={block}
+              metadata={metadata}
+              properties={content}
+              data={blockData}
+              path={getBaseUrl(location?.pathname || '')}
+              blocksConfig={blocksConfig}
+            />
           </StyleWrapper>
         ) : blockData ? (
           <div key={block}>

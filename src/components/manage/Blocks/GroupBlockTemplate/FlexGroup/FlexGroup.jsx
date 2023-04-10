@@ -27,19 +27,15 @@ const FlexGroup = (props) => {
   } = props;
   const metadata = props.metadata || props.properties;
   const blockState = {};
-  const { no_of_columns } = data;
+  const { no_of_columns = 2 } = data;
+  const flexClassNames = `ui unstackable items row flex-items-wrapper items-${no_of_columns}-columns`;
 
   React.useEffect(() => {
-    const dragDropList = document?.querySelectorAll(
-      '.flex-blocks-form [data-rbd-droppable-id]',
+    const dragDropList = document?.querySelector(
+      `.flex-blocks-form[data-block="${block}"] [data-rbd-droppable-id]`,
     );
-    if (dragDropList) {
-      Array.from(dragDropList).forEach((dragElement) => {
-        if (dragElement)
-          dragElement.setAttribute('class', 'ui items row flex-items-wrapper');
-      });
-    }
-  }, []);
+    if (dragDropList) dragDropList.setAttribute('class', flexClassNames);
+  }, [flexClassNames, block]);
 
   // Get editing instructions from block settings or props
   let instructions = data?.instructions?.data || data?.instructions;
@@ -47,13 +43,8 @@ const FlexGroup = (props) => {
     instructions = formDescription;
   }
 
-  const computeFlexClass = cx({
-    item: !no_of_columns,
-    [`item-col-${no_of_columns}`]: no_of_columns && true,
-  });
-
   return (
-    <div className="flex-blocks-form">
+    <div className="flex-blocks-form" data-block={block}>
       {isEditMode ? (
         <BlocksForm
           metadata={metadata}
@@ -92,7 +83,7 @@ const FlexGroup = (props) => {
           pathname={pathname}
         >
           {({ draginfo }, editBlock, blockProps) => (
-            <div className={computeFlexClass}>
+            <div className="item">
               <div className="item-wrapper">
                 <EditBlockWrapper
                   draginfo={draginfo}
@@ -127,11 +118,11 @@ const FlexGroup = (props) => {
           )}
         </BlocksForm>
       ) : (
-        <div className="ui items row flex-items-wrapper">
+        <div className={flexClassNames}>
           <RenderBlocks
             metadata={metadata}
             content={data?.data || {}}
-            flexClass={computeFlexClass}
+            blockId={block}
           />
         </div>
       )}
