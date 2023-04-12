@@ -88,7 +88,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   }, [token, dispatch, pathname, previousToken]);
 
   return (
-    <Header menuItems={items}>
+    <Header menuItems={items} isMultilingual={config.settings.isMultilingual}>
       {isHomePageInverse && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
