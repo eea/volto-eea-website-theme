@@ -86,7 +86,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       }
     }
   }, [token, dispatch, pathname, previousToken]);
-  console.log(config.settings.isMultilingual);
+
   return (
     <Header menuItems={items}>
       {isHomePageInverse && <BodyClass className="homepage" />}
