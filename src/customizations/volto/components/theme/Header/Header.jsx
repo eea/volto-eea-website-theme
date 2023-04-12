@@ -86,9 +86,9 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       }
     }
   }, [token, dispatch, pathname, previousToken]);
-
+  console.log(config.settings.isMultilingual);
   return (
-    <Header menuItems={items} isMultilingual={config.settings.isMultilingual}>
+    <Header menuItems={items}>
       {isHomePageInverse && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
@@ -200,6 +200,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       </Header.TopHeader>
       <Header.Main
         pathname={pathname}
+        isMultilingual={config.settings.isMultilingual}
         headerSearchBox={headerSearchBox}
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
