@@ -19,25 +19,27 @@ const removeTrailingSlash = (str) => {
 };
 
 const checkIfPublished = (props) => {
-  console.log({ props }, removeTrailingSlash(props.pathname));
-  //case 0: the state is not for the current content-type
+  //case 0: the state is not for the current content-type eg: Go to /contents from a page
   if (props.contentId !== removeTrailingSlash(props.pathname)) return true;
 
   //case 1 : review_state published
   if (props?.review_state === 'published') return true;
-  //case 2: review_state null, but parent is published
+
+  //case 2: review_state null, but parent is published eg:Image in published folder
   if (
     checkIfNullOrUndefined(props?.review_state) &&
     props?.content?.parent?.review_state === 'published'
   )
     return true;
-  //case 3: review_state null, but there is no parent
+
+  //case 3: review_state null, but there is no parent eg: PloneSite
   if (
     checkIfNullOrUndefined(props?.review_state) &&
     Object.keys(props?.content?.parent || {}).length === 0
   )
     return true;
-  //case 4: review_state null, and review state of parent is null
+
+  //case 4: review_state null, and review state of parent is null, eg: Image in PloneSite
   if (
     checkIfNullOrUndefined(props?.review_state) &&
     checkIfNullOrUndefined(props?.content?.parent?.review_state)
