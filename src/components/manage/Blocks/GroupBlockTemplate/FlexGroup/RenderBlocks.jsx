@@ -44,7 +44,7 @@ const RenderBlocks = (props) => {
         });
 
         return Block ? (
-          <div className="item">
+          <div className="item" key={block}>
             <StyleWrapper key={block} id={block}>
               <Block
                 id={block}
