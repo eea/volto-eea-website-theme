@@ -11,19 +11,39 @@ import { flattenToAppURL } from '@plone/volto/helpers';
  * @returns
  */
 
-const checkIfNullOrUndefined = (value) => {
-  return value === undefined || value === null;
+const removeTrailingSlash = (str) => {
+  return str.replace(/\/+$/, '');
 };
 
+const checkIfPublished = (props) => {
+  //case 0: the state is not for the current content-type eg: Go to /contents from a page
+  if (props.contentId !== removeTrailingSlash(props.pathname)) return true;
+
+  //case 1 : review_state published
+  if (props?.review_state === 'published') return true;
+
+  //case 2: review_state null, but parent is published eg:Image in published folder
+  if (
+    !props?.review_state &&
+    props?.content?.parent?.review_state === 'published'
+  )
+    return true;
+
+  //case 3: review_state null, but there is no parent eg: PloneSite
+  if (
+    !props?.review_state &&
+    Object.keys(props?.content?.parent || {}).length === 0
+  )
+    return true;
+
+  //case 4: review_state null, and review state of parent is null, eg: Image in PloneSite
+  if (!props?.review_state && !props?.content?.parent?.review_state)
+    return true;
+  return false;
+};
 const DraftBackground = (props) => {
   let draftClass = 'wf-state-is-draft';
-  if (
-    (checkIfNullOrUndefined(props?.review_state) &&
-      props?.content?.parent?.review_state === 'published') ||
-    props?.review_state === 'published' ||
-    (checkIfNullOrUndefined(props?.review_state) &&
-      Object.keys(props?.content?.parent || {}).length === 0)
-  ) {
+  if (checkIfPublished(props)) {
     draftClass = '';
   }
   return draftClass ? <BodyClass className={draftClass} /> : '';
