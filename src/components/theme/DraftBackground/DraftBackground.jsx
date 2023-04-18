@@ -11,9 +11,6 @@ import { flattenToAppURL } from '@plone/volto/helpers';
  * @returns
  */
 
-const checkIfNullOrUndefined = (value) => {
-  return value === undefined || value === null;
-};
 const removeTrailingSlash = (str) => {
   return str.replace(/\/+$/, '');
 };
@@ -27,23 +24,20 @@ const checkIfPublished = (props) => {
 
   //case 2: review_state null, but parent is published eg:Image in published folder
   if (
-    checkIfNullOrUndefined(props?.review_state) &&
+    !props?.review_state &&
     props?.content?.parent?.review_state === 'published'
   )
     return true;
 
   //case 3: review_state null, but there is no parent eg: PloneSite
   if (
-    checkIfNullOrUndefined(props?.review_state) &&
+    !props?.review_state &&
     Object.keys(props?.content?.parent || {}).length === 0
   )
     return true;
 
   //case 4: review_state null, and review state of parent is null, eg: Image in PloneSite
-  if (
-    checkIfNullOrUndefined(props?.review_state) &&
-    checkIfNullOrUndefined(props?.content?.parent?.review_state)
-  )
+  if (!props?.review_state && !props?.content?.parent?.review_state)
     return true;
   return false;
 };
