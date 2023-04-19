@@ -13,6 +13,7 @@ import contentBoxSVG from './icons/content-box.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import okMiddleware from './middleware/ok';
 import installSlate from './slate';
+import '../theme/site/extras/print.less';
 
 const applyConfig = (config) => {
   // EEA specific settings
