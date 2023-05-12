@@ -25,6 +25,7 @@ import {
   getBaseUrl,
   isInternalURL,
 } from '@plone/volto/helpers';
+import { getFieldURL } from '@eeacms/volto-eea-website-theme/helpers';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -273,30 +274,24 @@ class Edit extends Component {
                   small: data.size === 's',
                 })}
                 src={
-                  isInternalURL(data.url)
+                  getFieldURL(data.url)
                     ? // Backwards compat in the case that the block is storing the full server URL
                       (() => {
                         if (data.align === 'full')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/huge`;
+                          return `${getFieldURL(data.url)}/@@images/image/huge`;
                         if (data.size === 'l')
-                          return `${flattenToAppURL(
+                          return `${getFieldURL(
                             data.url,
                           )}/@@images/image/great`;
                         if (data.size === 'm')
-                          return `${flattenToAppURL(
+                          return `${getFieldURL(
                             data.url,
                           )}/@@images/image/preview`;
                         if (data.size === 's')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/mini`;
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/great`;
+                          return `${getFieldURL(data.url)}/@@images/image/mini`;
+                        return `${getFieldURL(data.url)}/@@images/image/great`;
                       })()
-                    : data.url
+                    : getFieldURL(data.url)
                 }
                 alt={data.alt || ''}
               />

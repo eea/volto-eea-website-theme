@@ -10,7 +10,7 @@ import { UniversalLink } from '@plone/volto/components';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
 import { withBlockExtensions } from '@plone/volto/helpers';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
+import { getFieldURL } from '@eeacms/volto-eea-website-theme/helpers';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
 /**
@@ -68,30 +68,30 @@ export const View = (props) => {
                           small: data.size === 's',
                         })}
                         src={
-                          isInternalURL(data.url)
+                          getFieldURL(data.url)
                             ? // Backwards compat in the case that the block is storing the full server URL
                               (() => {
                                 if (data.align === 'full')
-                                  return `${flattenToAppURL(
+                                  return `${getFieldURL(
                                     data.url,
                                   )}/@@images/image/huge`;
                                 if (data.size === 'l')
-                                  return `${flattenToAppURL(
+                                  return `${getFieldURL(
                                     data.url,
                                   )}/@@images/image/great`;
                                 if (data.size === 'm')
-                                  return `${flattenToAppURL(
+                                  return `${getFieldURL(
                                     data.url,
                                   )}/@@images/image/preview`;
                                 if (data.size === 's')
-                                  return `${flattenToAppURL(
+                                  return `${getFieldURL(
                                     data.url,
                                   )}/@@images/image/mini`;
-                                return `${flattenToAppURL(
+                                return `${getFieldURL(
                                   data.url,
                                 )}/@@images/image/great`;
                               })()
-                            : data.url
+                            : getFieldURL(data.url)
                         }
                         alt={data.alt || ''}
                         loading="lazy"
