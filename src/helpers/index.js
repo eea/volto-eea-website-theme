@@ -1,6 +1,7 @@
 import superagent from 'superagent';
 import config from '@plone/volto/registry';
 import { addHeadersFactory } from '@plone/volto/helpers/Proxy/Proxy';
+// import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/src/helpers/schema-utils';
 
 /**
  * Get a resource image/file with authenticated (if token exist) API headers

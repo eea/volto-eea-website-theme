@@ -1,6 +1,8 @@
 import * as eea from './config';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
+import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
+import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
@@ -203,6 +205,59 @@ const applyConfig = (config) => {
       },
     },
   ];
+
+  // Grid/Teaser block (kitconcept)
+  if (config.blocks.blocksConfig.__grid) {
+    config.blocks.blocksConfig.__grid.restricted = true;
+  }
+  if (config.blocks.blocksConfig.imagesGrid) {
+    config.blocks.blocksConfig.imagesGrid.restricted = true;
+  }
+  if (config.blocks.blocksConfig.teaser) {
+    config.blocks.blocksConfig.teaser.restricted = true;
+  }
+
+  // layout settings
+  config = [installLayoutSettingsBlock].reduce(
+    (acc, apply) => apply(acc),
+    config,
+  );
+
+  // Group
+  if (config.blocks.blocksConfig.group) {
+    config.blocks.blocksConfig.group.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Columns
+  if (config.blocks.blocksConfig.columnsBlock) {
+    config.blocks.blocksConfig.columnsBlock.mostUsed = true;
+    config.blocks.blocksConfig.columnsBlock.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Listing
+  if (config.blocks.blocksConfig.listing) {
+    config.blocks.blocksConfig.listing.title = 'Listing (Content)';
+    config.blocks.blocksConfig.listing.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Block chooser
+  config.blocks.blocksConfig.image.mostUsed = false;
+  config.blocks.blocksConfig.video.mostUsed = false;
+
+  // Divider
+  if (config.blocks.blocksConfig.dividerBlock) {
+    config.blocks.blocksConfig.dividerBlock.mostUsed = true;
+  }
+
+  // Call to Action
+  if (config.blocks.blocksConfig.callToActionBlock) {
+    config.blocks.blocksConfig.callToActionBlock.mostUsed = true;
+  }
+
+  // Accordion
+  if (config.blocks.blocksConfig.accordion) {
+    config.blocks.blocksConfig.accordion.mostUsed = true;
+  }
 
   // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
