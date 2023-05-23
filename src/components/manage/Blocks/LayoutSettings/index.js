@@ -13,7 +13,7 @@ export default (config) => {
     edit: LayoutSettingsEdit,
     schema: BlockSettingsSchema,
     restricted: false,
-    mostUsed: true,
+    mostUsed: false,
     blockHasOwnFocusManagement: true,
     sidebarTab: 1,
   };
