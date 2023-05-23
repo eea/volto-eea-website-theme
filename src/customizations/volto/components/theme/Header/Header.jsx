@@ -214,7 +214,11 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
             />
 
             {!!subsite && subsite.title && (
-              <UniversalLink item={subsite} className="subsite-logo">
+              <UniversalLink
+                href={flattenToAppURL(subsite['@id'])}
+                item={subsite}
+                className="subsite-logo"
+              >
                 {subsite.subsite_logo ? (
                   <Image
                     src={subsite.subsite_logo.scales.mini.download}
