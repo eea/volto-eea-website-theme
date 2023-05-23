@@ -12,9 +12,7 @@ export default (config) => {
     view: LayoutSettingsView,
     edit: LayoutSettingsEdit,
     schema: BlockSettingsSchema,
-    restricted: ({ properties }) => {
-      return !!properties['@type'];
-    },
+    restricted: false,
     mostUsed: true,
     blockHasOwnFocusManagement: true,
     sidebarTab: 1,
