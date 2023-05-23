@@ -28,7 +28,10 @@ export const EditSchema = () => {
       },
       body_class: {
         title: 'Body class',
-        choices: [['homepage-inverse', 'Homepage inverse']],
+        choices: [
+          ['homepage', 'Homepage'],
+          ['homepage-inverse', 'Homepage inverse'],
+        ],
       },
     },
   };
