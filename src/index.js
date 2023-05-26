@@ -16,6 +16,12 @@ import voltoCustomMiddleware from './middleware/voltoCustom';
 import okMiddleware from './middleware/ok';
 import installSlate from './slate';
 
+const restrictedBlocks = [
+  '__grid', // Grid/Teaser block (kitconcept)
+  'imagesGrid',
+  'teaser',
+];
+
 const applyConfig = (config) => {
   // EEA specific settings
   config.settings.eea = {
@@ -33,6 +39,13 @@ const applyConfig = (config) => {
 
   // Disable tags on View
   config.settings.showTags = false;
+
+  // Disable some blocks
+  restrictedBlocks.forEach((block) => {
+    if (config.blocks.blocksConfig[block]) {
+      config.blocks.blocksConfig[block].restricted = true;
+    }
+  });
 
   // Enable Title block
   config.blocks.blocksConfig.title.restricted = false;
@@ -205,17 +218,6 @@ const applyConfig = (config) => {
       },
     },
   ];
-
-  // Grid/Teaser block (kitconcept)
-  if (config.blocks.blocksConfig.__grid) {
-    config.blocks.blocksConfig.__grid.restricted = true;
-  }
-  if (config.blocks.blocksConfig.imagesGrid) {
-    config.blocks.blocksConfig.imagesGrid.restricted = true;
-  }
-  if (config.blocks.blocksConfig.teaser) {
-    config.blocks.blocksConfig.teaser.restricted = true;
-  }
 
   // layout settings
   config = [installLayoutSettingsBlock].reduce(
