@@ -3,11 +3,9 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
-import { startCase } from 'lodash';
-import qs from 'querystring';
+import startCase from 'lodash/startCase';
 import { Icon } from 'semantic-ui-react';
 import Popup from '@eeacms/volto-eea-design-system/ui/Popup/Popup';
-import { flattenToAppURL } from '@plone/volto/helpers';
 import config from '@plone/volto/registry';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import {
@@ -62,7 +60,7 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
-  const { banner = {}, intl, location, types = [] } = props;
+  const { banner = {}, intl } = props;
   const metadata = props.metadata || props.properties;
   const popupRef = useRef(null);
   const {
@@ -81,11 +79,6 @@ const View = (props) => {
   const copyrightPrefix =
     config.blocks.blocksConfig.title.copyrightPrefix || '';
 
-  // Set query parameters
-  const parameters = useMemo(
-    () => qs.parse(location.search.replace('?', '')) || {},
-    [location],
-  );
   // Set dates
   const getDate = useCallback(
     (hidden, key) => {
@@ -109,18 +102,7 @@ const View = (props) => {
   // Set image source
   const image = getImageSource(metadata['image']);
   // Get type
-  const type = useMemo(() => {
-    return (
-      types?.filter?.(
-        (type) =>
-          flattenToAppURL(type['@id']) ===
-          `/@types/${metadata['@type'] || parameters.type}`,
-      )[0]?.title ||
-      friendlyId(metadata['@type']) ||
-      metadata['@type'] ||
-      parameters.type
-    );
-  }, [types, metadata, parameters]);
+  const type = metadata.type_title || friendlyId(metadata['@type']);
 
   return (
     <Banner {...props} image={image}>
