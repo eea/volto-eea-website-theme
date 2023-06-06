@@ -299,7 +299,6 @@ class Comments extends Component {
    */
   render() {
     const { items, permissions } = this.props;
-    const moment = this.props.moment.default;
     const { collapsedComments } = this.state;
     // object with comment ids, to easily verify if any comment has children
     const allCommentsWithCildren = this.addRepliesAsChildrenToComments(items);
@@ -424,7 +423,7 @@ class Comments extends Component {
           : null}
       </Comment>
     );
-    console.log(permissions.view_comments);
+
     if (!permissions.view_comments) return '';
 
     return (
