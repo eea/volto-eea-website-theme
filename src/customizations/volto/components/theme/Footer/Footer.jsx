@@ -8,6 +8,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { flattenToAppURL } from '@plone/volto/helpers';
 import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
 import config from '@plone/volto/registry';
+import isArray from 'lodash/isArray';
 
 const Footer = () => {
   const { eea } = config.settings;
@@ -28,7 +29,7 @@ const Footer = () => {
     shallowEqual,
   );
   // ZMI > portal_actions > footer_actions
-  const actions = footerActions.length
+  const actions = isArray(footerActions)
     ? footerActions.map((action) => ({
         title: action.title,
         link: flattenToAppURL(action.url),
@@ -36,7 +37,7 @@ const Footer = () => {
     : eea.footerOpts.actions;
 
   // ZMI > portal_actions > copyright_actions
-  const copyright = copyrightActions.length
+  const copyright = isArray(copyrightActions)
     ? copyrightActions.map((action) => ({
         title: action.title,
         site: action.title,
@@ -45,7 +46,7 @@ const Footer = () => {
     : eea.footerOpts.copyright;
 
   // ZMI > portal_actions > social_actions
-  const social = socialActions.length
+  const social = isArray(socialActions)
     ? socialActions.map((action) => ({
         name: action.id,
         icon: action.icon,
@@ -54,7 +55,7 @@ const Footer = () => {
     : eea.footerOpts.social;
 
   // ZMI > portal_actions > contact_actions
-  const contacts = contactActions.length
+  const contacts = isArray(contactActions)
     ? contactActions.map((action, idx) => ({
         text: action.title,
         icon: action.icon,

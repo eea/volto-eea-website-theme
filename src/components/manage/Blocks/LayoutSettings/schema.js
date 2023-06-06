@@ -15,7 +15,7 @@ export const EditSchema = () => {
       {
         id: 'default',
         title: 'Default',
-        fields: ['layout_size'],
+        fields: ['layout_size', 'body_class'],
       },
     ],
     required: [],
@@ -25,6 +25,13 @@ export const EditSchema = () => {
         title: 'Layout size',
         actions: Object.keys(ALIGN_INFO_MAP),
         actionsInfoMap: ALIGN_INFO_MAP,
+      },
+      body_class: {
+        title: 'Body class',
+        choices: [
+          ['homepage', 'Homepage'],
+          ['homepage-inverse', 'Homepage inverse'],
+        ],
       },
     },
   };
