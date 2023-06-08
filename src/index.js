@@ -261,6 +261,12 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.accordion.mostUsed = true;
   }
 
+  // Breadcrumbs
+  config.settings.apiExpanders.push({
+    match: '',
+    GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
+  });
+
   // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
 };
