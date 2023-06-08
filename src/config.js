@@ -21,78 +21,78 @@ export const footerOpts = {
   actions: [
     {
       title: 'Privacy',
-      link: '/privacy',
+      url: '/privacy',
     },
     {
-      link: '/sitemap',
+      url: '/sitemap',
       title: 'Sitemap',
     },
     {
-      link: '/login',
+      url: '/login',
       title: 'CMS Login',
     },
   ],
   copyright: [
     {
-      link: '/copyright',
+      url: '/copyright',
       site: 'EEA',
     },
   ],
   sites: [
     {
-      link: 'https://water.europa.eu/marine',
+      url: 'https://water.europa.eu/marine',
       src: marineLogo,
       alt: 'WISE marine',
     },
     {
-      link: 'https://water.europa.eu/freshwater',
+      url: 'https://water.europa.eu/freshwater',
       src: freshwaterLogo,
       alt: 'WISE freshwater',
     },
     {
-      link: 'https://biodiversity.europa.eu/',
+      url: 'https://biodiversity.europa.eu/',
       src: biseLogo,
       alt: 'Biodiversity',
     },
     {
-      link: 'https://forest.eea.europa.eu/',
+      url: 'https://forest.eea.europa.eu/',
       src: fiseLogo,
       alt: 'Forest information system for europe',
     },
     {
-      link: 'https://climate-adapt.eea.europa.eu/observatory',
+      url: 'https://climate-adapt.eea.europa.eu/observatory',
       src: climateLogo,
       alt: 'European Climate and Health Observatory',
     },
     {
-      link: 'https://climate-adapt.eea.europa.eu/',
+      url: 'https://climate-adapt.eea.europa.eu/',
       src: ccaLogo,
       alt: 'Climate adapt',
     },
     {
-      link: 'https://industry.eea.europa.eu/',
+      url: 'https://industry.eea.europa.eu/',
       src: industryLogo,
       alt: 'European industrial emissions portal',
     },
     {
-      link: 'https://climate-energy.eea.europa.eu/',
+      url: 'https://climate-energy.eea.europa.eu/',
       src: energyLogo,
       alt: 'Climate and energy in the EU',
     },
     {
-      link: 'https://land.copernicus.eu/',
+      url: 'https://land.copernicus.eu/',
       src: copernicusLogo,
       alt: 'Copernicus land monitoring service',
     },
     {
-      link: 'https://insitu.copernicus.eu/',
+      url: 'https://insitu.copernicus.eu/',
       src: insituLogo,
       alt: 'Copernicus in situ',
     },
   ],
   managedBy: [
     {
-      link: 'https://www.eea.europa.eu/',
+      url: 'https://www.eea.europa.eu/',
       src: eeaWhiteLogo,
       alt: 'EEA Logo',
       className: 'site logo',
@@ -103,7 +103,7 @@ export const footerOpts = {
       },
     },
     {
-      link: 'https://www.eionet.europa.eu/',
+      url: 'https://www.eionet.europa.eu/',
       src: eionetLogo,
       alt: 'EIONET Logo',
       className: 'eionet logo',
@@ -118,46 +118,46 @@ export const footerOpts = {
     {
       name: 'twitter',
       icon: 'ri-twitter-fill',
-      link: 'https://twitter.com/euenvironment',
+      url: 'https://twitter.com/euenvironment',
     },
     {
       name: 'facebook',
       icon: 'ri-facebook-box-fill',
-      link: 'https://www.facebook.com/European.Environment.Agency',
+      url: 'https://www.facebook.com/European.Environment.Agency',
     },
     {
       name: 'linkedin',
       icon: 'ri-linkedin-fill',
-      link: 'https://www.linkedin.com/company/european-environment-agency',
+      url: 'https://www.linkedin.com/company/european-environment-agency',
     },
     {
       name: 'youtube',
       icon: 'ri-youtube-fill',
-      link: 'https://www.youtube.com/user/EEAvideos',
+      url: 'https://www.youtube.com/user/EEAvideos',
     },
     {
       name: 'instagram',
       icon: 'ri-instagram-fill',
-      link: 'https://www.instagram.com/ourplanet_eu',
+      url: 'https://www.instagram.com/ourplanet_eu',
     },
     {
       name: 'rss',
       icon: 'ri-rss-fill',
-      link: '/subscription/news-feeds',
+      url: '/subscription/news-feeds',
     },
   ],
   contacts: [
     {
       icon: 'comment outline',
       text: 'About us',
-      link: '/about',
+      url: '/about',
       children: [
         {
-          link: '/faq',
+          url: '/faq',
           text: 'FAQs',
         },
         {
-          link: '/careers',
+          url: '/careers',
           text: 'Careers',
         },
       ],
@@ -165,12 +165,12 @@ export const footerOpts = {
     {
       icon: 'comment outline',
       text: 'Contact us',
-      link: '/contact-us',
+      url: '/contact-us',
     },
     {
       icon: 'envelope outline',
       text: 'Sign up to our newsletter',
-      link: '/newsletter',
+      url: '/newsletter',
     },
   ],
   address: 'Kongens Nytorv 6 1050 Copenhagen K (+45) 33 36 71 00',
