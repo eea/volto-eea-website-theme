@@ -32,7 +32,7 @@ const Footer = () => {
   const actions = isArray(footerActions)
     ? footerActions.map((action) => ({
         title: action.title,
-        link: flattenToAppURL(action.url),
+        url: flattenToAppURL(action.url),
       }))
     : eea.footerOpts.actions;
 
@@ -41,7 +41,7 @@ const Footer = () => {
     ? copyrightActions.map((action) => ({
         title: action.title,
         site: action.title,
-        link: flattenToAppURL(action.url),
+        url: flattenToAppURL(action.url),
       }))
     : eea.footerOpts.copyright;
 
@@ -50,7 +50,7 @@ const Footer = () => {
     ? socialActions.map((action) => ({
         name: action.id,
         icon: action.icon,
-        link: action.url,
+        url: action.url,
       }))
     : eea.footerOpts.social;
 
@@ -59,13 +59,13 @@ const Footer = () => {
     ? contactActions.map((action, idx) => ({
         text: action.title,
         icon: action.icon,
-        link: flattenToAppURL(action.url),
+        url: flattenToAppURL(action.url),
         children:
           idx === 0
             ? contactExtraActions.map((child) => ({
                 text: child.title,
                 icon: child.icon,
-                link: flattenToAppURL(child.url),
+                url: flattenToAppURL(child.url),
               }))
             : [],
       }))
