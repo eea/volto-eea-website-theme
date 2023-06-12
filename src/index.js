@@ -68,13 +68,30 @@ const applyConfig = (config) => {
 
   // Apply tabs block customization
   if (config.blocks.blocksConfig.tabs_block) {
-    if (config.blocks.blocksConfig.tabs_block.templates.accordion) {
-      config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
-        opened: 'ri-arrow-up-s-line',
-        closed: 'ri-arrow-down-s-line',
-      };
-    }
+    // if (config.blocks.blocksConfig.tabs_block.templates.accordion) {
+    //   config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
+    //     opened: 'ri-arrow-up-s-line',
+    //     closed: 'ri-arrow-down-s-line',
+    //   };
+    // }
+
+    config.blocks.blocksConfig.tabs_block = {
+      ...config.blocks.blocksConfig.tabs_block,
+      schemaEnhancer: ({ formData, schema, intl }) => {
+        console.log('tabs schema', schema);
+        // schema.fieldsets[1].fields = [
+        //   'menuAlign',
+        //   'menuPosition',
+        //   'menuColor',
+        //   'menuInverted',
+        // ];
+        return schema;
+      },
+      // variations: [...config.blocks.blocksConfig.tabs_block.variations],
+    };
   }
+
+  console.log('tabs block', config.blocks.blocksConfig.tabs_block);
 
   // Apply columns block customization
   if (config.blocks.blocksConfig.columnsBlock) {
@@ -258,6 +275,8 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.mostUsed = true;
   }
+
+  console.log(config.blocks.blocksConfig.tabs_block);
 
   // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
