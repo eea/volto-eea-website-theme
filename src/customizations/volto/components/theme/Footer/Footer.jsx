@@ -80,6 +80,7 @@ const Footer = () => {
 
   return (
     <EEAFooter>
+      <EEAFooter.Header>{eea.footerOpts.logosHeader}</EEAFooter.Header>
       <EEAFooter.SubFooter {...options} />
       <EEAFooter.Header>{eea.footerOpts.header}</EEAFooter.Header>
       <EEAFooter.Sites sites={eea.footerOpts.sites} />
