@@ -75,21 +75,30 @@ const applyConfig = (config) => {
     //   };
     // }
 
-    config.blocks.blocksConfig.tabs_block = {
-      ...config.blocks.blocksConfig.tabs_block,
-      schemaEnhancer: ({ formData, schema, intl }) => {
-        console.log('tabs schema', schema);
-        // schema.fieldsets[1].fields = [
-        //   'menuAlign',
-        //   'menuPosition',
-        //   'menuColor',
-        //   'menuInverted',
-        // ];
-        return schema;
-      },
-      // variations: [...config.blocks.blocksConfig.tabs_block.variations],
-    };
-  }
+    const defaultVariation = config.blocks.blocksConfig.tabs_block.variations.find(({id}) => id === 'default');
+    const oldSchemaEnhancer = defaultVariation.schemaEnhancer;
+    defaultVariation.schemaEnhancer = (props) => {
+      const {formData, schema, intl} = props;
+      const newSchema = oldSchemaEnhancer(props);
+      //... modify newSchema;
+      return newSchema;
+    }
+
+  //   config.blocks.blocksConfig.tabs_block = {
+  //     ...config.blocks.blocksConfig.tabs_block,
+  //     schemaEnhancer: ({ formData, schema, intl }) => {
+  //       console.log('tabs schema', schema);
+  //       // schema.fieldsets[1].fields = [
+  //       //   'menuAlign',
+  //       //   'menuPosition',
+  //       //   'menuColor',
+  //       //   'menuInverted',
+  //       // ];
+  //       return schema;
+  //     },
+  //     // variations: [...config.blocks.blocksConfig.tabs_block.variations],
+  //   };
+  // }
 
   console.log('tabs block', config.blocks.blocksConfig.tabs_block);
 
