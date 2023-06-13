@@ -51,7 +51,7 @@ const applyConfig = (config) => {
     config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
     config?.settings?.eea?.languages?.length > 0
   )
-    config.blocks.blocksConfig.nextCloudVideo.subtitlesLanguages = config?.settings?.eea?.languages?.map(
+    config.blocks.blocksConfig.nextCloudVideo.subtitlesLanguages = config.settings.eea.languages.map(
       (el) => [el.code, el.name],
     );
 
