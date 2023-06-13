@@ -279,8 +279,6 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.accordion.mostUsed = true;
   }
 
-  // console.log(config.blocks.blocksConfig.tabs_block);
-
   // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
 };
