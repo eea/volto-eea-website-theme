@@ -68,11 +68,16 @@ const applyConfig = (config) => {
 
   // Apply tabs block customization
   if (config.blocks.blocksConfig.tabs_block) {
-    const defaultVariation = config.blocks.blocksConfig.tabs_block.variations.find(
+    const tabs_block_variations =
+      config.blocks.blocksConfig.tabs_block.variations;
+    const defaultVariation = tabs_block_variations.find(
       ({ id }) => id === 'default',
     );
-    const accordionVariation = config.blocks.blocksConfig.tabs_block.variations.find(
+    const accordionVariation = tabs_block_variations.find(
       ({ id }) => id === 'accordion',
+    );
+    const horizontalVariation = tabs_block_variations.find(
+      ({ id }) => id === 'horizontal-responsive',
     );
 
     if (accordionVariation) {
@@ -82,9 +87,22 @@ const applyConfig = (config) => {
       };
     }
 
-    const oldSchemaEnhancer = defaultVariation.schemaEnhancer;
+    const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
     defaultVariation.schemaEnhancer = (props) => {
-      const newSchema = oldSchemaEnhancer(props);
+      const newSchema = oldDefaultSchemaEnhancer(props);
+      const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+      menuFieldset.fields = [
+        'menuAlign',
+        'menuPosition',
+        'menuColor',
+        'menuInverted',
+      ];
+      return newSchema;
+    };
+
+    const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
+    horizontalVariation.schemaEnhancer = (props) => {
+      const newSchema = oldHorizontalSchemaEnhancer(props);
       const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
       menuFieldset.fields = [
         'menuAlign',
