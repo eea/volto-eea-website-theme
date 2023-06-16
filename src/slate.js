@@ -66,7 +66,7 @@ const clearFormatting = (editor) => {
         // console.log('node', n, p);
         return Text.isText(n);
       },
-      at: [0], // uncomment if you want everything to be cleared
+      //at: [0], // uncomment if you want everything to be cleared
     }),
   );
 
