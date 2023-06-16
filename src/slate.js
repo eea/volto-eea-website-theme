@@ -215,6 +215,8 @@ export default function installSlate(config) {
       </List.Item>
     );
 
+    config.settings.slate.allowedHeadlineElements.push('zotero');
+
     // Slate StyleMenu configuration
     config.settings.slate.styleMenu = {
       ...(config.settings.slate.styleMenu || {}),
