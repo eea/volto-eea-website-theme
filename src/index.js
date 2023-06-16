@@ -7,6 +7,7 @@ import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCS
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
+import { ThemesWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ThemesWidget';
 import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
@@ -111,11 +112,10 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
   }
 
-  // Custom TokenWidget
-  if (config.widgets.views) {
-    config.widgets.views.id.subjects = TokenWidget;
-    config.widgets.views.widget.tags = TokenWidget;
-  }
+  // Custom Widgets
+  config.widgets.views.id.taxonomy_themes = ThemesWidget;
+  config.widgets.views.id.subjects = TokenWidget;
+  config.widgets.views.widget.tags = TokenWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
