@@ -112,7 +112,7 @@ const StylingsButton = (props) => {
       }
     >
       <Dropdown.Menu>
-        {inlineOpts.length && (
+        {inlineOpts.length ? (
           <>
             <Dropdown.Header
               content={intl.formatMessage(messages.inlineStyle)}
@@ -126,9 +126,11 @@ const StylingsButton = (props) => {
               />
             ))}
           </>
+        ) : (
+          ''
         )}
 
-        {blockOpts.length && (
+        {blockOpts.length ? (
           <>
             <Dropdown.Header
               content={intl.formatMessage(messages.paragraphStyle)}
@@ -142,6 +144,8 @@ const StylingsButton = (props) => {
               />
             ))}
           </>
+        ) : (
+          ''
         )}
       </Dropdown.Menu>
     </Dropdown>
