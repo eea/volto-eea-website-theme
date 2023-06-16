@@ -1,6 +1,8 @@
 import * as eea from './config';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
+import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
+import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
@@ -13,6 +15,12 @@ import contentBoxSVG from './icons/content-box.svg';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import okMiddleware from './middleware/ok';
 import installSlate from './slate';
+
+const restrictedBlocks = [
+  '__grid', // Grid/Teaser block (kitconcept)
+  'imagesGrid',
+  'teaser',
+];
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -31,6 +39,21 @@ const applyConfig = (config) => {
 
   // Disable tags on View
   config.settings.showTags = false;
+
+  // Disable some blocks
+  restrictedBlocks.forEach((block) => {
+    if (config.blocks.blocksConfig[block]) {
+      config.blocks.blocksConfig[block].restricted = true;
+    }
+  });
+  // Set Languages in nextcloud-video-block
+  if (
+    config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
+    config?.settings?.eea?.languages?.length > 0
+  )
+    config.blocks.blocksConfig.nextCloudVideo.subtitlesLanguages = config.settings.eea.languages.map(
+      (el) => [el.code, el.name],
+    );
 
   // Enable Title block
   config.blocks.blocksConfig.title.restricted = false;
@@ -203,6 +226,54 @@ const applyConfig = (config) => {
       },
     },
   ];
+
+  // layout settings
+  config = [installLayoutSettingsBlock].reduce(
+    (acc, apply) => apply(acc),
+    config,
+  );
+
+  // Group
+  if (config.blocks.blocksConfig.group) {
+    config.blocks.blocksConfig.group.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Columns
+  if (config.blocks.blocksConfig.columnsBlock) {
+    config.blocks.blocksConfig.columnsBlock.mostUsed = true;
+    config.blocks.blocksConfig.columnsBlock.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Listing
+  if (config.blocks.blocksConfig.listing) {
+    config.blocks.blocksConfig.listing.title = 'Listing (Content)';
+    config.blocks.blocksConfig.listing.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Block chooser
+  config.blocks.blocksConfig.image.mostUsed = false;
+  config.blocks.blocksConfig.video.mostUsed = false;
+
+  // Divider
+  if (config.blocks.blocksConfig.dividerBlock) {
+    config.blocks.blocksConfig.dividerBlock.mostUsed = true;
+  }
+
+  // Call to Action
+  if (config.blocks.blocksConfig.callToActionBlock) {
+    config.blocks.blocksConfig.callToActionBlock.mostUsed = true;
+  }
+
+  // Accordion
+  if (config.blocks.blocksConfig.accordion) {
+    config.blocks.blocksConfig.accordion.mostUsed = true;
+  }
+
+  // Breadcrumbs
+  config.settings.apiExpanders.push({
+    match: '',
+    GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
+  });
 
   // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);

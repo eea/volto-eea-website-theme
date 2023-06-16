@@ -18,8 +18,10 @@ import { Portal } from 'react-portal';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { Button, Comment, Container, Icon } from 'semantic-ui-react';
+import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import { formatRelativeDate } from '@plone/volto/helpers/Utils/Date';
 import config from '@plone/volto/registry';
+// import { Button, Grid, Segment, Container } from 'semantic-ui-react';
 
 const messages = defineMessages({
   comment: {
@@ -296,7 +298,7 @@ class Comments extends Component {
    * @returns {string} Markup for the component.
    */
   render() {
-    const { items } = this.props;
+    const { items, permissions } = this.props;
     const { collapsedComments } = this.state;
     // object with comment ids, to easily verify if any comment has children
     const allCommentsWithCildren = this.addRepliesAsChildrenToComments(items);
@@ -308,7 +310,7 @@ class Comments extends Component {
     const commentElement = (comment) => (
       <Comment key={comment.comment_id}>
         <Avatar
-          src={comment.author_image}
+          src={flattenToAppURL(comment.author_image)}
           title={comment.author_name || 'Anonymous'}
           color={getColor(comment.author_username)}
         />
@@ -338,13 +340,15 @@ class Comments extends Component {
             )}
           </Comment.Text>
           <Comment.Actions>
-            <Comment.Action
-              as="a"
-              aria-label={this.props.intl.formatMessage(messages.reply)}
-              onClick={() => this.setReplyTo(comment.comment_id)}
-            >
-              <FormattedMessage id="Reply" defaultMessage="Reply" />
-            </Comment.Action>
+            {comment.can_reply && (
+              <Comment.Action
+                as="a"
+                aria-label={this.props.intl.formatMessage(messages.reply)}
+                onClick={() => this.setReplyTo(comment.comment_id)}
+              >
+                <FormattedMessage id="Reply" defaultMessage="Reply" />
+              </Comment.Action>
+            )}
             {comment.is_editable && (
               <Comment.Action
                 onClick={() =>
@@ -420,6 +424,8 @@ class Comments extends Component {
       </Comment>
     );
 
+    if (!permissions.view_comments) return '';
+
     return (
       <Container className="comments">
         <CommentEditModal
@@ -429,16 +435,17 @@ class Comments extends Component {
           id={this.state.editId}
           text={this.state.editText}
         />
-        <div id="comment-add-id">
-          <Form
-            onSubmit={this.onSubmit}
-            onCancel={this.onEditCancel}
-            submitLabel={this.props.intl.formatMessage(messages.comment)}
-            resetAfterSubmit
-            schema={makeFormSchema(this.props.intl)}
-          />
-        </div>
-
+        {permissions.can_reply && (
+          <div id="comment-add-id">
+            <Form
+              onSubmit={this.onSubmit}
+              onCancel={this.onEditCancel}
+              submitLabel={this.props.intl.formatMessage(messages.comment)}
+              resetAfterSubmit
+              schema={makeFormSchema(this.props.intl)}
+            />
+          </div>
+        )}
         {/* all comments  */}
         <Comment.Group threaded={false}>
           {allPrimaryComments.map((item) => commentElement(item))}
@@ -474,11 +481,13 @@ class Comments extends Component {
 
 export default compose(
   injectIntl,
+  injectLazyLibs(['moment']),
   connect(
     (state) => ({
       items: state.comments.items,
       next: state.comments.next,
       items_total: state.comments.items_total,
+      permissions: state.comments.permissions || {},
       addRequest: state.comments.add,
       deleteRequest: state.comments.delete,
     }),

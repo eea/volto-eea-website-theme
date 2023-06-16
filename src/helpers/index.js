@@ -3,6 +3,7 @@ import config from '@plone/volto/registry';
 import { addHeadersFactory } from '@plone/volto/helpers/Proxy/Proxy';
 import { isInternalURL } from '@plone/volto/helpers';
 
+
 /**
  * Get a resource image/file with authenticated (if token exist) API headers
  * @function getBackendResourceWithAuth
