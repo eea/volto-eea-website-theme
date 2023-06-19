@@ -26,7 +26,7 @@ import {
 import isBoolean from 'lodash/isBoolean';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { injectIntl } from 'react-intl';
+import { injectIntl, defineMessages } from 'react-intl';
 import { Portal } from 'react-portal';
 import { connect } from 'react-redux';
 import {
@@ -43,6 +43,14 @@ import { BlocksToolbar, UndoToolbar } from '@plone/volto/components';
 import { setSidebarTab } from '@plone/volto/actions';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
+
+const leavePageMessage = defineMessages({
+  leavePage: {
+    id: 'leavePage',
+    defaultMessage:
+      'You might have unsaved work? Are you sure you want to leave?',
+  },
+});
 
 /**
  * Form container class.
@@ -296,6 +304,11 @@ class Form extends Component {
     }
   }
 
+  altertUnsavedWork(event) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+
   /**
    * Component did mount
    * @method componentDidMount
@@ -303,6 +316,15 @@ class Form extends Component {
    */
   componentDidMount() {
     this.setState({ isClient: true });
+    window.addEventListener('beforeunload', this.altertUnsavedWork);
+  }
+  /**
+   * Component will unmount
+   * @method componentWillUnmount
+   * @returns {undefined}
+   */
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.altertUnsavedWork);
   }
 
   static getDerivedStateFromProps(props, state) {
