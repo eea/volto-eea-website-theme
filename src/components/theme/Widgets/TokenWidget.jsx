@@ -6,7 +6,10 @@ export const TokenWidget = ({ value, children, className }) =>
   value ? (
     <span className={cx(className, 'token', 'widget')}>
       {value.map((tag) => (
-        <Tag href={`http://search.apps.eea.europa.eu/?q=${tag}`} key={tag}>
+        <Tag
+          href={`https://www.eea.europa.eu/en/advanced-search?q=${tag}`}
+          key={tag}
+        >
           {children ? children(tag) : tag}
         </Tag>
       ))}

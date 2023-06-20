@@ -13,11 +13,11 @@ import isArray from 'lodash/isArray';
 const Footer = () => {
   const { eea } = config.settings;
   const {
-    footerActions = [],
-    copyrightActions = [],
-    socialActions = [],
-    contactActions = [],
-    contactExtraActions = [],
+    footerActions,
+    copyrightActions,
+    socialActions,
+    contactActions,
+    contactExtraActions,
   } = useSelector(
     (state) => ({
       footerActions: state.actions?.actions?.footer_actions,
