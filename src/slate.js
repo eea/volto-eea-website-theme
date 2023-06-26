@@ -17,6 +17,8 @@ import clearIcon from './icons/eraser.svg';
 
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
+  // TODO: someone fix this
+  if (levels.length < 2) return false;
   const [, [, path]] = levels;
   Transforms.setNodes(
     editor,
@@ -30,7 +32,9 @@ const toggleBlockClassFormat = (editor, format) => {
 
 const isBlockClassActive = (editor, format) => {
   if (!editor.selection) return false;
+  // TODO: someone fix this
   const levels = Array.from(Editor.levels(editor, editor.selection));
+  if (levels.length < 2) return false;
   const [, [node]] = levels;
   return node.styleName === format;
 };
