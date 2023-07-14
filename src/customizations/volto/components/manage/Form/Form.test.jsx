@@ -10,6 +10,20 @@ import '@testing-library/jest-dom/extend-expect';
 const mockStore = configureMockStore();
 let store;
 
+jest.mock('@plone/volto/components/manage/Form/Field', () => (props) => {
+  return (
+    <div id={`mocked-field-${props.id}`}>
+      {props.id}
+      {props.description}
+      <textarea
+        onClick={props.onClick}
+        onBlur={props.onBlur}
+        onChange={(target) => props.onChange(props.id, target?.target?.value)}
+      />
+    </div>
+  );
+});
+
 describe('Form', () => {
   beforeEach(() => {
     store = mockStore({
@@ -20,7 +34,7 @@ describe('Form', () => {
     });
   });
 
-  it('renders without crashing', () => {
+  it('renders "Test title" and has the correct structure without formData without crashing', () => {
     config.blocks = {
       initialBlocksFocus: {
         typeB: 'typeB',
@@ -45,15 +59,19 @@ describe('Form', () => {
       title: 'Test title',
     };
 
-    const { container } = render(
+    const { container, getByText } = render(
       <Provider store={store}>
         <Form {...props} />
       </Provider>,
     );
     expect(container).toBeTruthy();
+    expect(
+      container.querySelector('.ui.form .invisible .ui.raised.segments'),
+    ).toBeInTheDocument();
+    expect(getByText('Test title')).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
+  it('renders "Test title" and has the correct structure with formData without crashing with same types', () => {
     config.blocks = {
       initialBlocksFocus: {
         typeB: 'typeB',
@@ -85,15 +103,19 @@ describe('Form', () => {
       title: 'Test title',
     };
 
-    const { container } = render(
+    const { container, getByText } = render(
       <Provider store={store}>
         <Form {...props} />
       </Provider>,
     );
     expect(container).toBeTruthy();
+    expect(
+      container.querySelector('.ui.form .invisible .ui.raised.segments'),
+    ).toBeInTheDocument();
+    expect(getByText('Test title')).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
+  it('renders "Test title" and has the correct structure with formData without crashing with different types and isEditForm true', () => {
     config.blocks = {
       initialBlocksFocus: {
         typeA: 'typeA',
@@ -126,15 +148,19 @@ describe('Form', () => {
       isEditForm: true,
     };
 
-    const { container } = render(
+    const { container, getByText } = render(
       <Provider store={store}>
         <Form {...props} />
       </Provider>,
     );
     expect(container).toBeTruthy();
+    expect(
+      container.querySelector('.ui.form .invisible .ui.raised.segments'),
+    ).toBeInTheDocument();
+    expect(getByText('Test title')).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
+  it('renders "Test title" and has the correct structure with formData without crashing with no focused block', () => {
     config.blocks = {
       initialBlocksFocus: null,
     };
@@ -164,15 +190,19 @@ describe('Form', () => {
       title: 'Test title',
     };
 
-    const { container } = render(
+    const { container, getByText } = render(
       <Provider store={store}>
         <Form {...props} />
       </Provider>,
     );
     expect(container).toBeTruthy();
+    expect(
+      container.querySelector('.ui.form .invisible .ui.raised.segments'),
+    ).toBeInTheDocument();
+    expect(getByText('Test title')).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
+  it('should display the correct fields on the currently selected fieldset', () => {
     config.blocks = {
       initialBlocksFocus: null,
     };
@@ -195,7 +225,11 @@ describe('Form', () => {
           },
         ],
         properties: {
-          field1: { title: 'Field 1', description: 'Field 1 description' },
+          field1: {
+            title: 'Field 1',
+            description: 'Field 1 description',
+            items: ['field4'],
+          },
           field2: { title: 'Field 2' },
           field3: { title: 'Field 3' },
           field4: { title: 'Field 4' },
@@ -227,6 +261,10 @@ describe('Form', () => {
       FormValidation,
       'giveServerErrorsToCorrespondingFields',
     );
+    giveServerErrorsToCorrespondingFieldsMock.mockImplementation(() => [
+      { message: 'Sample error message' },
+      { message: 'Sample error message' },
+    ]);
     const requestError = 'Sample error message';
 
     const { container, getByText, rerender } = render(
@@ -239,8 +277,30 @@ describe('Form', () => {
       </Provider>,
     );
 
+    expect(getByText('Fieldset 1')).toBeInTheDocument();
+    expect(getByText('Fieldset 2')).toBeInTheDocument();
+    expect(getByText('Fieldset 1 description')).toBeInTheDocument();
+    expect(getByText('Test title')).toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field1')).toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field2')).toBeInTheDocument();
+    expect(
+      container.querySelector('#mocked-field-field3'),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelector('#mocked-field-field4'),
+    ).not.toBeInTheDocument();
+
     fireEvent.click(container.querySelector('#mocked-field-field2'));
     fireEvent.click(getByText('Fieldset 2'));
+
+    expect(
+      container.querySelector('#mocked-field-field1'),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelector('#mocked-field-field2'),
+    ).not.toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field3')).toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field4')).toBeInTheDocument();
 
     rerender(
       <Provider store={store}>
@@ -259,58 +319,7 @@ describe('Form', () => {
     );
   });
 
-  it('renders without crashing', () => {
-    config.blocks = {
-      initialBlocksFocus: null,
-    };
-    config.settings = {
-      verticalFormTabs: true,
-    };
-
-    const props = {
-      schema: {
-        fieldsets: [
-          {
-            fields: ['field1', 'field2'],
-            id: 'fieldset1',
-            title: 'Fieldset 1',
-          },
-        ],
-        properties: {},
-        definitions: {},
-        required: [],
-      },
-      formData: {
-        blocks: {
-          id1: {
-            '@type': 'typeB',
-            plaintext: 'Block A',
-            override_toc: false,
-          },
-        },
-        blocks_layout: {
-          items: ['id1'],
-        },
-      },
-      type: 'typeB',
-      isClient: true,
-      title: 'Test title',
-      description: 'Test description',
-      error: {
-        message: 'Sample error message',
-      },
-      onSubmit: jest.fn(),
-      onCancel: jest.fn(),
-    };
-
-    render(
-      <Provider store={store}>
-        <Form {...props} />
-      </Provider>,
-    );
-  });
-
-  it('renders without crashing', () => {
+  it('renders without crashing and selecting Submit/Cancel button', () => {
     config.blocks = {
       initialBlocksFocus: null,
     };
@@ -360,10 +369,105 @@ describe('Form', () => {
       submitLabel: 'Submit',
     };
 
-    render(
+    const { container, getByText } = render(
       <Provider store={store}>
         <Form {...props} />
       </Provider>,
     );
+
+    expect(getByText('Fieldset 1')).toBeInTheDocument();
+    expect(getByText('Fieldset 2')).toBeInTheDocument();
+    expect(getByText('Test title')).toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field1')).toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field2')).toBeInTheDocument();
+    expect(
+      container.querySelector('#mocked-field-field3'),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelector('#mocked-field-field4'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(container.querySelector('button[aria-label="Submit"]'));
+    fireEvent.click(container.querySelector('button[aria-label="Cancel"]'));
+  });
+
+  it('renders only one fieldset and the actions to save/cancel', () => {
+    config.blocks = {
+      initialBlocksFocus: null,
+    };
+    config.settings = {
+      verticalFormTabs: true,
+    };
+
+    const props = {
+      schema: {
+        fieldsets: [
+          {
+            fields: ['field1', 'field2'],
+            id: 'fieldset1',
+            title: 'Fieldset 1',
+          },
+        ],
+        properties: {
+          field1: {
+            title: 'Field 1',
+            description: 'Field 1 description',
+            items: ['field4'],
+            widget: 'textarea',
+          },
+          field2: { title: 'Field 2', widget: 'textarea' },
+        },
+        definitions: {},
+        required: [],
+      },
+      formData: {
+        blocks: {
+          id1: {
+            '@type': 'typeB',
+            plaintext: 'Block A',
+            override_toc: false,
+          },
+        },
+        blocks_layout: {
+          items: ['id1'],
+        },
+      },
+      type: 'typeB',
+      isClient: true,
+      title: 'Test title',
+      description: 'Test description',
+      error: {
+        message: 'Sample error message',
+      },
+      onSubmit: jest.fn(),
+      onCancel: jest.fn(),
+    };
+
+    const validateFieldsPerFieldsetMock = jest.spyOn(
+      FormValidation,
+      'validateFieldsPerFieldset',
+    );
+    validateFieldsPerFieldsetMock.mockImplementation(() => [
+      'field1',
+      'field2',
+    ]);
+
+    const { container, getByText } = render(
+      <Provider store={store}>
+        <Form {...props} />
+      </Provider>,
+    );
+
+    expect(getByText('Error')).toBeInTheDocument();
+    expect(getByText('Sample error message')).toBeInTheDocument();
+
+    expect(container.querySelector('#mocked-field-field1')).toBeInTheDocument();
+    expect(container.querySelector('#mocked-field-field2')).toBeInTheDocument();
+
+    fireEvent.click(container.querySelector('#mocked-field-field2 textarea'));
+    fireEvent.blur(container.querySelector('#mocked-field-field2 textarea'));
+    fireEvent.change(container.querySelector('#mocked-field-field2 textarea'), {
+      target: { value: 'test change' },
+    });
   });
 });
