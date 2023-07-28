@@ -1,9 +1,16 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useIntl } from 'react-intl';
 import { Node, Text } from 'slate';
 import cx from 'classnames';
 import { isEmpty, isEqual, omit } from 'lodash';
+import { UniversalLink, Toast } from '@plone/volto/components';
+import { messages, addAppURL } from '@plone/volto/helpers';
+import useClipboard from '@plone/volto/hooks/clipboard/useClipboard';
 import config from '@plone/volto/registry';
+import linkSVG from '@plone/volto/icons/link.svg';
 
 const OMITTED = ['editor', 'path'];
 
@@ -163,3 +170,60 @@ export const serializeNodesToText = (nodes) => {
 
 export const serializeNodesToHtml = (nodes) =>
   renderToStaticMarkup(serializeNodes(nodes));
+
+export const renderLinkElement = (tagName) => {
+  function LinkElement({
+    attributes,
+    children,
+    mode = 'edit',
+    className = null,
+  }) {
+    const { slate = {} } = config.settings;
+    const Tag = tagName;
+    const slug = attributes.id || '';
+    const location = useLocation();
+    const appPathname = addAppURL(location.pathname);
+    // eslint-disable-next-line no-unused-vars
+    const [copied, copy, setCopied] = useClipboard(
+      appPathname.concat(`#${slug}`),
+    );
+    const intl = useIntl();
+
+    return slate.useLinkedHeadings === false ? (
+      <Tag {...attributes} className={className}>
+        {children}
+      </Tag>
+    ) : (
+      <Tag {...attributes} className={className}>
+        {children}
+        {mode === 'view' && slug && (
+          <UniversalLink
+            className="anchor"
+            aria-hidden="true"
+            tabIndex={-1}
+            href={`#${slug}`}
+          >
+            <svg
+              {...linkSVG.attributes}
+              dangerouslySetInnerHTML={{ __html: linkSVG.content }}
+              height={null}
+              onClick={() => {
+                copy();
+
+                toast.info(
+                  <Toast
+                    info
+                    title={intl.formatMessage(messages.success)}
+                    content={intl.formatMessage(messages.urlClipboardCopy)}
+                  />,
+                );
+              }}
+            ></svg>
+          </UniversalLink>
+        )}
+      </Tag>
+    );
+  }
+  LinkElement.displayName = `${tagName}LinkElement`;
+  return LinkElement;
+};
