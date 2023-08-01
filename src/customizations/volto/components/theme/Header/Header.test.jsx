@@ -136,7 +136,7 @@ describe('Header', () => {
       hasLanguageDropdown: true,
     };
 
-    const { container, getByText, rerender } = render(
+    const { container, rerender } = render(
       <Provider store={store}>
         <Router history={history}>
           <Header pathname="/blog" />
@@ -218,7 +218,7 @@ describe('Header', () => {
       hasLanguageDropdown: true,
     };
 
-    const { container, getByText, rerender } = render(
+    const { container, rerender } = render(
       <Provider store={store}>
         <Router history={history}>
           <Header pathname="/blog" />
@@ -296,7 +296,7 @@ describe('Header', () => {
       hasLanguageDropdown: true,
     };
 
-    const { container, getByText, rerender } = render(
+    const { container, rerender } = render(
       <Provider store={store}>
         <Router history={history}>
           <Header pathname="/blog" />
