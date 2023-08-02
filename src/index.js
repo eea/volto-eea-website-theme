@@ -233,6 +233,7 @@ const applyConfig = (config) => {
       childrenColumns: [1, 4],
       columnsWidth: [3, 9],
       hideChildrenFromNavigation: false,
+      itemsEquallySpread: true,
     },
     '/en/countries': {
       childrenColumns: [5, 2],
