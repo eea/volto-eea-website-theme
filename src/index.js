@@ -242,7 +242,7 @@ const applyConfig = (config) => {
       itemsEquallySpread: false,
     },
     '/en/about': {
-      equalySpreadColumns: 4,
+      equallySpreadColumns: 4,
       hideChildrenFromNavigation: false,
     },
   };
