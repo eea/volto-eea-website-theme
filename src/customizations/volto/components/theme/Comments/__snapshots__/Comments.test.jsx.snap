@@ -308,10 +308,6 @@ exports[`Comments renders a comments component 1`] = `
 </div>
 `;
 
-exports[`Comments renders a comments component 2`] = `""`;
-
-exports[`Comments renders a comments component 3`] = `""`;
-
 exports[`Comments renders a comments component withour viewing the comments 1`] = `""`;
 
 exports[`Comments renders a comments component without permissions 1`] = `""`;
