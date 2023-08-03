@@ -231,18 +231,21 @@ const applyConfig = (config) => {
   config.settings.megaMenuLayouts = {
     '/en/topics': {
       childrenColumns: [1, 4],
-      columnsWidth: ['at-a-glance three wide', 'topics-right-column nine wide'],
+      columnsWidth: [
+        'at-a-glance three wide column',
+        'topics-right-column nine wide column',
+      ],
       hideChildrenFromNavigation: false,
       itemsEquallySpread: true,
     },
     '/en/countries': {
       childrenColumns: [5, 2],
-      columnsWidth: ['eight wide', 'four wide'],
+      columnsWidth: ['eight wide column', 'four wide column'],
       hideChildrenFromNavigation: false,
       itemsEquallySpread: false,
     },
     '/en/about': {
-      equallySpreadColumns: ['four column'],
+      equallySpreadColumns: ['ui four column grid'],
       hideChildrenFromNavigation: false,
     },
   };
