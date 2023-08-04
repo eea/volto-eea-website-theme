@@ -228,24 +228,22 @@ const applyConfig = (config) => {
   ];
 
   // mega menu layout settings
-  config.settings.megaMenuLayouts = {
+  config.settings.menuItemsLayouts = {
     '/en/topics': {
-      childrenColumns: [1, 4],
-      columnsWidth: [
+      menuItemListColumns: [1, 4],
+      menuItemColumns: [
         'at-a-glance three wide column',
         'topics-right-column nine wide column',
       ],
       hideChildrenFromNavigation: false,
-      itemsEquallySpread: true,
     },
     '/en/countries': {
-      childrenColumns: [5, 2],
-      columnsWidth: ['eight wide column', 'four wide column'],
+      menuItemColumns: ['eight wide column', 'four wide column'],
+      menuItemListColumns: [5, 2],
+      appendExtraMenuItemsToLastColumn: true,
       hideChildrenFromNavigation: false,
-      itemsEquallySpread: false,
     },
     '/en/about': {
-      equallySpreadColumns: ['ui four column grid'],
       hideChildrenFromNavigation: false,
     },
   };
