@@ -41,6 +41,10 @@ const messages = defineMessages({
     id: 'Modified',
     defaultMessage: 'Modified',
   },
+  rssFeed: {
+    id: 'rssFeed',
+    defaultMessage: 'RSS Feed',
+  },
 });
 
 const friendlyId = (id) => {
@@ -74,6 +78,7 @@ const View = (props) => {
     copyright,
     copyrightIcon,
     copyrightPosition,
+    rssLinks,
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -165,6 +170,15 @@ const View = (props) => {
                 }}
               />
             )}
+            {rssLinks?.map((rssLink, index) => (
+              <Banner.Action
+                icon="ri-rss-fill"
+                title={rssLink.title || intl.formatMessage(messages.rssFeed)}
+                className="rssfeed"
+                href={rssLink.href}
+                target="_blank"
+              />
+            ))}
           </>
         }
       >
