@@ -22,10 +22,13 @@ const RSSLink = {
     {
       id: 'default',
       title: 'Default',
-      fields: ['feedType', 'href'],
+      fields: ['title', 'feedType', 'href'],
     },
   ],
   properties: {
+    title: {
+      title: 'Title',
+    },
     feedType: {
       title: 'Feed Type',
       choices: [
