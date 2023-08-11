@@ -84,8 +84,10 @@ const applyConfig = (config) => {
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
-    config.blocks.blocksConfig.accordion.filterIcon = 'ri-filter-3-line';
-    config.blocks.blocksConfig.accordion.closeIcon = 'ri-close-line';
+    config.blocks.blocksConfig.accordion.filterIcon = {
+      opened: 'accordion-icon-opened',
+      closed: 'accordion-icon-closed',
+    };
     config.blocks.blocksConfig.accordion.options = {};
     config.blocks.blocksConfig.accordion.defaults.theme = 'secondary';
   }
