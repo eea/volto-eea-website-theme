@@ -83,11 +83,26 @@ const applyConfig = (config) => {
   };
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
-    config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
-    config.blocks.blocksConfig.accordion.filterIcon = {
-      opened: 'accordion-icon-opened',
-      closed: 'accordion-icon-closed',
+    config.blocks.blocksConfig.accordion.titleIcons = {
+      closed: {
+        leftPosition: 'ri-arrow-up-s-line',
+        rightPosition: 'ri-arrow-up-s-line',
+      },
+      opened: {
+        leftPosition: 'ri-arrow-down-s-line',
+        rightPosition: 'ri-arrow-down-s-line',
+      },
+      unfiltered: {
+        leftPosition: 'ri-filter-3-line',
+        rightPosition: 'ri-filter-3-line',
+      },
+      filtered: {
+        leftPosition: 'ri-close-line',
+        rightPosition: 'ri-close-line',
+      },
+      iconComponent: 'SemanticIcon',
     };
+
     config.blocks.blocksConfig.accordion.options = {};
     config.blocks.blocksConfig.accordion.defaults.theme = 'secondary';
   }
