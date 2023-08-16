@@ -13,7 +13,7 @@ import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-them
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 
-import BaseTag from './components/theme/BaseTag';
+// import BaseTag from './components/theme/BaseTag';
 import SubsiteClass from './components/theme/SubsiteClass';
 import contentBoxSVG from './icons/content-box.svg';
 
@@ -153,10 +153,10 @@ const applyConfig = (config) => {
       match: '',
       component: SubsiteClass,
     },
-    {
-      match: '',
-      component: BaseTag,
-    },
+    // {
+    //   match: '',
+    //   component: BaseTag,
+    // },
   ];
 
   config = installSlate(config);
