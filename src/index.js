@@ -7,7 +7,7 @@ import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCS
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
-import { ThemesWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ThemesWidget';
+import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
@@ -132,7 +132,7 @@ const applyConfig = (config) => {
   }
 
   // Custom Widgets
-  config.widgets.views.id.taxonomy_themes = ThemesWidget;
+  config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
 
