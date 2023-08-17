@@ -85,12 +85,12 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.titleIcons = {
       closed: {
-        leftPosition: 'ri-arrow-up-s-line',
-        rightPosition: 'ri-arrow-up-s-line',
-      },
-      opened: {
         leftPosition: 'ri-arrow-down-s-line',
         rightPosition: 'ri-arrow-down-s-line',
+      },
+      opened: {
+        leftPosition: 'ri-arrow-up-s-line',
+        rightPosition: 'ri-arrow-up-s-line',
       },
       unfiltered: {
         leftPosition: 'ri-filter-3-line',
