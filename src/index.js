@@ -247,6 +247,27 @@ const applyConfig = (config) => {
     },
   ];
 
+  // mega menu layout settings
+  config.settings.menuItemsLayouts = {
+    '/en/topics': {
+      menuItemChildrenListColumns: [1, 4],
+      menuItemColumns: [
+        'at-a-glance three wide column',
+        'topics-right-column nine wide column',
+      ],
+      hideChildrenFromNavigation: false,
+    },
+    '/en/countries': {
+      menuItemColumns: ['eight wide column', 'four wide column'],
+      menuItemChildrenListColumns: [5, 2],
+      appendExtraMenuItemsToLastColumn: true,
+      hideChildrenFromNavigation: false,
+    },
+    '/en/about': {
+      hideChildrenFromNavigation: false,
+    },
+  };
+
   // layout settings
   config = [installLayoutSettingsBlock].reduce(
     (acc, apply) => apply(acc),
