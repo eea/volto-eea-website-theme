@@ -135,6 +135,7 @@ const applyConfig = (config) => {
   config.widgets.views.id.taxonomy_themes = ThemesWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
+  config.widgets.views.id.topics = TokenWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
