@@ -7,7 +7,7 @@ import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCS
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
-import { ThemesWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ThemesWidget';
+import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import SubsiteClass from './components/theme/SubsiteClass';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
@@ -83,7 +83,26 @@ const applyConfig = (config) => {
   };
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
-    config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
+    config.blocks.blocksConfig.accordion.titleIcons = {
+      closed: {
+        leftPosition: 'ri-arrow-down-s-line',
+        rightPosition: 'ri-arrow-down-s-line',
+      },
+      opened: {
+        leftPosition: 'ri-arrow-up-s-line',
+        rightPosition: 'ri-arrow-up-s-line',
+      },
+      unfiltered: {
+        leftPosition: 'ri-filter-3-line',
+        rightPosition: 'ri-filter-3-line',
+      },
+      filtered: {
+        leftPosition: 'ri-close-line',
+        rightPosition: 'ri-close-line',
+      },
+      iconComponent: 'SemanticIcon',
+    };
+
     config.blocks.blocksConfig.accordion.options = {};
     config.blocks.blocksConfig.accordion.defaults.theme = 'secondary';
   }
@@ -113,7 +132,7 @@ const applyConfig = (config) => {
   }
 
   // Custom Widgets
-  config.widgets.views.id.taxonomy_themes = ThemesWidget;
+  config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
 
@@ -226,6 +245,27 @@ const applyConfig = (config) => {
       },
     },
   ];
+
+  // mega menu layout settings
+  config.settings.menuItemsLayouts = {
+    '/en/topics': {
+      menuItemChildrenListColumns: [1, 4],
+      menuItemColumns: [
+        'at-a-glance three wide column',
+        'topics-right-column nine wide column',
+      ],
+      hideChildrenFromNavigation: false,
+    },
+    '/en/countries': {
+      menuItemColumns: ['eight wide column', 'four wide column'],
+      menuItemChildrenListColumns: [5, 2],
+      appendExtraMenuItemsToLastColumn: true,
+      hideChildrenFromNavigation: false,
+    },
+    '/en/about': {
+      hideChildrenFromNavigation: false,
+    },
+  };
 
   // layout settings
   config = [installLayoutSettingsBlock].reduce(

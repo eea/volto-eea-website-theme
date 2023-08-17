@@ -4,7 +4,7 @@ import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
 export const TokenWidget = ({ value, children, className }) =>
   value ? (
-    <span className={cx(className, 'token', 'widget')}>
+    <div className={cx(className, 'token', 'widget', 'tags-content')}>
       {value.map((tag) => (
         <Tag
           href={`https://www.eea.europa.eu/en/advanced-search?q=${tag}`}
@@ -13,7 +13,7 @@ export const TokenWidget = ({ value, children, className }) =>
           {children ? children(tag) : tag}
         </Tag>
       ))}
-    </span>
+    </div>
   ) : (
     ''
   );

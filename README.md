@@ -23,9 +23,22 @@ EEA Website [Volto](https://github.com/plone/volto) Theme
 
 ## Getting started
 
+### Try volto-eea-website-theme with Docker
+
+      git clone https://github.com/eea/volto-eea-website-theme.git
+      cd volto-eea-website-theme
+      make
+      make start
+
+Go to http://localhost:3000
+
 ### Add volto-eea-website-theme to your Volto project
 
 1. Make sure you have a [Plone backend](https://plone.org/download) up-and-running at http://localhost:8080/Plone
+
+   ```Bash
+   docker compose up backend
+   ```
 
 1. Start Volto frontend
 
