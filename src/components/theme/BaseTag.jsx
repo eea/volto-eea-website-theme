@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { Helmet } from '@plone/volto/helpers';
+import Helmet from '@plone/volto/helpers/Helmet/Helmet';
 
 // const Helmet = () => null;
 
