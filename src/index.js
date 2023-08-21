@@ -1,21 +1,27 @@
-import * as eea from './config';
+import { Icon } from '@plone/volto/components';
+
+import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
+import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
+import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
+import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
+import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
+import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
+
+import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
-import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
-import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
-import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
-import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
-import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
-import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+
+import BaseTag from './components/theme/BaseTag';
 import SubsiteClass from './components/theme/SubsiteClass';
-import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
-import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
-import { Icon } from '@plone/volto/components';
 import contentBoxSVG from './icons/content-box.svg';
-import voltoCustomMiddleware from './middleware/voltoCustom';
-import okMiddleware from './middleware/ok';
+
 import installSlate from './slate';
+import okMiddleware from './middleware/ok';
+import voltoCustomMiddleware from './middleware/voltoCustom';
+
+import * as eea from './config';
 
 const restrictedBlocks = [
   '__grid', // Grid/Teaser block (kitconcept)
@@ -165,6 +171,10 @@ const applyConfig = (config) => {
     {
       match: '',
       component: SubsiteClass,
+    },
+    {
+      match: '',
+      component: BaseTag,
     },
   ];
 
