@@ -15,6 +15,7 @@
   ],
   "addons": [
     "@eeacms/volto-eea-design-system",
+    "@eeacms/volto-block-toc",
     "volto-subsites"
   ],
   "repository": {
@@ -22,6 +23,7 @@
     "url": "git@github.com:eea/volto-eea-website-theme.git"
   },
   "dependencies": {
+    "@eeacms/volto-block-toc": "*",
     "@eeacms/volto-eea-design-system": "*",
     "volto-subsites": "*"
   },
