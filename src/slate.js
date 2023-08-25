@@ -17,6 +17,8 @@ import clearIcon from './icons/eraser.svg';
 
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
+  // TODO: someone fix this
+  if (levels.length < 2) return false;
   const [, [, path]] = levels;
   Transforms.setNodes(
     editor,
@@ -30,7 +32,9 @@ const toggleBlockClassFormat = (editor, format) => {
 
 const isBlockClassActive = (editor, format) => {
   if (!editor.selection) return false;
+  // TODO: someone fix this
   const levels = Array.from(Editor.levels(editor, editor.selection));
+  if (levels.length < 2) return false;
   const [, [node]] = levels;
   return node.styleName === format;
 };
@@ -66,7 +70,7 @@ const clearFormatting = (editor) => {
         // console.log('node', n, p);
         return Text.isText(n);
       },
-      at: [0], // uncomment if you want everything to be cleared
+      //at: [0], // uncomment if you want everything to be cleared
     }),
   );
 
@@ -214,6 +218,8 @@ export default function installSlate(config) {
         {children}
       </List.Item>
     );
+
+    config.settings.slate.allowedHeadlineElements.push('zotero');
 
     // Slate StyleMenu configuration
     config.settings.slate.styleMenu = {

@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/volto-eea-website-theme",
-  "version": "1.15.0",
+  "version": "1.19.1",
   "description": "@eeacms/volto-eea-website-theme: Volto add-on",
   "main": "src/index.js",
   "author": "European Environment Agency: IDM2 A-Team",
@@ -15,6 +15,7 @@
   ],
   "addons": [
     "@eeacms/volto-eea-design-system",
+    "@eeacms/volto-block-toc",
     "volto-subsites"
   ],
   "repository": {
@@ -22,6 +23,7 @@
     "url": "git@github.com:eea/volto-eea-website-theme.git"
   },
   "dependencies": {
+    "@eeacms/volto-block-toc": "*",
     "@eeacms/volto-eea-design-system": "*",
     "volto-subsites": "*"
   },
