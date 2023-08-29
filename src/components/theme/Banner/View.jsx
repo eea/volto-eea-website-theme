@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
+import { Helmet } from '@plone/volto/helpers';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
@@ -41,6 +42,10 @@ const messages = defineMessages({
     id: 'Modified',
     defaultMessage: 'Modified',
   },
+  rssFeed: {
+    id: 'rssFeed',
+    defaultMessage: 'RSS Feed',
+  },
 });
 
 const friendlyId = (id) => {
@@ -74,6 +79,7 @@ const View = (props) => {
     copyright,
     copyrightIcon,
     copyrightPosition,
+    rssLinks,
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -165,6 +171,31 @@ const View = (props) => {
                 }}
               />
             )}
+            {rssLinks?.map((rssLink, index) => (
+              <>
+                <Helmet
+                  link={[
+                    {
+                      rel: 'alternate',
+                      title:
+                        rssLink.title ?? intl.formatMessage(messages.rssFeed),
+                      href: rssLink.href,
+                      type:
+                        rssLink.feedType === 'atom'
+                          ? 'application/atom+xml'
+                          : 'application/rss+xml',
+                    },
+                  ]}
+                />
+                <Banner.Action
+                  icon="ri-rss-fill"
+                  title={rssLink.title ?? intl.formatMessage(messages.rssFeed)}
+                  className="rssfeed"
+                  href={rssLink.href}
+                  target="_blank"
+                />
+              </>
+            ))}
           </>
         }
       >
