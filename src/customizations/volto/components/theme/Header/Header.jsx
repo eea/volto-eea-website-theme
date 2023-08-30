@@ -200,6 +200,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       </Header.TopHeader>
       <Header.Main
         pathname={pathname}
+        isMultilingual={config.settings.isMultilingual}
         headerSearchBox={headerSearchBox}
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}

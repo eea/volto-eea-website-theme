@@ -1,20 +1,34 @@
-import * as eea from './config';
-import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
-import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
-import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
-import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
-import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
-import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
-import SubsiteClass from './components/theme/SubsiteClass';
-import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
-import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
-import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
-
 import { Icon } from '@plone/volto/components';
+import { getBlocks } from '@plone/volto/helpers';
+import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
+import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
+import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
+import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
+import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
+import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
+import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
+
+import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
+import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
+import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
+
+import BaseTag from './components/theme/BaseTag';
+import SubsiteClass from './components/theme/SubsiteClass';
+import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
 import contentBoxSVG from './icons/content-box.svg';
-import voltoCustomMiddleware from './middleware/voltoCustom';
-import okMiddleware from './middleware/ok';
+
 import installSlate from './slate';
+import okMiddleware from './middleware/ok';
+import voltoCustomMiddleware from './middleware/voltoCustom';
+
+import * as eea from './config';
+
+const restrictedBlocks = [
+  '__grid', // Grid/Teaser block (kitconcept)
+  'imagesGrid',
+  'teaser',
+];
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -33,6 +47,21 @@ const applyConfig = (config) => {
 
   // Disable tags on View
   config.settings.showTags = false;
+
+  // Disable some blocks
+  restrictedBlocks.forEach((block) => {
+    if (config.blocks.blocksConfig[block]) {
+      config.blocks.blocksConfig[block].restricted = true;
+    }
+  });
+  // Set Languages in nextcloud-video-block
+  if (
+    config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
+    config?.settings?.eea?.languages?.length > 0
+  )
+    config.blocks.blocksConfig.nextCloudVideo.subtitlesLanguages = config.settings.eea.languages.map(
+      (el) => [el.code, el.name],
+    );
 
   // Enable Title block
   config.blocks.blocksConfig.title.restricted = false;
@@ -61,7 +90,26 @@ const applyConfig = (config) => {
   };
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
-    config.blocks.blocksConfig.accordion.semanticIcon = 'ri-arrow-down-s-line';
+    config.blocks.blocksConfig.accordion.titleIcons = {
+      closed: {
+        leftPosition: 'ri-arrow-down-s-line',
+        rightPosition: 'ri-arrow-down-s-line',
+      },
+      opened: {
+        leftPosition: 'ri-arrow-up-s-line',
+        rightPosition: 'ri-arrow-up-s-line',
+      },
+      unfiltered: {
+        leftPosition: 'ri-filter-3-line',
+        rightPosition: 'ri-filter-3-line',
+      },
+      filtered: {
+        leftPosition: 'ri-close-line',
+        rightPosition: 'ri-close-line',
+      },
+      iconComponent: 'SemanticIcon',
+    };
+
     config.blocks.blocksConfig.accordion.options = {};
     config.blocks.blocksConfig.accordion.defaults.theme = 'secondary';
   }
@@ -105,6 +153,26 @@ const applyConfig = (config) => {
   // Apply columns block customization
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
+    config.blocks.blocksConfig.columnsBlock.tocEntries = (
+      block = {},
+      tocData,
+    ) => {
+      // integration with volto-block-toc
+      const headlines = tocData.levels || ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+      let entries = [];
+      const sorted_column_blocks = getBlocks(block?.data || {});
+      sorted_column_blocks.forEach((column_block) => {
+        const sorted_blocks = getBlocks(column_block[1]);
+        sorted_blocks.forEach((block) => {
+          const { value, plaintext } = block[1];
+          const type = value?.[0]?.type;
+          if (headlines.includes(type)) {
+            entries.push([parseInt(type.slice(1)), plaintext, block[0]]);
+          }
+        });
+      });
+      return entries;
+    };
   }
 
   // Description block custom CSS
@@ -116,11 +184,10 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
   }
 
-  // Custom TokenWidget
-  if (config.widgets.views) {
-    config.widgets.views.id.subjects = TokenWidget;
-    config.widgets.views.widget.tags = TokenWidget;
-  }
+  // Custom Widgets
+  config.widgets.views.id.topics = TopicsWidget;
+  config.widgets.views.id.subjects = TokenWidget;
+  config.widgets.views.widget.tags = TokenWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
@@ -151,6 +218,10 @@ const applyConfig = (config) => {
     {
       match: '',
       component: SubsiteClass,
+    },
+    {
+      match: '',
+      component: BaseTag,
     },
   ];
 
@@ -231,6 +302,75 @@ const applyConfig = (config) => {
       },
     },
   ];
+
+  // mega menu layout settings
+  config.settings.menuItemsLayouts = {
+    '/en/topics': {
+      menuItemChildrenListColumns: [1, 4],
+      menuItemColumns: [
+        'at-a-glance three wide column',
+        'topics-right-column nine wide column',
+      ],
+      hideChildrenFromNavigation: false,
+    },
+    '/en/countries': {
+      menuItemColumns: ['eight wide column', 'four wide column'],
+      menuItemChildrenListColumns: [5, 2],
+      appendExtraMenuItemsToLastColumn: true,
+      hideChildrenFromNavigation: false,
+    },
+    '/en/about': {
+      hideChildrenFromNavigation: false,
+    },
+  };
+
+  // layout settings
+  config = [installLayoutSettingsBlock].reduce(
+    (acc, apply) => apply(acc),
+    config,
+  );
+
+  // Group
+  if (config.blocks.blocksConfig.group) {
+    config.blocks.blocksConfig.group.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Columns
+  if (config.blocks.blocksConfig.columnsBlock) {
+    config.blocks.blocksConfig.columnsBlock.mostUsed = true;
+    config.blocks.blocksConfig.columnsBlock.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Listing
+  if (config.blocks.blocksConfig.listing) {
+    config.blocks.blocksConfig.listing.title = 'Listing (Content)';
+    config.blocks.blocksConfig.listing.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+  }
+
+  // Block chooser
+  config.blocks.blocksConfig.image.mostUsed = false;
+  config.blocks.blocksConfig.video.mostUsed = false;
+
+  // Divider
+  if (config.blocks.blocksConfig.dividerBlock) {
+    config.blocks.blocksConfig.dividerBlock.mostUsed = true;
+  }
+
+  // Call to Action
+  if (config.blocks.blocksConfig.callToActionBlock) {
+    config.blocks.blocksConfig.callToActionBlock.mostUsed = true;
+  }
+
+  // Accordion
+  if (config.blocks.blocksConfig.accordion) {
+    config.blocks.blocksConfig.accordion.mostUsed = true;
+  }
+
+  // Breadcrumbs
+  config.settings.apiExpanders.push({
+    match: '',
+    GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
+  });
 
   // Custom blocks: Title
   return [installCustomTitle].reduce((acc, apply) => apply(acc), config);

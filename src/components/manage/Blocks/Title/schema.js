@@ -16,6 +16,34 @@ const infoSchema = {
   required: [],
 };
 
+const RSSLink = {
+  title: 'RSS Link',
+  fieldsets: [
+    {
+      id: 'default',
+      title: 'Default',
+      fields: ['title', 'feedType', 'href'],
+    },
+  ],
+  properties: {
+    title: {
+      title: 'Title',
+    },
+    feedType: {
+      title: 'Feed Type',
+      choices: [
+        ['rss2', 'RSS2'],
+        ['atom', 'ATOM'],
+      ],
+      default: 'rss2',
+    },
+    href: {
+      title: 'URL Path',
+    },
+  },
+  required: [],
+};
+
 export default {
   title: 'Page header',
   fieldsets: [
@@ -33,7 +61,7 @@ export default {
     {
       id: 'actions',
       title: 'Actions',
-      fields: ['hideShareButton', 'hideDownloadButton'],
+      fields: ['hideShareButton', 'hideDownloadButton', 'rssLinks'],
     },
     {
       id: 'copyright',
@@ -65,6 +93,11 @@ export default {
     hideDownloadButton: {
       title: 'Hide download button',
       type: 'boolean',
+    },
+    rssLinks: {
+      title: 'RSS Links',
+      widget: 'object_list',
+      schema: RSSLink,
     },
     info: {
       title: 'Extra info',
