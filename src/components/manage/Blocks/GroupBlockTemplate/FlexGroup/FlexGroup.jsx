@@ -82,7 +82,7 @@ const FlexGroup = (props) => {
           pathname={pathname}
         >
           {({ draginfo }, editBlock, blockProps) => (
-            <div className="item">
+            <div className="flex-item">
               <div className="item-wrapper">
                 <EditBlockWrapper
                   draginfo={draginfo}

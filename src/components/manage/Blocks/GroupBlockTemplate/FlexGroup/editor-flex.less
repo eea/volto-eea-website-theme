@@ -5,50 +5,11 @@
 
 @baseWidth: 100%;
 
+// on edit ensure add button is next to the block input area
 .flex-blocks-form {
   .item-wrapper {
     position: relative;
     width: 100%;
   }
-
-  @media only screen and (min-width: @computerBreakpoint) {
-    .ui.items.flex-items-wrapper.items-2-columns > .item {
-      width: calc(@baseWidth / 2 - 1%);
-    }
-
-    .ui.items.flex-items-wrapper.items-3-columns > .item {
-      width: calc(@baseWidth / 3);
-    }
-
-    .ui.items.flex-items-wrapper.items-4-columns > .item {
-      width: calc(@baseWidth / 4);
-    }
-
-    .ui.items.flex-items-wrapper.items-5-columns > .item {
-      width: calc(@baseWidth / 5);
-    }
-  }
-
-  @media only screen and (min-width: @tabletBreakpoint) {
-    .ui.items.flex-items-wrapper.items-2-columns > .item {
-      width: calc(@baseWidth / 2 - 1%);
-    }
-
-    .ui.items.flex-items-wrapper.items-3-columns > .item {
-      width: calc(@baseWidth / 3);
-    }
-
-    .ui.items.flex-items-wrapper.items-4-columns > .item {
-      width: calc(@baseWidth / 4);
-    }
-
-    .ui.items.flex-items-wrapper.items-5-columns > .item {
-      width: calc(@baseWidth / 5);
-    }
-  }
-
-  //override item block image width
-  .ui.items.flex-items-wrapper > .item > .image:not(.ui) {
-    width: 100%;
-  }
 }
+
