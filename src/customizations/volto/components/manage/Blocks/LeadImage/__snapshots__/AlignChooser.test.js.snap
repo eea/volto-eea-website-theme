@@ -1,0 +1,208 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AlignChooser calls onChangeBlock when an align button is clicked 1`] = `
+<div>
+  <div
+    class="align-buttons"
+  >
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Left"
+        class="ui active basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Right"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Center"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Full"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AlignChooser marks the active align button as active 1`] = `
+<div>
+  <div
+    class="align-buttons"
+  >
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Left"
+        class="ui active basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Right"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Center"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Full"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AlignChooser renders the align buttons 1`] = `
+<div>
+  <div
+    class="align-buttons"
+  >
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Left"
+        class="ui active basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Right"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Center"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+    <div
+      class="ui buttons"
+    >
+      <button
+        aria-label="Full"
+        class="ui basic icon button"
+      >
+        <svg
+          class="icon"
+          style="height: 24px; width: auto; fill: currentColor;"
+          viewBox=""
+          xmlns=""
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;
