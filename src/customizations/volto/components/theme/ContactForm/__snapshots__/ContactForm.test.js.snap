@@ -35,21 +35,3 @@ exports[`Contact form renders a contact form with error message 1`] = `
   </p>
 </div>
 `;
-
-exports[`ContactFormComponent renders the contact form link 1`] = `
-<div>
-  <div
-    class="ui container"
-    id="page-document"
-  >
-    <p>
-      Contact us:
-       
-      <a
-        rel="noopener noreferrer"
-        target="_blank"
-      />
-    </p>
-  </div>
-</div>
-`;
