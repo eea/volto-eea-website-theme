@@ -27,7 +27,7 @@ describe('Flex Group Variation Tests', () => {
     cy.contains('My Add-on Page');
   });
 
-  it('Add a Group block variation:Empty', () => {
+  it('Add a Group block variation with some texts', () => {
     // Change page title
     cy.clearSlateTitle();
     cy.getSlateTitle().type('My Add-on Page');
@@ -53,17 +53,16 @@ describe('Flex Group Variation Tests', () => {
       .contains('Flex Group')
       .click({ force: true });
 
-    cy.get('.block-editor-group [contenteditable=true]')
-      .focus()
+    cy.get('.block-editor-group .block-editor-slate')
       .click()
       .type('test{enter}');
-    cy.get('.block-editor-group [contenteditable=true]')
+    cy.get('.block-editor-group div[contenteditable*=true]')
       .eq(1)
       .focus()
       .click()
       .type('test2{enter}');
-    cy.get('.block-editor-group [contenteditable=true]')
-      .eq(2)
+    cy.get('.block-editor-group div[contenteditable*=true]')
+      .eq(1)
       .focus()
       .click()
       .type('test3');
