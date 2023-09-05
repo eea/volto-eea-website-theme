@@ -11,4 +11,52 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
+#: components/theme/Banner/View
+# defaultMessage: Created
+msgid "Created"
+msgstr ""
 
+#: components/theme/Banner/View
+# defaultMessage: Download
+msgid "Download"
+msgstr ""
+
+#: components/theme/Logo
+# defaultMessage: European Environment Agency
+msgid "European Environment Agency"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Modified
+msgid "Modified"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Published
+msgid "Published"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Share
+msgid "Share"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Share to
+msgid "Share to"
+msgstr ""
+
+#: components/theme/Logo
+# defaultMessage: Site
+msgid "Site"
+msgstr ""
+
+#: components/manage/Blocks/Title/Edit
+# defaultMessage: Type the title…
+msgid "Type the title…"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: RSS Feed
+msgid "rssFeed"
+msgstr ""

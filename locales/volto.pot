@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2023-06-28T10:48:22.678Z\n"
+"POT-Creation-Date: 2023-08-29T17:13:27.797Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -13,4 +13,52 @@ msgstr ""
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
 
+#: components/theme/Banner/View
+# defaultMessage: Created
+msgid "Created"
+msgstr ""
 
+#: components/theme/Banner/View
+# defaultMessage: Download
+msgid "Download"
+msgstr ""
+
+#: components/theme/Logo
+# defaultMessage: European Environment Agency
+msgid "European Environment Agency"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Modified
+msgid "Modified"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Published
+msgid "Published"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Share
+msgid "Share"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: Share to
+msgid "Share to"
+msgstr ""
+
+#: components/theme/Logo
+# defaultMessage: Site
+msgid "Site"
+msgstr ""
+
+#: components/manage/Blocks/Title/Edit
+# defaultMessage: Type the title…
+msgid "Type the title…"
+msgstr ""
+
+#: components/theme/Banner/View
+# defaultMessage: RSS Feed
+msgid "rssFeed"
+msgstr ""
