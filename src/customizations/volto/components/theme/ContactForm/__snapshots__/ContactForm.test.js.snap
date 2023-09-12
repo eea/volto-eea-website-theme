@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Contact form renders a contact form 1`] = `
+<div
+  className="ui container"
+  id="page-document"
+>
+  <p>
+    Contact us:
+     
+    <a
+      className={null}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={null}
+    />
+  </p>
+</div>
+`;
+
+exports[`Contact form renders a contact form with error message 1`] = `
+<div
+  className="ui container"
+  id="page-document"
+>
+  <p>
+    Contact us:
+     
+    <a
+      className={null}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={null}
+    />
+  </p>
+</div>
+`;

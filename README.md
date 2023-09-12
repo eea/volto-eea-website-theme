@@ -14,40 +14,52 @@
 [![Bugs](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-eea-website-theme-develop&metric=bugs)](https://sonarqube.eea.europa.eu/dashboard?id=volto-eea-website-theme-develop)
 [![Duplicated Lines (%)](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-eea-website-theme-develop&metric=duplicated_lines_density)](https://sonarqube.eea.europa.eu/dashboard?id=volto-eea-website-theme-develop)
 
-
 EEA Website [Volto](https://github.com/plone/volto) Theme
 
 ## Demo
 
-- https://demo-www.eea.europa.eu
+- https://www.eea.europa.eu
 
 ## Getting started
+
+### Try volto-eea-website-theme with Docker
+
+      git clone https://github.com/eea/volto-eea-website-theme.git
+      cd volto-eea-website-theme
+      make
+      make start
+
+Go to http://localhost:3000
 
 ### Add volto-eea-website-theme to your Volto project
 
 1. Make sure you have a [Plone backend](https://plone.org/download) up-and-running at http://localhost:8080/Plone
 
+   ```Bash
+   docker compose up backend
+   ```
+
 1. Start Volto frontend
 
-* If you already have a volto project, just update `package.json`:
+- If you already have a volto project, just update `package.json`:
 
-   ```JSON
-   "addons": [
-       "@eeacms/volto-eea-website-theme"
-   ],
+  ```JSON
+  "addons": [
+      "@eeacms/volto-eea-website-theme"
+  ],
 
-   "dependencies": {
-       "@eeacms/volto-eea-website-theme": "^1.0.0"
-   }
-   ```
+  "dependencies": {
+      "@eeacms/volto-eea-website-theme": "^1.0.0"
+  }
+  ```
 
-* If not, create one:
+- If not, create one:
 
-   ```
-   npm install -g yo @plone/generator-volto
-   yo @plone/volto my-volto-project --addon @eeacms/volto-eea-website-theme
-   cd my-volto-project
-   ```
+  ```
+  npm install -g yo @plone/generator-volto
+  yo @plone/volto my-volto-project --addon @eeacms/volto-eea-website-theme
+  cd my-volto-project
+  ```
 
 1. Install new add-ons and restart Volto:
 
@@ -67,6 +79,11 @@ See [RELEASE.md](https://github.com/eea/volto-eea-website-theme/blob/master/RELE
 ## How to contribute
 
 See [DEVELOP.md](https://github.com/eea/volto-eea-website-theme/blob/master/DEVELOP.md).
+
+## Docusaurus and Storybook
+
+See [Docusaurus](https://eea.github.io/).
+See [Storybook](https://eea.github.io/eea-storybook/).
 
 ## Copyright and license
 

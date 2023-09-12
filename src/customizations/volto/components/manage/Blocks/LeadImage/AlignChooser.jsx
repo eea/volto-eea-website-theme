@@ -57,7 +57,7 @@ const AlignChooser = ({
   return (
     <div className="align-buttons">
       {actions.map((action) => (
-        <Button.Group>
+        <Button.Group key={action}>
           <Button
             icon
             basic
