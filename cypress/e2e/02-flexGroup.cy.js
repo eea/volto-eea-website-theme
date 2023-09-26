@@ -17,7 +17,10 @@ describe('Flex Group Variation Tests', () => {
     cy.getSlate().click();
     cy.get('.ui.basic.icon.button.block-add-button').first().click();
     cy.get('.blocks-chooser .title').contains('Common').click();
-    cy.get('.content.active.common .button.group').contains('Section').click();
+    cy.get('.content.active.common .button.group')
+      .contains('Section')
+      .should('be.visible')
+      .click({ force: true });
 
     // Save
     cy.get('#toolbar-save').click();
@@ -42,7 +45,8 @@ describe('Flex Group Variation Tests', () => {
     cy.get('.blocks-chooser .title').contains('Common').click();
     cy.get('.content.active.common .button.group')
       .contains('Section (Group)')
-      .click();
+      .should('be.visible')
+      .click({ force: true });
 
     cy.contains('Section').click();
 

@@ -55,6 +55,7 @@ export default {
         'hideCreationDate',
         'hidePublishingDate',
         'hideModificationDate',
+        'subtitle',
         'info',
       ],
     },
@@ -93,6 +94,9 @@ export default {
     hideDownloadButton: {
       title: 'Hide download button',
       type: 'boolean',
+    },
+    subtitle: {
+      title: 'Subtitle',
     },
     rssLinks: {
       title: 'RSS Links',
