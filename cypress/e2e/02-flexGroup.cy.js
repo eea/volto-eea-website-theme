@@ -20,7 +20,7 @@ describe('Flex Group Variation Tests', () => {
     cy.get('.content.active.common .button.group')
       .contains('Section')
       .should('be.visible')
-      .click();
+      .click({ force: true });
 
     // Save
     cy.get('#toolbar-save').click();
@@ -46,7 +46,7 @@ describe('Flex Group Variation Tests', () => {
     cy.get('.content.active.common .button.group')
       .contains('Section (Group)')
       .should('be.visible')
-      .click();
+      .click({ force: true });
 
     cy.contains('Section').click();
 
