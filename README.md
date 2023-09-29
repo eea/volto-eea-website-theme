@@ -20,6 +20,11 @@ EEA Website [Volto](https://github.com/plone/volto) Theme
 
 - https://www.eea.europa.eu
 
+## Docusaurus and Storybook
+
+See [Docusaurus](https://eea.github.io/).
+See [Storybook](https://eea.github.io/eea-storybook/).
+
 ## Getting started
 
 ### Try volto-eea-website-theme with Docker
@@ -79,11 +84,6 @@ See [RELEASE.md](https://github.com/eea/volto-eea-website-theme/blob/master/RELE
 ## How to contribute
 
 See [DEVELOP.md](https://github.com/eea/volto-eea-website-theme/blob/master/DEVELOP.md).
-
-## Docusaurus and Storybook
-
-See [Docusaurus](https://eea.github.io/).
-See [Storybook](https://eea.github.io/eea-storybook/).
 
 ## Copyright and license
 
