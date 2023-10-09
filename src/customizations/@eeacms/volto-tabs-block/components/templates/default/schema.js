@@ -48,7 +48,6 @@ export default () => ({
     },
     menuColor: {
       title: 'Color',
-      defaultValue: 'green',
       choices: [
         ['red', 'Red'],
         ['orange', 'Orange'],
