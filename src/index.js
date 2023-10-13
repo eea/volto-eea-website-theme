@@ -124,7 +124,7 @@ const applyConfig = (config) => {
       ({ id }) => id === 'accordion',
     );
     const horizontalVariation = tabs_block_variations.find(
-      ({ id }) => id === 'horizontal-responsive',
+      ({ id }) => id === 'horizontalResponsive',
     );
 
     if (accordionVariation) {
@@ -134,6 +134,32 @@ const applyConfig = (config) => {
       };
     }
 
+    const oldSchemaEnhancer =
+      config.blocks.blocksConfig.tabs_block.schemaEnhancer;
+    config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
+      const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
+        .schema;
+      const oldSchemaExtender = schema.properties.data.schemaExtender;
+      schema.properties.data.schemaExtender = (schema, child) => {
+        const innerSchema = oldSchemaExtender
+          ? oldSchemaExtender(schema, child)
+          : schema;
+        innerSchema.properties.icon.description = (
+          <>
+            Ex. ri-home-line. See{' '}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://remixicon.com/"
+            >
+              Remix Icon set
+            </a>
+          </>
+        );
+        return innerSchema;
+      };
+      return schema;
+    };
     const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
     defaultVariation.schemaEnhancer = (props) => {
       const newSchema = oldDefaultSchemaEnhancer(props);
