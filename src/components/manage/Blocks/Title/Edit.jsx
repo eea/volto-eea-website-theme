@@ -189,7 +189,12 @@ export const TitleBlockEdit = (props) => {
           schema={schema}
           title={schema.title}
           onChangeField={(id, value) => {
+            console.log(id, value);
             props.onChangeBlock(props.block, {
+              ...props.data,
+              [id]: value,
+            });
+            console.log({
               ...props.data,
               [id]: value,
             });

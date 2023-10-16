@@ -42,7 +42,6 @@ const messages = defineMessages({
     defaultMessage: 'External URL',
   },
 });
-
 export function LeadImageSchema({ formData, intl }) {
   return {
     fieldsets: [

@@ -18,7 +18,7 @@ import { flattenToAppURL } from '@plone/volto/helpers';
  */
 const View = (props) => {
   const { data, properties } = props;
-  const { copyright, copyrightIcon, copyrightPosition } = data;
+  const { copyright, copyrightIcon, copyrightPosition, alignContent } = data;
 
   // const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);

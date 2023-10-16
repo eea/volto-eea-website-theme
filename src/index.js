@@ -9,7 +9,10 @@ import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 
-import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
+import {
+  addStylingFieldsetSchemaEnhancer,
+  addStylingFieldsetSchemaEnhancerImagePosition,
+} from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 
@@ -55,6 +58,9 @@ const applyConfig = (config) => {
     }
   });
   // Set Languages in nextcloud-video-block
+
+  config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+
   if (
     config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
     config?.settings?.eea?.languages?.length > 0
