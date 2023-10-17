@@ -57,10 +57,12 @@ const applyConfig = (config) => {
       config.blocks.blocksConfig[block].restricted = true;
     }
   });
-  // Set Languages in nextcloud-video-block
 
+  //Apply the image position style for image and leadimage blocks
   config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
 
+  // Set Languages in nextcloud-video-block
   if (
     config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
     config?.settings?.eea?.languages?.length > 0
@@ -71,7 +73,6 @@ const applyConfig = (config) => {
 
   // Enable Title block
   config.blocks.blocksConfig.title.restricted = false;
-  config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
 
   // Enable description block (also for cypress)
   config.blocks.blocksConfig.description.restricted = false;
