@@ -85,7 +85,6 @@ class Edit extends Component {
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
     const { copyright, copyrightIcon, copyrightPosition, styles } = data;
-    console.log(this.props);
     return (
       <div
         className={cx(
@@ -97,7 +96,10 @@ class Edit extends Component {
         )}
       >
         <div
-          className={`image-block-container ${data?.align ? data?.align : ''}`}
+          className={cx(
+            `image-block-container ${data?.align ? data?.align : ''}`,
+            styles?.bg,
+          )}
         >
           {!properties.image && (
             <Message>
@@ -110,10 +112,7 @@ class Edit extends Component {
           {properties.image && (
             <div className="image-block">
               <img
-                className={cx(
-                  { 'full-width': data.align === 'full' },
-                  styles?.bg,
-                )}
+                className={cx({ 'full-width': data.align === 'full' })}
                 src={
                   properties.image.data
                     ? `data:${properties.image['content-type']};base64,${properties.image.data}`

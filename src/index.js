@@ -71,6 +71,7 @@ const applyConfig = (config) => {
 
   // Enable Title block
   config.blocks.blocksConfig.title.restricted = false;
+  config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
 
   // Enable description block (also for cypress)
   config.blocks.blocksConfig.description.restricted = false;

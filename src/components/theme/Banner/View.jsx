@@ -84,7 +84,6 @@ const View = (props) => {
     styles,
     // contentType,
   } = props.data;
-  console.log('STYLE', styles);
   const copyrightPrefix =
     config.blocks.blocksConfig.title.copyrightPrefix || '';
 

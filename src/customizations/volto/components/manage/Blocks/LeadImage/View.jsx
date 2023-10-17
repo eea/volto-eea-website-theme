@@ -18,7 +18,7 @@ import { flattenToAppURL } from '@plone/volto/helpers';
  */
 const View = (props) => {
   const { data, properties } = props;
-  const { copyright, copyrightIcon, copyrightPosition, alignContent } = data;
+  const { copyright, copyrightIcon, copyrightPosition, styles } = data;
 
   // const [hovering, setHovering] = React.useState(false);
   const [viewLoaded, setViewLoaded] = React.useState(false);
@@ -40,9 +40,10 @@ const View = (props) => {
           )}
         >
           <div
-            className={`image-block-container ${
-              data?.align ? data?.align : ''
-            }`}
+            className={cx(
+              `image-block-container ${data?.align ? data?.align : ''}`,
+              styles?.bg,
+            )}
           >
             {properties.image && (
               <>

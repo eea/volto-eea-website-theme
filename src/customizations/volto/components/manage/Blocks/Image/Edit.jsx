@@ -235,6 +235,8 @@ class Edit extends Component {
    */
   render() {
     const { data } = this.props;
+    console.log(data, this.props);
+
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
@@ -261,6 +263,7 @@ class Edit extends Component {
               small: data.size === 's',
             },
             data?.align ? data?.align : '',
+            data?.styles?.bg,
           )}
         >
           {data.url ? (

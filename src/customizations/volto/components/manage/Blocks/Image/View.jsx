@@ -20,6 +20,7 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
  */
 export const View = (props) => {
   const { data, detached } = props;
+  console.log(data, props);
   const href = data?.href?.[0]?.['@id'] || '';
   const { copyright, copyrightIcon, copyrightPosition } = data;
   // const [hovering, setHovering] = React.useState(false);
@@ -53,6 +54,7 @@ export const View = (props) => {
                 small: data.size === 's',
               },
               data?.align ? data?.align : '',
+              data?.styles?.bg,
             )}
           >
             {data.url && (

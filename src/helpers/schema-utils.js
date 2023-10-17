@@ -60,7 +60,6 @@ export const addStylingFieldsetSchemaEnhancer = ({ schema }) => {
 
 export const addStylingFieldsetSchemaEnhancerImagePosition = ({ schema }) => {
   const applied = schema?.properties?.styles;
-  console.log({ schema });
   if (!applied) {
     const resSchema = cloneDeep(schema);
 
@@ -82,7 +81,7 @@ export const addStylingFieldsetSchemaEnhancerImagePosition = ({ schema }) => {
         ],
         properties: {
           bg: {
-            title: 'Background image position',
+            title: 'Image position',
             widget: 'align',
             actions: Object.keys(ALIGN_INFO_MAP_IMAGE_POSITION),
             actionsInfoMap: ALIGN_INFO_MAP_IMAGE_POSITION,
