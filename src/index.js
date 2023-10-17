@@ -13,6 +13,7 @@ import {
   addStylingFieldsetSchemaEnhancer,
   addStylingFieldsetSchemaEnhancerImagePosition,
 } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
+
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 
