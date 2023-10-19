@@ -125,7 +125,7 @@ const applyConfig = (config) => {
       ({ id }) => id === 'accordion',
     );
     const horizontalVariation = tabs_block_variations.find(
-      ({ id }) => id === 'horizontalResponsive',
+      ({ id }) => id === 'horizontal-responsive',
     );
 
     if (accordionVariation) {
@@ -218,8 +218,8 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
     config.blocks.blocksConfig.columnsBlock.tocEntries = (
-      block = {},
       tocData,
+      block = {},
     ) => {
       // integration with volto-block-toc
       const headlines = tocData.levels || ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
