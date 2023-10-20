@@ -116,12 +116,76 @@ const applyConfig = (config) => {
 
   // Apply tabs block customization
   if (config.blocks.blocksConfig.tabs_block) {
-    if (config.blocks.blocksConfig.tabs_block.templates.accordion) {
-      config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
+    const tabs_block_variations =
+      config.blocks.blocksConfig.tabs_block.variations;
+    const defaultVariation = tabs_block_variations.find(
+      ({ id }) => id === 'default',
+    );
+    const accordionVariation = tabs_block_variations.find(
+      ({ id }) => id === 'accordion',
+    );
+    const horizontalVariation = tabs_block_variations.find(
+      ({ id }) => id === 'horizontal-responsive',
+    );
+
+    if (accordionVariation) {
+      accordionVariation.semanticIcon = {
         opened: 'ri-arrow-up-s-line',
         closed: 'ri-arrow-down-s-line',
       };
     }
+
+    const oldSchemaEnhancer =
+      config.blocks.blocksConfig.tabs_block.schemaEnhancer;
+    config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
+      const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
+        .schema;
+      const oldSchemaExtender = schema.properties.data.schemaExtender;
+      schema.properties.data.schemaExtender = (schema, child) => {
+        const innerSchema = oldSchemaExtender
+          ? oldSchemaExtender(schema, child)
+          : schema;
+        innerSchema.properties.icon.description = (
+          <>
+            Ex. ri-home-line. See{' '}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://remixicon.com/"
+            >
+              Remix Icon set
+            </a>
+          </>
+        );
+        return innerSchema;
+      };
+      return schema;
+    };
+    const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
+    defaultVariation.schemaEnhancer = (props) => {
+      const newSchema = oldDefaultSchemaEnhancer(props);
+      const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+      menuFieldset.fields = [
+        'menuAlign',
+        'menuPosition',
+        'menuColor',
+        'menuInverted',
+      ];
+      return newSchema;
+    };
+
+    const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
+    horizontalVariation.schemaEnhancer = (props) => {
+      const newSchema = oldHorizontalSchemaEnhancer(props);
+      const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+      menuFieldset.fields = [
+        'menuAlign',
+        'menuPosition',
+        'menuColor',
+        'menuInverted',
+      ];
+      return newSchema;
+    };
   }
   //Group block flex variation
   if (config.blocks.blocksConfig.group) {
@@ -154,8 +218,8 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
     config.blocks.blocksConfig.columnsBlock.tocEntries = (
-      block = {},
       tocData,
+      block = {},
     ) => {
       // integration with volto-block-toc
       const headlines = tocData.levels || ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
