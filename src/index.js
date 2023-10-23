@@ -30,6 +30,84 @@ const restrictedBlocks = [
   'teaser',
 ];
 
+/**
+ * Customizes the variations of a tabs block by modifying their schema and semantic icons.
+ *
+ * @param {Array} tabs_block_variations - An array of variations for the tabs block.
+ * @param {Object} config - The Volto configuration object.
+ */
+function tabVariationCustomization(tabs_block_variations, config) {
+  if (!tabs_block_variations) return;
+  const defaultVariation = tabs_block_variations.find(
+    ({ id }) => id === 'default',
+  );
+  const accordionVariation = tabs_block_variations.find(
+    ({ id }) => id === 'accordion',
+  );
+  const horizontalVariation = tabs_block_variations.find(
+    ({ id }) => id === 'horizontal-responsive',
+  );
+
+  if (accordionVariation) {
+    accordionVariation.semanticIcon = {
+      opened: 'ri-arrow-up-s-line',
+      closed: 'ri-arrow-down-s-line',
+    };
+  }
+
+  const oldSchemaEnhancer =
+    config.blocks.blocksConfig.tabs_block.schemaEnhancer;
+  config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
+    const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
+      .schema;
+    const oldSchemaExtender = schema.properties.data.schemaExtender;
+    schema.properties.data.schemaExtender = (schema, child) => {
+      const innerSchema = oldSchemaExtender
+        ? oldSchemaExtender(schema, child)
+        : schema;
+      innerSchema.properties.icon.description = (
+        <>
+          Ex. ri-home-line. See{' '}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://remixicon.com/"
+          >
+            Remix Icon set
+          </a>
+        </>
+      );
+      return innerSchema;
+    };
+    return schema;
+  };
+  const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
+  defaultVariation.schemaEnhancer = (props) => {
+    const newSchema = oldDefaultSchemaEnhancer(props);
+    const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+    menuFieldset.fields = [
+      'menuAlign',
+      'menuPosition',
+      'menuColor',
+      'menuInverted',
+    ];
+    return newSchema;
+  };
+
+  const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
+  horizontalVariation.schemaEnhancer = (props) => {
+    const newSchema = oldHorizontalSchemaEnhancer(props);
+    const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+    menuFieldset.fields = [
+      'menuAlign',
+      'menuPosition',
+      'menuColor',
+      'menuInverted',
+    ];
+    return newSchema;
+  };
+}
+
 const applyConfig = (config) => {
   // EEA specific settings
   config.settings.eea = {
@@ -374,75 +452,3 @@ const applyConfig = (config) => {
 };
 
 export default applyConfig;
-
-function tabVariationCustomization(tabs_block_variations, config) {
-  if (!tabs_block_variations) return;
-  const defaultVariation = tabs_block_variations.find(
-    ({ id }) => id === 'default',
-  );
-  const accordionVariation = tabs_block_variations.find(
-    ({ id }) => id === 'accordion',
-  );
-  const horizontalVariation = tabs_block_variations.find(
-    ({ id }) => id === 'horizontal-responsive',
-  );
-
-  if (accordionVariation) {
-    accordionVariation.semanticIcon = {
-      opened: 'ri-arrow-up-s-line',
-      closed: 'ri-arrow-down-s-line',
-    };
-  }
-
-  const oldSchemaEnhancer =
-    config.blocks.blocksConfig.tabs_block.schemaEnhancer;
-  config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
-    const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
-      .schema;
-    const oldSchemaExtender = schema.properties.data.schemaExtender;
-    schema.properties.data.schemaExtender = (schema, child) => {
-      const innerSchema = oldSchemaExtender
-        ? oldSchemaExtender(schema, child)
-        : schema;
-      innerSchema.properties.icon.description = (
-        <>
-          Ex. ri-home-line. See{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://remixicon.com/"
-          >
-            Remix Icon set
-          </a>
-        </>
-      );
-      return innerSchema;
-    };
-    return schema;
-  };
-  const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
-  defaultVariation.schemaEnhancer = (props) => {
-    const newSchema = oldDefaultSchemaEnhancer(props);
-    const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
-    menuFieldset.fields = [
-      'menuAlign',
-      'menuPosition',
-      'menuColor',
-      'menuInverted',
-    ];
-    return newSchema;
-  };
-
-  const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
-  horizontalVariation.schemaEnhancer = (props) => {
-    const newSchema = oldHorizontalSchemaEnhancer(props);
-    const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
-    menuFieldset.fields = [
-      'menuAlign',
-      'menuPosition',
-      'menuColor',
-      'menuInverted',
-    ];
-    return newSchema;
-  };
-}
