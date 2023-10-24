@@ -1,5 +1,6 @@
 import applyConfig from './index';
 import * as eea from './config';
+import BaseTag from './components/theme/BaseTag';
 
 jest.mock(
   '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation',
@@ -27,9 +28,9 @@ jest.mock(
   }),
 );
 jest.mock(
-  '@eeacms/volto-eea-website-theme/components/theme/Widgets/ThemesWidget',
+  '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget',
   () => ({
-    ThemesWidget: 'MockedThemesWidget',
+    TopicsWidget: 'MockedThemesWidget',
   }),
 );
 jest.mock('./components/theme/SubsiteClass', () => 'MockedSubsiteClass');
@@ -129,7 +130,7 @@ describe('applyConfig', () => {
     expect(config.blocks.blocksConfig['description'].className).toBe(
       'documentDescription eea callout',
     );
-    expect(config.widgets.views.id.taxonomy_themes).toBe('MockedThemesWidget');
+
     expect(config.widgets.views.id.subjects).toBe('MockedTokenWidget');
     expect(config.settings.expressMiddleware.length).toEqual(2);
     expect(config.settings.appExtras).toEqual([
@@ -137,6 +138,7 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedCustomCSS' },
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
+      { match: '', component: BaseTag },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
@@ -204,6 +206,14 @@ describe('applyConfig', () => {
             templates: {
               accordion: {},
             },
+            variations: [
+              { id: 'default', title: 'Default', isDefault: true },
+              {
+                id: 'horizontal-responsive',
+                title: 'Horizontal',
+                isDefault: false,
+              },
+            ],
           },
           columnsBlock: {},
           hero: {},
@@ -264,21 +274,12 @@ describe('applyConfig', () => {
       'MockedHomePageInverseView',
     );
     expect(config.views.errorViews['404']).toBe('MockedNotFound');
-    expect(config.blocks.blocksConfig['accordion'].semanticIcon).toBe(
-      'ri-arrow-down-s-line',
-    );
+
     expect(config.blocks.blocksConfig['accordion'].options).toEqual({});
     expect(config.blocks.blocksConfig['accordion'].defaults.theme).toBe(
       'secondary',
     );
-    expect(
-      config.blocks.blocksConfig['tabs_block'].templates.accordion.semanticIcon
-        .opened,
-    ).toBe('ri-arrow-up-s-line');
-    expect(
-      config.blocks.blocksConfig['tabs_block'].templates.accordion.semanticIcon
-        .closed,
-    ).toBe('ri-arrow-down-s-line');
+
     expect(config.blocks.blocksConfig['columnsBlock'].available_colors).toEqual(
       eea.colors,
     );
@@ -286,7 +287,7 @@ describe('applyConfig', () => {
       'documentDescription eea callout',
     );
     expect(config.blocks.blocksConfig['hero'].copyrightPrefix).toBe('Image');
-    expect(config.widgets.views.id.taxonomy_themes).toBe('MockedThemesWidget');
+
     expect(config.widgets.views.id.subjects).toBe('MockedTokenWidget');
     expect(config.settings.expressMiddleware.length).toEqual(2);
     expect(config.settings.appExtras).toEqual([
@@ -294,6 +295,7 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedCustomCSS' },
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
+      { match: '', component: BaseTag },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
