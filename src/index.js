@@ -9,6 +9,9 @@ import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/W
 import { Icon } from '@plone/volto/components';
 import { getBlocks } from '@plone/volto/helpers';
 
+import TemporalCoverage from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TemporalCoverageFacet/TemporalCoverageFacet';
+import TemporalCoverageFacetFilterListEntry from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TemporalCoverageFacet/TemporalCoverageFacetFilterListEntry';
+
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
@@ -263,6 +266,22 @@ const applyConfig = (config) => {
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
+
+  //Add Temporal Coverage Facet
+  if (config?.blocks?.blocksConfig?.search) {
+    config.blocks.blocksConfig.search.extensions.facetWidgets.types = [
+      ...config.blocks.blocksConfig.search.extensions.facetWidgets.types,
+      {
+        id: 'time_covereage',
+        title: 'Temporal Coverage',
+        view: TemporalCoverage,
+        isDefault: false,
+        stateToValue: TemporalCoverage.stateToValue,
+        valueToQuery: TemporalCoverage.valueToQuery,
+        filterListComponent: TemporalCoverageFacetFilterListEntry,
+      },
+    ];
+  }
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
