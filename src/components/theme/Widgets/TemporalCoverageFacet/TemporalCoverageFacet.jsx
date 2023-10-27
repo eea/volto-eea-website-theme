@@ -31,7 +31,7 @@ const TemporalCoverage = (props) => {
   const [endValue, setEndValue] = useState(end);
 
   return (
-    <div className="daterange-facet">
+    <div>
       <Header as="h4">{facet?.title ?? facet?.field?.label}</Header>
       <div className="years-input">
         <Input
