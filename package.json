@@ -25,7 +25,8 @@
   "dependencies": {
     "@eeacms/volto-eea-design-system": "*",
     "@eeacms/volto-group-block": "*",
-    "volto-subsites": "*"
+    "volto-subsites": "*",
+    "react-compound-slider": "^3.4.0"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.10.0",
