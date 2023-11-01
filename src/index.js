@@ -1,30 +1,31 @@
-import { Icon } from '@plone/volto/components';
-import { getBlocks } from '@plone/volto/helpers';
+import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
-import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
-import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
+import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+import { Icon } from '@plone/volto/components';
+import { getBlocks } from '@plone/volto/helpers';
 
 import {
   addStylingFieldsetSchemaEnhancer,
   addStylingFieldsetSchemaEnhancerImagePosition,
 } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
-import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
+import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
+import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
+import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
 import BaseTag from './components/theme/BaseTag';
 import SubsiteClass from './components/theme/SubsiteClass';
-import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
 import contentBoxSVG from './icons/content-box.svg';
 
-import installSlate from './slate';
 import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
+import installSlate from './slate';
 
 import * as eea from './config';
 
@@ -33,6 +34,84 @@ const restrictedBlocks = [
   'imagesGrid',
   'teaser',
 ];
+
+/**
+ * Customizes the variations of a tabs block by modifying their schema and semantic icons.
+ *
+ * @param {Array} tabs_block_variations - An array of variations for the tabs block.
+ * @param {Object} config - The Volto configuration object.
+ */
+function tabVariationCustomization(tabs_block_variations, config) {
+  if (!tabs_block_variations) return;
+  const defaultVariation = tabs_block_variations.find(
+    ({ id }) => id === 'default',
+  );
+  const accordionVariation = tabs_block_variations.find(
+    ({ id }) => id === 'accordion',
+  );
+  const horizontalVariation = tabs_block_variations.find(
+    ({ id }) => id === 'horizontal-responsive',
+  );
+
+  if (accordionVariation) {
+    accordionVariation.semanticIcon = {
+      opened: 'ri-arrow-up-s-line',
+      closed: 'ri-arrow-down-s-line',
+    };
+  }
+
+  const oldSchemaEnhancer =
+    config.blocks.blocksConfig.tabs_block.schemaEnhancer;
+  config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
+    const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
+      .schema;
+    const oldSchemaExtender = schema.properties.data.schemaExtender;
+    schema.properties.data.schemaExtender = (schema, child) => {
+      const innerSchema = oldSchemaExtender
+        ? oldSchemaExtender(schema, child)
+        : schema;
+      innerSchema.properties.icon.description = (
+        <>
+          Ex. ri-home-line. See{' '}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://remixicon.com/"
+          >
+            Remix Icon set
+          </a>
+        </>
+      );
+      return innerSchema;
+    };
+    return schema;
+  };
+  const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
+  defaultVariation.schemaEnhancer = (props) => {
+    const newSchema = oldDefaultSchemaEnhancer(props);
+    const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+    menuFieldset.fields = [
+      'menuAlign',
+      'menuPosition',
+      'menuColor',
+      'menuInverted',
+    ];
+    return newSchema;
+  };
+
+  const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
+  horizontalVariation.schemaEnhancer = (props) => {
+    const newSchema = oldHorizontalSchemaEnhancer(props);
+    const menuFieldset = newSchema.fieldsets.find(({ id }) => id === 'menu');
+    menuFieldset.fields = [
+      'menuAlign',
+      'menuPosition',
+      'menuColor',
+      'menuInverted',
+    ];
+    return newSchema;
+  };
+}
 
 const applyConfig = (config) => {
   // EEA specific settings
@@ -125,12 +204,9 @@ const applyConfig = (config) => {
 
   // Apply tabs block customization
   if (config.blocks.blocksConfig.tabs_block) {
-    if (config.blocks.blocksConfig.tabs_block.templates.accordion) {
-      config.blocks.blocksConfig.tabs_block.templates.accordion.semanticIcon = {
-        opened: 'ri-arrow-up-s-line',
-        closed: 'ri-arrow-down-s-line',
-      };
-    }
+    const tabs_block_variations =
+      config.blocks.blocksConfig.tabs_block.variations;
+    tabVariationCustomization(tabs_block_variations, config);
   }
   //Group block flex variation
   if (config.blocks.blocksConfig.group) {
@@ -163,8 +239,8 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
     config.blocks.blocksConfig.columnsBlock.tocEntries = (
-      block = {},
       tocData,
+      block = {},
     ) => {
       // integration with volto-block-toc
       const headlines = tocData.levels || ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
