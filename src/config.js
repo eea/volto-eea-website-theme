@@ -194,36 +194,48 @@ export const headerOpts = {
     title: 'Environmental information systems',
     links: [
       {
-        title: 'Biodiversity Information System for Europe',
-        href: 'https://biodiversity.europa.eu/',
+        title: 'European Environment Agency website',
+        href: 'https://www.eea.europa.eu',
       },
       {
-        title: 'Climate Adaptation Platform',
-        href: 'https://climate-adapt.eea.europa.eu/',
-      },
-      {
-        title: 'Copernicus in situ component',
-        href: 'https://insitu.copernicus.eu/',
-      },
-      {
-        title: 'European Industrial Emissions Portal',
-        href: 'https://industry.eea.europa.eu/',
-      },
-      {
-        title: 'Forest Information System for Europe',
-        href: 'https://forest.eea.europa.eu/',
-      },
-      {
-        title: 'Information Platform for Chemical Monitoring',
-        href: 'https://ipchem.jrc.ec.europa.eu/RDSIdiscovery/ipchem/index.html',
-      },
-      {
-        title: 'Marine Water Information System for Europe',
+        title: 'WISE marine - Marine information system for Europe',
         href: 'https://water.europa.eu/marine',
       },
       {
-        title: 'Fresh Water Information System for Europe',
+        title: 'WISE freshwater - Freshwater information system for Europe',
         href: 'https://water.europa.eu/freshwater',
+      },
+      {
+        title: 'BISE - Biodiversity information system for Europe',
+        href: 'https://biodiversity.europa.eu',
+      },
+      {
+        title: 'FISE - Forest information system for Europe',
+        href: 'https://forest.eea.europa.eu/',
+      },
+      {
+        title: 'European Climate and health observatory',
+        href: 'https://climate-adapt.eea.europa.eu/en/observatory',
+      },
+      {
+        title: 'ClimateADAPT',
+        href: 'https://climate-adapt.eea.europa.eu/',
+      },
+      {
+        title: 'European Industrial Emissions Portal',
+        href: 'https://industry.eea.europa.eu',
+      },
+      {
+        title: 'Climate and energy in the EU',
+        href: 'https://climate-energy.eea.europa.eu',
+      },
+      {
+        title: 'Copernicus Land Monitoring Service',
+        href: 'https://land.copernicus.eu/en',
+      },
+      {
+        title: 'Copernicus InSitu',
+        href: 'https://insitu.copernicus.eu',
       },
     ],
   },

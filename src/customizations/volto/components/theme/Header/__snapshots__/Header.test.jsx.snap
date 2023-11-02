@@ -1,0 +1,307 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header renders a header component 1`] = `
+<div
+  className="eea header"
+>
+  <div
+    className="top bar"
+  >
+    <div
+      className="ui container"
+    >
+      <div
+        className="item header-top-item official-union"
+      >
+        <img
+          alt="eea flag"
+          className="ui image"
+          src="eea.png"
+        />
+        <div
+          aria-expanded={false}
+          aria-label="dropdown"
+          className="ui dropdown"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onMouseDown={[Function]}
+          role="listbox"
+          tabIndex={0}
+        >
+          <div
+            aria-atomic={true}
+            aria-live="polite"
+            className="divider text"
+            role="alert"
+          >
+            An official website of the European Union | How do you know?
+          </div>
+          <i
+            aria-hidden="true"
+            className="chevron down icon"
+            onClick={[Function]}
+          />
+          <div
+            className="menu transition"
+            role="option"
+          >
+            <div
+              className="content"
+              onClick={[Function]}
+              onKeyDown={[Function]}
+            >
+              <p>
+                All official European Union website addresses are in the
+                 
+                <b>
+                  europa.eu
+                </b>
+                 domain.
+              </p>
+              <a
+                href="https://europa.eu/european-union/contact/institutions-bodies_en"
+                onKeyDown={[Function]}
+                rel="noreferrer"
+                target="_blank"
+              >
+                See all EU institutions and bodies
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="main bar transparency"
+  >
+    <div
+      className="ui container"
+    >
+      <div
+        className="ui grid"
+      >
+        <div
+          className="four wide computer eight wide mobile eight wide tablet column"
+        >
+          <div>
+            <a
+              className="logo"
+              href=""
+              onClick={[Function]}
+            >
+              <img
+                className="ui image eea-logo"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          className="eight wide computer four wide mobile four wide tablet column"
+        >
+          <div
+            className="main-menu inverted"
+          >
+            <ul
+              className="ui text eea-main-menu tablet or lower hidden menu"
+              id="navigation"
+            >
+              <li
+                className="item"
+                onClick={[Function]}
+              >
+                <a
+                  href="/"
+                  onClick={[Function]}
+                />
+              </li>
+            </ul>
+            <button
+              aria-haspopup="true"
+              aria-pressed="false"
+              className="search-action"
+              onClick={[Function]}
+              tabIndex="0"
+            >
+              <img
+                alt="search button open/close"
+                className="ui image"
+                src="search-line.svg"
+              />
+            </button>
+            <button
+              aria-haspopup="true"
+              aria-pressed="false"
+              className="burger-action mobile "
+              onClick={[Function]}
+              tabIndex="0"
+            >
+              <img
+                alt="menu icon open/close"
+                className="ui image"
+                src="menu-line.svg"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Header renders a header component 2`] = `
+<div
+  className="eea header"
+>
+  <div
+    className="top bar"
+  >
+    <div
+      className="ui container"
+    >
+      <div
+        className="item header-top-item official-union"
+      >
+        <img
+          alt="eea flag"
+          className="ui image"
+          src="eea.png"
+        />
+        <div
+          aria-expanded={false}
+          aria-label="dropdown"
+          className="ui dropdown"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onMouseDown={[Function]}
+          role="listbox"
+          tabIndex={0}
+        >
+          <div
+            aria-atomic={true}
+            aria-live="polite"
+            className="divider text"
+            role="alert"
+          >
+            An official website of the European Union | How do you know?
+          </div>
+          <i
+            aria-hidden="true"
+            className="chevron down icon"
+            onClick={[Function]}
+          />
+          <div
+            className="menu transition"
+            role="option"
+          >
+            <div
+              className="content"
+              onClick={[Function]}
+              onKeyDown={[Function]}
+            >
+              <p>
+                All official European Union website addresses are in the
+                 
+                <b>
+                  europa.eu
+                </b>
+                 domain.
+              </p>
+              <a
+                href="https://europa.eu/european-union/contact/institutions-bodies_en"
+                onKeyDown={[Function]}
+                rel="noreferrer"
+                target="_blank"
+              >
+                See all EU institutions and bodies
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="main bar "
+  >
+    <div
+      className="ui container"
+    >
+      <div
+        className="ui grid"
+      >
+        <div
+          className="four wide computer eight wide mobile eight wide tablet column"
+        >
+          <div>
+            <a
+              className="logo"
+              href=""
+              onClick={[Function]}
+            >
+              <img
+                className="ui image eea-logo"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          className="eight wide computer four wide mobile four wide tablet column"
+        >
+          <div
+            className="main-menu"
+          >
+            <ul
+              className="ui text eea-main-menu tablet or lower hidden menu"
+              id="navigation"
+            >
+              <li
+                className="item"
+                onClick={[Function]}
+              >
+                <a
+                  href="/"
+                  onClick={[Function]}
+                />
+              </li>
+            </ul>
+            <button
+              aria-haspopup="true"
+              aria-pressed="false"
+              className="search-action"
+              onClick={[Function]}
+              tabIndex="0"
+            >
+              <img
+                alt="search button open/close"
+                className="ui image"
+                src="search-line.svg"
+              />
+            </button>
+            <button
+              aria-haspopup="true"
+              aria-pressed="false"
+              className="burger-action mobile "
+              onClick={[Function]}
+              tabIndex="0"
+            >
+              <img
+                alt="menu icon open/close"
+                className="ui image"
+                src="menu-line.svg"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
