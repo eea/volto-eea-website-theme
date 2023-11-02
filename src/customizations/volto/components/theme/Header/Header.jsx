@@ -92,21 +92,22 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       {isHomePageInverse && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
-          <Image src={eeaFlag} alt="eea flag"></Image>
+          <Image src={eeaFlag} alt="European Union flag"></Image>
           <Header.TopDropdownMenu
             text="An official website of the European Union | How do you know?"
             tabletText="EEA information systems"
-            mobileText=" "
+            mobileText="EEA information systems"
             icon="chevron down"
             aria-label="dropdown"
-            className=""
+            classNameHeader="mobile-sr-only"
             viewportWidth={width}
           >
-            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
               className="content"
               onClick={(evt) => evt.stopPropagation()}
               onKeyDown={(evt) => evt.stopPropagation()}
+              tabIndex={0}
+              role={'presentation'}
             >
               <p>
                 All official European Union website addresses are in the{' '}
@@ -129,9 +130,10 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
             <Header.TopDropdownMenu
               id="theme-sites"
               text={headerOpts.partnerLinks.title}
+              aria-label={headerOpts.partnerLinks.title}
               viewportWidth={width}
             >
-              <div className="wrapper">
+              <div className="wrapper" tabIndex={0} role={'presentation'}>
                 {headerOpts.partnerLinks.links.map((item, index) => (
                   <Dropdown.Item key={index}>
                     <a
