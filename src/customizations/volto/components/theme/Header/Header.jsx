@@ -152,53 +152,54 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           </Header.TopItem>
         )}
 
-        {config.settings.isMultilingual && (
-          <Header.TopDropdownMenu
-            id="language-switcher"
-            className="item"
-            hasLanguageDropdown={
-              config.settings.supportedLanguages.length > 1 &&
-              config.settings.hasLanguageDropdown
-            }
-            text={`${language.toUpperCase()}`}
-            mobileText={`${language.toUpperCase()}`}
-            icon={
-              <Image src={globeIcon} alt="language dropdown globe icon"></Image>
-            }
-            viewportWidth={width}
-          >
-            <ul
-              className="wrapper language-list"
-              role="listbox"
-              aria-label="language switcher"
+        {config.settings.isMultilingual &&
+          config.settings.supportedLanguages.length > 1 &&
+          config.settings.hasLanguageDropdown && (
+            <Header.TopDropdownMenu
+              id="language-switcher"
+              className="item"
+              text={`${language.toUpperCase()}`}
+              mobileText={`${language.toUpperCase()}`}
+              icon={
+                <Image
+                  src={globeIcon}
+                  alt="language dropdown globe icon"
+                ></Image>
+              }
+              viewportWidth={width}
             >
-              {eea.languages.map((item, index) => (
-                <Dropdown.Item
-                  as="li"
-                  key={index}
-                  text={
-                    <span>
-                      {item.name}
-                      <span className="country-code">
-                        {item.code.toUpperCase()}
+              <ul
+                className="wrapper language-list"
+                role="listbox"
+                aria-label="language switcher"
+              >
+                {eea.languages.map((item, index) => (
+                  <Dropdown.Item
+                    as="li"
+                    key={index}
+                    text={
+                      <span>
+                        {item.name}
+                        <span className="country-code">
+                          {item.code.toUpperCase()}
+                        </span>
                       </span>
-                    </span>
-                  }
-                  onClick={() => {
-                    const translation = find(translations, {
-                      language: item.code,
-                    });
-                    const to = translation
-                      ? flattenToAppURL(translation['@id'])
-                      : `/${item.code}`;
-                    setLanguage(item.code);
-                    history.push(to);
-                  }}
-                ></Dropdown.Item>
-              ))}
-            </ul>
-          </Header.TopDropdownMenu>
-        )}
+                    }
+                    onClick={() => {
+                      const translation = find(translations, {
+                        language: item.code,
+                      });
+                      const to = translation
+                        ? flattenToAppURL(translation['@id'])
+                        : `/${item.code}`;
+                      setLanguage(item.code);
+                      history.push(to);
+                    }}
+                  ></Dropdown.Item>
+                ))}
+              </ul>
+            </Header.TopDropdownMenu>
+          )}
       </Header.TopHeader>
       <Header.Main
         pathname={pathname}
