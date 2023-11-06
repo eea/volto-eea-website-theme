@@ -17,8 +17,8 @@ describe('Blocks Tests', () => {
     cy.get('.documentFirstHeading').click();
     cy.get('a').contains('Block').click();
     cy.get(`[aria-label="Add RSS Link"]`).click();
-    cy.get('#field-title-0-rssLinks-0').type('Test EEA Theme');
-    cy.get('#field-href-2-rssLinks-0').type('test.com');
+    cy.get('#field-title-0-rssLinks-0').type('RSS');
+    cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss');
 
     //add a block
     cy.getSlate().click();
@@ -26,12 +26,13 @@ describe('Blocks Tests', () => {
     cy.get('.blocks-chooser .title').contains('Media').click();
     cy.get('.content.active.media .button.image').contains('Image').click();
 
-    // check banner rss link
-    cy.get('.button.rssfeed').click();
-
     // Save
     cy.get('#toolbar-save').click();
     cy.url().should('eq', Cypress.config().baseUrl + '/cypress/my-page');
+
+    // check banner rss link
+    cy.get('.button.rssfeed').should('have.attr', 'href', '/cypress/my-page/rss');
+    cy.get('.button.rssfeed').contains('RSS');
 
     // then the page view should contain our changes
     cy.contains('My Add-on Page');

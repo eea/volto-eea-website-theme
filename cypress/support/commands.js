@@ -408,9 +408,11 @@ Cypress.Commands.add('clearSlate', (selector) => {
 });
 
 Cypress.Commands.add('getSlateTitle', () => {
-  return cy.get(SLATE_TITLE_SELECTOR, {
-    timeout: 10000,
-  });
+  return cy
+    .get(SLATE_TITLE_SELECTOR, {
+      timeout: 10000,
+    })
+    .should('be.visible');
 });
 
 Cypress.Commands.add('clearSlateTitle', () => {

@@ -19,6 +19,7 @@ describe('Flex Group Variation Tests', () => {
     cy.get('.blocks-chooser .title').contains('Common').click();
     cy.get('.content.active.common .button.group')
       .contains('Section')
+      .should('be.visible')
       .click({ force: true });
 
     // Save
@@ -44,7 +45,8 @@ describe('Flex Group Variation Tests', () => {
     cy.get('.blocks-chooser .title').contains('Common').click();
     cy.get('.content.active.common .button.group')
       .contains('Section (Group)')
-      .click();
+      .should('be.visible')
+      .click({ force: true });
 
     cy.contains('Section').click();
 

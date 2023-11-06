@@ -80,6 +80,7 @@ const View = (props) => {
     copyrightIcon,
     copyrightPosition,
     rssLinks,
+    subtitle,
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -199,6 +200,7 @@ const View = (props) => {
           </>
         }
       >
+        {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
         <Title config={banner.title} properties={metadata} />
         <Banner.Metadata>
           <Banner.MetadataField
