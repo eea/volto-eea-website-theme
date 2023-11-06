@@ -27,7 +27,7 @@ describe('Blocks Tests', () => {
     cy.get('.content.active.media .button.image').contains('Image').click();
 
     cy.get('.block.image .ui.input input[type="text"]').type(
-      `https://github.com/plone/volto/raw/master/logos/volto-colorful.png{enter}`,
+      `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
     );
     // then the page view should contain the image block
 
@@ -41,7 +41,7 @@ describe('Blocks Tests', () => {
     cy.get('#page-document img').should(
       'have.attr',
       'src',
-      'https://github.com/plone/volto/raw/master/logos/volto-colorful.png',
+      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
     );
 
     cy.get('#page-document img')
