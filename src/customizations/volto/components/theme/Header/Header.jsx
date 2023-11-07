@@ -151,7 +151,6 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
             </Header.TopDropdownMenu>
           </Header.TopItem>
         )}
-
         {config.settings.isMultilingual &&
           config.settings.supportedLanguages.length > 1 &&
           config.settings.hasLanguageDropdown && (
@@ -173,7 +172,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
                 role="listbox"
                 aria-label="language switcher"
               >
-                {eea.languages.map((item, index) => (
+                {eea.languages?.map((item, index) => (
                   <Dropdown.Item
                     as="li"
                     key={index}
