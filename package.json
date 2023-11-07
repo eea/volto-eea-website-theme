@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@eeacms/volto-eea-design-system": "*",
-    "react-lazy-load-image-component": "1.5.6",
     "@eeacms/volto-group-block": "*",
+    "react-lazy-load-image-component": "1.5.6",
     "volto-subsites": "*"
   },
   "devDependencies": {

@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Header renders a header component 1`] = `
-<header
-  aria-label="Site"
+<div
   className="eea header"
 >
   <div
@@ -21,7 +20,7 @@ exports[`Header renders a header component 1`] = `
         />
         <div
           aria-expanded={false}
-          aria-label="An official website of the European Union | How do you know?"
+          aria-label="dropdown"
           className="ui dropdown"
           onBlur={[Function]}
           onChange={[Function]}
@@ -33,7 +32,10 @@ exports[`Header renders a header component 1`] = `
           tabIndex={0}
         >
           <div
-            className="divider text mobile-sr-only"
+            aria-atomic={true}
+            aria-live="polite"
+            className="divider text"
+            role="alert"
           >
             An official website of the European Union | How do you know?
           </div>
@@ -79,7 +81,7 @@ exports[`Header renders a header component 1`] = `
     className="main bar transparency"
   >
     <div
-      className="ui container main-bar-container"
+      className="ui container"
     >
       <div
         className="ui grid"
@@ -105,43 +107,42 @@ exports[`Header renders a header component 1`] = `
           <div
             className="main-menu inverted"
           >
-            <nav
-              aria-label="Main"
+            <ul
+              className="ui text eea-main-menu tablet or lower hidden menu"
+              id="navigation"
             >
-              <ul
-                className="ui text eea-main-menu tablet or lower hidden menu"
-                id="navigation"
+              <li
+                className="item"
+                onClick={[Function]}
               >
-                <li
-                  aria-expanded={false}
-                  className="item"
+                <a
+                  href="/"
                   onClick={[Function]}
-                >
-                  <a
-                    href="/"
-                    onClick={[Function]}
-                  />
-                </li>
-              </ul>
-            </nav>
+                />
+              </li>
+            </ul>
             <button
-              aria-expanded={false}
+              aria-haspopup="true"
+              aria-pressed="false"
               className="search-action"
               onClick={[Function]}
+              tabIndex="0"
             >
               <img
-                alt="Global search"
+                alt="search button open/close"
                 className="ui image"
                 src="search-line.svg"
               />
             </button>
             <button
-              aria-expanded={false}
+              aria-haspopup="true"
+              aria-pressed="false"
               className="burger-action mobile "
               onClick={[Function]}
+              tabIndex="0"
             >
               <img
-                alt="Menu navigation"
+                alt="menu icon open/close"
                 className="ui image"
                 src="menu-line.svg"
               />
@@ -151,12 +152,11 @@ exports[`Header renders a header component 1`] = `
       </div>
     </div>
   </div>
-</header>
+</div>
 `;
 
 exports[`Header renders a header component 2`] = `
-<header
-  aria-label="Site"
+<div
   className="eea header"
 >
   <div
@@ -175,7 +175,7 @@ exports[`Header renders a header component 2`] = `
         />
         <div
           aria-expanded={false}
-          aria-label="An official website of the European Union | How do you know?"
+          aria-label="dropdown"
           className="ui dropdown"
           onBlur={[Function]}
           onChange={[Function]}
@@ -187,7 +187,10 @@ exports[`Header renders a header component 2`] = `
           tabIndex={0}
         >
           <div
-            className="divider text mobile-sr-only"
+            aria-atomic={true}
+            aria-live="polite"
+            className="divider text"
+            role="alert"
           >
             An official website of the European Union | How do you know?
           </div>
@@ -233,7 +236,7 @@ exports[`Header renders a header component 2`] = `
     className="main bar "
   >
     <div
-      className="ui container main-bar-container"
+      className="ui container"
     >
       <div
         className="ui grid"
@@ -259,43 +262,42 @@ exports[`Header renders a header component 2`] = `
           <div
             className="main-menu"
           >
-            <nav
-              aria-label="Main"
+            <ul
+              className="ui text eea-main-menu tablet or lower hidden menu"
+              id="navigation"
             >
-              <ul
-                className="ui text eea-main-menu tablet or lower hidden menu"
-                id="navigation"
+              <li
+                className="item"
+                onClick={[Function]}
               >
-                <li
-                  aria-expanded={false}
-                  className="item"
+                <a
+                  href="/"
                   onClick={[Function]}
-                >
-                  <a
-                    href="/"
-                    onClick={[Function]}
-                  />
-                </li>
-              </ul>
-            </nav>
+                />
+              </li>
+            </ul>
             <button
-              aria-expanded={false}
+              aria-haspopup="true"
+              aria-pressed="false"
               className="search-action"
               onClick={[Function]}
+              tabIndex="0"
             >
               <img
-                alt="Global search"
+                alt="search button open/close"
                 className="ui image"
                 src="search-line.svg"
               />
             </button>
             <button
-              aria-expanded={false}
+              aria-haspopup="true"
+              aria-pressed="false"
               className="burger-action mobile "
               onClick={[Function]}
+              tabIndex="0"
             >
               <img
-                alt="Menu navigation"
+                alt="menu icon open/close"
                 className="ui image"
                 src="menu-line.svg"
               />
@@ -305,5 +307,5 @@ exports[`Header renders a header component 2`] = `
       </div>
     </div>
   </div>
-</header>
+</div>
 `;
