@@ -150,7 +150,7 @@ describe('Header', () => {
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
       keyCode: 37,
     });
-    //fireEvent.click(container.querySelector('.country-code'));
+    fireEvent.click(container.querySelector('.country-code'));
 
     // expect(getByText('da')).toBeInTheDocument();
 
@@ -232,7 +232,7 @@ describe('Header', () => {
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
       keyCode: 37,
     });
-    //fireEvent.click(container.querySelector('.country-code'));
+    fireEvent.click(container.querySelector('.country-code'));
 
     // expect(getByText('da')).toBeInTheDocument();
 
@@ -310,7 +310,7 @@ describe('Header', () => {
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
       keyCode: 37,
     });
-    //fireEvent.click(container.querySelector('.country-code'));
+    fireEvent.click(container.querySelector('.country-code'));
     fireEvent.click(container.querySelector('a[href="/test1"]'));
 
     // expect(getByText('da')).toBeInTheDocument();

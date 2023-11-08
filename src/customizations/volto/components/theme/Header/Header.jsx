@@ -170,7 +170,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
               <ul
                 className="wrapper language-list"
                 role="listbox"
-                aria-label="language switcher"
+                aria-labelledby="language switcher" //jest doesn't like  aria-label
               >
                 {eea.languages?.map((item, index) => (
                   <Dropdown.Item
