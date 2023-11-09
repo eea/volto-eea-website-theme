@@ -29,10 +29,6 @@ const messages = defineMessages({
     id: 'Open in a new tab',
     defaultMessage: 'Open in a new tab',
   },
-  AltTextHint: {
-    id: 'Alt text hint',
-    defaultMessage: 'Leave empty if the image is purely decorative.',
-  },
   AltTextHintLinkText: {
     id: 'Alt text hint link text',
     defaultMessage: 'Describe the purpose of the image.',
@@ -74,6 +70,7 @@ export function ImageSchema({ formData, intl }) {
       },
       alt: {
         title: intl.formatMessage(messages.AltText),
+        default: 'image-block',
         description: (
           <>
             <a
@@ -83,8 +80,7 @@ export function ImageSchema({ formData, intl }) {
               rel="noopener noreferrer"
             >
               {intl.formatMessage(messages.AltTextHintLinkText)}
-            </a>{' '}
-            {intl.formatMessage(messages.AltTextHint)}
+            </a>
           </>
         ),
       },
@@ -95,6 +91,7 @@ export function ImageSchema({ formData, intl }) {
       size: {
         title: intl.formatMessage(messages.size),
         widget: 'image_size',
+        default: 'l',
       },
       href: {
         title: intl.formatMessage(messages.LinkTo),
@@ -133,6 +130,6 @@ export function ImageSchema({ formData, intl }) {
         defaultValue: 'left',
       },
     },
-    required: [],
+    required: ['alt'],
   };
 }

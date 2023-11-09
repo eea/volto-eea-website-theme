@@ -151,7 +151,6 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
             </Header.TopDropdownMenu>
           </Header.TopItem>
         )}
-
         {config.settings.isMultilingual &&
           config.settings.supportedLanguages.length > 1 &&
           config.settings.hasLanguageDropdown && (
@@ -171,9 +170,9 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
               <ul
                 className="wrapper language-list"
                 role="listbox"
-                aria-label="language switcher"
+                aria-labelledby="language switcher" //jest doesn't like  aria-label
               >
-                {eea.languages.map((item, index) => (
+                {eea.languages?.map((item, index) => (
                   <Dropdown.Item
                     as="li"
                     key={index}

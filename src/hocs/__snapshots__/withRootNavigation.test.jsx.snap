@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withRootNavigation injects navigation items into wrapped component 1`] = `
+<div>
+  <div>
+    My Block
+  </div>
+</div>
+`;

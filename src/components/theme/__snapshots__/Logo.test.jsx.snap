@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logo renders a Logo component 1`] = `
+<a
+  className="logo"
+  href="/"
+  onClick={[Function]}
+  title="Site"
+>
+  <img
+    alt="European Environment Agency"
+    className="ui image eea-logo"
+    src="eea-logo.svg"
+    title="Site"
+  />
+</a>
+`;

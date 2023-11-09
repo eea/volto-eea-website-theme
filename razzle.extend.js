@@ -7,6 +7,7 @@ const modify = (config, { target, dev }, webpack) => {
   const { alias } = config.resolve;
   alias['../../theme.config$'] = themeConfigPath;
   alias['../../theme.config'] = themeConfigPath;
+  alias['../../theme'] = `${__dirname}/theme`;
 
   const designSystem = '@eeacms/volto-eea-design-system';
   const designSystemPath =

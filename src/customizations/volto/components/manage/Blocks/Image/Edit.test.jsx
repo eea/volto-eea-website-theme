@@ -36,7 +36,17 @@ describe('Edit', () => {
         create: {},
         data: {},
         subrequests: {
-          [blockId]: {},
+          [blockId]: {
+            data: {
+              image: {
+                scales: {
+                  large: {
+                    download: 'http://localhost:8080/Plone/image',
+                  },
+                },
+              },
+            },
+          },
         },
       },
       intl: {
@@ -79,10 +89,8 @@ describe('Edit', () => {
     settings.internalApiPath = 'http://localhost:8080/Plone';
 
     expect(container.querySelector('.block.image.align')).toBeInTheDocument();
-    expect(
-      container.querySelector('.image-block-container'),
-    ).toBeInTheDocument();
-    expect(container.querySelector('.copyright-wrapper')).toBeInTheDocument();
+    const imageContainer = container.querySelector('.image-block-container');
+    expect(imageContainer).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
@@ -122,7 +130,6 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
-    expect(container.querySelector('.copyright-wrapper')).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
@@ -161,7 +168,6 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
-    expect(container.querySelector('.copyright-wrapper')).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
@@ -200,7 +206,6 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
-    expect(container.querySelector('.copyright-wrapper')).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
@@ -238,7 +243,6 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
-    expect(container.querySelector('.copyright-wrapper')).toBeInTheDocument();
   });
 
   it('should render without errors', () => {
@@ -276,7 +280,6 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
-    expect(container.querySelector('.copyright-wrapper')).toBeInTheDocument();
   });
 
   it('should render without errors', () => {

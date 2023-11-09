@@ -1,0 +1,21 @@
+.image-block {
+  position: relative;
+}
+
+.copyright-image {
+  position: absolute;
+  z-index: @copyrightImageZIndex;
+  top: @copyrightImageTopPosition;
+  width: @copyrightImageWidth;
+  padding-right: @copyrightImageSidePadding;
+  padding-left: @copyrightImageSidePadding;
+}
+
+.alt-text-warning {
+  color: @altTextColor;
+  font-size: @altTextFontSize;
+}
+
+.image-block-container {
+  width: @imageBlockContainerWidth;
+}
