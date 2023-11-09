@@ -8,6 +8,7 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { Icon } from '@plone/volto/components';
 import { getBlocks } from '@plone/volto/helpers';
+import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
@@ -23,6 +24,7 @@ import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
 
 import * as eea from './config';
+import React from 'react';
 
 const restrictedBlocks = [
   '__grid', // Grid/Teaser block (kitconcept)
@@ -439,6 +441,21 @@ const applyConfig = (config) => {
   // Accordion
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.mostUsed = true;
+  }
+
+  // Teaser block changes
+  if (config.blocks.blocksConfig.teaser) {
+    // Use volto-eea-design-system Tag component for rendering teaser tags
+    config.blocks.blocksConfig.teaser.renderTag = (tag, index) => {
+      return (
+        <Tag
+          href={`https://www.eea.europa.eu/en/advanced-search?filters[0][field]=topic&filters[0][values][0]=${tag}&filters[0][type]=any&filters[1][field]=language&filters[1][type]=any&filters[1][values][0]=en&filters[2][field]=issued.date&filters[2][values][0]=Last 5 years&filters[2][type]=any&sort-field=issued.date&sort-direction=desc`}
+          key={index}
+        >
+          {tag}
+        </Tag>
+      );
+    };
   }
 
   // Breadcrumbs
