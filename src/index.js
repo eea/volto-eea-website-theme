@@ -451,6 +451,7 @@ const applyConfig = (config) => {
         <Tag
           href={`https://www.eea.europa.eu/en/advanced-search?filters[0][field]=topic&filters[0][values][0]=${tag}&filters[0][type]=any&filters[1][field]=language&filters[1][type]=any&filters[1][values][0]=en&filters[2][field]=issued.date&filters[2][values][0]=Last 5 years&filters[2][type]=any&sort-field=issued.date&sort-direction=desc`}
           key={index}
+          aria-label={`Search for content tagged with ${tag}`}
         >
           {tag}
         </Tag>
