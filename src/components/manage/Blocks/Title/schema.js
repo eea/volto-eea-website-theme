@@ -161,7 +161,7 @@ export default {
         ],
         properties: {
           bg: {
-            title: 'Background image position',
+            title: 'Image position',
             widget: 'align',
             actions: Object.keys(ALIGN_INFO_MAP_IMAGE_POSITION),
             actionsInfoMap: ALIGN_INFO_MAP_IMAGE_POSITION,
