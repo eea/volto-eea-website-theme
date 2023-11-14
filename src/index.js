@@ -16,7 +16,6 @@ import {
 
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
-import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
 import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
 import BaseTag from './components/theme/BaseTag';
