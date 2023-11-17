@@ -138,8 +138,13 @@ const applyConfig = (config) => {
   });
 
   //Apply the image position style for image and leadimage blocks
-  config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
-  config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  if (config.blocks.blocksConfig.leadimage) {
+    config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  }
+
+  if (config.blocks.blocksConfig.image) {
+    config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  }
 
   // Set Languages in nextcloud-video-block
   if (
