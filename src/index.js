@@ -10,9 +10,13 @@ import { Icon } from '@plone/volto/components';
 import { getBlocks } from '@plone/volto/helpers';
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
+import {
+  addStylingFieldsetSchemaEnhancer,
+  addStylingFieldsetSchemaEnhancerImagePosition,
+} from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
+
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
-import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
 import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
 import BaseTag from './components/theme/BaseTag';
@@ -134,6 +138,16 @@ const applyConfig = (config) => {
       config.blocks.blocksConfig[block].restricted = true;
     }
   });
+
+  //Apply the image position style for image and leadimage blocks
+  if (config.blocks.blocksConfig.leadimage) {
+    config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  }
+
+  if (config.blocks.blocksConfig.image) {
+    config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  }
+
   // Set Languages in nextcloud-video-block
   if (
     config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
