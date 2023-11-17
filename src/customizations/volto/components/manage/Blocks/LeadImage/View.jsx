@@ -42,7 +42,6 @@ const View = (props) => {
           <div
             className={cx(
               `image-block-container ${data?.align ? data?.align : ''}`,
-              styles?.bg,
             )}
           >
             {properties.image && (
@@ -51,7 +50,10 @@ const View = (props) => {
                   const image = (
                     <div className="image-block">
                       <img
-                        className={cx({ 'full-width': data.align === 'full' })}
+                        className={cx(
+                          { 'full-width': data.align === 'full' },
+                          styles?.objectPosition,
+                        )}
                         src={flattenToAppURL(properties.image.download)}
                         alt={properties.image_caption || ''}
                       />

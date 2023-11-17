@@ -144,7 +144,7 @@ export default {
     },
     copyrightPosition: {
       title: 'Align',
-      widget: 'align',
+      widget: 'style_align',
       actions: ['left', 'right'],
       defaultValue: 'left',
     },
@@ -162,7 +162,7 @@ export default {
         properties: {
           bg: {
             title: 'Image position',
-            widget: 'align',
+            widget: 'style_align',
             actions: Object.keys(ALIGN_INFO_MAP_IMAGE_POSITION),
             actionsInfoMap: ALIGN_INFO_MAP_IMAGE_POSITION,
             defaultValue: 'has--bg--center',

@@ -53,7 +53,6 @@ export const View = (props) => {
                 small: data.size === 's',
               },
               data?.align ? data?.align : '',
-              data?.styles?.bg,
             )}
           >
             {data.url && (
@@ -62,12 +61,15 @@ export const View = (props) => {
                   const image = (
                     <>
                       <img
-                        className={cx({
-                          'full-width': data.align === 'full',
-                          large: data.size === 'l',
-                          medium: data.size === 'm',
-                          small: data.size === 's',
-                        })}
+                        className={cx(
+                          {
+                            'full-width': data.align === 'full',
+                            large: data.size === 'l',
+                            medium: data.size === 'm',
+                            small: data.size === 's',
+                          },
+                          data?.styles?.objectPosition,
+                        )}
                         src={
                           isInternalURL(data.url)
                             ? // Backwards compat in the case that the block is storing the full server URL

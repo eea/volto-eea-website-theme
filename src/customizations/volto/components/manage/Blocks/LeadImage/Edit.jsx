@@ -98,7 +98,6 @@ class Edit extends Component {
         <div
           className={cx(
             `image-block-container ${data?.align ? data?.align : ''}`,
-            styles?.bg,
           )}
         >
           {!properties.image && (
@@ -112,7 +111,10 @@ class Edit extends Component {
           {properties.image && (
             <div className="image-block">
               <img
-                className={cx({ 'full-width': data.align === 'full' })}
+                className={cx(
+                  { 'full-width': data.align === 'full' },
+                  styles?.objectPosition,
+                )}
                 src={
                   properties.image.data
                     ? `data:${properties.image['content-type']};base64,${properties.image.data}`

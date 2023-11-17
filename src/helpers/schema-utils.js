@@ -14,9 +14,9 @@ export const ALIGN_INFO_MAP = {
   full: [imageFullSVG, 'Full width'],
 };
 const ALIGN_INFO_MAP_IMAGE_POSITION = {
-  'has--bg--top': [alignTopSVG, 'Top'],
-  'has--bg--center': [alignCenterSVG, 'Center'],
-  'has--bg--bottom': [alignBottomSVG, 'Bottom'],
+  'has--object-position--top': [alignTopSVG, 'Top'],
+  'has--object-position--center': [alignCenterSVG, 'Center'],
+  'has--object-position--bottom': [alignBottomSVG, 'Bottom'],
 };
 
 export const addStylingFieldsetSchemaEnhancer = (props) => {
@@ -39,17 +39,17 @@ export const addStylingFieldsetSchemaEnhancer = (props) => {
 export const addStylingFieldsetSchemaEnhancerImagePosition = (props) => {
   const schema = addStyling(props);
 
-  schema.properties.styles.schema.properties.bg = {
+  schema.properties.styles.schema.properties.objectPosition = {
     title: 'Image position',
-    widget: 'align',
+    widget: 'style_align',
     actions: Object.keys(ALIGN_INFO_MAP_IMAGE_POSITION),
     actionsInfoMap: ALIGN_INFO_MAP_IMAGE_POSITION,
-    defaultValue: 'has--bg--center',
+    defaultValue: 'has--object-position--center',
   };
 
   schema.properties.styles.schema.fieldsets[0].fields = [
     ...schema.properties.styles.schema.fieldsets[0].fields,
-    'bg',
+    'objectPosition',
   ];
 
   return schema;
