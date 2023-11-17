@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Header renders a header component 1`] = `
-<div
+<header
+  aria-label="Site"
   className="eea header"
 >
   <div
@@ -14,13 +15,13 @@ exports[`Header renders a header component 1`] = `
         className="item header-top-item official-union"
       >
         <img
-          alt="eea flag"
+          alt="European Union flag"
           className="ui image"
           src="eea.png"
         />
         <div
           aria-expanded={false}
-          aria-label="dropdown"
+          aria-label="An official website of the European Union | How do you know?"
           className="ui dropdown"
           onBlur={[Function]}
           onChange={[Function]}
@@ -32,10 +33,7 @@ exports[`Header renders a header component 1`] = `
           tabIndex={0}
         >
           <div
-            aria-atomic={true}
-            aria-live="polite"
-            className="divider text"
-            role="alert"
+            className="divider text mobile-sr-only"
           >
             An official website of the European Union | How do you know?
           </div>
@@ -52,6 +50,8 @@ exports[`Header renders a header component 1`] = `
               className="content"
               onClick={[Function]}
               onKeyDown={[Function]}
+              role="presentation"
+              tabIndex={0}
             >
               <p>
                 All official European Union website addresses are in the
@@ -79,7 +79,7 @@ exports[`Header renders a header component 1`] = `
     className="main bar transparency"
   >
     <div
-      className="ui container"
+      className="ui container main-bar-container"
     >
       <div
         className="ui grid"
@@ -105,42 +105,43 @@ exports[`Header renders a header component 1`] = `
           <div
             className="main-menu inverted"
           >
-            <ul
-              className="ui text eea-main-menu tablet or lower hidden menu"
-              id="navigation"
+            <nav
+              aria-label="Main"
             >
-              <li
-                className="item"
-                onClick={[Function]}
+              <ul
+                className="ui text eea-main-menu tablet or lower hidden menu"
+                id="navigation"
               >
-                <a
-                  href="/"
+                <li
+                  aria-expanded={false}
+                  className="item"
                   onClick={[Function]}
-                />
-              </li>
-            </ul>
+                >
+                  <a
+                    href="/"
+                    onClick={[Function]}
+                  />
+                </li>
+              </ul>
+            </nav>
             <button
-              aria-haspopup="true"
-              aria-pressed="false"
+              aria-expanded={false}
               className="search-action"
               onClick={[Function]}
-              tabIndex="0"
             >
               <img
-                alt="search button open/close"
+                alt="Global search"
                 className="ui image"
                 src="search-line.svg"
               />
             </button>
             <button
-              aria-haspopup="true"
-              aria-pressed="false"
+              aria-expanded={false}
               className="burger-action mobile "
               onClick={[Function]}
-              tabIndex="0"
             >
               <img
-                alt="menu icon open/close"
+                alt="Menu navigation"
                 className="ui image"
                 src="menu-line.svg"
               />
@@ -150,11 +151,12 @@ exports[`Header renders a header component 1`] = `
       </div>
     </div>
   </div>
-</div>
+</header>
 `;
 
 exports[`Header renders a header component 2`] = `
-<div
+<header
+  aria-label="Site"
   className="eea header"
 >
   <div
@@ -167,13 +169,13 @@ exports[`Header renders a header component 2`] = `
         className="item header-top-item official-union"
       >
         <img
-          alt="eea flag"
+          alt="European Union flag"
           className="ui image"
           src="eea.png"
         />
         <div
           aria-expanded={false}
-          aria-label="dropdown"
+          aria-label="An official website of the European Union | How do you know?"
           className="ui dropdown"
           onBlur={[Function]}
           onChange={[Function]}
@@ -185,10 +187,7 @@ exports[`Header renders a header component 2`] = `
           tabIndex={0}
         >
           <div
-            aria-atomic={true}
-            aria-live="polite"
-            className="divider text"
-            role="alert"
+            className="divider text mobile-sr-only"
           >
             An official website of the European Union | How do you know?
           </div>
@@ -205,6 +204,8 @@ exports[`Header renders a header component 2`] = `
               className="content"
               onClick={[Function]}
               onKeyDown={[Function]}
+              role="presentation"
+              tabIndex={0}
             >
               <p>
                 All official European Union website addresses are in the
@@ -232,7 +233,7 @@ exports[`Header renders a header component 2`] = `
     className="main bar "
   >
     <div
-      className="ui container"
+      className="ui container main-bar-container"
     >
       <div
         className="ui grid"
@@ -258,42 +259,43 @@ exports[`Header renders a header component 2`] = `
           <div
             className="main-menu"
           >
-            <ul
-              className="ui text eea-main-menu tablet or lower hidden menu"
-              id="navigation"
+            <nav
+              aria-label="Main"
             >
-              <li
-                className="item"
-                onClick={[Function]}
+              <ul
+                className="ui text eea-main-menu tablet or lower hidden menu"
+                id="navigation"
               >
-                <a
-                  href="/"
+                <li
+                  aria-expanded={false}
+                  className="item"
                   onClick={[Function]}
-                />
-              </li>
-            </ul>
+                >
+                  <a
+                    href="/"
+                    onClick={[Function]}
+                  />
+                </li>
+              </ul>
+            </nav>
             <button
-              aria-haspopup="true"
-              aria-pressed="false"
+              aria-expanded={false}
               className="search-action"
               onClick={[Function]}
-              tabIndex="0"
             >
               <img
-                alt="search button open/close"
+                alt="Global search"
                 className="ui image"
                 src="search-line.svg"
               />
             </button>
             <button
-              aria-haspopup="true"
-              aria-pressed="false"
+              aria-expanded={false}
               className="burger-action mobile "
               onClick={[Function]}
-              tabIndex="0"
             >
               <img
-                alt="menu icon open/close"
+                alt="Menu navigation"
                 className="ui image"
                 src="menu-line.svg"
               />
@@ -303,5 +305,5 @@ exports[`Header renders a header component 2`] = `
       </div>
     </div>
   </div>
-</div>
+</header>
 `;
