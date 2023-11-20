@@ -66,7 +66,7 @@ function tabVariationCustomization(tabs_block_variations, config) {
   config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
     const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
       .schema;
-    const oldSchemaExtender = schema.properties.data.schemaExtender;
+    const oldSchemaExtender = schema.properties?.data?.schemaExtender;
     schema.properties.data.schemaExtender = (schema, child) => {
       const innerSchema = oldSchemaExtender
         ? oldSchemaExtender(schema, child)
