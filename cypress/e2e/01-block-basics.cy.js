@@ -25,10 +25,11 @@ describe('Blocks Tests', () => {
     cy.get('.ui.basic.icon.button.block-add-button').first().click();
     cy.get('.blocks-chooser .title').contains('Media').click();
     cy.get('.content.active.media .button.image').contains('Image').click();
+    cy.get('.block.image .ui.input input[type="text"]').type("https://eea.github.io/volto-eea-design-system/img/eea_icon.png{enter}");
 
     cy.get('.align-buttons .ui.basic.icon.button').first().click();
     cy.get('#blockform-fieldset-styling').click();
-    cy.get('#field-objectPosition-0-styles').click().type('center');
+    cy.get('#field-objectPosition-0-styles').click().type('top');
 
     // Save
     cy.get('#toolbar-save').click();
@@ -40,6 +41,6 @@ describe('Blocks Tests', () => {
 
     // then the page view should contain our changes
     cy.contains('My Add-on Page');
-    cy.get('.block.image.align.center');
+    cy.get('.block.image.align.left img.top').should('have.attr', 'src', 'https://eea.github.io/volto-eea-design-system/img/eea_icon.png');
   });
 });
