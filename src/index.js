@@ -8,10 +8,15 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { Icon } from '@plone/volto/components';
 import { getBlocks } from '@plone/volto/helpers';
+import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
+
+import {
+  addStylingFieldsetSchemaEnhancer,
+  addStylingFieldsetSchemaEnhancerImagePosition,
+} from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
-import { addStylingFieldsetSchemaEnhancer } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
 import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
 import BaseTag from './components/theme/BaseTag';
@@ -23,6 +28,7 @@ import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
 
 import * as eea from './config';
+import React from 'react';
 
 const restrictedBlocks = [
   '__grid', // Grid/Teaser block (kitconcept)
@@ -60,7 +66,7 @@ function tabVariationCustomization(tabs_block_variations, config) {
   config.blocks.blocksConfig.tabs_block.schemaEnhancer = (props) => {
     const schema = (oldSchemaEnhancer ? oldSchemaEnhancer(props) : props)
       .schema;
-    const oldSchemaExtender = schema.properties.data.schemaExtender;
+    const oldSchemaExtender = schema.properties?.data?.schemaExtender;
     schema.properties.data.schemaExtender = (schema, child) => {
       const innerSchema = oldSchemaExtender
         ? oldSchemaExtender(schema, child)
@@ -132,6 +138,16 @@ const applyConfig = (config) => {
       config.blocks.blocksConfig[block].restricted = true;
     }
   });
+
+  //Apply the image position style for image and leadimage blocks
+  if (config.blocks.blocksConfig.leadimage) {
+    config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  }
+
+  if (config.blocks.blocksConfig.image) {
+    config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+  }
+
   // Set Languages in nextcloud-video-block
   if (
     config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
@@ -439,6 +455,22 @@ const applyConfig = (config) => {
   // Accordion
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.mostUsed = true;
+  }
+
+  // Teaser block changes
+  if (config.blocks.blocksConfig.teaser) {
+    // Use volto-eea-design-system Tag component for rendering teaser tags
+    config.blocks.blocksConfig.teaser.renderTag = (tag, index) => {
+      return (
+        <Tag
+          href={`https://www.eea.europa.eu/en/advanced-search?filters[0][field]=topic&filters[0][values][0]=${tag}&filters[0][type]=any&filters[1][field]=language&filters[1][type]=any&filters[1][values][0]=en&filters[2][field]=issued.date&filters[2][values][0]=Last 5 years&filters[2][type]=any&sort-field=issued.date&sort-direction=desc`}
+          key={index}
+          aria-label={`Search for content tagged with ${tag}`}
+        >
+          {tag}
+        </Tag>
+      );
+    };
   }
 
   // Breadcrumbs

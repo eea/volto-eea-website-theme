@@ -1,3 +1,13 @@
+import alignTopSVG from '@plone/volto/icons/move-up.svg';
+import alignCenterSVG from '@plone/volto/icons/row.svg';
+import alignBottomSVG from '@plone/volto/icons/move-down.svg';
+
+const ALIGN_INFO_MAP_IMAGE_POSITION = {
+  'has--bg--top': [alignTopSVG, 'Top'],
+  'has--bg--center': [alignCenterSVG, 'Center'],
+  'has--bg--bottom': [alignBottomSVG, 'Bottom'],
+};
+
 const infoSchema = {
   title: 'Info',
   fieldsets: [
@@ -69,6 +79,11 @@ export default {
       title: 'Copyright',
       fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
     },
+    {
+      id: 'styling',
+      title: 'Styles',
+      fields: ['styles'],
+    },
   ],
   properties: {
     hideContentType: {
@@ -129,10 +144,34 @@ export default {
     },
     copyrightPosition: {
       title: 'Align',
-      widget: 'align',
+      widget: 'style_align',
       actions: ['left', 'right'],
       defaultValue: 'left',
     },
+    styles: {
+      widget: 'object',
+      title: 'Styling',
+      schema: {
+        fieldsets: [
+          {
+            id: 'default',
+            title: 'Default',
+            fields: ['bg'],
+          },
+        ],
+        properties: {
+          bg: {
+            title: 'Image position',
+            widget: 'style_align',
+            actions: Object.keys(ALIGN_INFO_MAP_IMAGE_POSITION),
+            actionsInfoMap: ALIGN_INFO_MAP_IMAGE_POSITION,
+            defaultValue: 'has--bg--center',
+          },
+        },
+        required: [],
+      },
+    },
   },
+
   required: [],
 };

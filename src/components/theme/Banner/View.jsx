@@ -81,6 +81,7 @@ const View = (props) => {
     copyrightPosition,
     rssLinks,
     subtitle,
+    styles,
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -112,7 +113,7 @@ const View = (props) => {
   const type = metadata.type_title || friendlyId(metadata['@type']);
 
   return (
-    <Banner {...props} image={image}>
+    <Banner {...props} image={image} styles={styles}>
       <Banner.Content
         actions={
           <>
