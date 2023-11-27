@@ -413,6 +413,10 @@ const applyConfig = (config) => {
     '/en/about': {
       hideChildrenFromNavigation: false,
     },
+    // if you want to set default settings for all menu items that don't have a specific path
+    // '*': {
+    //   hideChildrenFromNavigation: false,
+    // },
   };
 
   // layout settings
