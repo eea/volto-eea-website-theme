@@ -142,7 +142,7 @@ const View = (props) => {
                           }}
                         />
                         <Banner.Action
-                          icon="ri-twitter-fill"
+                          icon="ri-twitter-x-line"
                           title={'Share page to Twitter'}
                           titleClass={'hiddenStructure'}
                           onClick={() => {

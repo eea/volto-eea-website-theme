@@ -26,6 +26,11 @@ msgstr ""
 msgid "European Environment Agency"
 msgstr ""
 
+#: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
+# defaultMessage: Invalid block - Will be removed on saving
+msgid "Invalid Block"
+msgstr ""
+
 #: components/theme/Banner/View
 # defaultMessage: Modified
 msgid "Modified"
@@ -54,6 +59,11 @@ msgstr ""
 #: components/manage/Blocks/Title/Edit
 # defaultMessage: Type the title…
 msgid "Type the title…"
+msgstr ""
+
+#: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
+# defaultMessage: Unknown Block {block}
+msgid "Unknown Block"
 msgstr ""
 
 #: components/theme/Banner/View
