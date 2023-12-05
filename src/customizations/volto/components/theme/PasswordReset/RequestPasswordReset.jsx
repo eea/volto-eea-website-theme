@@ -3,27 +3,6 @@ import { Container } from 'semantic-ui-react';
 import { FormattedMessage } from 'react-intl';
 import './style.less';
 
-// function RequestPasswordReset() {
-//   return (
-//     <>
-//       <h1 className="documentFirstHeading">Lost Password</h1>
-//       <div className="documentDescription">
-//         For security reasons, we store your password encrypted, and cannot mail
-//         it to you. If you would like to reset your password, fill out the form
-//         below and we will send you an email at the address you gave when you
-//         registered to start the process of resetting your password.
-//       </div>
-//       <p id="content-core">
-//         To reset your password visit{' '}
-//         <a href="https://www.eionet.europa.eu/password-reset">
-//           Reset Eionet account password page
-//         </a>
-//         .
-//       </p>
-//     </>
-//   );
-// }
-
 function RequestPasswordReset() {
   return (
     <Container id="passwordreset">

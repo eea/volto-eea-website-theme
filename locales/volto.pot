@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2023-08-29T17:13:27.797Z\n"
+"POT-Creation-Date: 2023-12-05T09:30:23.741Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -26,6 +26,11 @@ msgstr ""
 #: components/theme/Logo
 # defaultMessage: European Environment Agency
 msgid "European Environment Agency"
+msgstr ""
+
+#: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
+# defaultMessage: Invalid block - Will be removed on saving
+msgid "Invalid Block"
 msgstr ""
 
 #: components/theme/Banner/View
@@ -56,6 +61,11 @@ msgstr ""
 #: components/manage/Blocks/Title/Edit
 # defaultMessage: Type the title…
 msgid "Type the title…"
+msgstr ""
+
+#: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
+# defaultMessage: Unknown Block {block}
+msgid "Unknown Block"
 msgstr ""
 
 #: components/theme/Banner/View
