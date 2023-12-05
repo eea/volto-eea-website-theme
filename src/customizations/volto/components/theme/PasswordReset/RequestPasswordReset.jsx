@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
 import { FormattedMessage } from 'react-intl';
-import './style.less';
 
 function RequestPasswordReset() {
   return (
