@@ -1,6 +1,6 @@
 ## SidebarPopup
 
-- https://github.com/plone/volto/pull/5520#pullrequestreview-1778406750
+- https://github.com/plone/volto/pull/5520/files
 - refs #257682
 
 ## ObjectBrowserNav
