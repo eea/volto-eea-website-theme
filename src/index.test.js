@@ -45,12 +45,17 @@ jest.mock(
 jest.mock('@plone/volto/components', () => ({
   Icon: 'MockedIcon',
 }));
+jest.mock(
+  '@eeacms/volto-eea-website-theme/components/theme/AppExtras/RemoveSchema',
+  () => 'MockedRemoveSchema',
+);
 
 global.__SERVER__ = true;
 
 describe('applyConfig', () => {
   it('should update the config settings with EEA specific settings', () => {
     const originalConfig = {
+      addonReducers: {},
       blocks: {
         blocksConfig: {
           title: {
@@ -139,6 +144,7 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
       { match: '', component: BaseTag },
+      { match: '*', component: 'MockedRemoveSchema' },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
@@ -183,6 +189,7 @@ describe('applyConfig', () => {
 
   it('should update the config settings with EEA specific settings', () => {
     const originalConfig = {
+      addonReducers: {},
       blocks: {
         blocksConfig: {
           title: {
@@ -296,6 +303,7 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
       { match: '', component: BaseTag },
+      { match: '*', component: 'MockedRemoveSchema' },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
