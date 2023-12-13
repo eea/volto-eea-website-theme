@@ -26,6 +26,8 @@ import contentBoxSVG from './icons/content-box.svg';
 import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
+import installReducers from './reducers';
+import installMiddlewares from './middleware';
 
 import * as eea from './config';
 import React from 'react';
@@ -493,7 +495,10 @@ const applyConfig = (config) => {
   });
 
   // Custom blocks: Title
-  return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
+  return [installCustomTitle, installMiddlewares, installReducers].reduce(
+    (acc, apply) => apply(acc),
+    config,
+  );
 };
 
 export default applyConfig;
