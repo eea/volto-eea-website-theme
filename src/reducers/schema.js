@@ -30,7 +30,7 @@ export default function schema(state = initialState, action = {}) {
       ...state,
       error: null,
       loading: false,
-      loaded: true,
+      loaded: false,
       schema: null,
     };
   }
