@@ -1,4 +1,4 @@
-export default function apiEnhencer(middlewares) {
+export default function apiEnhancer(middlewares) {
   return [
     () => (next) => (action) => {
       if (action.request) {
