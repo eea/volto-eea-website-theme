@@ -27,6 +27,9 @@ import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
 
+import { nanoid } from '@plone/volto-slate/utils';
+import { v4 as uuid } from 'uuid';
+
 import * as eea from './config';
 import React from 'react';
 
@@ -96,6 +99,7 @@ function tabVariationCustomization(tabs_block_variations, config) {
     };
     return schema;
   };
+
   const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
   defaultVariation.schemaEnhancer = (props) => {
     const newSchema = oldDefaultSchemaEnhancer(props);
@@ -137,6 +141,38 @@ const applyConfig = (config) => {
   if (config.settings?.serverConfig?.extractScripts) {
     config.settings.serverConfig.extractScripts.errorPages = true;
   }
+  // Set clone function for slate in order to change uid when copy
+  config.blocks.blocksConfig.slate.cloneData = (data) => {
+    const replaceAllUidsWithNewOnes = (value) => {
+      if (value?.children?.length > 0) {
+        const newChildren = value.children.map((childrenData) => {
+          if (childrenData?.data?.uid) {
+            return {
+              ...childrenData,
+              data: { ...childrenData.data, uid: nanoid(5) },
+            };
+          }
+          return childrenData;
+        });
+        return {
+          ...value,
+          children: newChildren,
+        };
+      }
+      return value;
+    };
+    return [
+      uuid(),
+      {
+        ...data,
+        value: [
+          ...(data?.value || []).map((value) =>
+            replaceAllUidsWithNewOnes(value),
+          ),
+        ],
+      },
+    ];
+  };
 
   // Disable tags on View
   config.settings.showTags = false;
