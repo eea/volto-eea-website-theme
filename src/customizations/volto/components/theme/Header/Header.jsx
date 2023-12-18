@@ -31,6 +31,16 @@ function removeTrailingSlash(path) {
   return path.replace(/\/+$/, '');
 }
 
+const checkPrefixPath = (pathname) => {
+  if (
+    config.settings.prefixPath &&
+    !pathname.startsWith(config.settings.prefixPath)
+  )
+    return config.settings.prefixPath + removeTrailingSlash(pathname);
+
+  return removeTrailingSlash(pathname);
+};
+
 /**
  * EEA Specific Header component.
  */
@@ -53,7 +63,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
       (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
     return (
       has_home_layout &&
-      (removeTrailingSlash(pathname) === router_pathname ||
+      (checkPrefixPath(pathname) === checkPrefixPath(router_pathname) ||
         router_pathname.endsWith('/edit'))
     );
   });
