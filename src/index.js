@@ -112,7 +112,6 @@ function tabVariationCustomization(tabs_block_variations, config) {
     ];
     return newSchema;
   };
-
   const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
   horizontalVariation.schemaEnhancer = (props) => {
     const newSchema = oldHorizontalSchemaEnhancer(props);
@@ -141,7 +140,7 @@ const applyConfig = (config) => {
   if (config.settings?.serverConfig?.extractScripts) {
     config.settings.serverConfig.extractScripts.errorPages = true;
   }
-  // Set clone function for slate in order to change uid when copy
+  // Set cloneData function for slate block, in order to change the uuids of fragments in the copy process
   config.blocks.blocksConfig.slate.cloneData = (data) => {
     const replaceAllUidsWithNewOnes = (value) => {
       if (value?.children?.length > 0) {
