@@ -32,11 +32,9 @@ function removeTrailingSlash(path) {
 }
 
 const checkPrefixPath = (pathname) => {
-  if (
-    config.settings.prefixPath &&
-    !pathname.startsWith(config.settings.prefixPath)
-  )
-    return config.settings.prefixPath + removeTrailingSlash(pathname);
+  const { prefixPath } = config.settings;
+  if (prefixPath && !pathname.startsWith(prefixPath))
+    return prefixPath + removeTrailingSlash(pathname);
 
   return removeTrailingSlash(pathname);
 };
