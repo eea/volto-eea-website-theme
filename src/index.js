@@ -141,37 +141,39 @@ const applyConfig = (config) => {
     config.settings.serverConfig.extractScripts.errorPages = true;
   }
   // Set cloneData function for slate block, in order to change the uuids of fragments in the copy process
-  config.blocks.blocksConfig.slate.cloneData = (data) => {
-    const replaceAllUidsWithNewOnes = (value) => {
-      if (value?.children?.length > 0) {
-        const newChildren = value.children.map((childrenData) => {
-          if (childrenData?.data?.uid) {
-            return {
-              ...childrenData,
-              data: { ...childrenData.data, uid: nanoid(5) },
-            };
-          }
-          return childrenData;
-        });
-        return {
-          ...value,
-          children: newChildren,
-        };
-      }
-      return value;
+  if (config.blocks?.blocksConfig?.slate) {
+    config.blocks.blocksConfig.slate.cloneData = (data) => {
+      const replaceAllUidsWithNewOnes = (value) => {
+        if (value?.children?.length > 0) {
+          const newChildren = value.children.map((childrenData) => {
+            if (childrenData?.data?.uid) {
+              return {
+                ...childrenData,
+                data: { ...childrenData.data, uid: nanoid(5) },
+              };
+            }
+            return childrenData;
+          });
+          return {
+            ...value,
+            children: newChildren,
+          };
+        }
+        return value;
+      };
+      return [
+        uuid(),
+        {
+          ...data,
+          value: [
+            ...(data?.value || []).map((value) =>
+              replaceAllUidsWithNewOnes(value),
+            ),
+          ],
+        },
+      ];
     };
-    return [
-      uuid(),
-      {
-        ...data,
-        value: [
-          ...(data?.value || []).map((value) =>
-            replaceAllUidsWithNewOnes(value),
-          ),
-        ],
-      },
-    ];
-  };
+  }
 
   // Disable tags on View
   config.settings.showTags = false;
