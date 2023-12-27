@@ -5,8 +5,6 @@ describe('Blocks copy/paste', () => {
   afterEach(slateAfterEach);
 
   it('Copy/paste multiple blocks', () => {
-    cy.intercept('PATCH', '/**/my-page').as('save');
-    cy.intercept('GET', '/**/my-page').as('content');
     // GIVEN: A page with multiple blocks
     cy.getSlate().click().type('/maps{enter}');
 
@@ -21,9 +19,6 @@ describe('Blocks copy/paste', () => {
     );
 
     cy.getSlate().click();
-
-    cy.toolbarSave();
-    cy.get('a[aria-label="Edit"]').click();
 
     // WHEN: I copy paste them
     cy.getSlateTitle().focus().click().type('{shift}', { release: false });
@@ -46,8 +41,7 @@ describe('Blocks copy/paste', () => {
 
   it('Cut/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.intercept('PATCH', '/**/my-page').as('save');
-    cy.intercept('GET', '/**/my-page').as('content');
+
     cy.getSlate().click().type('/maps{enter}');
     cy.get(`.block.maps .toolbar-inner .ui.input input`)
       .type(
@@ -61,10 +55,6 @@ describe('Blocks copy/paste', () => {
 
     cy.getSlate().click();
 
-    cy.toolbarSave();
-    cy.get('a[aria-label="Edit"]').click();
-
-    // WHEN: I cut paste them
     cy.getSlateTitle().focus().click().type('{shift}', { release: false });
     cy.get('.block-editor-maps').click();
     cy.get('#toolbar-cut-blocks').click();
@@ -85,8 +75,6 @@ describe('Blocks copy/paste', () => {
   });
 
   it('Delete multiple blocks', () => {
-    cy.intercept('PATCH', '/**/my-page').as('save');
-    cy.intercept('GET', '/**/my-page').as('content');
     // GIVEN: A page with multiple blocks
     cy.getSlate().click().type('/maps{enter}');
     cy.get(`.block.maps .toolbar-inner .ui.input input`)
@@ -101,10 +89,6 @@ describe('Blocks copy/paste', () => {
 
     cy.getSlate().click();
 
-    cy.toolbarSave();
-    cy.get('a[aria-label="Edit"]').click();
-
-    // WHEN: I delete them
     cy.getSlateTitle().focus().type('{shift}', { release: false });
     cy.get('.block-editor-maps').click();
     cy.get('#toolbar-delete-blocks').should('be.visible');
