@@ -6,6 +6,6 @@ export default function BaseTag(props) {
   const baseHref = contentId ? flattenToAppURL(contentId) : null;
 
   return baseHref !== null ? (
-    <Helmet base={{ target: '_blank', href: `${baseHref}/` }} />
+    <Helmet base={{ target: '_self', href: `${baseHref}/` }} />
   ) : null;
 }
