@@ -10,12 +10,8 @@ const AppExtras = (props) => {
   const active = appExtras
     .map((reg) => {
       const match = matchPath(pathname, reg.match);
-      if (
-        reg.exceptions?.length > 0 &&
-        reg.exceptions.filter((e) => e.test(pathname)).length > 0
-      )
-        return null;
-      return match ? { reg, match } : null;
+      const excluded = matchPath(pathname, reg.exclude);
+      return !excluded && match ? { reg, match } : null;
     })
     .filter((reg) => reg);
 
