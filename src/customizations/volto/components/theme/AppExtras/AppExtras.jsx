@@ -12,7 +12,6 @@ const AppExtras = (props) => {
       const excluded = matchPath(pathname, reg.exclude);
       if (excluded) return null;
       const match = matchPath(pathname, reg.match);
-
       return match ? { reg, match } : null;
     })
     .filter((reg) => reg);
