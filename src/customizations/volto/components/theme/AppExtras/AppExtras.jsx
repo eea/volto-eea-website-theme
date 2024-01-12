@@ -9,9 +9,11 @@ const AppExtras = (props) => {
   const { pathname } = props;
   const active = appExtras
     .map((reg) => {
-      const match = matchPath(pathname, reg.match);
       const excluded = matchPath(pathname, reg.exclude);
-      return !excluded && match ? { reg, match } : null;
+      if (excluded) return null;
+      const match = matchPath(pathname, reg.match);
+
+      return match ? { reg, match } : null;
     })
     .filter((reg) => reg);
 
