@@ -9,6 +9,7 @@ export default function applyConfig(config) {
     ...(config.settings.appExtras || []),
     {
       match: '*',
+      exceptions: [/.*diff(?:\?.*)?$/],
       component: RemoveSchema,
     },
   ];
