@@ -1,6 +1,7 @@
 /*
  * UniversalLink
  * @module components/UniversalLink
+ * Removed noreferrer from rel attribute
  */
 
 import React from 'react';
@@ -99,7 +100,7 @@ const UniversalLink = ({
             ? '_blank'
             : null
         }
-        rel="noopener noreferrer"
+        rel="noopener"
         className={className}
         {...props}
       >
@@ -123,8 +124,7 @@ const UniversalLink = ({
       <a
         href={flattenToAppURL(url)}
         title={title}
-        target="_blank"
-        rel="noopener noreferrer"
+        rel="noopener"
         className={className}
         {...props}
       >
