@@ -7,6 +7,7 @@ import React from 'react';
 // import { diffWords as dWords } from 'diff';
 import { join, map } from 'lodash';
 import PropTypes from 'prop-types';
+import { diffJson } from 'diff';
 import { Grid } from 'semantic-ui-react';
 import ReactDOMServer from 'react-dom/server';
 import { Provider } from 'react-intl-redux';
@@ -54,7 +55,7 @@ const DiffField = ({
     if (!str) return [];
     const splitedArray = [];
     let elementCurent = '';
-    let insideTag = 0;
+    let insideTag = false;
     for (let i = 0; i < str.length; i++)
       if (str[i] === '<') {
         if (elementCurent) splitedArray.push(elementCurent);
@@ -70,6 +71,7 @@ const DiffField = ({
         splitedArray.push(elementCurent);
         elementCurent = '';
       } else elementCurent += str[i];
+    if (elementCurent) splitedArray.push(elementCurent);
     return splitedArray;
   };
 
@@ -137,6 +139,34 @@ const DiffField = ({
         );
         break;
       }
+      case 'temporal': {
+        if (one?.temporal?.length > 0 && two.temporal?.length > 0) {
+          let firstString = one.temporal.reduce((acc, cur) => {
+            return acc + cur?.label + ', ';
+          }, '');
+          firstString = firstString.substring(0, firstString.length - 2);
+          let secondString = two.temporal.reduce((acc, cur) => {
+            return acc + cur?.label + ', ';
+          }, '');
+          secondString = secondString.substring(0, secondString.length - 2);
+          parts = diffWords(firstString, secondString);
+        }
+        break;
+      }
+      case 'geolocation': {
+        if (one?.geolocation?.length > 0 && two.geolocation?.length > 0) {
+          let firstString = one.geolocation.reduce((acc, cur) => {
+            return acc + cur?.label + ', ';
+          }, '');
+          firstString = firstString.substring(0, firstString.length - 2);
+          let secondString = two.geolocation.reduce((acc, cur) => {
+            return acc + cur?.label + ', ';
+          }, '');
+          secondString = secondString.substring(0, secondString.length - 2);
+          parts = diffWords(firstString, secondString);
+        }
+        break;
+      }
       case 'textarea':
       default:
         parts = diffWords(one, two);
@@ -151,6 +181,7 @@ const DiffField = ({
   } else {
     parts = diffWords(one?.title || one, two?.title || two);
   }
+
   return (
     <Grid data-testid="DiffField">
       <Grid.Row>
