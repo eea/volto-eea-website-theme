@@ -171,7 +171,7 @@ const DiffField = ({
         parts = diffWords(one, two);
         break;
     }
-  } else if (schema.title == 'Data sources and providers') {
+  } else if (schema.title === 'Data sources and providers') {
     if (one?.data?.length > 0 && two.data?.length > 0) {
       let firstString = one.data.reduce((acc, cur) => {
         return acc + cur?.title + ', ' + cur?.organisation + '<br/>';
