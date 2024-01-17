@@ -20,6 +20,7 @@ import { DefaultView } from '@plone/volto/components/';
 import { serializeNodes } from '@plone/volto-slate/editor/render';
 
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
+import { isObject } from 'addons/volto-searchlib/searchlib';
 
 /**
  * Enhanced diff words utility
@@ -79,7 +80,7 @@ const DiffField = ({
   };
 
   let parts, oneArray, twoArray;
-  if (schema.widget) {
+  if (schema.widget && schema.title !== 'Data sources and providers') {
     switch (schema.widget) {
       case 'richtext':
         parts = diffWords(one?.data, two?.data);
@@ -171,6 +172,18 @@ const DiffField = ({
         parts = diffWords(one, two);
         break;
     }
+  } else if (schema.title == 'Data sources and providers') {
+    if (one?.data?.length > 0 && two.data?.length > 0) {
+      let firstString = one.data.reduce((acc, cur) => {
+        return acc + cur?.title + ', ' + cur?.organisation + '<br/>';
+      }, '');
+      firstString = firstString.substring(0, firstString.length - 2);
+      let secondString = two.data.reduce((acc, cur) => {
+        return acc + cur?.title + ', ' + cur?.organisation + '<br/>';
+      }, '');
+      secondString = secondString.substring(0, secondString.length - 2);
+      parts = diffWords(firstString, secondString);
+    }
   } else if (schema.type === 'object') {
     parts = diffWords(one?.filename || one, two?.filename || two);
   } else if (schema.type === 'array') {
@@ -206,8 +219,7 @@ const DiffField = ({
                         !value.includes('href') &&
                         !value.includes('=')
                       )
-                        return `<span class="deletion">${value}</span>`;
-
+                        return acc + `<span class="deletion">${value}</span>`;
                       if (
                         part.added &&
                         !value.includes('<') &&
@@ -246,7 +258,7 @@ const DiffField = ({
                         !value.includes('href') &&
                         !value.includes('=')
                       )
-                        return `<span class="addition">${value}</span>`;
+                        return acc + `<span class="addition">${value}</span>`;
                       if (
                         part.removed &&
                         !value.includes('<') &&
@@ -289,7 +301,7 @@ const DiffField = ({
                         !value.includes('href') &&
                         !value.includes('=')
                       )
-                        return `<span class="deletion">${value}</span>`;
+                        return acc + `<span class="deletion">${value}</span>`;
 
                       if (
                         part.added &&
@@ -302,7 +314,7 @@ const DiffField = ({
                         !value.includes('href') &&
                         !value.includes('=')
                       )
-                        return `<span class="addition">${value}</span>`;
+                        return acc + `<span class="addition">${value}</span>`;
 
                       return acc + value;
                     }, '');
