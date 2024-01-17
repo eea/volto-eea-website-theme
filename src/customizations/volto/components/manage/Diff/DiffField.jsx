@@ -20,7 +20,6 @@ import { DefaultView } from '@plone/volto/components/';
 import { serializeNodes } from '@plone/volto-slate/editor/render';
 
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
-import { isObject } from 'addons/volto-searchlib/searchlib';
 
 /**
  * Enhanced diff words utility
