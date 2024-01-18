@@ -29,9 +29,6 @@ import installSlate from './slate';
 import installReducers from './reducers';
 import installMiddlewares from './middleware';
 
-import { nanoid } from '@plone/volto-slate/utils';
-import { v4 as uuid } from 'uuid';
-
 import * as eea from './config';
 import React from 'react';
 
@@ -90,7 +87,7 @@ function tabVariationCustomization(tabs_block_variations, config) {
           Ex. ri-home-line. See{' '}
           <a
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             href="https://remixicon.com/"
           >
             Remix Icon set
@@ -101,7 +98,6 @@ function tabVariationCustomization(tabs_block_variations, config) {
     };
     return schema;
   };
-
   const oldDefaultSchemaEnhancer = defaultVariation.schemaEnhancer;
   defaultVariation.schemaEnhancer = (props) => {
     const newSchema = oldDefaultSchemaEnhancer(props);
@@ -114,6 +110,7 @@ function tabVariationCustomization(tabs_block_variations, config) {
     ];
     return newSchema;
   };
+
   const oldHorizontalSchemaEnhancer = horizontalVariation.schemaEnhancer;
   horizontalVariation.schemaEnhancer = (props) => {
     const newSchema = oldHorizontalSchemaEnhancer(props);
@@ -141,40 +138,6 @@ const applyConfig = (config) => {
   // Insert scripts on Error pages
   if (config.settings?.serverConfig?.extractScripts) {
     config.settings.serverConfig.extractScripts.errorPages = true;
-  }
-  // Set cloneData function for slate block, in order to change the uuids of fragments in the copy process
-  if (config.blocks?.blocksConfig?.slate) {
-    config.blocks.blocksConfig.slate.cloneData = (data) => {
-      const replaceAllUidsWithNewOnes = (value) => {
-        if (value?.children?.length > 0) {
-          const newChildren = value.children.map((childrenData) => {
-            if (childrenData?.data?.uid) {
-              return {
-                ...childrenData,
-                data: { ...childrenData.data, uid: nanoid(5) },
-              };
-            }
-            return childrenData;
-          });
-          return {
-            ...value,
-            children: newChildren,
-          };
-        }
-        return value;
-      };
-      return [
-        uuid(),
-        {
-          ...data,
-          value: [
-            ...(data?.value || []).map((value) =>
-              replaceAllUidsWithNewOnes(value),
-            ),
-          ],
-        },
-      ];
-    };
   }
 
   // Disable tags on View

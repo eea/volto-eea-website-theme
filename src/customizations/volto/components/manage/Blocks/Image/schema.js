@@ -80,7 +80,7 @@ export function ImageSchema({ formData, intl }) {
               href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
               title={intl.formatMessage(messages.openLinkInNewTab)}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
             >
               {intl.formatMessage(messages.AltTextHintLinkText)}
             </a>{' '}
@@ -117,7 +117,7 @@ export function ImageSchema({ formData, intl }) {
             Ex. ri-copyright-line. See{' '}
             <a
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
               href="https://eea.github.io/volto-eea-design-system/docs/webdev/Guidelines/iconography/#icon-set"
             >
               Remix Icon set
