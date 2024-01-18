@@ -88,11 +88,7 @@ function tabVariationCustomization(tabs_block_variations, config) {
       innerSchema.properties.icon.description = (
         <>
           Ex. ri-home-line. See{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://remixicon.com/"
-          >
+          <a target="_blank" rel="noopener" href="https://remixicon.com/">
             Remix Icon set
           </a>
         </>

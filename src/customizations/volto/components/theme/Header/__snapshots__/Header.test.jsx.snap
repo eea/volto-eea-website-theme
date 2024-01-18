@@ -64,7 +64,7 @@ exports[`Header renders a header component 1`] = `
               <a
                 href="https://europa.eu/european-union/contact/institutions-bodies_en"
                 onKeyDown={[Function]}
-                rel="noreferrer"
+                rel="noopener"
                 target="_blank"
               >
                 See all EU institutions and bodies
@@ -218,7 +218,7 @@ exports[`Header renders a header component 2`] = `
               <a
                 href="https://europa.eu/european-union/contact/institutions-bodies_en"
                 onKeyDown={[Function]}
-                rel="noreferrer"
+                rel="noopener"
                 target="_blank"
               >
                 See all EU institutions and bodies
