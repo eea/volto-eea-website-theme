@@ -10,7 +10,7 @@ exports[`Contact form renders a contact form 1`] = `
      
     <a
       className={null}
-      rel="noopener"
+      rel="noopener noreferrer"
       target="_blank"
       title={null}
     />
@@ -28,7 +28,7 @@ exports[`Contact form renders a contact form with error message 1`] = `
      
     <a
       className={null}
-      rel="noopener"
+      rel="noopener noreferrer"
       target="_blank"
       title={null}
     />
