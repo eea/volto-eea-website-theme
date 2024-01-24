@@ -3,7 +3,7 @@ const path = require('path');
 
 const projectRootPath = fs.existsSync('./project')
   ? fs.realpathSync('./project')
-  : fs.realpathSync('./../../../');
+  : fs.realpathSync(__dirname + '/../../../');
 const packageJson = require(path.join(projectRootPath, 'package.json'));
 const jsConfig = require(path.join(projectRootPath, 'jsconfig.json')).compilerOptions;
 
@@ -51,6 +51,6 @@ module.exports = {
         allowReferrer: true,
       },
     ],
-  },
+  }
 };
 
