@@ -6,8 +6,12 @@ export default function getListingBlockAsyncData({
   data,
   path,
   blocksConfig,
+  content,
 }) {
   const { resolvedExtensions } = resolveBlockExtensions(data, blocksConfig);
+  const id = data.block;
+
+  const subrequestID = content?.UID ? `${content?.UID}-${id}` : id;
 
   return [
     dispatch(
@@ -19,7 +23,7 @@ export default function getListingBlockAsyncData({
             ? { fullobjects: 1 }
             : { metadata_fields: '_all' }),
         },
-        data.block,
+        subrequestID,
       ),
     ),
   ];
