@@ -299,7 +299,9 @@ class Edit extends Component {
                           data.url,
                         )}/@@images/image/preview`;
                       if (data.size === 's')
-                      return `${flattenToAppURL(data.url)}/@@images/image/mini`;
+                        return `${flattenToAppURL(
+                          data.url,
+                        )}/@@images/image/mini`;
                       return `${flattenToAppURL(data.url)}/@@images/image`;
                     })()
                   : data.url
