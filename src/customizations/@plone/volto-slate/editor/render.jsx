@@ -70,10 +70,11 @@ export const Leaf = ({ children, ...rest }) => {
     typeof children === 'string' ? (
       children.split('\n').map((t, i) => {
         // Softbreak support. Should do a plugin?
+        const hasSoftBreak =
+          children.indexOf('\n') > -1 && children.split('\n').length - 1 > i;
         return (
           <React.Fragment key={`${i}`}>
-            {children.indexOf('\n') > -1 &&
-              children.split('\n').length - 1 > i ? (
+            {hasSoftBreak ? (
               <>
                 {klass ? <span className={klass}>{t}</span> : t}
                 <br />
