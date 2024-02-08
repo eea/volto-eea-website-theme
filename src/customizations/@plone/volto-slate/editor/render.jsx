@@ -73,7 +73,7 @@ export const Leaf = ({ children, ...rest }) => {
         return (
           <React.Fragment key={`${i}`}>
             {children.indexOf('\n') > -1 &&
-            children.split('\n').length - 1 > i ? (
+              children.split('\n').length - 1 > i ? (
               <>
                 {klass ? <span className={klass}>{t}</span> : t}
                 <br />
@@ -104,7 +104,20 @@ export const serializeNodes = (nodes, getAttributes, extras = {}) => {
   const editor = { children: nodes || [] };
 
   const _serializeNodes = (nodes) => {
-    return (nodes || []).map(([node, path], i) => {
+    return (nodes || []).map(([node, path]) => {
+      let _serialized;
+      const isTextNode = Text.isText(node);
+      try {
+        if (!isTextNode) {
+          _serialized = _serializeNodes(
+            Array.from(Node.children(editor, path)),
+          );
+        }
+      } catch {
+        // eslint-disable-next-line no-console
+        console.error('Error in serializing nodes', editor, path);
+      }
+
       return Text.isText(node) ? (
         <Leaf path={path} leaf={node} text={node} mode="view" key={path}>
           {node.text}
@@ -125,7 +138,7 @@ export const serializeNodes = (nodes, getAttributes, extras = {}) => {
           }
           extras={extras}
         >
-          {_serializeNodes(Array.from(Node.children(editor, path)))}
+          {_serialized}
         </Element>
       );
     });
