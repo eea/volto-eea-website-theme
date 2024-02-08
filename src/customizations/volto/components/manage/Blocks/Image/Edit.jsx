@@ -16,7 +16,6 @@ import { isEqual } from 'lodash';
 
 import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
 import { Icon as IconSemantic } from 'semantic-ui-react';
-import { withBlockExtensions } from '@plone/volto/helpers';
 import { createContent } from '@plone/volto/actions';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
@@ -24,19 +23,27 @@ import {
   flattenToAppURL,
   getBaseUrl,
   isInternalURL,
+  withBlockExtensions,
+  validateFileUploadSize,
 } from '@plone/volto/helpers';
+import config from '@plone/volto/registry';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import uploadSVG from '@plone/volto/icons/upload.svg';
+
 const Dropzone = loadable(() => import('react-dropzone'));
 
 const messages = defineMessages({
   ImageBlockInputPlaceholder: {
     id: 'Browse the site, drop an image, or type an URL',
     defaultMessage: 'Browse the site, drop an image, or type an URL',
+  },
+  uploadingImage: {
+    id: 'Uploading image',
+    defaultMessage: 'Uploading image',
   },
 });
 
@@ -56,7 +63,7 @@ class Edit extends Component {
     block: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
     data: PropTypes.objectOf(PropTypes.any).isRequired,
-    content: PropTypes.objectOf(PropTypes.any).isRequired,
+    content: PropTypes.objectOf(PropTypes.any),
     request: PropTypes.shape({
       loading: PropTypes.bool,
       loaded: PropTypes.bool,
@@ -85,6 +92,7 @@ class Edit extends Component {
    * @returns {undefined}
    */
   UNSAFE_componentWillReceiveProps(nextProps) {
+    // Update block data after upload finished
     if (
       this.props.request.loading &&
       nextProps.request.loaded &&
@@ -96,6 +104,8 @@ class Edit extends Component {
       this.props.onChangeBlock(this.props.block, {
         ...this.props.data,
         url: nextProps.content['@id'],
+        image_field: 'image',
+        image_scales: { image: [nextProps.content.image] },
         alt: '',
       });
     }
@@ -123,6 +133,7 @@ class Edit extends Component {
   onUploadImage = (e) => {
     e.stopPropagation();
     const file = e.target.files[0];
+    if (!validateFileUploadSize(file, this.props.intl.formatMessage)) return;
     this.setState({
       uploading: true,
     });
@@ -167,6 +178,8 @@ class Edit extends Component {
     this.props.onChangeBlock(this.props.block, {
       ...this.props.data,
       url: flattenToAppURL(this.state.url),
+      image_field: undefined,
+      image_scales: undefined,
     });
   };
 
@@ -176,23 +189,25 @@ class Edit extends Component {
    * @param {array} files File objects
    * @returns {undefined}
    */
-  onDrop = (file) => {
-    this.setState({
-      uploading: true,
-    });
+  onDrop = (files) => {
+    if (!validateFileUploadSize(files[0], this.props.intl.formatMessage)) {
+      this.setState({ dragging: false });
+      return;
+    }
+    this.setState({ uploading: true });
 
-    readAsDataURL(file[0]).then((data) => {
+    readAsDataURL(files[0]).then((data) => {
       const fields = data.match(/^data:(.*);(.*),(.*)$/);
       this.props.createContent(
         getBaseUrl(this.props.pathname),
         {
           '@type': 'Image',
-          title: file[0].name,
+          title: files[0].name,
           image: {
             data: fields[3],
             encoding: fields[2],
             'content-type': fields[1],
-            filename: file[0].name,
+            filename: files[0].name,
           },
         },
         this.props.block,
@@ -234,6 +249,7 @@ class Edit extends Component {
    * @returns {string} Markup for the component.
    */
   render() {
+    const Image = config.getComponent({ name: 'Image' }).component;
     const { data } = this.props;
     const placeholder =
       this.props.data.placeholder ||
@@ -252,166 +268,172 @@ class Edit extends Component {
           data.align,
         )}
       >
-        <div
-          className={cx(
-            'image-block-container',
-            {
-              large: data.size === 'l',
-              medium: data.size === 'm',
-              small: data.size === 's',
-            },
-            data?.align ? data?.align : '',
-          )}
-        >
-          {data.url ? (
-            <>
-              <img
-                className={cx(
-                  {
-                    'full-width': data.align === 'full',
-                    large: data.size === 'l',
-                    medium: data.size === 'm',
-                    small: data.size === 's',
-                  },
-                  data?.styles?.objectPosition,
-                )}
-                src={
-                  isInternalURL(data.url)
-                    ? // Backwards compat in the case that the block is storing the full server URL
-                      (() => {
-                        if (data.align === 'full')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/huge`;
-                        if (data.size === 'l')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/great`;
-                        if (data.size === 'm')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/preview`;
-                        if (data.size === 's')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/mini`;
+        {data.url ? (
+          <>
+            <Image
+              className={cx({
+                'full-width': data.align === 'full',
+                large: data.size === 'l',
+                medium: data.size === 'm',
+                small: data.size === 's',
+              })}
+              item={
+                data.image_scales
+                  ? {
+                      '@id': data.url,
+                      image_field: data.image_field,
+                      image_scales: data.image_scales,
+                    }
+                  : undefined
+              }
+              src={
+                data.image_scales
+                  ? undefined
+                  : isInternalURL(data.url)
+                  ? // Backwards compat in the case that the block is storing the full server URL
+                    (() => {
+                      if (data.size === 'l')
+                        return `${flattenToAppURL(data.url)}/@@images/image`;
+                      if (data.size === 'm')
                         return `${flattenToAppURL(
                           data.url,
-                        )}/@@images/image/great`;
-                      })()
-                    : data.url
-                }
-                alt={data.alt || ''}
-              />
-              <div className={`copyright-wrapper ${copyrightPosition}`}>
-                {copyright && showCopyright ? (
-                  <Copyright copyrightPosition={copyrightPosition}>
-                    <Copyright.Icon>
-                      <IconSemantic name={copyrightIcon} />
-                    </Copyright.Icon>
-                    <Copyright.Text>{copyright}</Copyright.Text>
-                  </Copyright>
-                ) : (
-                  ''
-                )}
-              </div>
-            </>
-          ) : (
-            <div>
-              {this.props.editable && (
-                <Dropzone
-                  noClick
-                  onDrop={this.onDrop}
-                  onDragEnter={this.onDragEnter}
-                  onDragLeave={this.onDragLeave}
-                  className="dropzone"
-                >
-                  {({ getRootProps, getInputProps }) => (
-                    <div {...getRootProps()}>
-                      <Message>
-                        {this.state.dragging && <Dimmer active></Dimmer>}
-                        {this.state.uploading && (
-                          <Dimmer active>
-                            <Loader indeterminate>Uploading image</Loader>
-                          </Dimmer>
-                        )}
-                        <div className="no-image-wrapper">
-                          <img src={imageBlockSVG} alt="" />
-                          <div className="toolbar-inner">
-                            <Button.Group>
-                              <Button
-                                basic
-                                icon
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  this.props.openObjectBrowser();
-                                }}
-                              >
-                                <Icon name={navTreeSVG} size="24px" />
-                              </Button>
-                            </Button.Group>
-                            <Button.Group>
-                              <label className="ui button basic icon">
-                                <Icon name={uploadSVG} size="24px" />
-                                <input
-                                  {...getInputProps({
-                                    type: 'file',
-                                    onChange: this.onUploadImage,
-                                    style: { display: 'none' },
-                                  })}
-                                />
-                              </label>
-                            </Button.Group>
-                            <Input
-                              onKeyDown={this.onKeyDownVariantMenuForm}
-                              onChange={this.onChangeUrl}
-                              placeholder={placeholder}
-                              value={this.state.url}
-                              onClick={(e) => {
-                                e.target.focus();
-                              }}
-                              onFocus={(e) => {
-                                this.props.onSelectBlock(this.props.id);
-                              }}
-                            />
-                            {this.state.url && (
-                              <Button.Group>
-                                <Button
-                                  basic
-                                  className="cancel"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    this.setState({ url: '' });
-                                  }}
-                                >
-                                  <Icon name={clearSVG} size="30px" />
-                                </Button>
-                              </Button.Group>
-                            )}
-                            <Button.Group>
-                              <Button
-                                basic
-                                primary
-                                disabled={!this.state.url}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  this.onSubmitUrl();
-                                }}
-                              >
-                                <Icon name={aheadSVG} size="30px" />
-                              </Button>
-                            </Button.Group>
-                          </div>
-                        </div>
-                      </Message>
-                    </div>
-                  )}
-                </Dropzone>
+                        )}/@@images/image/preview`;
+                      if (data.size === 's')
+                      return `${flattenToAppURL(data.url)}/@@images/image/mini`;
+                      return `${flattenToAppURL(data.url)}/@@images/image`;
+                    })()
+                  : data.url
+              }
+              sizes={config.blocks.blocksConfig.image.getSizes(data)}
+              alt={data.alt || ''}
+              loading="lazy"
+              responsive={true}
+            />
+            <div className={`copyright-wrapper ${copyrightPosition}`}>
+              {copyright && showCopyright ? (
+                <Copyright copyrightPosition={copyrightPosition}>
+                  <Copyright.Icon>
+                    <IconSemantic name={copyrightIcon} />
+                  </Copyright.Icon>
+                  <Copyright.Text>{copyright}</Copyright.Text>
+                </Copyright>
+              ) : (
+                ''
               )}
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          <div>
+            {this.props.editable && (
+              <Dropzone
+                noClick
+                onDrop={this.onDrop}
+                onDragEnter={this.onDragEnter}
+                onDragLeave={this.onDragLeave}
+                className="dropzone"
+              >
+                {({ getRootProps, getInputProps }) => (
+                  <div {...getRootProps()}>
+                    <Message>
+                      {this.state.dragging && <Dimmer active></Dimmer>}
+                      {this.state.uploading && (
+                        <Dimmer active>
+                          <Loader indeterminate>
+                            {this.props.intl.formatMessage(
+                              messages.uploadingImage,
+                            )}
+                          </Loader>
+                        </Dimmer>
+                      )}
+                      <div className="no-image-wrapper">
+                        <img src={imageBlockSVG} alt="" />
+                        <div className="toolbar-inner">
+                          <Button.Group>
+                            <Button
+                              basic
+                              icon
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.props.openObjectBrowser({
+                                  onSelectItem: (
+                                    url,
+                                    { title, image_field, image_scales },
+                                  ) => {
+                                    this.props.onChangeBlock(this.props.block, {
+                                      ...this.props.data,
+                                      url,
+                                      image_field,
+                                      image_scales,
+                                      alt: this.props.data.alt || title || '',
+                                    });
+                                  },
+                                });
+                              }}
+                            >
+                              <Icon name={navTreeSVG} size="24px" />
+                            </Button>
+                          </Button.Group>
+                          <Button.Group>
+                            <label className="ui button basic icon">
+                              <Icon name={uploadSVG} size="24px" />
+                              <input
+                                {...getInputProps({
+                                  type: 'file',
+                                  onChange: this.onUploadImage,
+                                  style: { display: 'none' },
+                                })}
+                              />
+                            </label>
+                          </Button.Group>
+                          <Input
+                            onKeyDown={this.onKeyDownVariantMenuForm}
+                            onChange={this.onChangeUrl}
+                            placeholder={placeholder}
+                            value={this.state.url}
+                            onClick={(e) => {
+                              e.target.focus();
+                            }}
+                            onFocus={(e) => {
+                              this.props.onSelectBlock(this.props.id);
+                            }}
+                          />
+                          {this.state.url && (
+                            <Button.Group>
+                              <Button
+                                basic
+                                className="cancel"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  this.setState({ url: '' });
+                                }}
+                              >
+                                <Icon name={clearSVG} size="30px" />
+                              </Button>
+                            </Button.Group>
+                          )}
+                          <Button.Group>
+                            <Button
+                              basic
+                              primary
+                              disabled={!this.state.url}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                this.onSubmitUrl();
+                              }}
+                            >
+                              <Icon name={aheadSVG} size="30px" />
+                            </Button>
+                          </Button.Group>
+                        </div>
+                      </div>
+                    </Message>
+                  </div>
+                )}
+              </Dropzone>
+            )}
+          </div>
+        )}
         <SidebarPortal selected={this.props.selected}>
           <ImageSidebar {...this.props} />
         </SidebarPortal>
