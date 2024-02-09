@@ -10,10 +10,11 @@ import { defineMessages, injectIntl } from 'react-intl';
 import cx from 'classnames';
 import { Message } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
+
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import { Icon } from 'semantic-ui-react';
 import { LeadImageSidebar, SidebarPortal } from '@plone/volto/components';
-import { flattenToAppURL } from '@plone/volto/helpers';
+import config from '@plone/volto/registry';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 
@@ -80,11 +81,18 @@ class Edit extends Component {
    * @returns {string} Markup for the component.
    */
   render() {
+    const Image = config.getComponent({ name: 'Image' }).component;
     const { data, properties } = this.props;
+    const { copyright, copyrightIcon, copyrightPosition } = data;
     const placeholder =
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
-    const { copyright, copyrightIcon, copyrightPosition, styles } = data;
+
+    const hasImage = !!properties.image;
+    const hasImageData = hasImage && !!properties.image.data;
+    const className = cx('responsive', { 'full-image': data.align === 'full' });
+    const altText = data.image_caption || properties.image_caption || '';
+
     return (
       <div
         className={cx(
@@ -100,7 +108,7 @@ class Edit extends Component {
             `image-block-container ${data?.align ? data?.align : ''}`,
           )}
         >
-          {!properties.image && (
+          {!hasImage && (
             <Message>
               <center>
                 <img src={imageBlockSVG} alt="" />
@@ -108,19 +116,17 @@ class Edit extends Component {
               </center>
             </Message>
           )}
-          {properties.image && (
+          {hasImage && hasImageData && (
             <div className="image-block">
               <img
-                className={cx(
-                  { 'full-width': data.align === 'full' },
-                  styles?.objectPosition,
-                )}
-                src={
-                  properties.image.data
-                    ? `data:${properties.image['content-type']};base64,${properties.image.data}`
-                    : flattenToAppURL(properties.image.download)
-                }
-                alt={data.image_caption || ''}
+                className={className}
+                src={`data:${properties.image['content-type']};base64,${properties.image.data}`}
+                width={properties.image.width}
+                height={properties.image.height}
+                alt={altText}
+                style={{
+                  aspectRatio: `${properties.image.width}/${properties.image.height}`,
+                }}
               />
               <div className="copyright-wrapper">
                 {copyright ? (
@@ -135,6 +141,21 @@ class Edit extends Component {
                 )}
               </div>
             </div>
+          )}
+          {hasImage && !hasImageData && (
+            <Image
+              className={className}
+              item={properties}
+              imageField="image"
+              sizes={(() => {
+                if (data.align === 'full' || data.align === 'center')
+                  return '100vw';
+                if (data.align === 'left' || data.align === 'right')
+                  return '50vw';
+                return undefined;
+              })()}
+              alt={altText}
+            />
           )}
         </div>
         <SidebarPortal selected={this.props.selected}>
