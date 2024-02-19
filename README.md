@@ -27,7 +27,9 @@ See [Storybook](https://eea.github.io/eea-storybook/).
 
 ## Volto customizations
 
-- `volto-slate/editor/SlateEditor` -> [ref](https://taskman.eionet.europa.eu/issues/264239#note-11) When two slates looks at the same prop changing one slate and updating the other should be handled properly. This change makes replacing the old value of slate work in sync with the other slates that watches the same prop.
+- `volto-slate/editor/SlateEditor` -> When two slates looks at the same prop changing one slate and updating the other should be handled properly. This change makes replacing the old value of slate work in sync with the other slates that watches the same prop [ref](https://taskman.eionet.europa.eu/issues/264239#note-11).
+
+  **!!IMPORTANT**: This change requires volto@^16.26.1
 
 - `volto/components/manage/Sidebar/SidebarPopup` -> https://github.com/plone/volto/pull/5520
 
