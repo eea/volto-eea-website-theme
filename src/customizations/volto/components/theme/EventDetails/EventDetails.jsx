@@ -142,7 +142,6 @@ const EventDetails = ({ content, display_as = 'aside' }) => {
         <a
           className="ics-download"
           target="_blank"
-          rel="noreferrer"
           href={`${expandToBackendURL(content['@id'])}/ics_view`}
         >
           {intl.formatMessage(messages.downloadEvent)}
