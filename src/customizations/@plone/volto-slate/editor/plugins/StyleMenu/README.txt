@@ -1,1 +1,0 @@
-This customization fixes bugs with styleMenu not highlighting selected styles in some scenarios. This should be removed after https://github.com/plone/volto/pull/4852

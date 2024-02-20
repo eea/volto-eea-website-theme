@@ -1,9 +1,19 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
 import { Node, Text } from 'slate';
 import cx from 'classnames';
 import { isEmpty, isEqual, omit } from 'lodash';
+import { UniversalLink, Toast } from '@plone/volto/components';
+import { messages, addAppURL } from '@plone/volto/helpers';
+import useClipboard from '@plone/volto/hooks/clipboard/useClipboard';
 import config from '@plone/volto/registry';
+import linkSVG from '@plone/volto/icons/link.svg';
+
+import './less/slate.less';
 
 const OMITTED = ['editor', 'path'];
 
@@ -70,10 +80,11 @@ export const Leaf = ({ children, ...rest }) => {
     typeof children === 'string' ? (
       children.split('\n').map((t, i) => {
         // Softbreak support. Should do a plugin?
+        const hasSoftBreak =
+          children.indexOf('\n') > -1 && children.split('\n').length - 1 > i;
         return (
           <React.Fragment key={`${i}`}>
-            {children.indexOf('\n') > -1 &&
-            children.split('\n').length - 1 > i ? (
+            {hasSoftBreak ? (
               <>
                 {klass ? <span className={klass}>{t}</span> : t}
                 <br />
@@ -104,7 +115,20 @@ export const serializeNodes = (nodes, getAttributes, extras = {}) => {
   const editor = { children: nodes || [] };
 
   const _serializeNodes = (nodes) => {
-    return (nodes || []).map(([node, path], i) => {
+    return (nodes || []).map(([node, path]) => {
+      let _serialized;
+      const isTextNode = Text.isText(node);
+      try {
+        if (!isTextNode) {
+          _serialized = _serializeNodes(
+            Array.from(Node.children(editor, path)),
+          );
+        }
+      } catch {
+        // eslint-disable-next-line no-console
+        console.error('Error in serializing nodes', editor, path);
+      }
+
       return Text.isText(node) ? (
         <Leaf path={path} leaf={node} text={node} mode="view" key={path}>
           {node.text}
@@ -125,7 +149,7 @@ export const serializeNodes = (nodes, getAttributes, extras = {}) => {
           }
           extras={extras}
         >
-          {_serializeNodes(Array.from(Node.children(editor, path)))}
+          {_serialized}
         </Element>
       );
     });
@@ -163,3 +187,68 @@ export const serializeNodesToText = (nodes) => {
 
 export const serializeNodesToHtml = (nodes) =>
   renderToStaticMarkup(serializeNodes(nodes));
+
+export const renderLinkElement = (tagName) => {
+  function LinkElement({
+    attributes,
+    children,
+    mode = 'edit',
+    className = null,
+  }) {
+    const { slate = {} } = config.settings;
+    const Tag = tagName;
+    const slug = attributes.id || '';
+    const location = useLocation();
+    const token = useSelector((state) => state.userSession.token);
+    const appPathname = addAppURL(location.pathname);
+    // eslint-disable-next-line no-unused-vars
+    const [copied, copy, setCopied] = useClipboard(
+      appPathname.concat(`#${slug}`),
+    );
+    const intl = useIntl();
+    return !token || slate.useLinkedHeadings === false ? (
+      <Tag {...attributes} className={className} tabIndex={0}>
+        {children}
+      </Tag>
+    ) : (
+      <Tag {...attributes} className={className} tabIndex={0}>
+        {children}
+        {mode === 'view' && slug && (
+          <UniversalLink
+            className="anchor"
+            aria-hidden="true"
+            tabIndex={-1}
+            href={`#${slug}`}
+          >
+            <style>
+              {/* Prettify the unstyled flash of the link icon on development */}
+              {`
+                a.anchor svg {
+                  height: var(--anchor-svg-height, 24px);
+                }
+                `}
+            </style>
+            <svg
+              {...linkSVG.attributes}
+              dangerouslySetInnerHTML={{ __html: linkSVG.content }}
+              height={null}
+              onClick={() => {
+                copy();
+
+                toast.info(
+                  <Toast
+                    info
+                    title={intl.formatMessage(messages.success)}
+                    content={intl.formatMessage(messages.urlClipboardCopy)}
+                  />,
+                );
+              }}
+            ></svg>
+          </UniversalLink>
+        )}
+      </Tag>
+    );
+  }
+  LinkElement.displayName = `${tagName}LinkElement`;
+  return LinkElement;
+};

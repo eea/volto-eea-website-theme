@@ -105,8 +105,6 @@ export const View = ({ className, data, detached, style }) => {
                       responsive={true}
                     />
                     <div
-                      // onMouseEnter={() => setHovering(true)}
-                      // onMouseLeave={() => setHovering(false)}
                       className={`copyright-wrapper ${
                         copyrightPosition ? copyrightPosition : 'left'
                       }`}
@@ -116,14 +114,7 @@ export const View = ({ className, data, detached, style }) => {
                           <Copyright.Icon>
                             <Icon className={copyrightIcon} />
                           </Copyright.Icon>
-                          {/*<div*/}
-                          {/*  className={cx(*/}
-                          {/*    'copyright-hover-container',*/}
-                          {/*    !hovering ? 'hiddenStructure' : '',*/}
-                          {/*  )}*/}
-                          {/*>*/}
                           <Copyright.Text>{copyright}</Copyright.Text>
-                          {/*</div>*/}
                         </Copyright>
                       ) : (
                         ''
