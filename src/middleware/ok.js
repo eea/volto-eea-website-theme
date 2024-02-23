@@ -7,9 +7,11 @@ const ok = function (req, res, next) {
   res.send('ok');
 };
 
-export default function (express) {
+const okMiddleware = function (express) {
   const middleware = express.Router();
   middleware.all(config?.settings?.okRoute || '/ok', ok);
   middleware.id = 'ok';
   return middleware;
-}
+};
+
+export default okMiddleware;

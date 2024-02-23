@@ -94,10 +94,10 @@ const View = (props) => {
     },
     [metadata],
   );
-  const creationDate = useMemo(() => getDate(hideCreationDate, 'created'), [
-    getDate,
-    hideCreationDate,
-  ]);
+  const creationDate = useMemo(
+    () => getDate(hideCreationDate, 'created'),
+    [getDate, hideCreationDate],
+  );
   const publishingDate = useMemo(
     () => getDate(hidePublishingDate, 'effective'),
     [getDate, hidePublishingDate],

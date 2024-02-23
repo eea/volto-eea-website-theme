@@ -3,7 +3,7 @@ import LayoutSettingsView from './LayoutSettingsView';
 import LayoutSettingsEdit from './LayoutSettingsEdit';
 import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
 
-export default (config) => {
+const applyConfig = (config) => {
   config.blocks.blocksConfig.layoutSettings = {
     id: 'layoutSettings',
     title: 'Layout settings',
@@ -20,3 +20,5 @@ export default (config) => {
 
   return config;
 };
+
+export default applyConfig;
