@@ -13,7 +13,7 @@ import useClipboard from '@plone/volto/hooks/clipboard/useClipboard';
 import config from '@plone/volto/registry';
 import linkSVG from '@plone/volto/icons/link.svg';
 
-import './less/slate.less';
+import '@plone/volto-slate/editor/less/slate.less';
 
 const OMITTED = ['editor', 'path'];
 
