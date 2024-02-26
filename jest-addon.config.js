@@ -1,4 +1,4 @@
-require('dotenv').config({ path: __dirname + '/.env' })
+require('dotenv').config({ path: __dirname + '/.env' });
 
 module.exports = {
   testMatch: ['**/src/addons/**/?(*.)+(spec|test).[jt]s?(x)'],
@@ -28,6 +28,7 @@ module.exports = {
   ],
   transform: {
     '^.+\\.js(x)?$': 'babel-jest',
+    '^.+\\.ts(x)?$': 'ts-jest',
     '^.+\\.(png)$': 'jest-file',
     '^.+\\.(jpg)$': 'jest-file',
     '^.+\\.(svg)$': './node_modules/@plone/volto/jest-svgsystem-transform.js',
@@ -45,4 +46,4 @@ module.exports = {
       '<rootDir>/node_modules/@eeacms/volto-eea-website-theme/jest.setup.js',
     ],
   }),
-}
+};
