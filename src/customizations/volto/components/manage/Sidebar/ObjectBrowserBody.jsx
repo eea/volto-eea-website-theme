@@ -280,7 +280,7 @@ class ObjectBrowserBody extends Component {
       onChangeBlock(block, {
         ...data,
         url: flattenToAppURL(item.getURL),
-        alt: item.description || item.title || '',
+        alt: item.rights || '',
       });
     } else if (mode === 'link') {
       onChangeBlock(block, {
