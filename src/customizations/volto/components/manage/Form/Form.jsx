@@ -140,6 +140,10 @@ class Form extends Component {
       text: uuid(),
     };
     let { formData } = props;
+    // TODO Tiberiu: customized here
+    formData = formData || {}; // when coming from login screen, formData is null
+    // this fixes a bug where, if you go to an /edit page, it will show login (you need to wait the 5 seconds timeout), after login you get redirected back to the edit, then it crashes
+    // end customized
     const blocksFieldname = getBlocksFieldname(formData);
     const blocksLayoutFieldname = getBlocksLayoutFieldname(formData);
 
