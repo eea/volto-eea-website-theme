@@ -1,5 +1,4 @@
-/* this customization is used to put default alt as description
-   than image title, because this is the most probably scenario
+/* this customization is used to put default alt as the rights field
 */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
