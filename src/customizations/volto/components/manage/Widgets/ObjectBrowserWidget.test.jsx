@@ -5,7 +5,7 @@ import { Provider } from 'react-intl-redux';
 import configureStore from 'redux-mock-store';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import ObjectBrowserWidgetComponent from './ObjectBrowserWidget';
+import ObjectBrowserWidgetComponent from '@plone/volto/components/manage/Widgets/ObjectBrowserWidget';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
