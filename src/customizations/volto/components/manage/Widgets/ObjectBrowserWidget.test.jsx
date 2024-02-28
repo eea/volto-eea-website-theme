@@ -161,11 +161,9 @@ describe('ObjectBrowserWidgetComponent', () => {
     fireEvent.change(getByPlaceholderText('No items selected'), {
       target: { value: 'http://localhost:3000/Plone/test' },
     });
-
     expect(container.querySelector('button.primary')).toBeInTheDocument();
-    fireEvent.click(container.querySelector('button.primary'));
 
-    fireEvent.click(container.querySelector('button.action'));
+    fireEvent.click(container.querySelector('button.cancel'));
 
     expect(container).toBeTruthy();
   });
