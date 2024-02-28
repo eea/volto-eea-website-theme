@@ -42,7 +42,10 @@ const View = ({ data, properties }) => {
                 const image = (
                   <div className="image-block">
                     <Image
-                      className={cx({ 'full-width': data.align === 'full' })}
+                      className={cx(
+                        { 'full-width': data.align === 'full' },
+                        data?.styles?.objectPosition,
+                      )}
                       item={properties}
                       imageField="image"
                       sizes={config.blocks.blocksConfig.leadimage.getSizes(

@@ -282,12 +282,15 @@ class Edit extends Component {
           {data.url ? (
             <>
               <Image
-                className={cx({
-                  'full-width': data.align === 'full',
-                  large: data.size === 'l',
-                  medium: data.size === 'm',
-                  small: data.size === 's',
-                })}
+                className={cx(
+                  {
+                    'full-width': data.align === 'full',
+                    large: data.size === 'l',
+                    medium: data.size === 'm',
+                    small: data.size === 's',
+                  },
+                  data?.styles?.objectPosition,
+                )}
                 item={
                   data.image_scales
                     ? {

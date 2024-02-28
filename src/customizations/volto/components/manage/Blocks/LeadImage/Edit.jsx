@@ -119,7 +119,7 @@ class Edit extends Component {
           {hasImage && hasImageData && (
             <div className="image-block">
               <img
-                className={className}
+                className={(className, data?.styles?.objectPosition)}
                 src={`data:${properties.image['content-type']};base64,${properties.image.data}`}
                 width={properties.image.width}
                 height={properties.image.height}
