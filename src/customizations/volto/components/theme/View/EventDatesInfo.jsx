@@ -26,11 +26,14 @@ export const datesForDisplay = (start, end, moment) => {
 };
 
 const When_ = ({ start, end, whole_day, open_end, moment: momentlib }) => {
-  //   const lang = useSelector((state) => state.intl.locale);
+  // Customization:
+  // Fix date format by using dateLocale instead of language from Redux
+  // const lang = useSelector((state) => state.intl.locale);
   const dateLocale = config.settings.dateLocale || 'en-gb';
 
   const moment = momentlib.default;
   moment.locale(dateLocale);
+  // end customization
 
   const datesInfo = datesForDisplay(start, end, moment);
   if (!datesInfo) {
