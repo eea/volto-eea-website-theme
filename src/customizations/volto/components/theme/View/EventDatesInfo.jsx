@@ -1,3 +1,5 @@
+/* Original: https://github.com/plone/volto/blob/16.x.x/src/components/theme/View/EventDatesInfo.jsx */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { List } from 'semantic-ui-react';
