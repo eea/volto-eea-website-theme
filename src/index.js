@@ -130,6 +130,12 @@ const applyConfig = (config) => {
     ...(config.settings.eea || {}),
   };
 
+  //include site title in <title>
+  if (!config.settings.siteTitleFormat) {
+    config.settings.siteTitleFormat = { includeSiteTitle: true };
+  } else config.settings.siteTitleFormat.includeSiteTitle = true;
+  config.settings.titleAndSiteTitleSeparator = '|';
+
   // #160689 Redirect contact-form to contact-us
   config.settings.contactForm = '/contact';
 
