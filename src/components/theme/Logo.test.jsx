@@ -27,6 +27,5 @@ describe('EEALogo Component', () => {
     );
 
     expect(container).toBeTruthy();
-    expect(container).toHaveProperty();
   });
 });
