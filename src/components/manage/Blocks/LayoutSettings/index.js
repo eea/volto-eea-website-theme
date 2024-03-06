@@ -14,7 +14,6 @@ export default (config) => {
     schema: BlockSettingsSchema,
     restricted: false,
     mostUsed: false,
-    blockHasOwnFocusManagement: true,
     sidebarTab: 1,
   };
 

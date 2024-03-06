@@ -215,6 +215,11 @@ describe('applyConfig', () => {
                 title: 'Horizontal',
                 isDefault: false,
               },
+              {
+                id: 'accordion',
+                title: 'Accordion responsive',
+                isDefault: false,
+              },
             ],
           },
           columnsBlock: {},
