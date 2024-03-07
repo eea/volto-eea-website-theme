@@ -62,7 +62,7 @@ const Footer = () => {
         url: flattenToAppURL(action.url),
         children:
           idx === 0
-            ? contactExtraActions.map((child) => ({
+            ? (contactExtraActions || []).map((child) => ({
                 text: child.title,
                 icon: child.icon,
                 url: flattenToAppURL(child.url),

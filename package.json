@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/volto-eea-website-theme",
-  "version": "1.28.1",
+  "version": "1.29.0",
   "description": "@eeacms/volto-eea-website-theme: Volto add-on",
   "main": "src/index.js",
   "author": "European Environment Agency: IDM2 A-Team",
