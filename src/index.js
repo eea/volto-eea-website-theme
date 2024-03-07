@@ -27,7 +27,7 @@ import contentBoxSVG from './icons/content-box.svg';
 import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
-
+import { print } from './reducers';
 import { nanoid } from '@plone/volto-slate/utils';
 import { v4 as uuid } from 'uuid';
 
@@ -533,6 +533,12 @@ const applyConfig = (config) => {
       );
     };
   }
+
+  // addonReducers
+  config.addonReducers = {
+    ...(config.addonReducers || {}),
+    print,
+  };
 
   // Breadcrumbs
   config.settings.apiExpanders.push({
