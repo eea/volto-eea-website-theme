@@ -185,12 +185,23 @@ const View = (props) => {
                     );
                     printLoader.style.display = 'flex';
 
+                    let timeoutValue = 1000;
+                    // if we have plotlycharts increase timeout
+                    setTimeout(() => {
+                      const plotlyCharts = document.getElementsByClassName(
+                        'visualization-wrapper',
+                      );
+                      if (plotlyCharts.length > 0) {
+                        timeoutValue = timeoutValue + 1000;
+                      }
+                    }, timeoutValue);
+
                     // scroll to iframes to make them be in the viewport
                     // use timeout to wait for load
-                    let timeoutValue = 3000;
                     setTimeout(() => {
                       const iframes = document.getElementsByTagName('iframe');
-                      if (iframes) {
+                      if (iframes.length > 0) {
+                        timeoutValue = timeoutValue + 2000;
                         Array.from(iframes).forEach((element, index) => {
                           setTimeout(() => {
                             element.scrollIntoView({
@@ -201,9 +212,9 @@ const View = (props) => {
                           }, timeoutValue);
                           timeoutValue = timeoutValue + 3000;
                         });
+                        timeoutValue = timeoutValue + 1000;
                       }
 
-                      timeoutValue = timeoutValue + 1000;
                       setTimeout(() => {
                         window.scrollTo({
                           top: 0,
