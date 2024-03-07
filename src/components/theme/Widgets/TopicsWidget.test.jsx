@@ -10,7 +10,7 @@ const mockStore = configureStore();
 let history = createMemoryHistory();
 
 describe('TopicsWidget Component', () => {
-  it('renders without crashing', () => {
+  it('renders without crashing, with value', () => {
     const store = mockStore({
       intl: {
         locale: 'en',
@@ -26,6 +26,25 @@ describe('TopicsWidget Component', () => {
             children={''}
             className={'test'}
           />
+        </Router>
+      </Provider>,
+    );
+
+    expect(container).toBeTruthy();
+  });
+
+  it('renders without crashing, without value', () => {
+    const store = mockStore({
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+
+    const { container } = render(
+      <Provider store={store}>
+        <Router history={history}>
+          <TopicsWidget value={null} children={''} className={'test'} />
         </Router>
       </Provider>,
     );
