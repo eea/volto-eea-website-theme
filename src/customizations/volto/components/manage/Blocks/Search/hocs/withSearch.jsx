@@ -18,6 +18,7 @@ const SEARCH_ENDPOINT_FIELDS = [
   'limit',
   'sort_on',
   'sort_order',
+  'facets',
 ];
 
 const PAQO = 'plone.app.querystring.operation';
@@ -28,15 +29,26 @@ const PAQO = 'plone.app.querystring.operation';
  * @function getInitialState
  *
  */
-function getInitialState(data, facets, urlSearchText, id) {
-  const {
-    types: facetWidgetTypes,
-  } = config.blocks.blocksConfig.search.extensions.facetWidgets;
+function getInitialState(
+  data,
+  facets,
+  urlSearchText,
+  id,
+  sortOnParam,
+  sortOrderParam,
+) {
+  const { types: facetWidgetTypes } =
+    config.blocks.blocksConfig.search.extensions.facetWidgets;
   const facetSettings = data?.facets || [];
 
   return {
     query: [
-      ...(data.query?.query || []),
+      ...(data.query?.query.map((q) => {
+        return {
+          ...q,
+          mandatory: true,
+        };
+      }) || []),
       ...(facetSettings || [])
         .map((facet) => {
           if (!facet?.field) return null;
@@ -63,11 +75,11 @@ function getInitialState(data, facets, urlSearchText, id) {
           ]
         : []),
     ],
-    facets: (data?.facets || []).map((facet) => facet.field.value),
-    sort_on: data.query?.sort_on,
-    sort_order: data.query?.sort_order,
+    sort_on: sortOnParam || data.query?.sort_on,
+    sort_order: sortOrderParam || data.query?.sort_order,
     b_size: data.query?.b_size,
     limit: data.query?.limit,
+    facets: (data?.facets || []).map((facet) => facet?.field?.value),
     block: id,
   };
 }
@@ -88,9 +100,8 @@ function normalizeState({
   sortOrder,
   facetSettings, // data.facets extracted from block data
 }) {
-  const {
-    types: facetWidgetTypes,
-  } = config.blocks.blocksConfig.search.extensions.facetWidgets;
+  const { types: facetWidgetTypes } =
+    config.blocks.blocksConfig.search.extensions.facetWidgets;
 
   // Here, we are removing the QueryString of the Listing ones, which is present in the Facet
   // because we already initialize the facet with those values.
@@ -254,6 +265,8 @@ const withSearch = (options) => (WrappedComponent) => {
       editable,
     );
 
+    // TODO: Improve the hook dependencies out of the scope of https://github.com/plone/volto/pull/4662
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const urlQuery = locationSearchData.query
       ? deserializeQuery(locationSearchData.query)
       : [];
@@ -264,6 +277,8 @@ const withSearch = (options) => (WrappedComponent) => {
 
     // TODO: refactor, should use only useLocationStateManager()!!!
     const [searchText, setSearchText] = React.useState(urlSearchText);
+    // TODO: Improve the hook dependencies out of the scope of https://github.com/plone/volto/pull/4662
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const configuredFacets =
       data.facets?.map((facet) => facet?.field?.value) || [];
 
@@ -359,11 +374,24 @@ const withSearch = (options) => (WrappedComponent) => {
     const [sortOn, setSortOn] = React.useState(data?.query?.sort_on);
     const [sortOrder, setSortOrder] = React.useState(data?.query?.sort_order);
 
-    const [searchData, setSearchData] = React.useState({});
+    const [searchData, setSearchData] = React.useState(
+      getInitialState(data, facets, urlSearchText, id),
+    );
 
+    const deepFacets = JSON.stringify(facets);
+    const deepData = JSON.stringify(data);
     React.useEffect(() => {
-      setSearchData(getInitialState(data, facets, urlSearchText, id));
-    }, [facets, data, urlSearchText, id]);
+      setSearchData(
+        getInitialState(
+          JSON.parse(deepData),
+          JSON.parse(deepFacets),
+          urlSearchText,
+          id,
+          sortOn,
+          sortOrder,
+        ),
+      );
+    }, [deepData, deepFacets, urlSearchText, id, sortOn, sortOrder]);
 
     const timeoutRef = React.useRef();
     const facetSettings = data?.facets;
@@ -379,7 +407,7 @@ const withSearch = (options) => (WrappedComponent) => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(
           () => {
-            const searchData = normalizeState({
+            const newSearchData = normalizeState({
               id,
               query: data.query || {},
               facets: toSearchFacets || facets,
@@ -391,8 +419,8 @@ const withSearch = (options) => (WrappedComponent) => {
             if (toSearchFacets) setFacets(toSearchFacets);
             if (toSortOn) setSortOn(toSortOn);
             if (toSortOrder) setSortOrder(toSortOrder);
-            setSearchData(searchData);
-            setLocationSearchData(getSearchFields(searchData));
+            setSearchData(newSearchData);
+            setLocationSearchData(getSearchFields(newSearchData));
           },
           toSearchFacets ? inputDelay / 3 : inputDelay,
         );
@@ -412,13 +440,14 @@ const withSearch = (options) => (WrappedComponent) => {
     );
 
     const removeSearchQuery = () => {
-      searchData.query = searchData.query.reduce(
+      let newSearchData = { ...searchData };
+      newSearchData.query = searchData.query.reduce(
         // Remove SearchableText from query
         (acc, kvp) => (kvp.i === 'SearchableText' ? acc : [...acc, kvp]),
         [],
       );
-      setSearchData(searchData);
-      setLocationSearchData(getSearchFields(searchData));
+      setSearchData(newSearchData);
+      setLocationSearchData(getSearchFields(newSearchData));
     };
 
     const querystringResults = useSelector(
@@ -426,7 +455,6 @@ const withSearch = (options) => (WrappedComponent) => {
     );
     const totalItems =
       querystringResults[id]?.total || querystringResults[id]?.items?.length;
-
     return (
       <WrappedComponent
         {...props}
