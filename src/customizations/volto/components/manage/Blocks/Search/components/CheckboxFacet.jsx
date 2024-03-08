@@ -4,7 +4,7 @@ import {
   selectFacetSchemaEnhancer,
   selectFacetStateToValue,
   selectFacetValueToQuery,
-} from '@plone/volto/components/manage/Blocks/Search/components/base';
+} from './base';
 
 /**
  * A facet that uses radio/checkboxes to provide an explicit list of values for
@@ -19,6 +19,7 @@ const CheckboxFacet = (props) => {
     onChange,
     value,
     isEditMode,
+    isFacetCountEnabled,
   } = props;
   const facetValue = value;
 
@@ -31,31 +32,59 @@ const CheckboxFacet = (props) => {
 
           return (
             <div className="entry" key={value}>
-              <Checkbox
-                disabled={isEditMode}
-                label={`${label} (${count})`}
-                radio={!isMulti}
-                checked={
-                  isMulti
-                    ? !!facetValue?.find((f) => f.value === value)
-                    : facetValue && facetValue.value === value
-                }
-                onChange={(e, { checked }) =>
-                  onChange(
-                    facet.field.value,
+              {isFacetCountEnabled === true ? (
+                <Checkbox
+                  disabled={isEditMode}
+                  label={`${label} (${count})`}
+                  radio={!isMulti}
+                  checked={
                     isMulti
-                      ? [
-                          ...facetValue
-                            .filter((f) => f.value !== value)
-                            .map((f) => f.value),
-                          ...(checked ? [value] : []),
-                        ]
-                      : checked
-                      ? value
-                      : null,
-                  )
-                }
-              />
+                      ? !!facetValue?.find((f) => f.value === value)
+                      : facetValue && facetValue.value === value
+                  }
+                  onChange={(e, { checked }) =>
+                    onChange(
+                      facet.field.value,
+                      isMulti
+                        ? [
+                            ...facetValue
+                              .filter((f) => f.value !== value)
+                              .map((f) => f.value),
+                            ...(checked ? [value] : []),
+                          ]
+                        : checked
+                          ? value
+                          : null,
+                    )
+                  }
+                />
+              ) : (
+                <Checkbox
+                  disabled={isEditMode}
+                  label={label}
+                  radio={!isMulti}
+                  checked={
+                    isMulti
+                      ? !!facetValue?.find((f) => f.value === value)
+                      : facetValue && facetValue.value === value
+                  }
+                  onChange={(e, { checked }) =>
+                    onChange(
+                      facet.field.value,
+                      isMulti
+                        ? [
+                            ...facetValue
+                              .filter((f) => f.value !== value)
+                              .map((f) => f.value),
+                            ...(checked ? [value] : []),
+                          ]
+                        : checked
+                          ? value
+                          : null,
+                    )
+                  }
+                />
+              )}
             </div>
           );
         })}
