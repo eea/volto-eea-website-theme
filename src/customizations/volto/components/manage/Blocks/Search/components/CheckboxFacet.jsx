@@ -4,7 +4,7 @@ import {
   selectFacetSchemaEnhancer,
   selectFacetStateToValue,
   selectFacetValueToQuery,
-} from '@plone/volto/src/components/manage/Blocks/Search/components/base';
+} from '@plone/volto/components/manage/Blocks/Search/components/base';
 
 /**
  * A facet that uses radio/checkboxes to provide an explicit list of values for
