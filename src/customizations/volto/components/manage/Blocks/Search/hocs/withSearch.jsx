@@ -37,8 +37,9 @@ function getInitialState(
   sortOnParam,
   sortOrderParam,
 ) {
-  const { types: facetWidgetTypes } =
-    config.blocks.blocksConfig.search.extensions.facetWidgets;
+  const {
+    types: facetWidgetTypes,
+  } = config.blocks.blocksConfig.search.extensions.facetWidgets;
   const facetSettings = data?.facets || [];
 
   return {
@@ -100,8 +101,9 @@ function normalizeState({
   sortOrder,
   facetSettings, // data.facets extracted from block data
 }) {
-  const { types: facetWidgetTypes } =
-    config.blocks.blocksConfig.search.extensions.facetWidgets;
+  const {
+    types: facetWidgetTypes,
+  } = config.blocks.blocksConfig.search.extensions.facetWidgets;
 
   // Here, we are removing the QueryString of the Listing ones, which is present in the Facet
   // because we already initialize the facet with those values.

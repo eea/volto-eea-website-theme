@@ -2,7 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Button, Grid } from 'semantic-ui-react';
 import { resolveExtension } from '@plone/volto/helpers/Extensions/withBlockExtensions';
 import config from '@plone/volto/registry';
-import { hasNonValueOperation, hasDateOperation } from '../utils';
+import {
+  hasNonValueOperation,
+  hasDateOperation,
+} from '@plone/volto/src/components/manage/Blocks/Search/utils';
 import { defineMessages, useIntl } from 'react-intl';
 
 const messages = defineMessages({
@@ -106,8 +109,9 @@ const Facets = (props) => {
 
           let value = stateToValue({ facetSettings, index, selectedValue });
 
-          const { rewriteOptions = (name, options) => options } =
-            search.extensions.facetWidgets;
+          const {
+            rewriteOptions = (name, options) => options,
+          } = search.extensions.facetWidgets;
 
           return FacetWrapper && (isEditMode || showFacet(index)) ? (
             <FacetWrapper
@@ -157,8 +161,8 @@ const Facets = (props) => {
                 ? intl.formatMessage(messages.showFilters)
                 : intl.formatMessage(messages.moreFilters)
               : advancedFilters === 2
-                ? intl.formatMessage(messages.hideFilters)
-                : intl.formatMessage(messages.lessFilters)}
+              ? intl.formatMessage(messages.hideFilters)
+              : intl.formatMessage(messages.lessFilters)}
           </Button>
         </Grid.Column>
       )}

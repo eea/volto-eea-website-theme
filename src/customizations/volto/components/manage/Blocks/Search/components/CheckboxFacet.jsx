@@ -4,7 +4,7 @@ import {
   selectFacetSchemaEnhancer,
   selectFacetStateToValue,
   selectFacetValueToQuery,
-} from './base';
+} from '@plone/volto/src/components/manage/Blocks/Search/components/base';
 
 /**
  * A facet that uses radio/checkboxes to provide an explicit list of values for
@@ -53,8 +53,8 @@ const CheckboxFacet = (props) => {
                             ...(checked ? [value] : []),
                           ]
                         : checked
-                          ? value
-                          : null,
+                        ? value
+                        : null,
                     )
                   }
                 />
@@ -79,8 +79,8 @@ const CheckboxFacet = (props) => {
                             ...(checked ? [value] : []),
                           ]
                         : checked
-                          ? value
-                          : null,
+                        ? value
+                        : null,
                     )
                   }
                 />
