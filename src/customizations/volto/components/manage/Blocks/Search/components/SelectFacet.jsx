@@ -5,12 +5,15 @@ import {
   DropdownIndicator,
   MultiValueContainer,
 } from '@plone/volto/components/manage/Widgets/SelectStyling';
-import { selectTheme, customSelectStyles } from './SelectStyling';
+import {
+  selectTheme,
+  customSelectStyles,
+} from '@plone/volto/components/manage/Blocks/Search/components/SelectStyling';
 import {
   selectFacetSchemaEnhancer,
   selectFacetStateToValue,
   selectFacetValueToQuery,
-} from './base';
+} from '@plone/volto/components/manage/Blocks/Search/components/base';
 
 const SelectFacet = (props) => {
   const {
