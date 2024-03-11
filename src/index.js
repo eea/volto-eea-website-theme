@@ -8,6 +8,7 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { Icon } from '@plone/volto/components';
 import { getBlocks } from '@plone/volto/helpers';
+import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
 import {
@@ -26,7 +27,7 @@ import contentBoxSVG from './icons/content-box.svg';
 import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
-
+import { print } from './reducers';
 import { nanoid } from '@plone/volto-slate/utils';
 import { v4 as uuid } from 'uuid';
 
@@ -224,6 +225,20 @@ const applyConfig = (config) => {
     ...config.views.errorViews,
     '404': NotFound,
   };
+  // Apply slate text block customization
+  if (config.blocks.blocksConfig.slate) {
+    config.blocks.blocksConfig.slate.tocEntry = (block = {}) => {
+      const { value, override_toc, entry_text, level } = block;
+      const plaintext =
+        serializeNodesToText(block.value || []) || block.plaintext;
+      const type = value?.[0]?.type;
+      return override_toc && level
+        ? [parseInt(level.slice(1)), entry_text]
+        : config.settings.slate.topLevelTargetElements.includes(type)
+        ? [parseInt(type.slice(1)), plaintext]
+        : null;
+    };
+  }
   // Apply accordion block customization
   if (config.blocks.blocksConfig.accordion) {
     config.blocks.blocksConfig.accordion.titleIcons = {
@@ -518,6 +533,12 @@ const applyConfig = (config) => {
       );
     };
   }
+
+  // addonReducers
+  config.addonReducers = {
+    ...(config.addonReducers || {}),
+    print,
+  };
 
   // Breadcrumbs
   config.settings.apiExpanders.push({

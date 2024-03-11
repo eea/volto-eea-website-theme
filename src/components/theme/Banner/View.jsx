@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Helmet } from '@plone/volto/helpers';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { withRouter } from 'react-router';
 import { defineMessages, injectIntl } from 'react-intl';
 import startCase from 'lodash/startCase';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Loader } from 'semantic-ui-react';
 import Popup from '@eeacms/volto-eea-design-system/ui/Popup/Popup';
 import config from '@plone/volto/registry';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
@@ -14,7 +14,8 @@ import {
   sharePage,
 } from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
-
+import { setIsPrint } from '@eeacms/volto-eea-website-theme/actions/print';
+import cx from 'classnames';
 import './styles.less';
 
 const messages = defineMessages({
@@ -65,6 +66,7 @@ const Title = ({ config = {}, properties }) => {
 };
 
 const View = (props) => {
+  const dispatch = useDispatch();
   const { banner = {}, intl } = props;
   const metadata = props.metadata || props.properties;
   const popupRef = useRef(null);
@@ -164,14 +166,95 @@ const View = (props) => {
               </>
             )}
             {!hideDownloadButton && (
-              <Banner.Action
-                icon="ri-download-2-fill"
-                title={intl.formatMessage(messages.download)}
-                className="download"
-                onClick={() => {
-                  window.print();
-                }}
-              />
+              <>
+                <Banner.Action
+                  icon="ri-download-2-fill"
+                  title={intl.formatMessage(messages.download)}
+                  className="download"
+                  onClick={() => {
+                    // set tabs to be visible
+                    const tabs = document.getElementsByClassName('ui tab');
+                    Array.from(tabs).forEach((tab) => {
+                      tab.style.display = 'block';
+                    });
+
+                    dispatch(setIsPrint(true));
+                    // display loader
+                    const printLoader = document.getElementById(
+                      'download-print-loader',
+                    );
+                    printLoader.style.display = 'flex';
+
+                    let timeoutValue = 1000;
+                    // if we have plotlycharts increase timeout
+                    setTimeout(() => {
+                      const plotlyCharts = document.getElementsByClassName(
+                        'visualization-wrapper',
+                      );
+                      if (plotlyCharts.length > 0) {
+                        timeoutValue = timeoutValue + 1000;
+                      }
+                    }, timeoutValue);
+
+                    // scroll to iframes to make them be in the viewport
+                    // use timeout to wait for load
+                    setTimeout(() => {
+                      const iframes = document.getElementsByTagName('iframe');
+                      if (iframes.length > 0) {
+                        timeoutValue = timeoutValue + 2000;
+                        Array.from(iframes).forEach((element, index) => {
+                          setTimeout(() => {
+                            element.scrollIntoView({
+                              behavior: 'instant',
+                              block: 'nearest',
+                              inline: 'center',
+                            });
+                          }, timeoutValue);
+                          timeoutValue = timeoutValue + 3000;
+                        });
+                        timeoutValue = timeoutValue + 1000;
+                      }
+
+                      setTimeout(() => {
+                        window.scrollTo({
+                          top: 0,
+                        });
+                        Array.from(tabs).forEach((tab) => {
+                          tab.style.display = '';
+                        });
+                        printLoader.style.display = 'none';
+                        dispatch(setIsPrint(false));
+                        window.print();
+                      }, timeoutValue);
+                    }, timeoutValue);
+                  }}
+                />
+                <div
+                  id="download-print-loader"
+                  className={cx('ui warning message')}
+                  style={{
+                    position: 'fixed',
+                    left: '40%',
+                    right: '40%',
+                    backgroundColor: '#fff',
+                    padding: '1em',
+                    display: 'none',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    top: '40%',
+                    zIndex: '9999',
+                  }}
+                >
+                  <Loader
+                    disabled={false}
+                    indeterminate
+                    active
+                    inline
+                    size="medium"
+                  ></Loader>
+                  <div>Preparing download</div>
+                </div>
+              </>
             )}
             {rssLinks?.map((rssLink, index) => (
               <>
@@ -253,6 +336,7 @@ export default compose(
   connect((state) => {
     return {
       types: state.types.types,
+      isPrint: state.isPrint,
     };
   }),
 )(View);
