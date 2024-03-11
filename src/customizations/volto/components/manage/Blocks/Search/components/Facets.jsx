@@ -2,10 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button, Grid } from 'semantic-ui-react';
 import { resolveExtension } from '@plone/volto/helpers/Extensions/withBlockExtensions';
 import config from '@plone/volto/registry';
-import {
-  hasNonValueOperation,
-  hasDateOperation,
-} from '@plone/volto/src/components/manage/Blocks/Search/utils';
+import { hasNonValueOperation, hasDateOperation } from '../utils';
 import { defineMessages, useIntl } from 'react-intl';
 
 const messages = defineMessages({
