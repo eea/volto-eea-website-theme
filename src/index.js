@@ -34,11 +34,7 @@ import { v4 as uuid } from 'uuid';
 import * as eea from './config';
 import React from 'react';
 
-const restrictedBlocks = [
-  '__grid', // Grid/Teaser block (kitconcept)
-  'imagesGrid',
-  'teaser',
-];
+const restrictedBlocks = ['imagesGrid', 'teaser'];
 
 /**
  * Customizes the variations of a tabs block by modifying their schema and semantic icons.
