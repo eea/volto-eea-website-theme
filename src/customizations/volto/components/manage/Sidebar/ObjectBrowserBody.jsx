@@ -1,5 +1,5 @@
 /* this customization is used to put default alt as the rights field
-*/
+ */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
@@ -279,7 +279,8 @@ class ObjectBrowserBody extends Component {
       onChangeBlock(block, {
         ...data,
         url: flattenToAppURL(item.getURL),
-        alt: item.rights || '',
+        alt: item.title || item.description || '',
+        copyright: item.rights || '',
       });
     } else if (mode === 'link') {
       onChangeBlock(block, {
