@@ -9,11 +9,14 @@ exports[`Contact form renders a contact form 1`] = `
     Contact us:
      
     <a
-      className="external"
-      rel="noopener noreferrer"
-      target="_blank"
+      className={null}
+      href="/"
+      onClick={[Function]}
+      target={null}
       title={null}
-    />
+    >
+      /
+    </a>
   </p>
 </div>
 `;
@@ -27,11 +30,14 @@ exports[`Contact form renders a contact form with error message 1`] = `
     Contact us:
      
     <a
-      className="external"
-      rel="noopener noreferrer"
-      target="_blank"
+      className={null}
+      href="/"
+      onClick={[Function]}
+      target={null}
       title={null}
-    />
+    >
+      /
+    </a>
   </p>
 </div>
 `;

@@ -5,7 +5,21 @@ import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
 import Edit from './Edit';
-import { getImageBlockSizes } from '@plone/volto/components/manage/Blocks/Image/utils';
+
+const getImageBlockSizes = function (data) {
+  if (data.align === 'full') return '100vw';
+  if (data.align === 'center') {
+    if (data.size === 'l') return '100vw';
+    if (data.size === 'm') return '50vw';
+    if (data.size === 's') return '25vw';
+  }
+  if (data.align === 'left' || data.align === 'right') {
+    if (data.size === 'l') return '50vw';
+    if (data.size === 'm') return '25vw';
+    if (data.size === 's') return '15vw';
+  }
+  return undefined;
+};
 
 const mockStore = configureMockStore();
 const { settings } = config;
