@@ -15,21 +15,21 @@ import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
 import clearIcon from './icons/eraser.svg';
 
-const addFormat = (opts, format, after) => {
-  const index = opts.indexOf(format);
-  const afterIndex = opts.indexOf(after);
+const addSlateToolbarButton = ({ opts, add, before }) => {
+  const index = opts.indexOf(add);
+  const beforeIndex = opts.indexOf(before);
   if (index === -1) {
-    if (afterIndex > -1) {
-      opts.splice(afterIndex + 1, 0, format);
+    if (beforeIndex > -1) {
+      opts.splice(beforeIndex + 1, 0, add);
     } else {
-      opts.push(format);
+      opts.push(add);
     }
-  } else if (index > -1 && afterIndex > -1 && index > afterIndex + 1) {
+  } else if (index > -1 && beforeIndex > -1 && index > beforeIndex + 1) {
     opts.splice(index, 1);
-    opts.splice(afterIndex + 1, 0, format);
-  } else if (index > -1 && index < afterIndex) {
+    opts.splice(beforeIndex + 1, 0, add);
+  } else if (index > -1 && index < beforeIndex) {
     opts.splice(index, 1);
-    opts.splice(afterIndex, 0, format);
+    opts.splice(beforeIndex, 0, add);
   }
   return opts;
 };
@@ -137,21 +137,23 @@ export default function installSlate(config) {
       <ClearFormattingButton title="Clear formatting" icon={clearIcon} />
     );
 
-    addFormat(
-      config.settings.slate.toolbarButtons,
-      'heading-four',
-      'heading-three',
-    );
+    addSlateToolbarButton({
+      opts: config.settings.slate.toolbarButtons,
+      add: 'h3-light',
+      before: 'heading-three',
+    });
 
     // Remove blockquote, italic, strikethrough slate button from toolbarButtons
-    config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
-      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
-    );
+    config.settings.slate.toolbarButtons =
+      config.settings.slate.toolbarButtons.filter(
+        (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+      );
 
     // Remove blockquote, italic, strikethrough slate button from expandedToolbarButtons
-    config.settings.slate.expandedToolbarButtons = config.settings.slate.expandedToolbarButtons.filter(
-      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
-    );
+    config.settings.slate.expandedToolbarButtons =
+      config.settings.slate.expandedToolbarButtons.filter(
+        (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+      );
 
     // Remove 'underline' and 'italic' hotkeys
     config.settings.slate.hotkeys = Object.keys(config.settings.slate.hotkeys)
