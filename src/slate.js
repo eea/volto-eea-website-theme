@@ -144,16 +144,14 @@ export default function installSlate(config) {
     });
 
     // Remove blockquote, italic, strikethrough slate button from toolbarButtons
-    config.settings.slate.toolbarButtons =
-      config.settings.slate.toolbarButtons.filter(
-        (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
-      );
+    config.settings.slate.toolbarButtons = config.settings.slate.toolbarButtons.filter(
+      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+    );
 
     // Remove blockquote, italic, strikethrough slate button from expandedToolbarButtons
-    config.settings.slate.expandedToolbarButtons =
-      config.settings.slate.expandedToolbarButtons.filter(
-        (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
-      );
+    config.settings.slate.expandedToolbarButtons = config.settings.slate.expandedToolbarButtons.filter(
+      (item) => !['blockquote', 'italic', 'strikethrough'].includes(item),
+    );
 
     // Remove 'underline' and 'italic' hotkeys
     config.settings.slate.hotkeys = Object.keys(config.settings.slate.hotkeys)
