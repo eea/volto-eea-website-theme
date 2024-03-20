@@ -5,7 +5,12 @@ import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
 import Edit from './Edit';
-import { getImageBlockSizes } from '@plone/volto/components/manage/Blocks/Image/utils';
+import { Image } from '@plone/volto/components';
+import { getImageBlockSizes } from './Edit';
+
+config.set('components', {
+  Image: { component: Image },
+});
 
 const mockStore = configureMockStore();
 const { settings } = config;
