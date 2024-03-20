@@ -15,6 +15,25 @@ import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
 import clearIcon from './icons/eraser.svg';
 
+const addFormat = (opts, format, after) => {
+  const index = opts.indexOf(format);
+  const afterIndex = opts.indexOf(after);
+  if (index === -1) {
+    if (afterIndex > -1) {
+      opts.splice(afterIndex + 1, 0, format);
+    } else {
+      opts.push(format);
+    }
+  } else if (index > -1 && afterIndex > -1 && index > afterIndex + 1) {
+    opts.splice(index, 1);
+    opts.splice(afterIndex + 1, 0, format);
+  } else if (index > -1 && index < afterIndex) {
+    opts.splice(index, 1);
+    opts.splice(afterIndex, 0, format);
+  }
+  return opts;
+};
+
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
   // TODO: someone fix this
@@ -116,6 +135,12 @@ export default function installSlate(config) {
 
     config.settings.slate.buttons.clearformatting = (props) => (
       <ClearFormattingButton title="Clear formatting" icon={clearIcon} />
+    );
+
+    addFormat(
+      config.settings.slate.toolbarButtons,
+      'heading-four',
+      'heading-three',
     );
 
     // Remove blockquote, italic, strikethrough slate button from toolbarButtons
