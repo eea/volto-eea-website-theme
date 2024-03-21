@@ -1,6 +1,11 @@
 import React from 'react';
+import cx from 'classnames';
 import { List } from 'semantic-ui-react';
-import { MarkElementButton, ToolbarButton } from '@plone/volto-slate/editor/ui';
+import {
+  MarkElementButton,
+  ToolbarButton,
+  BlockButton,
+} from '@plone/volto-slate/editor/ui';
 import installCallout from '@plone/volto-slate/editor/plugins/Callout';
 import { Icon } from '@plone/volto/components';
 import { Editor, Transforms, Text } from 'slate';
@@ -11,9 +16,42 @@ import alignLeftIcon from '@plone/volto/icons/align-left.svg';
 import alignRightIcon from '@plone/volto/icons/align-right.svg';
 import alignCenterIcon from '@plone/volto/icons/align-center.svg';
 import alignJustifyIcon from '@plone/volto/icons/align-justify.svg';
+import subTextIcon from '@plone/volto/icons/subtext.svg';
 import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
 import clearIcon from './icons/eraser.svg';
+
+const installSlateToolbarButton = ({
+  config,
+  key,
+  before,
+  button,
+  element,
+}) => {
+  const toolbarButtons = config.settings.slate.toolbarButtons;
+  const index = toolbarButtons.indexOf(key);
+  const beforeIndex = toolbarButtons.indexOf(before);
+  if (index === -1) {
+    if (beforeIndex > -1) {
+      toolbarButtons.splice(beforeIndex + 1, 0, key);
+    } else {
+      toolbarButtons.push(key);
+    }
+  } else if (index > -1 && beforeIndex > -1 && index > beforeIndex + 1) {
+    toolbarButtons.splice(index, 1);
+    toolbarButtons.splice(beforeIndex + 1, 0, key);
+  } else if (index > -1 && index < beforeIndex) {
+    toolbarButtons.splice(index, 1);
+    toolbarButtons.splice(beforeIndex, 0, key);
+  }
+  if (button) {
+    config.settings.slate.buttons[key] = button;
+  }
+  if (element) {
+    config.settings.slate.elements[key] = element;
+  }
+  return config;
+};
 
 const toggleBlockClassFormat = (editor, format) => {
   const levels = Array.from(Editor.levels(editor, editor.selection));
@@ -111,8 +149,46 @@ const ClearFormattingButton = ({ icon, ...props }) => {
 
 export default function installSlate(config) {
   if (config.settings.slate) {
+    let renderLinkElement;
     // Callout slate button
     config = installCallout(config);
+
+    try {
+      renderLinkElement =
+        require('@plone/volto-slate/editor/render').renderLinkElement ||
+        require('@eeacms/volto-anchors/helpers').renderLinkElement;
+    } catch {}
+
+    installSlateToolbarButton({
+      config,
+      key: 'h3-light',
+      before: 'heading-three',
+      button: (props) => (
+        <BlockButton
+          title="Heading 3 light"
+          format="h3-light"
+          allowedChildren={config.settings.slate.allowedHeadlineElements}
+          icon={subTextIcon}
+          {...props}
+        />
+      ),
+      element: renderLinkElement
+        ? (opts) => {
+            return renderLinkElement('h3')({
+              ...opts,
+              className: 'subtitle-light',
+            });
+          }
+        : ({ attributes, children }) => (
+            <h3
+              {...attributes}
+              className={cx(attributes.className, 'subtitle-light')}
+            >
+              {children}
+            </h3>
+          ),
+    });
+    config.settings.slate.topLevelTargetElements.push('h3-light');
 
     config.settings.slate.buttons.clearformatting = (props) => (
       <ClearFormattingButton title="Clear formatting" icon={clearIcon} />
