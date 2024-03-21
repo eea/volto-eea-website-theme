@@ -16,10 +16,10 @@ import alignLeftIcon from '@plone/volto/icons/align-left.svg';
 import alignRightIcon from '@plone/volto/icons/align-right.svg';
 import alignCenterIcon from '@plone/volto/icons/align-center.svg';
 import alignJustifyIcon from '@plone/volto/icons/align-justify.svg';
-import subTextIcon from '@plone/volto/icons/subtext.svg';
 import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
 import clearIcon from './icons/eraser.svg';
+import fontMono from './icons/font-mono.svg';
 
 const installSlateToolbarButton = ({
   config,
@@ -105,20 +105,16 @@ const clearFormatting = (editor) => {
     Editor.nodes(editor, {
       mode: 'lowest',
       match: (n, p) => {
-        // console.log('node', n, p);
         return Text.isText(n);
       },
       //at: [0], // uncomment if you want everything to be cleared
     }),
   );
 
-  // console.log('sn', sn);
-
   sn.forEach(([n, at]) => {
     const toRemove = Object.keys(n).filter((k) => k.startsWith('style-'));
     if (toRemove.length) {
       Transforms.unsetNodes(editor, toRemove, { at });
-      // console.log('unset', n, at, toRemove);
     }
   });
 
@@ -155,7 +151,6 @@ export default function installSlate(config) {
 
     try {
       renderLinkElement =
-        require('@plone/volto-slate/editor/render').renderLinkElement ||
         require('@eeacms/volto-anchors/helpers').renderLinkElement;
     } catch {}
 
@@ -165,10 +160,10 @@ export default function installSlate(config) {
       before: 'heading-three',
       button: (props) => (
         <BlockButton
-          title="Heading 3 light"
+          title="Figure title"
           format="h3-light"
           allowedChildren={config.settings.slate.allowedHeadlineElements}
-          icon={subTextIcon}
+          icon={fontMono}
           {...props}
         />
       ),
