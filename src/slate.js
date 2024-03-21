@@ -150,8 +150,8 @@ export default function installSlate(config) {
     config = installCallout(config);
 
     try {
-      renderLinkElement =
-        require('@eeacms/volto-anchors/helpers').renderLinkElement;
+      renderLinkElement = require('@eeacms/volto-anchors/helpers')
+        .renderLinkElement;
     } catch {}
 
     installSlateToolbarButton({
