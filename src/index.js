@@ -373,6 +373,7 @@ const applyConfig = (config) => {
     },
   ];
 
+  // Install slate
   config = installSlate(config);
 
   // Custom block-style colors
