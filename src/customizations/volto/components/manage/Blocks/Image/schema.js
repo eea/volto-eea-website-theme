@@ -37,6 +37,10 @@ const messages = defineMessages({
     id: 'Alt text hint link text',
     defaultMessage: 'Describe the purpose of the image.',
   },
+  linkSettings: {
+    id: 'Link settings',
+    defaultMessage: 'Link settings',
+  },
 });
 
 export function ImageSchema({ formData, intl }) {
@@ -61,7 +65,7 @@ export function ImageSchema({ formData, intl }) {
         ? [
             {
               id: 'link_settings',
-              title: 'Link settings',
+              title: intl.formatMessage(messages.linkSettings),
               fields: ['href', 'openLinkInNewTab'],
             },
           ]
@@ -80,7 +84,7 @@ export function ImageSchema({ formData, intl }) {
               href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
               title={intl.formatMessage(messages.openLinkInNewTab)}
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
             >
               {intl.formatMessage(messages.AltTextHintLinkText)}
             </a>{' '}
@@ -136,3 +140,14 @@ export function ImageSchema({ formData, intl }) {
     required: [],
   };
 }
+
+export const gridImageDisableSizeAndPositionHandlersSchema = ({
+  schema,
+  formData,
+  intl,
+}) => {
+  schema.fieldsets[0].fields = schema.fieldsets[0].fields.filter(
+    (item) => !['align', 'size'].includes(item),
+  );
+  return schema;
+};

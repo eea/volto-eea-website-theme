@@ -143,6 +143,7 @@ const EventDetails = ({ content, display_as = 'aside' }) => {
           className="ics-download"
           target="_blank"
           href={`${expandToBackendURL(content['@id'])}/ics_view`}
+          rel="noopener"
         >
           {intl.formatMessage(messages.downloadEvent)}
         </a>

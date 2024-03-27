@@ -12,7 +12,7 @@ export class ContactFormComponent extends Component {
   }
 
   render() {
-    const remoteUrl = config.settings.contactForm;
+    const remoteUrl = config.settings.contactForm || '/';
     return (
       <Container id="page-document">
         <p>

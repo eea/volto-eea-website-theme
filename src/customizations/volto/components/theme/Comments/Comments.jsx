@@ -33,8 +33,7 @@ const messages = defineMessages({
     defaultMessage: 'Comments',
   },
   commentDescription: {
-    id:
-      'You can add a comment by filling out the form below. Plain text formatting.',
+    id: 'You can add a comment by filling out the form below. Plain text formatting.',
     defaultMessage:
       'You can add a comment by filling out the form below. Plain text formatting.',
   },

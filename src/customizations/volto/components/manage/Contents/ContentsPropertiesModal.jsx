@@ -27,8 +27,7 @@ const messages = defineMessages({
     defaultMessage: 'Publishing Date',
   },
   effectiveDescription: {
-    id:
-      'If this date is in the future, the content will not show up in listings and searches until this date.',
+    id: 'If this date is in the future, the content will not show up in listings and searches until this date.',
     defaultMessage:
       'If this date is in the future, the content will not show up in listings and searches until this date.',
   },
@@ -37,8 +36,7 @@ const messages = defineMessages({
     defaultMessage: 'Expiration Date',
   },
   expiresDescription: {
-    id:
-      'When this date is reached, the content will nolonger be visible in listings and searches.',
+    id: 'When this date is reached, the content will nolonger be visible in listings and searches.',
     defaultMessage:
       'When this date is reached, the content will nolonger be visible in listings and searches.',
   },
@@ -56,8 +54,7 @@ const messages = defineMessages({
     defaultMessage: 'Creators',
   },
   creatorsDescription: {
-    id:
-      'Persons responsible for creating the content of this item. Please enter a list of user names, one per line. The principal creator should come first.',
+    id: 'Persons responsible for creating the content of this item. Please enter a list of user names, one per line. The principal creator should come first.',
     defaultMessage:
       'Persons responsible for creating the content of this item. Please enter a list of user names, one per line. The principal creator should come first.',
   },

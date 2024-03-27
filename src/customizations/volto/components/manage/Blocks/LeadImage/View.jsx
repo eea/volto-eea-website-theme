@@ -7,101 +7,87 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { UniversalLink } from '@plone/volto/components';
 import cx from 'classnames';
+import config from '@plone/volto/registry';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import { Icon } from 'semantic-ui-react';
-import { flattenToAppURL } from '@plone/volto/helpers';
 
 /**
  * View image block class.
  * @class View
  * @extends Component
  */
-const View = (props) => {
-  const { data, properties } = props;
-  const { copyright, copyrightIcon, copyrightPosition, styles } = data;
-
-  // const [hovering, setHovering] = React.useState(false);
-  const [viewLoaded, setViewLoaded] = React.useState(false);
-
-  React.useEffect(() => {
-    setViewLoaded(true);
-  }, []);
+const View = ({ data, properties }) => {
+  const { copyright, copyrightIcon, copyrightPosition } = data;
+  const Image = config.getComponent({ name: 'Image' }).component;
 
   return (
     <>
-      {viewLoaded && (
-        <p
+      <p
+        className={cx(
+          'block image align',
+          {
+            center: !Boolean(data.align),
+          },
+          data.align,
+        )}
+      >
+        <div
           className={cx(
-            'block image align',
-            {
-              center: !Boolean(data.align),
-            },
-            data.align,
+            `image-block-container ${data?.align ? data?.align : ''}`,
           )}
         >
-          <div
-            className={cx(
-              `image-block-container ${data?.align ? data?.align : ''}`,
-            )}
-          >
-            {properties.image && (
-              <>
-                {(() => {
-                  const image = (
-                    <div className="image-block">
-                      <img
-                        className={cx(
-                          { 'full-width': data.align === 'full' },
-                          styles?.objectPosition,
-                        )}
-                        src={flattenToAppURL(properties.image.download)}
-                        alt={properties.image_caption || ''}
-                      />
-                      <div
-                        // onMouseEnter={() => setHovering(true)}
-                        // onMouseLeave={() => setHovering(false)}
-                        className={`copyright-wrapper ${
-                          copyrightPosition ? copyrightPosition : 'left'
-                        }`}
-                      >
-                        {copyright ? (
-                          <Copyright copyrightPosition={copyrightPosition}>
-                            <Copyright.Icon>
-                              <Icon className={copyrightIcon} />
-                            </Copyright.Icon>
-                            {/*<div*/}
-                            {/*  className={cx(*/}
-                            {/*    'copyright-hover-container',*/}
-                            {/*    !hovering ? 'hiddenStructure' : '',*/}
-                            {/*  )}*/}
-                            {/*>*/}
-                            <Copyright.Text>{copyright}</Copyright.Text>
-                            {/*</div>*/}
-                          </Copyright>
-                        ) : (
-                          ''
-                        )}
-                      </div>
+          {properties.image && (
+            <>
+              {(() => {
+                const image = (
+                  <div className="image-block">
+                    <Image
+                      className={cx(
+                        { 'full-width': data.align === 'full' },
+                        data?.styles?.objectPosition,
+                      )}
+                      item={properties}
+                      imageField="image"
+                      sizes={config.blocks.blocksConfig.leadimage.getSizes(
+                        data,
+                      )}
+                      alt={properties.image_caption || ''}
+                      responsive={true}
+                    />
+                    <div
+                      className={`copyright-wrapper ${
+                        copyrightPosition ? copyrightPosition : 'left'
+                      }`}
+                    >
+                      {copyright ? (
+                        <Copyright copyrightPosition={copyrightPosition}>
+                          <Copyright.Icon>
+                            <Icon className={copyrightIcon} />
+                          </Copyright.Icon>
+                        </Copyright>
+                      ) : (
+                        ''
+                      )}
                     </div>
+                  </div>
+                );
+                if (data.href) {
+                  return (
+                    <UniversalLink
+                      href={data.href}
+                      openLinkInNewTab={data.openLinkInNewTab}
+                    >
+                      {image}
+                    </UniversalLink>
                   );
-                  if (data.href) {
-                    return (
-                      <UniversalLink
-                        href={data.href}
-                        openLinkInNewTab={data.openLinkInNewTab}
-                      >
-                        {image}
-                      </UniversalLink>
-                    );
-                  } else {
-                    return image;
-                  }
-                })()}
-              </>
-            )}
-          </div>
-        </p>
-      )}
+                } else {
+                  return image;
+                }
+              })()}
+            </>
+          )}
+        </div>
+      </p>
     </>
   );
 };

@@ -5,7 +5,7 @@ import { Provider } from 'react-intl-redux';
 import configureStore from 'redux-mock-store';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import ObjectBrowserWidgetComponent from './ObjectBrowserWidget';
+import ObjectBrowserWidgetComponent from '@plone/volto/components/manage/Widgets/ObjectBrowserWidget';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
@@ -161,11 +161,9 @@ describe('ObjectBrowserWidgetComponent', () => {
     fireEvent.change(getByPlaceholderText('No items selected'), {
       target: { value: 'http://localhost:3000/Plone/test' },
     });
-
     expect(container.querySelector('button.primary')).toBeInTheDocument();
-    fireEvent.click(container.querySelector('button.primary'));
 
-    fireEvent.click(container.querySelector('button.action'));
+    fireEvent.click(container.querySelector('button.cancel'));
 
     expect(container).toBeTruthy();
   });
