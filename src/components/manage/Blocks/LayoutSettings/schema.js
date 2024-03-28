@@ -32,6 +32,7 @@ export const EditSchema = () => {
           ['homepage', 'Homepage'],
           ['homepage-inverse', 'Homepage inverse'],
         ],
+        widget: 'creatableselect',
       },
     },
   };
