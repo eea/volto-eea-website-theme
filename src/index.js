@@ -338,7 +338,7 @@ const applyConfig = (config) => {
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
-  config.widgets.widget.creatableselect = CreatableSelectWidget;
+  config.widgets.widget.creatable_select = CreatableSelectWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
