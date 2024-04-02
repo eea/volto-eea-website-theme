@@ -25,7 +25,7 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 export const View = (props) => {
   const { className, data, detached, style } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const href = data?.href?.[0]?.['@id'] ?? (data?.href || '');
+  const href = data?.href?.[0]?.['@id'] || '';
   const showCopyright = data?.size === 'l' || !data.size;
 
   const Image = config.getComponent({ name: 'Image' }).component;

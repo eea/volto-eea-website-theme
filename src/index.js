@@ -6,6 +6,8 @@ import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homep
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
+
 import { Icon } from '@plone/volto/components';
 import { getBlocks } from '@plone/volto/helpers';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
@@ -305,16 +307,16 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
     config.blocks.blocksConfig.columnsBlock.tocEntries = (
-      tocData,
       block = {},
+      tocData,
     ) => {
       // integration with volto-block-toc
       const headlines = tocData.levels || ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
       let entries = [];
-      const sorted_column_blocks = getBlocks(block?.data || {});
-      sorted_column_blocks.forEach((column_block) => {
-        const sorted_blocks = getBlocks(column_block[1]);
-        sorted_blocks.forEach((block) => {
+      const columns = getBlocks(block?.data || {});
+      columns.forEach((column) => {
+        const blocks = getBlocks(column[1]);
+        blocks.forEach((block) => {
           const { value, plaintext } = block[1];
           const type = value?.[0]?.type;
           if (headlines.includes(type)) {
@@ -339,6 +341,7 @@ const applyConfig = (config) => {
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
+  config.widgets.widget.creatable_select = CreatableSelectWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
