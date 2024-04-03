@@ -66,7 +66,13 @@ export const getVoltoStyles = (props) => {
     if (styles[key] === true) {
       output[key] = key;
     } else {
-      output[value] = value;
+      if (Array.isArray(value)) {
+        value.forEach((el, i) => {
+          output[el] = el;
+        });
+      } else {
+        output[value] = value;
+      }
     }
   }
   return output;
