@@ -9,7 +9,6 @@ import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/W
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
 import { Icon } from '@plone/volto/components';
-import { getBlocks } from '@plone/volto/helpers';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -306,26 +305,6 @@ const applyConfig = (config) => {
   // Apply columns block customization
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.available_colors = eea.colors;
-    config.blocks.blocksConfig.columnsBlock.tocEntries = (
-      block = {},
-      tocData,
-    ) => {
-      // integration with volto-block-toc
-      const headlines = tocData.levels || ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-      let entries = [];
-      const columns = getBlocks(block?.data || {});
-      columns.forEach((column) => {
-        const blocks = getBlocks(column[1]);
-        blocks.forEach((block) => {
-          const { value, plaintext } = block[1];
-          const type = value?.[0]?.type;
-          if (headlines.includes(type)) {
-            entries.push([parseInt(type.slice(1)), plaintext, block[0]]);
-          }
-        });
-      });
-      return entries;
-    };
   }
 
   // Description block custom CSS
