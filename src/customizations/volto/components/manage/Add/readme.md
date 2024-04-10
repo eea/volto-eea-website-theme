@@ -1,1 +1,0 @@
-This customization aims to resolve the issue of adding a page with an empty title. It is a temporary solution and should be removed upon upgrading to Volto 17. Please check this for more information: https://github.com/plone/volto/pull/5842
