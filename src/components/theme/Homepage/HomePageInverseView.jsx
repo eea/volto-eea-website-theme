@@ -17,12 +17,12 @@ import { hasBlocksData } from '@plone/volto/helpers';
  * @param {Object} content Content object.
  * @returns {string} Markup of the component.
  */
-const HomePageInverseView = ({ content }) => {
-  return hasBlocksData(content) ? (
+const HomePageInverseView = (props) => {
+  return hasBlocksData(props.content) ? (
     <>
       <BodyClass className="homepage homepage-inverse" />
-      <h1 className="hiddenStructure">{content.title}</h1>
-      <DefaultView content={content} />
+      <h1 className="hiddenStructure">{props.content.title}</h1>
+      <DefaultView {...props} />
     </>
   ) : null;
 };
