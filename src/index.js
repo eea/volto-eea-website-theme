@@ -125,6 +125,7 @@ const applyConfig = (config) => {
   config.settings.eea = {
     ...eea,
     ...(config.settings.eea || {}),
+    contentTypesWithoutHeaderImage: ['Image'],
   };
 
   //include site title in <title>
