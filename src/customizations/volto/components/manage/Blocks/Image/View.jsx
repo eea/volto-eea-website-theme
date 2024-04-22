@@ -9,8 +9,12 @@ import PropTypes from 'prop-types';
 import { UniversalLink } from '@plone/volto/components';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
-import { withBlockExtensions } from '@plone/volto/helpers';
-import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers';
+import {
+  flattenToAppURL,
+  isInternalURL,
+  withBlockExtensions,
+} from '@plone/volto/helpers';
+import config from '@plone/volto/registry';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
 /**
@@ -19,131 +23,126 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
  * @extends Component
  */
 export const View = (props) => {
-  const { data, detached } = props;
-  const href = data?.href?.[0]?.['@id'] || '';
+  const { className, data, detached, style } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  // const [hovering, setHovering] = React.useState(false);
-  const [viewLoaded, setViewLoaded] = React.useState(false);
-
+  const href = data?.href?.[0]?.['@id'] || '';
   const showCopyright = data?.size === 'l' || !data.size;
 
-  React.useEffect(() => {
-    setViewLoaded(true);
-  }, []);
+  const Image = config.getComponent({ name: 'Image' }).component;
 
   return (
     <>
-      {viewLoaded && (
+      <div
+        className={cx(
+          'block image align',
+          {
+            center: !Boolean(data.align),
+            detached,
+          },
+          data.align,
+          className,
+        )}
+        style={style}
+      >
         <div
           className={cx(
-            'block image align',
+            'image-block-container',
             {
-              center: !Boolean(data.align),
-              detached,
+              large: data.size === 'l',
+              medium: data.size === 'm',
+              small: data.size === 's',
             },
-            data.align,
+            data?.align ? data?.align : '',
           )}
         >
-          <div
-            className={cx(
-              'image-block-container',
-              {
-                large: data.size === 'l',
-                medium: data.size === 'm',
-                small: data.size === 's',
-              },
-              data?.align ? data?.align : '',
-            )}
-          >
-            {data.url && (
-              <>
-                {(() => {
-                  const image = (
-                    <>
-                      <img
-                        className={cx(
-                          {
-                            'full-width': data.align === 'full',
-                            large: data.size === 'l',
-                            medium: data.size === 'm',
-                            small: data.size === 's',
-                          },
-                          data?.styles?.objectPosition,
-                        )}
-                        src={
-                          isInternalURL(data.url)
-                            ? // Backwards compat in the case that the block is storing the full server URL
-                              (() => {
-                                if (data.align === 'full')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/huge`;
-                                if (data.size === 'l')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/great`;
-                                if (data.size === 'm')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/preview`;
-                                if (data.size === 's')
-                                  return `${flattenToAppURL(
-                                    data.url,
-                                  )}/@@images/image/mini`;
+          {data.url && (
+            <>
+              {(() => {
+                const image = (
+                  <>
+                    <Image
+                      className={cx(
+                        {
+                          'full-width': data.align === 'full',
+                          large: data.size === 'l',
+                          medium: data.size === 'm',
+                          small: data.size === 's',
+                        },
+                        data?.styles?.objectPosition,
+                      )}
+                      item={
+                        data.image_scales
+                          ? {
+                              '@id': data.url,
+                              image_field: data.image_field,
+                              image_scales: data.image_scales,
+                            }
+                          : undefined
+                      }
+                      src={
+                        data.image_scales
+                          ? undefined
+                          : isInternalURL(data.url)
+                          ? // Backwards compat in the case that the block is storing the full server URL
+                            (() => {
+                              if (data.size === 'l')
                                 return `${flattenToAppURL(
                                   data.url,
-                                )}/@@images/image/great`;
-                              })()
-                            : data.url
-                        }
-                        alt={data.alt || ''}
-                        loading="lazy"
-                      />
-                      <div
-                        // onMouseEnter={() => setHovering(true)}
-                        // onMouseLeave={() => setHovering(false)}
-                        className={`copyright-wrapper ${
-                          copyrightPosition ? copyrightPosition : 'left'
-                        }`}
-                      >
-                        {copyright && showCopyright ? (
-                          <Copyright copyrightPosition={copyrightPosition}>
-                            <Copyright.Icon>
-                              <Icon className={copyrightIcon} />
-                            </Copyright.Icon>
-                            {/*<div*/}
-                            {/*  className={cx(*/}
-                            {/*    'copyright-hover-container',*/}
-                            {/*    !hovering ? 'hiddenStructure' : '',*/}
-                            {/*  )}*/}
-                            {/*>*/}
-                            <Copyright.Text>{copyright}</Copyright.Text>
-                            {/*</div>*/}
-                          </Copyright>
-                        ) : (
-                          ''
-                        )}
-                      </div>
-                    </>
+                                )}/@@images/image`;
+                              if (data.size === 'm')
+                                return `${flattenToAppURL(
+                                  data.url,
+                                )}/@@images/image/preview`;
+                              if (data.size === 's')
+                                return `${flattenToAppURL(
+                                  data.url,
+                                )}/@@images/image/mini`;
+                              return `${flattenToAppURL(
+                                data.url,
+                              )}/@@images/image`;
+                            })()
+                          : data.url
+                      }
+                      sizes={config.blocks.blocksConfig.image.getSizes(data)}
+                      alt={data.alt || ''}
+                      loading="lazy"
+                      responsive={true}
+                    />
+                    <div
+                      className={`copyright-wrapper ${
+                        copyrightPosition ? copyrightPosition : 'left'
+                      }`}
+                    >
+                      {copyright && showCopyright ? (
+                        <Copyright copyrightPosition={copyrightPosition}>
+                          <Copyright.Icon>
+                            <Icon className={copyrightIcon} />
+                          </Copyright.Icon>
+                          <Copyright.Text>{copyright}</Copyright.Text>
+                        </Copyright>
+                      ) : (
+                        ''
+                      )}
+                    </div>
+                  </>
+                );
+                if (href) {
+                  return (
+                    <UniversalLink
+                      href={href}
+                      openLinkInNewTab={data.openLinkInNewTab}
+                    >
+                      {image}
+                    </UniversalLink>
                   );
-                  if (href) {
-                    return (
-                      <UniversalLink
-                        href={href}
-                        openLinkInNewTab={data.openLinkInNewTab}
-                      >
-                        {image}
-                      </UniversalLink>
-                    );
-                  } else {
-                    return image;
-                  }
-                })()}
-              </>
-            )}
-          </div>
+                } else {
+                  return image;
+                }
+              })()}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 };

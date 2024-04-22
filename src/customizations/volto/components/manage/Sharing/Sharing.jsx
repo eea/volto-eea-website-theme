@@ -2,6 +2,9 @@
  * Sharing container.
  * @module components/manage/Sharing/Sharing
  */
+
+//TODO: This component should be removed from customizations.
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Plug, Pluggable } from '@plone/volto/components/manage/Pluggable';

@@ -3,6 +3,8 @@
  * @module components/manage/Form/ModalForm
  */
 
+//TODO: Remove this component from customizations.
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { keys, map } from 'lodash';

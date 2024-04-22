@@ -89,6 +89,9 @@ const View = (props) => {
   const copyrightPrefix =
     config.blocks.blocksConfig.title.copyrightPrefix || '';
 
+  const contentTypesWithoutHeaderImage =
+    config.settings?.eea?.contentTypesWithoutHeaderImage || [];
+
   // Set dates
   const getDate = useCallback(
     (hidden, key) => {
@@ -96,10 +99,10 @@ const View = (props) => {
     },
     [metadata],
   );
-  const creationDate = useMemo(() => getDate(hideCreationDate, 'created'), [
-    getDate,
-    hideCreationDate,
-  ]);
+  const creationDate = useMemo(
+    () => getDate(hideCreationDate, 'created'),
+    [getDate, hideCreationDate],
+  );
   const publishingDate = useMemo(
     () => getDate(hidePublishingDate, 'effective'),
     [getDate, hidePublishingDate],
@@ -110,7 +113,11 @@ const View = (props) => {
   );
 
   // Set image source
-  const image = getImageSource(metadata['image']);
+  const image = contentTypesWithoutHeaderImage.includes(
+    props.properties['@type'],
+  )
+    ? false
+    : getImageSource(metadata['image']);
   // Get type
   const type = metadata.type_title || friendlyId(metadata['@type']);
 

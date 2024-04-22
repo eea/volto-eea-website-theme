@@ -54,7 +54,7 @@ const RSSLink = {
   required: [],
 };
 
-export default {
+const titleSchema = {
   title: 'Page header',
   fieldsets: [
     {
@@ -175,3 +175,5 @@ export default {
 
   required: [],
 };
+
+export default titleSchema;

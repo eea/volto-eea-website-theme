@@ -35,11 +35,7 @@ import { v4 as uuid } from 'uuid';
 import * as eea from './config';
 import React from 'react';
 
-const restrictedBlocks = [
-  '__grid', // Grid/Teaser block (kitconcept)
-  'imagesGrid',
-  'teaser',
-];
+const restrictedBlocks = ['imagesGrid', 'teaser'];
 
 /**
  * Customizes the variations of a tabs block by modifying their schema and semantic icons.
@@ -129,7 +125,14 @@ const applyConfig = (config) => {
   config.settings.eea = {
     ...eea,
     ...(config.settings.eea || {}),
+    contentTypesWithoutHeaderImage: ['Image'],
   };
+
+  //include site title in <title>
+  if (!config.settings.siteTitleFormat) {
+    config.settings.siteTitleFormat = { includeSiteTitle: true };
+  } else config.settings.siteTitleFormat.includeSiteTitle = true;
+  config.settings.titleAndSiteTitleSeparator = '|';
 
   // #160689 Redirect contact-form to contact-us
   config.settings.contactForm = '/contact';
@@ -185,11 +188,13 @@ const applyConfig = (config) => {
 
   //Apply the image position style for image and leadimage blocks
   if (config.blocks.blocksConfig.leadimage) {
-    config.blocks.blocksConfig.leadimage.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+    config.blocks.blocksConfig.leadimage.schemaEnhancer =
+      addStylingFieldsetSchemaEnhancerImagePosition;
   }
 
   if (config.blocks.blocksConfig.image) {
-    config.blocks.blocksConfig.image.schemaEnhancer = addStylingFieldsetSchemaEnhancerImagePosition;
+    config.blocks.blocksConfig.image.schemaEnhancer =
+      addStylingFieldsetSchemaEnhancerImagePosition;
   }
 
   // Set Languages in nextcloud-video-block
@@ -197,9 +202,8 @@ const applyConfig = (config) => {
     config?.blocks?.blocksConfig?.nextCloudVideo?.subtitlesLanguages &&
     config?.settings?.eea?.languages?.length > 0
   )
-    config.blocks.blocksConfig.nextCloudVideo.subtitlesLanguages = config.settings.eea.languages.map(
-      (el) => [el.code, el.name],
-    );
+    config.blocks.blocksConfig.nextCloudVideo.subtitlesLanguages =
+      config.settings.eea.languages.map((el) => [el.code, el.name]);
 
   // Enable Title block
   config.blocks.blocksConfig.title.restricted = false;
@@ -224,7 +228,7 @@ const applyConfig = (config) => {
   };
   config.views.errorViews = {
     ...config.views.errorViews,
-    '404': NotFound,
+    404: NotFound,
   };
   // Apply slate text block customization
   if (config.blocks.blocksConfig.slate) {
@@ -467,19 +471,22 @@ const applyConfig = (config) => {
 
   // Group
   if (config.blocks.blocksConfig.group) {
-    config.blocks.blocksConfig.group.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+    config.blocks.blocksConfig.group.schemaEnhancer =
+      addStylingFieldsetSchemaEnhancer;
   }
 
   // Columns
   if (config.blocks.blocksConfig.columnsBlock) {
     config.blocks.blocksConfig.columnsBlock.mostUsed = true;
-    config.blocks.blocksConfig.columnsBlock.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+    config.blocks.blocksConfig.columnsBlock.schemaEnhancer =
+      addStylingFieldsetSchemaEnhancer;
   }
 
   // Listing
   if (config.blocks.blocksConfig.listing) {
     config.blocks.blocksConfig.listing.title = 'Listing (Content)';
-    config.blocks.blocksConfig.listing.schemaEnhancer = addStylingFieldsetSchemaEnhancer;
+    config.blocks.blocksConfig.listing.schemaEnhancer =
+      addStylingFieldsetSchemaEnhancer;
   }
 
   // Block chooser

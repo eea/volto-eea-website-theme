@@ -3,6 +3,8 @@
  * @module components/manage/Form/Form
  */
 
+//TODO: Remove this component from customizations.
+
 import { BlocksForm, Field, Icon, Toast } from '@plone/volto/components';
 import {
   difference,
@@ -233,9 +235,8 @@ class Form extends Component {
     let activeIndex = 0;
 
     if (requestError && prevProps.requestError !== requestError) {
-      errors = FormValidation.giveServerErrorsToCorrespondingFields(
-        requestError,
-      );
+      errors =
+        FormValidation.giveServerErrorsToCorrespondingFields(requestError);
       activeIndex = FormValidation.showFirstTabWithErrors({
         errors,
         schema: this.props.schema,

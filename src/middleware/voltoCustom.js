@@ -29,9 +29,11 @@ function voltoCustomMiddleware(req, res, next) {
     });
 }
 
-export default function (express) {
+const registervoltoCustomMiddleware = function (express) {
   const middleware = express.Router();
   middleware.all(['**/voltoCustom.css$'], voltoCustomMiddleware);
   middleware.id = 'voltoCustom.css';
   return middleware;
-}
+};
+
+export default registervoltoCustomMiddleware;
