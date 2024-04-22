@@ -82,8 +82,7 @@ const messages = defineMessages({
     defaultMessage: 'Changes applied',
   },
   workingCopyAppliedBy: {
-    id:
-      'Made by {creator} on {date}. This is not a working copy anymore, but the main content.',
+    id: 'Made by {creator} on {date}. This is not a working copy anymore, but the main content.',
     defaultMessage:
       'Made by {creator} on {date}. This is not a working copy anymore, but the main content.',
   },
