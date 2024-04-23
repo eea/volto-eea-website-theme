@@ -342,3 +342,5 @@ export const colors = [
   '#F9F9F9',
   '#FFFFFF',
 ];
+
+export const contentTypesWithoutHeaderImage = ['Image'];
