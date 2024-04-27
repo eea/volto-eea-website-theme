@@ -74,7 +74,9 @@ const UniversalLink = ({
 
   const checkedURL = URLUtils.checkAndNormalizeUrl(url);
 
-  url = checkedURL.url;
+  // we can receive an item with a linkWithHash property set from ObjectBrowserWidget
+  // if so, we use that instead of the url prop
+  url = (item && item['linkWithHash']) || checkedURL.url;
   let tag = (
     <Link
       to={flattenToAppURL(url)}

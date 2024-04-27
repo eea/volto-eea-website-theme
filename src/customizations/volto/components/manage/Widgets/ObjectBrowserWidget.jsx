@@ -105,7 +105,8 @@ export class ObjectBrowserWidgetComponent extends Component {
     this.placeholderRef = React.createRef();
   }
   renderLabel(item) {
-    const href = item['@id'];
+    // show linkWithHash if available, otherwise @id
+    const href = item['linkWithHash'] || item['@id'];
     return (
       <Popup
         key={flattenToAppURL(href)}
@@ -163,6 +164,7 @@ export class ObjectBrowserWidgetComponent extends Component {
     }
     let exists = false;
     let index = -1;
+
     value.forEach((_item, _index) => {
       if (flattenToAppURL(_item['@id']) === flattenToAppURL(item['@id'])) {
         exists = true;
@@ -181,6 +183,7 @@ export class ObjectBrowserWidgetComponent extends Component {
           ...this.props.selectedItemAttrs,
           // Add the required attributes for the widget to work
           '@id',
+          'linkWithHash', // add linkWithHash to the allowed attributes
           'title',
         ];
         resultantItem = Object.keys(item)
@@ -222,16 +225,28 @@ export class ObjectBrowserWidgetComponent extends Component {
     }
   };
 
+  /**
+   * Splits a URL into its link and hash components.
+   * @param {string} url - The URL to split.
+   * @returns {[string, string]} - An array containing the link and hash components of the URL.
+   */
+  getHashAndLinkFromUrl = (url) => {
+    return url.split('#');
+  };
+
   onSubmitManualLink = () => {
     if (this.validateManualLink(this.state.manualLinkInput)) {
       if (isInternalURL(this.state.manualLinkInput)) {
-        const link = this.state.manualLinkInput;
+        const [link, hash] = this.getHashAndLinkFromUrl(
+          this.state.manualLinkInput,
+        );
+        const relative_link = flattenToAppURL(link);
         // convert it into an internal on if possible
         this.props
           .searchContent(
             '/',
             {
-              'path.query': flattenToAppURL(this.state.manualLinkInput),
+              'path.query': relative_link,
               'path.depth': '0',
               sort_on: 'getObjPositionInParent',
               metadata_fields: '_all',
@@ -241,6 +256,10 @@ export class ObjectBrowserWidgetComponent extends Component {
           )
           .then((resp) => {
             if (resp.items?.length > 0) {
+              // if there is a hash within the url, add it to the item as linkWithHash
+              if (hash) {
+                resp.items[0]['linkWithHash'] = `${relative_link}#${hash}`;
+              }
               this.onChange(resp.items[0]);
             } else {
               this.props.onChange(this.props.id, [
