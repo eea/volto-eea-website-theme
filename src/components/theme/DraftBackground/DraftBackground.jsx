@@ -19,17 +19,18 @@ const checkIfPublished = (props) => {
   //case 0: the state is not for the current content-type eg: Go to /contents from a page
   if (props.contentId !== removeTrailingSlash(props.pathname)) return true;
 
-  //case 1 : review_state published
-  if (props?.review_state === 'published') return true;
-
-  // remove draft image if effective date is set and is in the future
+  // set draft image if effective date is set and is in the future
+  // regardless of review_state
   const effectiveDate = props?.content?.effective;
   if (
     effectiveDate !== 'None' &&
     new Date(effectiveDate).getTime() > new Date().getTime()
   ) {
-    return true;
+    return false;
   }
+
+  //case 1 : review_state published
+  if (props?.review_state === 'published') return true;
 
   //case 2: review_state null, but parent is published eg:Image in published folder
   if (
