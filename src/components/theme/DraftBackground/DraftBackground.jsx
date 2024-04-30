@@ -7,15 +7,31 @@ import { compose } from 'redux';
 import { flattenToAppURL } from '@plone/volto/helpers';
 
 /**
- * @param {Object} props
- * @returns
+ * Removes any trailing slashes from the given string.
+ *
+ * @param {string} str - The input string to remove trailing slashes from.
+ * @returns {string} The input string with any trailing slashes removed.
  */
-
 const removeTrailingSlash = (str) => {
   return str.replace(/\/+$/, '');
 };
 
-const checkIfPublished = (props) => {
+/**
+ * Checks if the current content is published.
+ *
+ * This function checks the review state and effective date of the current content
+ * to determine if it should be considered published. It handles various cases,
+ * such as when the review state is null, when the content has a parent, and when
+ * the effective date is in the future.
+ *
+ * @param {object} props - The props object containing information about the current content.
+ * @param {string} props.contentId - The ID of the current content.
+ * @param {string} props.pathname - The current URL pathname.
+ * @param {object} props.content - The content object.
+ * @param {string} props.review_state - The review state of the current content.
+ * @returns {boolean} - True if the content is considered published, false otherwise.
+ */
+export const checkIfPublished = (props) => {
   //case 0: the state is not for the current content-type eg: Go to /contents from a page
   if (props.contentId !== removeTrailingSlash(props.pathname)) return true;
 
