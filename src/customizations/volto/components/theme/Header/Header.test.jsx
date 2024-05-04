@@ -6,7 +6,7 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { Provider } from 'react-intl-redux';
 import config from '@plone/volto/registry';
-
+import { waitFor } from '@testing-library/react';
 import Header from './Header';
 
 const mockStore = configureStore();
@@ -99,7 +99,7 @@ describe('Header', () => {
     expect(json).toMatchSnapshot();
   });
 
-  it('renders a header component', () => {
+  it('renders a header component', async () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
@@ -151,6 +151,9 @@ describe('Header', () => {
     );
 
     fireEvent.click(container.querySelector('.content'));
+    await waitFor(() => {
+      expect(container.querySelector('.country-code')).not.toBeNull();
+    });
     fireEvent.keyDown(container.querySelector('.content'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('.content a'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
@@ -169,7 +172,7 @@ describe('Header', () => {
     );
   });
 
-  it('renders a header component', () => {
+  it('renders a header component', async () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
@@ -185,6 +188,7 @@ describe('Header', () => {
           '@components': {
             subsite: {
               '@type': 'Subsite',
+              '@id': 'http://localhost:8080/Plone/subsite',
               title: 'Home Page',
               subsite_logo: {
                 scales: {
@@ -233,6 +237,9 @@ describe('Header', () => {
     );
 
     fireEvent.click(container.querySelector('.content'));
+    await waitFor(() => {
+      expect(container.querySelector('.country-code')).not.toBeNull();
+    });
     fireEvent.keyDown(container.querySelector('.content'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('.content a'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
@@ -251,7 +258,7 @@ describe('Header', () => {
     );
   });
 
-  it('renders a header component', () => {
+  it('renders a header component', async () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
@@ -270,6 +277,7 @@ describe('Header', () => {
           '@components': {
             subsite: {
               '@type': 'Subsite',
+              '@id': 'http://localhost:8080/Plone/subsite',
               title: 'Home Page',
               subsite_logo: undefined,
             },
@@ -311,6 +319,9 @@ describe('Header', () => {
     );
 
     fireEvent.click(container.querySelector('.content'));
+    await waitFor(() => {
+      expect(container.querySelector('.country-code')).not.toBeNull();
+    });
     fireEvent.keyDown(container.querySelector('.content'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('.content a'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
