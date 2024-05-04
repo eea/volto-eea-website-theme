@@ -9,16 +9,10 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 
 import { withRouter } from 'react-router-dom';
 import { UniversalLink } from '@plone/volto/components';
-import {
-  getBaseUrl,
-  hasApiExpander,
-  flattenToAppURL,
-} from '@plone/volto/helpers';
+import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
-import { find } from 'lodash';
-import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
 import config from '@plone/volto/registry';
@@ -26,6 +20,7 @@ import { compose } from 'recompose';
 import { BodyClass } from '@plone/volto/helpers';
 
 import cx from 'classnames';
+import LanguageSwitcher from './LanguageSwitcher';
 
 function removeTrailingSlash(path) {
   return path.replace(/\/+$/, '');
@@ -35,11 +30,6 @@ function removeTrailingSlash(path) {
  * EEA Specific Header component.
  */
 const EEAHeader = ({ pathname, token, items, history, subsite }) => {
-  const currentLang = useSelector((state) => state.intl.locale);
-  const translations = useSelector(
-    (state) => state.content.data?.['@components']?.translations?.items,
-  );
-
   const router_pathname = useSelector((state) => {
     return removeTrailingSlash(state.router?.location?.pathname) || '';
   });
@@ -65,27 +55,21 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
-  const [language, setLanguage] = React.useState(
-    currentLang || eea.defaultLanguage,
-  );
 
   React.useEffect(() => {
-    const { settings } = config;
     const base_url = getBaseUrl(pathname);
+    const { settings } = config;
+
+    // Check if navigation data needs to be fetched based on the API expander availability
     if (!hasApiExpander('navigation', base_url)) {
       dispatch(getNavigation(base_url, settings.navDepth));
     }
-  }, [pathname, dispatch]);
 
-  React.useEffect(() => {
+    // Additional check for token changes
     if (token !== previousToken) {
-      const { settings } = config;
-      const base = getBaseUrl(pathname);
-      if (!hasApiExpander('navigation', base)) {
-        dispatch(getNavigation(base, settings.navDepth));
-      }
+      dispatch(getNavigation(base_url, settings.navDepth));
     }
-  }, [token, dispatch, pathname, previousToken]);
+  }, [pathname, token, dispatch, previousToken]);
 
   return (
     <Header menuItems={items}>
@@ -155,50 +139,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         {config.settings.isMultilingual &&
           config.settings.supportedLanguages.length > 1 &&
           config.settings.hasLanguageDropdown && (
-            <Header.TopDropdownMenu
-              id="language-switcher"
-              className="item"
-              text={`${language.toUpperCase()}`}
-              mobileText={`${language.toUpperCase()}`}
-              icon={
-                <Image
-                  src={globeIcon}
-                  alt="language dropdown globe icon"
-                ></Image>
-              }
-              viewportWidth={width}
-            >
-              <ul
-                className="wrapper language-list"
-                role="listbox"
-                aria-label="language switcher"
-              >
-                {eea.languages.map((item, index) => (
-                  <Dropdown.Item
-                    as="li"
-                    key={index}
-                    text={
-                      <span>
-                        {item.name}
-                        <span className="country-code">
-                          {item.code.toUpperCase()}
-                        </span>
-                      </span>
-                    }
-                    onClick={() => {
-                      const translation = find(translations, {
-                        language: item.code,
-                      });
-                      const to = translation
-                        ? flattenToAppURL(translation['@id'])
-                        : `/${item.code}`;
-                      setLanguage(item.code);
-                      history.push(to);
-                    }}
-                  ></Dropdown.Item>
-                ))}
-              </ul>
-            </Header.TopDropdownMenu>
+            <LanguageSwitcher width={width} history={history} />
           )}
       </Header.TopHeader>
       <Header.Main
