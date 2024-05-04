@@ -20,7 +20,9 @@ import { compose } from 'recompose';
 import { BodyClass } from '@plone/volto/helpers';
 
 import cx from 'classnames';
-import LanguageSwitcher from './LanguageSwitcher';
+import loadable from '@loadable/component';
+
+const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 
 function removeTrailingSlash(path) {
   return path.replace(/\/+$/, '');
@@ -51,7 +53,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const { eea } = config.settings;
   const headerOpts = eea.headerOpts || {};
   const headerSearchBox = eea.headerSearchBox || [];
-  const { logo, logoWhite } = headerOpts || {};
+  const { logo, logoWhite } = headerOpts;
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
@@ -139,7 +141,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         {config.settings.isMultilingual &&
           config.settings.supportedLanguages.length > 1 &&
           config.settings.hasLanguageDropdown && (
-            <LanguageSwitcher width={width} history={history} />
+            <LazyLanguageSwitcher width={width} history={history} />
           )}
       </Header.TopHeader>
       <Header.Main
