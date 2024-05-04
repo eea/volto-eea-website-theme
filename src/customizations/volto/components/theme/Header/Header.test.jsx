@@ -12,6 +12,12 @@ import Header from './Header';
 const mockStore = configureStore();
 let history = createMemoryHistory();
 
+jest.mock('@plone/volto/helpers/Loadable/Loadable');
+beforeAll(
+  async () =>
+    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
+);
+
 describe('Header', () => {
   it('renders a header component', () => {
     const store = mockStore({
