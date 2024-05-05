@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Header renders a header component 1`] = `
+exports[`Header renders a header component with homepage_inverse_view layout 1`] = `
 <header
   aria-label="Site"
   className="eea header"
@@ -90,7 +90,7 @@ exports[`Header renders a header component 1`] = `
           <div>
             <a
               className="logo"
-              href=""
+              href="/"
               onClick={[Function]}
             >
               <img
@@ -120,161 +120,10 @@ exports[`Header renders a header component 1`] = `
                   <a
                     href="/"
                     onClick={[Function]}
-                  />
-                </li>
-              </ul>
-            </nav>
-            <button
-              aria-expanded={false}
-              className="search-action"
-              onClick={[Function]}
-            >
-              <img
-                alt="Global search"
-                className="ui image"
-                src="search-line.svg"
-              />
-            </button>
-            <button
-              aria-expanded={false}
-              className="burger-action mobile "
-              onClick={[Function]}
-            >
-              <img
-                alt="Menu navigation"
-                className="ui image"
-                src="menu-line.svg"
-              />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
-`;
-
-exports[`Header renders a header component 2`] = `
-<header
-  aria-label="Site"
-  className="eea header"
->
-  <div
-    className="top bar"
-  >
-    <div
-      className="ui container"
-    >
-      <div
-        className="item header-top-item official-union"
-      >
-        <img
-          alt="European Union flag"
-          className="ui image"
-          src="eea.png"
-        />
-        <div
-          aria-expanded={false}
-          aria-label="An official website of the European Union | How do you know?"
-          className="ui dropdown"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onClick={[Function]}
-          onFocus={[Function]}
-          onKeyDown={[Function]}
-          onMouseDown={[Function]}
-          role="listbox"
-          tabIndex={0}
-        >
-          <div
-            className="divider text mobile-sr-only"
-          >
-            An official website of the European Union | How do you know?
-          </div>
-          <i
-            aria-hidden="true"
-            className="chevron down icon"
-            onClick={[Function]}
-          />
-          <div
-            className="menu transition"
-            role="option"
-          >
-            <div
-              className="content"
-              onClick={[Function]}
-              onKeyDown={[Function]}
-              role="presentation"
-              tabIndex={0}
-            >
-              <p>
-                All official European Union website addresses are in the
-                 
-                <b>
-                  europa.eu
-                </b>
-                 domain.
-              </p>
-              <a
-                href="https://europa.eu/european-union/contact/institutions-bodies_en"
-                onKeyDown={[Function]}
-                rel="noopener"
-                target="_blank"
-              >
-                See all EU institutions and bodies
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="main bar "
-  >
-    <div
-      className="ui container main-bar-container"
-    >
-      <div
-        className="ui grid"
-      >
-        <div
-          className="four wide computer eight wide mobile eight wide tablet column"
-        >
-          <div>
-            <a
-              className="logo"
-              href=""
-              onClick={[Function]}
-            >
-              <img
-                className="ui image eea-logo"
-              />
-            </a>
-          </div>
-        </div>
-        <div
-          className="eight wide computer four wide mobile four wide tablet column"
-        >
-          <div
-            className="main-menu"
-          >
-            <nav
-              aria-label="Main"
-            >
-              <ul
-                className="ui text eea-main-menu tablet or lower hidden menu"
-                id="navigation"
-              >
-                <li
-                  aria-expanded={false}
-                  className="item"
-                  onClick={[Function]}
-                >
-                  <a
-                    href="/"
-                    onClick={[Function]}
-                  />
+                    title="Test english article"
+                  >
+                    Test english article
+                  </a>
                 </li>
               </ul>
             </nav>
