@@ -1,5 +1,4 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
 import { render, fireEvent, getByText } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
@@ -7,7 +6,7 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { Provider } from 'react-intl-redux';
 import config from '@plone/volto/registry';
-import { waitFor } from '@testing-library/react';
+import { waitFor, act } from '@testing-library/react';
 import Header from './Header';
 
 const mockStore = configureStore();
@@ -59,15 +58,16 @@ describe('Header', () => {
       },
     };
 
-    const component = renderer.create(
-      <Provider store={store}>
-        <Router history={history}>
-          <Header pathname="/home" />
-        </Router>
-      </Provider>,
-    );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    act(() => {
+      const { container } = render(
+        <Provider store={store}>
+          <Router history={history}>
+            <Header pathname="/home" />
+          </Router>
+        </Provider>,
+      );
+      expect(container).toMatchSnapshot();
+    });
   });
 
   it('renders a header component with homepage_view layout and translations', async () => {
