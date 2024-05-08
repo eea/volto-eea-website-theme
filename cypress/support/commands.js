@@ -400,7 +400,7 @@ Cypress.Commands.add('clearSlate', (selector) => {
   return cy
     .get(selector)
     .focus()
-    .click({ force: true })
+    .click()
     .wait(1000)
     .type('{selectAll}')
     .wait(1000)
