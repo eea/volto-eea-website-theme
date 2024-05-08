@@ -292,7 +292,7 @@ pipeline {
       }
       steps {
         script {
-          if (env.CHANGE_BRANCH != 'develop') {
+          if (env.CHANGE_BRANCH != 'develop' && env.CHANGE_BRANCH='draft_image') {
             error 'Pipeline aborted due to PR not made from develop branch'
           }
           withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN')]) {
