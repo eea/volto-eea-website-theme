@@ -142,7 +142,7 @@ exports[`Comments renders a comments component 1`] = `
             <span
               title="2017-11-06T19:36:01"
             >
-              6 years ago
+              7 years ago
             </span>
           </span>
         </div>
@@ -242,7 +242,7 @@ exports[`Comments renders a comments component 1`] = `
             <span
               title="2017-11-06T19:36:01"
             >
-              6 years ago
+              7 years ago
             </span>
           </span>
         </div>
