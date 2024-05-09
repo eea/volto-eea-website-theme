@@ -37,12 +37,12 @@ export const checkIfPublished = (props) => {
 
   // set draft image if effective date is set and is in the future
   // regardless of review_state
-  const effectiveDate = props?.content?.effective;
+  const effectiveDate = props?.content?.effective || 'None';
   if (
     effectiveDate !== 'None' &&
     new Date(effectiveDate).getTime() > new Date().getTime()
   ) {
-    return false;
+    return true;
   }
 
   //case 1 : review_state published
