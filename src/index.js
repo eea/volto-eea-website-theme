@@ -39,8 +39,9 @@ const restrictedBlocks = [
   '__grid', // Grid/Teaser block (kitconcept)
   'imagesGrid',
   'teaser',
+  'dataFigure',
+  'plotly_chart',
 ];
-
 /**
  * Customizes the variations of a tabs block by modifying their schema and semantic icons.
  *
