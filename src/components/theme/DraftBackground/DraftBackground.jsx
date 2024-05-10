@@ -25,10 +25,11 @@ const checkIfPublished = (props) => {
   // remove draft image if effective date is set and is in the future
   const effectiveDate = props?.content?.effective;
   if (
+    effectiveDate &&
     effectiveDate !== 'None' &&
     new Date(effectiveDate).getTime() > new Date().getTime()
   ) {
-    return true;
+    return false;
   }
 
   //case 2: review_state null, but parent is published eg:Image in published folder
