@@ -39,6 +39,7 @@ export const checkIfPublished = (props) => {
   // regardless of review_state
   const effectiveDate = props?.content?.effective;
   if (
+    effectiveDate &&
     effectiveDate !== 'None' &&
     new Date(effectiveDate).getTime() > new Date().getTime()
   ) {
@@ -67,6 +68,7 @@ export const checkIfPublished = (props) => {
     return true;
   return false;
 };
+
 const DraftBackground = (props) => {
   let draftClass = 'wf-state-is-draft';
   if (checkIfPublished(props)) {
