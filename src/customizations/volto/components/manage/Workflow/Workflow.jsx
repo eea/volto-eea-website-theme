@@ -1,23 +1,18 @@
-/**
- * Workflow component.
- * @module components/manage/Workflow/Workflow
- */
-
-import { FormFieldWrapper, Icon, Toast } from '@plone/volto/components';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { compose } from 'redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { uniqBy } from 'lodash';
+import { toast } from 'react-toastify';
+import { defineMessages, useIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
+import { Icon, Toast } from '@plone/volto/components';
+import { FormFieldWrapper } from '@plone/volto/components';
 import {
   flattenToAppURL,
-  getCurrentStateMapping,
   getWorkflowOptions,
+  getCurrentStateMapping,
 } from '@plone/volto/helpers';
-import { uniqBy } from 'lodash';
-import PropTypes from 'prop-types';
-import { Component, Fragment } from 'react';
-import { defineMessages, injectIntl } from 'react-intl';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { compose } from 'redux';
-
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 
 import {
@@ -25,44 +20,28 @@ import {
   getWorkflow,
   transitionWorkflow,
 } from '@plone/volto/actions';
-
-import checkSVG from '@plone/volto/icons/check.svg';
 import downSVG from '@plone/volto/icons/down-key.svg';
 import upSVG from '@plone/volto/icons/up-key.svg';
+import checkSVG from '@plone/volto/icons/check.svg';
 
 const messages = defineMessages({
   messageUpdated: {
     id: 'Workflow updated.',
     defaultMessage: 'Workflow updated.',
   },
-  notAllowedToUpdateWorkflow: {
-    id: 'notAllowedToUpdateWorkflow',
-    defaultMessage: 'Please fill out all the required fields',
-  },
   messageNoWorkflow: {
     id: 'No workflow',
     defaultMessage: 'No workflow',
+  },
+  notAllowedToUpdateWorkflow: {
+    id: 'notAllowedToUpdateWorkflow',
+    defaultMessage: 'Please fill out all the required fields',
   },
   state: {
     id: 'State',
     defaultMessage: 'State',
   },
 });
-
-const filter_remaining_steps = (values, key) => {
-  return values.filter((value) => {
-    const is_not_ready = !value.is_ready;
-    if (!is_not_ready) {
-      return false;
-    }
-    const states = value.states;
-    const required_for_all = states?.indexOf('all') !== -1;
-    return (
-      (is_not_ready && required_for_all) ||
-      (is_not_ready && states?.indexOf(key) !== -1)
-    );
-  });
-};
 
 const SingleValue = injectLazyLibs('reactSelect')(({ children, ...props }) => {
   const stateDecorator = {
@@ -185,98 +164,85 @@ const customSelectStyles = {
   }),
 };
 
-/**
- * Workflow container class.
- * @class Workflow
- * @extends Component
- */
-class Workflow extends Component {
-  /**
-   * Property types.
-   * @property {Object} propTypes Property types.
-   * @static
-   */
-  static propTypes = {
-    getContent: PropTypes.func.isRequired,
-    getWorkflow: PropTypes.func.isRequired,
-    transitionWorkflow: PropTypes.func.isRequired,
-    workflowLoaded: PropTypes.bool,
-    loaded: PropTypes.bool.isRequired,
-    pathname: PropTypes.string.isRequired,
+function useWorkflow() {
+  const history = useSelector((state) => state.workflow.history, shallowEqual);
+  const transitions = useSelector(
+    (state) => state.workflow.transitions,
+    shallowEqual,
+  );
+  const editingProgressSteps = useSelector((state) =>
+    state?.editingProgress?.editing?.loaded === true
+      ? state?.editingProgress?.result?.steps
+      : [],
+  );
+  const workflowLoaded = useSelector((state) => state.workflow.get?.loaded);
+  const loaded = useSelector((state) => state.workflow.transition.loaded);
+  const currentStateValue = useSelector(
+    (state) => getCurrentStateMapping(state.workflow.currentState),
+    shallowEqual,
+  );
 
-    contentHistory: PropTypes.arrayOf(
-      PropTypes.shape({
-        review_state: PropTypes.string,
-      }),
-    ),
-    transitions: PropTypes.arrayOf(
-      PropTypes.shape({
-        '@id': PropTypes.string,
-        title: PropTypes.string,
-      }),
-    ),
+  return {
+    loaded,
+    history,
+    transitions,
+    currentStateValue,
+    workflowLoaded,
+    editingProgressSteps,
   };
+}
 
-  /**
-   * Default properties
-   * @property {Object} defaultProps Default properties.
-   * @static
-   */
-  static defaultProps = {
-    history: [],
-    transitions: [],
-  };
+const filter_remaining_steps = (values, key) => {
+  return values.filter((value) => {
+    const is_not_ready = !value.is_ready;
 
-  state = {
-    selectedOption: this.props.currentStateValue,
-  };
-
-  componentDidMount() {
-    this.props.getWorkflow(this.props.pathname);
-  }
-
-  /**
-   * Component will receive props
-   * @method componentWillReceiveProps
-   * @param {Object} nextProps Next properties
-   * @returns {undefined}
-   */
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.pathname !== this.props.pathname) {
-      this.props.getWorkflow(nextProps.pathname);
+    if (!is_not_ready) {
+      return false;
     }
-    if (!this.props.loaded && nextProps.loaded) {
-      this.props.getWorkflow(nextProps.pathname);
-      this.props.getContent(nextProps.pathname);
-    }
-    if (!this.props.workflowLoaded && nextProps.workflowLoaded) {
-      this.props.getContent(nextProps.pathname);
-      // #153145 - Redirect to the newly created version
-      if (this.state?.selectedOption?.value === 'createNewVersion') {
-        this.props.history.push(`${nextProps.pathname}.1`);
-      }
-    }
-  }
 
-  /**
-   * On transition handler
-   * @method transition
-   * @param {string} event Event object
-   * @returns {undefined}
-   */
-  transition = (selectedOption) => {
+    const states = value.states;
+    const required_for_all = states?.indexOf('all') !== -1;
+
+    return (
+      (is_not_ready && required_for_all) ||
+      (is_not_ready && states?.indexOf(key) !== -1)
+    );
+  });
+};
+
+const Workflow = (props) => {
+  const intl = useIntl();
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const {
+    loaded,
+    currentStateValue,
+    transitions,
+    workflowLoaded,
+    editingProgressSteps,
+  } = useWorkflow();
+  const content = useSelector((state) => state.content?.data, shallowEqual);
+  const [selectedOption, setSelectedOption] = React.useState(currentStateValue);
+  const { pathname } = props;
+
+  useEffect(() => {
+    dispatch(getWorkflow(pathname));
+    dispatch(getContent(pathname));
+  }, [dispatch, pathname, loaded]);
+
+  const transition = (selectedOption) => {
     if (
       filter_remaining_steps(
-        this.props.editingProgressSteps,
-        this.props?.content?.review_state || '',
+        editingProgressSteps,
+        props?.content?.review_state || '',
       ).length === 0
     ) {
-      this.props.transitionWorkflow(flattenToAppURL(selectedOption.url));
-      this.setState({ selectedOption });
+      dispatch(transitionWorkflow(flattenToAppURL(selectedOption.url)));
+      setSelectedOption(selectedOption);
       toast.success(
         <Toast
           success
-          title={this.props.intl.formatMessage(messages.messageUpdated)}
+          title={intl.formatMessage(messages.messageUpdated)}
           content=""
         />,
       );
@@ -284,138 +250,75 @@ class Workflow extends Component {
       toast.error(
         <Toast
           error
-          title={this.props.intl.formatMessage(
-            messages.notAllowedToUpdateWorkflow,
-          )}
+          title={intl.formatMessage(messages.notAllowedToUpdateWorkflow)}
           content=""
         />,
       );
     }
   };
 
-  selectValue = (option) => {
-    const stateDecorator = {
-      marginLeft: '10px',
-      marginRight: '10px',
-      display: 'inline-block',
-      backgroundColor: option.color || null,
-      content: ' ',
-      height: '10px',
-      width: '10px',
-      borderRadius: '50%',
-    };
-    return (
-      <Fragment>
-        <span style={stateDecorator} />
-        <span className="Select-value-label">{option.label}</span>
-      </Fragment>
-    );
-  };
+  useEffect(() => {
+    if (selectedOption?.value === 'createNewVersion' && workflowLoaded) {
+      history.push(`${pathname}.1`);
+    }
+  }, [history, pathname, selectedOption?.value, workflowLoaded]);
 
-  optionRenderer = (option) => {
-    const stateDecorator = {
-      marginLeft: '10px',
-      marginRight: '10px',
-      display: 'inline-block',
-      backgroundColor:
-        this.props.currentStateValue.value === option.value
-          ? option.color
-          : null,
-      content: ' ',
-      height: '10px',
-      width: '10px',
-      borderRadius: '50%',
-      border:
-        this.props.currentStateValue.value !== option.value
-          ? `1px solid ${option.color}`
-          : null,
-    };
+  const { Placeholder } = props.reactSelect.components;
+  const Select = props.reactSelect.default;
 
-    return (
-      <Fragment>
-        <span style={stateDecorator} />
-        <span style={{ marginRight: 'auto' }}>{option.label}</span>
-        <Icon name={checkSVG} size="24px" />
-      </Fragment>
-    );
-  };
+  const filterd_transitions = transitions.filter((transition) => {
+    if (
+      transition?.['@id']?.endsWith('markForDeletion') &&
+      props.content?.review_state === 'published'
+    ) {
+      return false;
+    }
+    return true;
+  });
 
-  render() {
-    const { Placeholder } = this.props.reactSelect.components;
-    const Select = this.props.reactSelect.default;
-    // Remove markForDeletion transition if item is published
-    // in order not to un-publish items by mistake. This transition
-    // can still be executed from /contents - refs #256563, #153145
-    const transitions = this.props.transitions.filter((transition) => {
-      if (
-        transition?.['@id']?.endsWith('markForDeletion') &&
-        this.props?.content?.review_state === 'published'
-      ) {
-        return false;
-      }
-      return true;
-    });
+  return (
+    <FormFieldWrapper
+      id="state-select"
+      title={intl.formatMessage(messages.state)}
+      intl={intl}
+      {...props}
+    >
+      <Select
+        name="state-select"
+        className="react-select-container"
+        classNamePrefix="react-select"
+        isDisabled={!content.review_state || filterd_transitions.length === 0}
+        options={uniqBy(
+          filterd_transitions.map((transition) =>
+            getWorkflowOptions(transition),
+          ),
+          'label',
+        ).concat(currentStateValue)}
+        styles={customSelectStyles}
+        theme={selectTheme}
+        components={{
+          DropdownIndicator,
+          Placeholder,
+          Option,
+          SingleValue,
+        }}
+        onChange={transition}
+        value={
+          content.review_state
+            ? currentStateValue
+            : {
+                label: intl.formatMessage(messages.messageNoWorkflow),
+                value: 'noworkflow',
+              }
+        }
+        isSearchable={false}
+      />
+    </FormFieldWrapper>
+  );
+};
 
-    return (
-      <FormFieldWrapper
-        id="state-select"
-        title={this.props.intl.formatMessage(messages.state)}
-        {...this.props}
-      >
-        <Select
-          name="state-select"
-          className="react-select-container"
-          classNamePrefix="react-select"
-          isDisabled={
-            !this.props.content.review_state || transitions.length === 0
-          }
-          options={uniqBy(
-            transitions.map((transition) => getWorkflowOptions(transition)),
-            'label',
-          ).concat(this.props.currentStateValue)}
-          styles={customSelectStyles}
-          theme={selectTheme}
-          components={{
-            DropdownIndicator,
-            Placeholder,
-            Option,
-            SingleValue,
-          }}
-          onChange={this.transition}
-          value={
-            this.props.content.review_state
-              ? this.props.currentStateValue
-              : {
-                  label: this.props.intl.formatMessage(
-                    messages.messageNoWorkflow,
-                  ),
-                  value: 'noworkflow',
-                }
-          }
-          isSearchable={false}
-        />
-      </FormFieldWrapper>
-    );
-  }
-}
+Workflow.propTypes = {
+  pathname: PropTypes.string.isRequired,
+};
 
-export default compose(
-  injectIntl,
-  injectLazyLibs(['reactSelect']),
-  withRouter,
-  connect(
-    (state, props) => ({
-      loaded: state.workflow.transition.loaded,
-      content: state.content.data,
-      workflowLoaded: state.workflow.get?.loaded,
-      contentHistory: state.workflow.history,
-      transitions: state.workflow.transitions,
-      currentStateValue: getCurrentStateMapping(state.workflow.currentState),
-      editingProgressSteps:
-        state?.editingProgress?.editing?.loaded === true
-          ? state?.editingProgress?.result?.steps
-          : [],
-    }),
-    { getContent, getWorkflow, transitionWorkflow },
-  ),
-)(Workflow);
+export default compose(injectLazyLibs(['reactSelect']))(Workflow);
