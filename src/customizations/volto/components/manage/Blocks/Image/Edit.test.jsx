@@ -1,10 +1,16 @@
-import React from 'react';
+import config from '@plone/volto/registry';
+import '@testing-library/jest-dom/extend-expect';
 import { render } from '@testing-library/react';
+import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
 import Edit from './Edit';
-import config from '@plone/volto/registry';
-import '@testing-library/jest-dom/extend-expect';
+import { Image } from '@plone/volto/components';
+import { getImageBlockSizes } from './Edit';
+
+config.set('components', {
+  Image: { component: Image },
+});
 
 const mockStore = configureMockStore();
 const { settings } = config;
@@ -25,6 +31,7 @@ config.blocks.blocksConfig = {
       addPermission: [],
       view: [],
     },
+    getSizes: getImageBlockSizes,
   },
 };
 const blockId = '1234';

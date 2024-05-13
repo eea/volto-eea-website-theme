@@ -1,7 +1,7 @@
 import Edit from './Edit';
 import View from './View';
 
-export default (config) => {
+const applyConfig = (config) => {
   config.blocks.blocksConfig.title = {
     ...config.blocks.blocksConfig.title,
     edit: Edit,
@@ -12,3 +12,5 @@ export default (config) => {
 
   return config;
 };
+
+export default applyConfig;

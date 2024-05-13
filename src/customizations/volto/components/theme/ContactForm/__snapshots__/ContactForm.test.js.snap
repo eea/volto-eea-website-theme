@@ -10,10 +10,13 @@ exports[`Contact form renders a contact form 1`] = `
      
     <a
       className={null}
-      rel="noopener noreferrer"
-      target="_blank"
+      href="/"
+      onClick={[Function]}
+      target={null}
       title={null}
-    />
+    >
+      /
+    </a>
   </p>
 </div>
 `;
@@ -28,10 +31,13 @@ exports[`Contact form renders a contact form with error message 1`] = `
      
     <a
       className={null}
-      rel="noopener noreferrer"
-      target="_blank"
+      href="/"
+      onClick={[Function]}
+      target={null}
       title={null}
-    />
+    >
+      /
+    </a>
   </p>
 </div>
 `;
