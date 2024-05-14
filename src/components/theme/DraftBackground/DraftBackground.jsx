@@ -17,7 +17,7 @@ const removeTrailingSlash = (str) => {
 /**
  * Checks if a given date is in the future.
  *
- * @param {Date} date - The date to check.
+ * @param {string} date - The date to check.
  * @returns {boolean} `true` if the date is in the future, `false` otherwise.
  */
 const dateIsInFuture = (date) => {
