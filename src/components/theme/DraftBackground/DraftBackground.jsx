@@ -1,10 +1,8 @@
-import React from 'react';
+import { BodyClass, flattenToAppURL } from '@plone/volto/helpers';
 import { connect } from 'react-redux';
-import './draft.css';
-import { BodyClass } from '@plone/volto/helpers';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
-import { flattenToAppURL } from '@plone/volto/helpers';
+import './draft.css';
 
 /**
  * Removes any trailing slashes from the given string.
@@ -14,6 +12,18 @@ import { flattenToAppURL } from '@plone/volto/helpers';
  */
 const removeTrailingSlash = (str) => {
   return str.replace(/\/+$/, '');
+};
+
+/**
+ * Checks if a given date is in the future.
+ *
+ * @param {string} date - The date to check.
+ * @returns {boolean} `true` if the date is in the future, `false` otherwise.
+ */
+const dateIsInFuture = (date) => {
+  return (
+    date && date !== 'None' && new Date(date).getTime() > new Date().getTime()
+  );
 };
 
 /**
@@ -38,34 +48,32 @@ export const checkIfPublished = (props) => {
   // set draft image if effective date is set and is in the future
   // regardless of review_state
   const effectiveDate = props?.content?.effective;
-  if (
-    effectiveDate &&
-    effectiveDate !== 'None' &&
-    new Date(effectiveDate).getTime() > new Date().getTime()
-  ) {
+  if (dateIsInFuture(effectiveDate)) {
     return false;
   }
 
+  const reviewState = props?.review_state;
+
   //case 1 : review_state published
-  if (props?.review_state === 'published') return true;
+  if (reviewState === 'published') return true;
 
   //case 2: review_state null, but parent is published eg:Image in published folder
-  if (
-    !props?.review_state &&
-    props?.content?.parent?.review_state === 'published'
-  )
+  // is marked as published, or not published if the effective date of parent
+  // is in the future
+  const parent = props?.content?.parent;
+  const parentReviewState = parent?.review_state;
+  if (!reviewState && parentReviewState === 'published') {
+    if (dateIsInFuture(parent?.effective)) {
+      return false;
+    }
     return true;
+  }
 
   //case 3: review_state null, but there is no parent eg: PloneSite
-  if (
-    !props?.review_state &&
-    Object.keys(props?.content?.parent || {}).length === 0
-  )
-    return true;
+  if (!reviewState && Object.keys(parent || {}).length === 0) return true;
 
   //case 4: review_state null, and review state of parent is null, eg: Image in PloneSite
-  if (!props?.review_state && !props?.content?.parent?.review_state)
-    return true;
+  if (!reviewState && !parentReviewState) return true;
   return false;
 };
 
