@@ -76,6 +76,7 @@ export const View = (props) => {
                               '@id': data.url,
                               image_field: data.image_field,
                               image_scales: data.image_scales,
+                              data: data,
                             }
                           : undefined
                       }
@@ -88,7 +89,7 @@ export const View = (props) => {
                               if (data.size === 'l')
                                 return `${flattenToAppURL(
                                   data.url,
-                                )}/@@images/image`;
+                                )}/@@images/image/large`;
                               if (data.size === 'm')
                                 return `${flattenToAppURL(
                                   data.url,
@@ -99,7 +100,7 @@ export const View = (props) => {
                                 )}/@@images/image/mini`;
                               return `${flattenToAppURL(
                                 data.url,
-                              )}/@@images/image`;
+                              )}/@@images/image/large`;
                             })()
                           : data.url
                       }

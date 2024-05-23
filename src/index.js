@@ -194,6 +194,18 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.image) {
     config.blocks.blocksConfig.image.schemaEnhancer =
       addStylingFieldsetSchemaEnhancerImagePosition;
+    config.blocks.blocksConfig.image.getSizes = function (data) {
+      if (data.size === 'm' || data.size === 's') return undefined;
+
+      if (data.align === 'left' || data.align === 'right') {
+        if (data.size === 'l') return '400px';
+        if (data.size === 'm') return '200px';
+        if (data.size === 's') return '200px';
+      }
+      if (data.size === 'l') {
+        return '(max-width: 600px) 400px, (max-width: 1440px) 800px, 100vw';
+      }
+    };
   }
 
   // Set Languages in nextcloud-video-block

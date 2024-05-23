@@ -18,12 +18,17 @@ describe('TopicsWidget Component', () => {
       },
     });
 
+    const tags = [
+      { title: 'Environment', token: '1' },
+      { title: 'Climate', token: '2' },
+    ];
+
     const { container } = render(
       <Provider store={store}>
         <Router history={history}>
           <TopicsWidget
-            value={['Value1', 'Value2']}
-            children={''}
+            value={tags}
+            children={(tagTitle) => <span>{tagTitle}</span>}
             className={'test'}
           />
         </Router>

@@ -313,6 +313,7 @@ class Edit extends Component {
                         '@id': data.url,
                         image_field: data.image_field,
                         image_scales: data.image_scales,
+                        data: data,
                       }
                     : undefined
                 }
@@ -323,7 +324,9 @@ class Edit extends Component {
                     ? // Backwards compat in the case that the block is storing the full server URL
                       (() => {
                         if (data.size === 'l')
-                          return `${flattenToAppURL(data.url)}/@@images/image`;
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/large`;
                         if (data.size === 'm')
                           return `${flattenToAppURL(
                             data.url,
@@ -332,7 +335,9 @@ class Edit extends Component {
                           return `${flattenToAppURL(
                             data.url,
                           )}/@@images/image/mini`;
-                        return `${flattenToAppURL(data.url)}/@@images/image`;
+                        return `${flattenToAppURL(
+                          data.url,
+                        )}/@@images/image/large`;
                       })()
                     : data.url
                 }
