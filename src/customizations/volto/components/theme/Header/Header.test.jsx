@@ -1,19 +1,33 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, getByText } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 import configureStore from 'redux-mock-store';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { Provider } from 'react-intl-redux';
 import config from '@plone/volto/registry';
-
+import { waitFor } from '@testing-library/react';
 import Header from './Header';
 
 const mockStore = configureStore();
 let history = createMemoryHistory();
 
+const item = {
+  '@id': 'en',
+  description: 'Description of item',
+  items: [],
+  review_state: 'published',
+  title: 'Test english article',
+};
+
+jest.mock('@plone/volto/helpers/Loadable/Loadable');
+beforeAll(
+  async () =>
+    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
+);
+
 describe('Header', () => {
-  it('renders a header component', () => {
+  it('renders a header component with homepage_inverse_view layout', () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
@@ -21,7 +35,7 @@ describe('Header', () => {
         messages: {},
       },
       navigation: {
-        items: ['en'],
+        items: [item],
       },
       content: {
         data: {
@@ -38,22 +52,23 @@ describe('Header', () => {
     config.settings = {
       ...config.settings,
       eea: {
+        ...config.settings.eea,
         headerOpts: undefined,
+        logoTargetUrl: '/',
       },
     };
 
-    const component = renderer.create(
+    const { container } = render(
       <Provider store={store}>
         <Router history={history}>
           <Header pathname="/home" />
         </Router>
       </Provider>,
     );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
-  it('renders a header component', () => {
+  it('renders a header component with homepage_view layout and translations', async () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
@@ -61,47 +76,7 @@ describe('Header', () => {
         messages: {},
       },
       navigation: {
-        items: ['en'],
-      },
-      content: {
-        data: {
-          layout: 'homepage_inverse_view',
-        },
-      },
-      router: {
-        location: {
-          pathname: '/home/',
-        },
-      },
-    });
-
-    config.settings = {
-      ...config.settings,
-      eea: {
-        headerOpts: {},
-      },
-    };
-
-    const component = renderer.create(
-      <Provider store={store}>
-        <Router history={history}>
-          <Header pathname="/blog" />
-        </Router>
-      </Provider>,
-    );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
-  });
-
-  it('renders a header component', () => {
-    const store = mockStore({
-      userSession: { token: null },
-      intl: {
-        locale: undefined,
-        messages: {},
-      },
-      navigation: {
-        items: ['en'],
+        items: [item],
       },
       content: {
         data: {
@@ -123,6 +98,7 @@ describe('Header', () => {
     config.settings = {
       ...config.settings,
       eea: {
+        ...config.settings.eea,
         headerOpts: {
           partnerLinks: {
             links: [{ href: '/link1', title: 'link 1' }],
@@ -145,6 +121,9 @@ describe('Header', () => {
     );
 
     fireEvent.click(container.querySelector('.content'));
+    await waitFor(() => {
+      expect(container.querySelector('.country-code')).not.toBeNull();
+    });
     fireEvent.keyDown(container.querySelector('.content'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('.content a'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
@@ -152,7 +131,7 @@ describe('Header', () => {
     });
     fireEvent.click(container.querySelector('.country-code'));
 
-    // expect(getByText('da')).toBeInTheDocument();
+    expect(getByText(container, 'RO')).toBeInTheDocument();
 
     rerender(
       <Provider store={{ ...store, userSession: { token: '1234' } }}>
@@ -163,15 +142,15 @@ describe('Header', () => {
     );
   });
 
-  it('renders a header component', () => {
+  it('renders a header component with a subsite', async () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
-        locale: undefined,
+        locale: 'en',
         messages: {},
       },
       navigation: {
-        items: ['en'],
+        items: [item],
       },
       content: {
         data: {
@@ -179,6 +158,7 @@ describe('Header', () => {
           '@components': {
             subsite: {
               '@type': 'Subsite',
+              '@id': 'http://localhost:8080/Plone/subsite',
               title: 'Home Page',
               subsite_logo: {
                 scales: {
@@ -205,6 +185,7 @@ describe('Header', () => {
     config.settings = {
       ...config.settings,
       eea: {
+        ...config.settings.eea,
         headerOpts: {
           partnerLinks: {
             links: [{ href: '/link1', title: 'link 1' }],
@@ -227,6 +208,9 @@ describe('Header', () => {
     );
 
     fireEvent.click(container.querySelector('.content'));
+    await waitFor(() => {
+      expect(container.querySelector('.country-code')).not.toBeNull();
+    });
     fireEvent.keyDown(container.querySelector('.content'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('.content a'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
@@ -234,7 +218,7 @@ describe('Header', () => {
     });
     fireEvent.click(container.querySelector('.country-code'));
 
-    // expect(getByText('da')).toBeInTheDocument();
+    expect(getByText(container, 'RO')).toBeInTheDocument();
 
     rerender(
       <Provider store={{ ...store, userSession: { token: '1234' } }}>
@@ -245,17 +229,17 @@ describe('Header', () => {
     );
   });
 
-  it('renders a header component', () => {
+  it('renders a header component with a subsite and two children', async () => {
     const store = mockStore({
       userSession: { token: null },
       intl: {
-        locale: undefined,
+        locale: 'en',
         messages: {},
       },
       navigation: {
         items: [
           { url: '/test1', title: 'test 1', nav_title: 'Test 1', items: [] },
-          { url: undefined, title: 'test 2', items: [] },
+          { url: '/test2', title: 'test 2', items: [] },
         ],
       },
       content: {
@@ -264,6 +248,7 @@ describe('Header', () => {
           '@components': {
             subsite: {
               '@type': 'Subsite',
+              '@id': 'http://localhost:8080/Plone/subsite',
               title: 'Home Page',
               subsite_logo: undefined,
             },
@@ -283,6 +268,7 @@ describe('Header', () => {
     config.settings = {
       ...config.settings,
       eea: {
+        ...config.settings.eea,
         headerOpts: {
           partnerLinks: {
             links: [{ href: '/link1', title: 'link 1' }],
@@ -305,6 +291,9 @@ describe('Header', () => {
     );
 
     fireEvent.click(container.querySelector('.content'));
+    await waitFor(() => {
+      expect(container.querySelector('.country-code')).not.toBeNull();
+    });
     fireEvent.keyDown(container.querySelector('.content'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('.content a'), { keyCode: 37 });
     fireEvent.keyDown(container.querySelector('a[href="/link1"]'), {
@@ -313,7 +302,7 @@ describe('Header', () => {
     fireEvent.click(container.querySelector('.country-code'));
     fireEvent.click(container.querySelector('a[href="/test1"]'));
 
-    // expect(getByText('da')).toBeInTheDocument();
+    expect(getByText(container, 'RO')).toBeInTheDocument();
 
     rerender(
       <Provider store={{ ...store, userSession: { token: '1234' } }}>
