@@ -3,6 +3,21 @@ import cx from 'classnames';
 import { flattenToAppURL, flattenScales } from '@plone/volto/helpers';
 
 /**
+ * Determines the image scale name based on the provided data.
+ *
+ * @param {object} data - The data object containing the image size information.
+ * @param {string} [data.size] - The size of the image, can be 'l', 'm', or 's'.
+ * @returns {string} The name of the image scale, either 'large', 'preview', or 'mini'.
+ */
+const imageScaleName = (data) => {
+  if (!data) return 'large';
+  if (data.size === 'l') return 'large';
+  if (data.size === 'm') return 'preview';
+  if (data.size === 's') return 'mini';
+  return 'large';
+};
+
+/**
  * Image component
  * @param {object} item - Context item that has the image field (can also be a catalog brain or summary)
  * @param {string} imageField - Key of the image field inside the item, or inside the image_scales object of the item if it is a catalog brain or summary
@@ -47,24 +62,33 @@ export default function Image({
     const isSvg = image['content-type'] === 'image/svg+xml';
     // In case `base_path` is present (`preview_image_link`) use it as base path
     const basePath = image.base_path || item['@id'];
+    const relativeBasePath = flattenToAppURL(basePath);
+    const selectedScale = imageScaleName(item.data);
 
-    attrs.src = `${flattenToAppURL(basePath)}/${image.download}`;
+    attrs.src = `${relativeBasePath}/${image.download}`;
     attrs.width = image.width;
     attrs.height = image.height;
     attrs.className = cx(className, { responsive });
 
     if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
-      const sortedScales = Object.values(image.scales).sort((a, b) => {
-        if (a.width > b.width) return 1;
-        else if (a.width < b.width) return -1;
-        else return 0;
-      });
+      const filteredScales = [
+        'mini',
+        'preview',
+        'large',
+        item.data?.align === 'full' ? 'huge' : undefined,
+      ]
+        .map((key) => image.scales[key])
+        .filter(Boolean);
+      const imageScale = image.scales[selectedScale];
+      if (imageScale) {
+        // set default image size, width and height to the selected scale
+        attrs.width = imageScale.width;
+        attrs.height = imageScale.height;
+        attrs.src = `${relativeBasePath}/${imageScale.download}`;
+      }
 
-      attrs.srcSet = sortedScales
-        .map(
-          (scale) =>
-            `${flattenToAppURL(basePath)}/${scale.download} ${scale.width}w`,
-        )
+      attrs.srcSet = filteredScales
+        .map((scale) => `${relativeBasePath}/${scale.download} ${scale.width}w`)
         .join(', ');
     }
   }
