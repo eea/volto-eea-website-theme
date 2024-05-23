@@ -35,7 +35,7 @@ import { v4 as uuid } from 'uuid';
 import * as eea from './config';
 import React from 'react';
 
-const restrictedBlocks = ['imagesGrid', 'teaser'];
+const restrictedBlocks = ['imagesGrid', 'teaser', 'dataFigure', 'plotly_chart'];
 
 /**
  * Customizes the variations of a tabs block by modifying their schema and semantic icons.

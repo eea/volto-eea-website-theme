@@ -87,10 +87,10 @@ class SlateEditor extends Component {
     const uid = uuid(); // used to namespace the editor's plugins
 
     this.slateSettings = props.slateSettings || config.settings.slate;
-
-    this.initialValue = cloneDeep(
-      this.props.value || this.slateSettings.defaultValue(),
-    );
+    this.initialValue =
+      this.props.value && this.props.value.length > 0
+        ? cloneDeep(this.props.value)
+        : this.slateSettings.defaultValue();
 
     this.state = {
       editor: this.createEditor(uid),
@@ -182,8 +182,11 @@ class SlateEditor extends Component {
       this.props.value &&
       !isEqual(this.props.value, this.state.internalValue)
     ) {
-      const newValue = cloneDeep(this.props.value);
       const { editor } = this.state;
+      const newValue =
+        this.props.value && this.props.value.length > 0
+          ? cloneDeep(this.props.value)
+          : this.slateSettings.defaultValue();
 
       resetNodes(editor, { nodes: newValue });
 
@@ -209,7 +212,6 @@ class SlateEditor extends Component {
 
     if (!prevProps.selected && this.props.selected) {
       // if the SlateEditor becomes selected from unselected
-
       if (window.getSelection().type === 'None') {
         // TODO: why is this condition checked?
         Transforms.select(
@@ -217,7 +219,6 @@ class SlateEditor extends Component {
           Editor.range(this.state.editor, Editor.start(this.state.editor, [])),
         );
       }
-
       ReactEditor.focus(this.state.editor);
     }
 
@@ -331,7 +332,9 @@ class SlateEditor extends Component {
                 this.props.onBlur && this.props.onBlur();
                 return null;
               }}
-              onClick={this.props.onClick}
+              onClick={(e) => {
+                return this.props.onClick && this.props.onClick(e);
+              }}
               onSelect={(e) => {
                 if (!selected && this.props.onFocus) {
                   // we can't overwrite the onFocus of Editable, as the onFocus
