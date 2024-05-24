@@ -1,6 +1,8 @@
 /**
  * UrlWidget component.
  * @module components/manage/Widgets/UrlWidget
+ * Volto pr: https://github.com/plone/volto/pull/6036
+ * Remove after the pr has been merged and put in the right version
  */
 
 import React, { useState, useEffect } from 'react';
