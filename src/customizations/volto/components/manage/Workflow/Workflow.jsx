@@ -258,12 +258,14 @@ const Workflow = (props) => {
   };
 
   useEffect(() => {
-    if (selectedOption?.value === 'createNewVersion' && workflowLoaded) {
-      setTimeout(() => {
-        history.push(`${pathname}.1`);
-      }, [5000]);
+    if (
+      selectedOption?.value === 'createNewVersion' &&
+      workflowLoaded &&
+      loaded
+    ) {
+      history.push(`${pathname}.1`);
     }
-  }, [history, pathname, selectedOption?.value, workflowLoaded]);
+  }, [history, pathname, selectedOption?.value, workflowLoaded, loaded]);
 
   const { Placeholder } = props.reactSelect.components;
   const Select = props.reactSelect.default;
