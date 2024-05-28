@@ -259,7 +259,9 @@ const Workflow = (props) => {
 
   useEffect(() => {
     if (selectedOption?.value === 'createNewVersion' && workflowLoaded) {
-      history.push(`${pathname}.1`);
+      setTimeout(() => {
+        history.push(`${pathname}.1`);
+      }, [5000]);
     }
   }, [history, pathname, selectedOption?.value, workflowLoaded]);
 
