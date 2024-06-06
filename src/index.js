@@ -329,6 +329,7 @@ const applyConfig = (config) => {
   }
 
   // Custom Widgets
+  config.widgets.id.other_organisations = TokenWidget;
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
