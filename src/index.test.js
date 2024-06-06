@@ -246,6 +246,7 @@ describe('applyConfig', () => {
           },
         },
         widget: {},
+        id: {},
       },
       settings: {
         eea: {},
