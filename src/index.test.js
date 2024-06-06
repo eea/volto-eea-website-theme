@@ -91,7 +91,9 @@ describe('applyConfig', () => {
             tags: undefined,
           },
         },
-        widget: {},
+        widget: {
+          id: {}
+        },
       },
       settings: {
         eea: {
