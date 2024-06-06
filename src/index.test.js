@@ -92,7 +92,7 @@ describe('applyConfig', () => {
           },
         },
         widget: {
-          id: {}
+          id: {},
         },
       },
       settings: {
