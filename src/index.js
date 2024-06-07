@@ -9,7 +9,7 @@ import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/W
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
 import { Icon } from '@plone/volto/components';
-import { TokenWidget as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
+import { TokenWidget as TokenWidgetEdit } from '@plone/volto/components';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
