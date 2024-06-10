@@ -11,10 +11,26 @@ import { flattenToAppURL, flattenScales } from '@plone/volto/helpers';
  */
 const imageScaleName = (data) => {
   if (!data) return 'large';
+  if (data.align === 'full') return 'huge';
   if (data.size === 'l') return 'large';
   if (data.size === 'm') return 'preview';
   if (data.size === 's') return 'mini';
   return 'large';
+};
+
+const getImageBlockSizes = (data) => {
+  if (data.align === 'full') return ['huge', 'large', 'preview'];
+  if (data.align === 'center') {
+    if (data.size === 'l') return ['large', 'preview'];
+    if (data.size === 'm') return ['preview'];
+    if (data.size === 's') return ['mini'];
+  }
+  if (data.align === 'left' || data.align === 'right') {
+    if (data.size === 'l') return ['preview'];
+    if (data.size === 'm') return ['mini'];
+    if (data.size === 's') return ['mini'];
+  }
+  return undefined;
 };
 
 /**
@@ -39,7 +55,7 @@ export default function Image({
 }) {
   if (!item && !src) return null;
 
-  // TypeScript hints for editor autocomplete :)
+  //  TypeScript hints for editor autocomplete :)
   /** @type {React.ImgHTMLAttributes<HTMLImageElement>} */
   const attrs = {};
 
@@ -63,7 +79,6 @@ export default function Image({
     // In case `base_path` is present (`preview_image_link`) use it as base path
     const basePath = image.base_path || item['@id'];
     const relativeBasePath = flattenToAppURL(basePath);
-    const selectedScale = imageScaleName(item.data);
 
     attrs.src = `${relativeBasePath}/${image.download}`;
     attrs.width = image.width;
@@ -71,25 +86,7 @@ export default function Image({
     attrs.className = cx(className, { responsive });
 
     if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
-      const filteredScales = [
-        'mini',
-        'preview',
-        'large',
-        item.data?.align === 'full' ? 'huge' : undefined,
-      ]
-        .map((key) => image.scales[key])
-        .filter(Boolean);
-      const imageScale = image.scales[selectedScale];
-      if (imageScale) {
-        // set default image size, width and height to the selected scale
-        attrs.width = imageScale.width;
-        attrs.height = imageScale.height;
-        attrs.src = `${relativeBasePath}/${imageScale.download}`;
-      }
-
-      attrs.srcSet = filteredScales
-        .map((scale) => `${relativeBasePath}/${scale.download} ${scale.width}w`)
-        .join(', ');
+      return PictureImage(item, image, attrs, relativeBasePath, alt);
     }
   }
 
@@ -117,3 +114,34 @@ Image.propTypes = {
   responsive: PropTypes.bool,
   className: PropTypes.string,
 };
+function PictureImage(item, image, attrs, relativeBasePath, alt) {
+  const filteredScales = getImageBlockSizes(item.data);
+
+  const selectedScale = imageScaleName(item.data);
+  const imageScale = image.scales[selectedScale];
+  if (imageScale) {
+    // set default image size, width and height to the selected scale
+    attrs.width = imageScale.width;
+    attrs.height = imageScale.height;
+    attrs.src = `${relativeBasePath}/${imageScale.download}`;
+  }
+
+  return (
+    <picture>
+      {filteredScales.map((scale, index) => {
+        const minWidth = scale.width;
+        const nextScale = filteredScales[index + 1];
+        const maxWidth = (nextScale && nextScale.width - 1 + 'px') || '100vw';
+
+        return (
+          <source
+            key={index}
+            media={`(min-width: ${minWidth}px) and (max-width: ${maxWidth})`}
+            srcSet={`${relativeBasePath}/${scale.download}`}
+          />
+        );
+      })}
+      <img {...attrs} alt={alt} />
+    </picture>
+  );
+}
