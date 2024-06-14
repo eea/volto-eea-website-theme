@@ -92,6 +92,7 @@ describe('applyConfig', () => {
           },
         },
         widget: {},
+        id: {},
       },
       settings: {
         eea: {
@@ -245,6 +246,7 @@ describe('applyConfig', () => {
           },
         },
         widget: {},
+        id: {},
       },
       settings: {
         eea: {},
