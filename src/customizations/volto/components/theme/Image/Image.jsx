@@ -19,18 +19,30 @@ const imageScaleName = (data) => {
 };
 
 const getImageBlockSizes = (data) => {
-  if (data.align === 'full') return ['huge', 'large', 'preview'];
+  if (data.align === 'full')
+    return [
+      ['preview', '(max-width: 599px)'],
+      ['teaser', '(min-width: 600px) and (max-width: 799px)'],
+      ['large', '(min-width: 800px) and (max-width: 999px)'],
+      ['larger', '(min-width: 1000px) and (max-width: 1199px)'],
+      ['great', '(min-width: 1200px) and (max-width: 1599px)'],
+      ['huge', '(min-width: 1600px)'],
+    ];
   if (data.align === 'center') {
-    if (data.size === 'l') return ['large', 'preview'];
-    if (data.size === 'm') return ['preview'];
-    if (data.size === 's') return ['mini'];
+    if (data.size === 'l')
+      return [
+        ['preview', '(max-width: 599px)'],
+        ['large', '(min-width: 600px)'],
+      ];
+    if (data.size === 'm') return ['preview', '(min-width: 320px)'];
+    if (data.size === 's') return ['mini', '(min-width: 320px)'];
   }
   if (data.align === 'left' || data.align === 'right') {
-    if (data.size === 'l') return ['preview'];
-    if (data.size === 'm') return ['mini'];
-    if (data.size === 's') return ['mini'];
+    if (data.size === 'l') return ['preview', '(min-width: 320px)'];
+    if (data.size === 'm') return ['mini', '(min-width: 320px)'];
+    if (data.size === 's') return ['mini', '(min-width: 320px)'];
   }
-  return undefined;
+  return [];
 };
 
 /**
@@ -128,15 +140,14 @@ function PictureImage(item, image, attrs, relativeBasePath, alt) {
 
   return (
     <picture>
-      {filteredScales.map((scale, index) => {
-        const minWidth = scale.width;
-        const nextScale = filteredScales[index + 1];
-        const maxWidth = (nextScale && nextScale.width - 1 + 'px') || '100vw';
+      {filteredScales.map((scaleArray, index) => {
+        const scale = image.scales[scaleArray[0]];
+        const mediaQuery = scaleArray[1];
 
         return (
           <source
             key={index}
-            media={`(min-width: ${minWidth}px) and (max-width: ${maxWidth})`}
+            media={mediaQuery}
             srcSet={`${relativeBasePath}/${scale.download}`}
           />
         );
