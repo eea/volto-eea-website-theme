@@ -51,10 +51,10 @@ const UniversalLink = ({
 
       //case: item of type 'File'
       if (
-        !token &&
+        download &&
         config.settings.downloadableObjects.includes(item['@type'])
       ) {
-        url = `${url}/@@download/file`;
+        url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
       }
 
       if (
@@ -68,10 +68,15 @@ const UniversalLink = ({
 
   const isExternal = !isInternalURL(url);
 
-  const isDownload = (!isExternal && url.includes('@@download')) || download;
+  const isDownload = !isExternal && download;
+  if (!isDownload && url) {
+    url = url.replace('/@@download/file', '');
+  }
+  if (isDownload && url) {
+    url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
+  }
   const isDisplayFile =
     (!isExternal && url.includes('@@display-file')) || false;
-
   const checkedURL = URLUtils.checkAndNormalizeUrl(url);
 
   // we can receive an item with a linkWithHash property set from ObjectBrowserWidget
