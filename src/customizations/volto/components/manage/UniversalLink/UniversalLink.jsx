@@ -29,6 +29,7 @@ const UniversalLink = ({
   const token = useSelector((state) => state.userSession?.token);
 
   let url = href;
+
   if (!href && item) {
     if (!item['@id']) {
       // eslint-disable-next-line no-console
@@ -68,13 +69,8 @@ const UniversalLink = ({
 
   const isExternal = !isInternalURL(url);
 
-  const isDownload = !isExternal && download;
-  if (!isDownload && url) {
-    url = url.replace('/@@download/file', '');
-  }
-  if (isDownload && url) {
-    url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
-  }
+  const isDownload = !isExternal && url && url.includes('@@download/file');
+
   const isDisplayFile =
     (!isExternal && url.includes('@@display-file')) || false;
   const checkedURL = URLUtils.checkAndNormalizeUrl(url);
