@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import EditBlock from './Edit';
+import EditBlock from '@plone/volto/components/manage/Blocks/Block/Edit.jsx';
 import { DragDropList } from '@plone/volto/components';
 import {
   getBlocks,
@@ -17,7 +17,7 @@ import {
   nextBlockId,
   previousBlockId,
 } from '@plone/volto/helpers';
-import EditBlockWrapper from './EditBlockWrapper';
+import EditBlockWrapper from '@plone/volto/components/manage/Blocks/Block/EditBlockWrapper.jsx';
 import { setSidebarTab } from '@plone/volto/actions';
 import { useDispatch } from 'react-redux';
 import { useDetectClickOutside, useEvent } from '@plone/volto/helpers';
