@@ -34,6 +34,8 @@ See [Storybook](https://eea.github.io/eea-storybook/).
   **!!IMPORTANT**: This change requires volto@^16.26.1
 
 - `volto/components/manage/Sidebar/SidebarPopup` -> https://github.com/plone/volto/pull/5520
+- `volto/components/manage/Form/Form.jsx` -> Pass errors of metadata validation to BlocksForm
+- `volto/components/manage/Blocks/Block/BlocksForm.jsx` -> Pass errors of metadata validation to blocks.
 
 ## Getting started
 
