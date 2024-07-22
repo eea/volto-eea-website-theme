@@ -29,6 +29,7 @@ const UniversalLink = ({
   const token = useSelector((state) => state.userSession?.token);
 
   let url = href;
+
   if (!href && item) {
     if (!item['@id']) {
       // eslint-disable-next-line no-console
@@ -51,10 +52,10 @@ const UniversalLink = ({
 
       //case: item of type 'File'
       if (
-        !token &&
+        download &&
         config.settings.downloadableObjects.includes(item['@type'])
       ) {
-        url = `${url}/@@download/file`;
+        url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
       }
 
       if (
@@ -68,10 +69,10 @@ const UniversalLink = ({
 
   const isExternal = !isInternalURL(url);
 
-  const isDownload = (!isExternal && url.includes('@@download')) || download;
+  const isDownload = !isExternal && url && url.includes('@@download/file');
+
   const isDisplayFile =
     (!isExternal && url.includes('@@display-file')) || false;
-
   const checkedURL = URLUtils.checkAndNormalizeUrl(url);
 
   // we can receive an item with a linkWithHash property set from ObjectBrowserWidget
