@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@eeacms/volto-block-style": "*",
-    "@eeacms/volto-eea-design-system": "eea/volto-eea-design-system#footer-simplification",
+    "@eeacms/volto-eea-design-system": "*",
     "@eeacms/volto-group-block": "*",
     "volto-subsites": "*"
   },
