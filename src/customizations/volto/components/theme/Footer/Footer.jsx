@@ -83,7 +83,11 @@ const Footer = () => {
       <EEAFooter.Header>{eea.footerOpts.logosHeader}</EEAFooter.Header>
       <EEAFooter.SubFooter {...options} />
       <EEAFooter.Header>{eea.footerOpts.header}</EEAFooter.Header>
-      <EEAFooter.Sites sites={eea.footerOpts.sites} />
+      <EEAFooter.SitesButton
+        buttonName={eea.footerOpts.buttonName}
+        hrefButton={eea.footerOpts.hrefButton}
+      />
+      <EEAFooter.Social {...options} />
       <EEAFooter.Actions actions={actions} copyright={copyright} />
     </EEAFooter>
   );
