@@ -1,1 +1,2 @@
 Customize from @plone/volto 17.18.2 - refs https://taskman.eionet.europa.eu/issues/269086
+Should be safe to remove with @plone/volto 18.x - https://github.com/plone/volto/pull/6181
