@@ -52,7 +52,6 @@ const BlocksForm = (props) => {
   } = props;
 
   const blockList = getBlocks(properties);
-
   const dispatch = useDispatch();
   const intl = useIntl();
 

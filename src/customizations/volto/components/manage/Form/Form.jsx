@@ -53,6 +53,14 @@ import {
 } from '@plone/volto/actions';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
+import { defineMessages } from 'react-intl';
+
+const messagesPreviewImage = defineMessages({
+  preview_image_wait: {
+    id: 'Wait for the map to load',
+    defaultMessage: 'Wait for the map to load',
+  },
+});
 
 /**
  * Form container class.
@@ -157,7 +165,6 @@ class Form extends Component {
     const blocksLayoutFieldname = getBlocksLayoutFieldname(formData);
 
     const schema = this.removeBlocksLayoutFields(originalSchema);
-
     this.props.setMetadataFieldsets(
       schema?.fieldsets ? schema.fieldsets.map((fieldset) => fieldset.id) : [],
     );
@@ -247,7 +254,6 @@ class Form extends Component {
     this.onClickInput = this.onClickInput.bind(this);
     this.onToggleMetadataFieldset = this.onToggleMetadataFieldset.bind(this);
   }
-
   /**
    * On updates caused by props change
    * if errors from Backend come, these will be shown to their corresponding Fields
@@ -503,7 +509,19 @@ class Form extends Component {
     if (event) {
       event.preventDefault();
     }
-
+    if (this.props.globalData.map_visualization_data?.preview === 'loading') {
+      toast.error(
+        <Toast
+          error
+          title={this.props.intl.formatMessage(
+            messagesPreviewImage.preview_image_wait,
+          )}
+          content={this.props.intl.formatMessage(
+            messagesPreviewImage.preview_image_wait,
+          )}
+        />,
+      );
+    }
     const errors = this.props.schema
       ? FormValidation.validateFieldsPerFieldset({
           schema: this.props.schema,
