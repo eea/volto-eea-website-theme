@@ -503,7 +503,15 @@ class Form extends Component {
     if (event) {
       event.preventDefault();
     }
-
+    if (this.props.globalData.map_visualization_data?.preview === 'loading') {
+      toast.error(
+        <Toast
+          error
+          title={'Map not loaded'}
+          content={'Wait for the map to load before saving'}
+        />,
+      );
+    }
     const errors = this.props.schema
       ? FormValidation.validateFieldsPerFieldset({
           schema: this.props.schema,
