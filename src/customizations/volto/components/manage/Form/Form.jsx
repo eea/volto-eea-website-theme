@@ -53,6 +53,7 @@ import {
 } from '@plone/volto/actions';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
+import { defineMessages } from 'react-intl';
 
 /**
  * Form container class.
@@ -157,8 +158,7 @@ class Form extends Component {
     const blocksLayoutFieldname = getBlocksLayoutFieldname(formData);
 
     const schema = this.removeBlocksLayoutFields(originalSchema);
-
-    this.props.setMetadataFieldsets(
+    this.props.messages = this.props.setMetadataFieldsets(
       schema?.fieldsets ? schema.fieldsets.map((fieldset) => fieldset.id) : [],
     );
 
@@ -245,6 +245,12 @@ class Form extends Component {
     this.onTabChange = this.onTabChange.bind(this);
     this.onBlurField = this.onBlurField.bind(this);
     this.onClickInput = this.onClickInput.bind(this);
+    this.messages = defineMessages({
+      preview_image_wait: {
+        id: 'Wait for the map to load',
+        defaultMessage: 'Wait for the map to load',
+      },
+    });
     this.onToggleMetadataFieldset = this.onToggleMetadataFieldset.bind(this);
   }
 
@@ -507,8 +513,12 @@ class Form extends Component {
       toast.error(
         <Toast
           error
-          title={'Map not loaded'}
-          content={'Wait for the map to load before saving'}
+          title={this.props.intl.formatMessage(
+            this.messages.preview_image_wait,
+          )}
+          content={this.props.intl.formatMessage(
+            this.messages.preview_image_wait,
+          )}
         />,
       );
     }
