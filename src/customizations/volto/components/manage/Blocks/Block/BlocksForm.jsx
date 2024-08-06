@@ -50,9 +50,8 @@ const BlocksForm = (props) => {
     editable = true,
     direction = 'vertical',
   } = props;
-  console.log('ha', { errors });
+  
   const blockList = getBlocks(properties);
-
   const dispatch = useDispatch();
   const intl = useIntl();
 
