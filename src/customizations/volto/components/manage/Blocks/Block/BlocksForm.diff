@@ -1,0 +1,12 @@
+3c3
+< import EditBlock from './Edit';
+---
+> import EditBlock from '@plone/volto/components/manage/Blocks/Block/Edit.jsx';
+20c20
+< import EditBlockWrapper from './EditBlockWrapper';
+---
+> import EditBlockWrapper from '@plone/volto/components/manage/Blocks/Block/EditBlockWrapper.jsx';
+41a42
+>     errors,
+261a263
+>               errors,

@@ -286,12 +286,6 @@ export default function installSlate(config) {
       </List>
     );
 
-    config.settings.slate.elements.li = ({ attributes, children }) => (
-      <List.Item as="li" {...attributes}>
-        {children}
-      </List.Item>
-    );
-
     config.settings.slate.allowedHeadlineElements.push('zotero');
 
     // Slate StyleMenu configuration
