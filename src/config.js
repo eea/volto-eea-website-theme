@@ -16,7 +16,7 @@ import climateLogo from '@eeacms/volto-eea-design-system/../theme/themes/eea/ass
 // Footer.jsx config options
 export const footerOpts = {
   buttonName: 'Explore our Environmental information systems',
-  hrefButton: '/en/information-platforms',
+  hrefButton: 'https://www.eea.europa.eu/en/information-systems',
   logosHeader: '',
   contactHeader: 'Contact Us',
   actions: [
