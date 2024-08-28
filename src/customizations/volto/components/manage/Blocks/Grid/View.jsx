@@ -4,7 +4,7 @@ import { RenderBlocks } from '@plone/volto/components';
 import { withBlockExtensions } from '@plone/volto/helpers';
 import config from '@plone/volto/registry';
 
-const convertTeaserToGridIfNecessary = (data) => {
+const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
   if (data?.['@type'] === 'teaserGrid')
     return {
       ...data,
@@ -13,11 +13,24 @@ const convertTeaserToGridIfNecessary = (data) => {
       blocks: data?.columns?.reduce((acc, current) => {
         return {
           ...acc,
-          [current?.id]: current,
+          [current?.id]: { current, '@type': current['@type'] || 'slate' },
         };
       }, {}),
     };
-  return data;
+  if (data.blocks)
+    return {
+      ...data,
+      blocks: Object.keys(data.blocks).reduce((acc, current) => {
+        return {
+          ...acc,
+          [current]: {
+            ...data.blocks[current],
+            '@type': data.blocks[current]?.['@type'] || 'slate',
+          },
+        };
+      }, {}),
+    };
+  else return data;
 };
 
 const GridBlockView = (props) => {
@@ -48,7 +61,9 @@ const GridBlockView = (props) => {
           {...props}
           blockWrapperTag={Grid.Column}
           metadata={metadata}
-          content={convertTeaserToGridIfNecessary(data)}
+          content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
+            data,
+          )}
           location={location}
           blocksConfig={blocksConfig}
           isContainer
