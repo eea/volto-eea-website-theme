@@ -84,6 +84,7 @@ const View = (props) => {
     rssLinks,
     subtitle,
     styles,
+    content_type,
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -119,7 +120,8 @@ const View = (props) => {
     ? false
     : getImageSource(metadata['image']);
   // Get type
-  const type = metadata.type_title || friendlyId(metadata['@type']);
+  const type =
+    content_type || metadata.type_title || friendlyId(metadata['@type']);
 
   return (
     <Banner {...props} image={image} styles={styles}>
@@ -294,11 +296,7 @@ const View = (props) => {
         {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
         <Title config={banner.title} properties={metadata} />
         <Banner.Metadata>
-          <Banner.MetadataField
-            type="type"
-            hidden={hideContentType}
-            value={type}
-          />
+          <Banner.MetadataField hidden={hideContentType} value={type} />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.created)}

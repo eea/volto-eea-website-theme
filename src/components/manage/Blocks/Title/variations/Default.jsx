@@ -6,8 +6,9 @@
 import React from 'react';
 import { Portal } from 'react-portal';
 import PropTypes from 'prop-types';
-import { withBlockExtensions } from '@plone/volto/helpers';
-import DefaultTemplate from './variations/Default';
+import { BodyClass } from '@plone/volto/helpers';
+
+import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
 
 function IsomorphicPortal({ children }) {
   const [isClient, setIsClient] = React.useState();
@@ -20,24 +21,22 @@ function IsomorphicPortal({ children }) {
   );
 }
 
-/**
- * View title block class.
- * @class View
- * @extends Component
- */
-const View = (props = {}) => {
-  const { variation, data = {} } = props;
-  const Renderer = variation?.view ?? DefaultTemplate;
-  return <Renderer {...props} />;
-};
+const DefaultTemplate = (props) => (
+  <React.Fragment>
+    <BodyClass className="with-title-block" />
+    <IsomorphicPortal>
+      <BannerView {...props} />
+    </IsomorphicPortal>
+  </React.Fragment>
+);
 
 /**
  * Property types.
  * @property {Object} propTypes Property types.
  * @static
  */
-View.propTypes = {
+DefaultTemplate.propTypes = {
   properties: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default withBlockExtensions(View);
+export default DefaultTemplate;
