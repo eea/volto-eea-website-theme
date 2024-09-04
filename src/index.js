@@ -6,6 +6,7 @@ import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homep
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+import { DatetimeWidgetEu } from './components/theme/Widgets/DatetimeWidgetEu';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
 import { Icon } from '@plone/volto/components';
@@ -331,10 +332,13 @@ const applyConfig = (config) => {
 
   // Custom Widgets
   config.widgets.id.other_organisations = TokenWidgetEdit;
+  config.widgets.views.widget.datetime = DatetimeWidgetEu;
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
+
+  console.log('hereeeee', config.widgets.views);
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
