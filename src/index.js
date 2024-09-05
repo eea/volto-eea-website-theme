@@ -1,3 +1,11 @@
+import React from 'react';
+import { v4 as uuid } from 'uuid';
+import { Icon } from '@plone/volto/components';
+import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
+import SelectAutoCompleteWidget from '@plone/volto/components/manage/Widgets/SelectAutoComplete';
+import { serializeNodesToText } from '@plone/volto-slate/editor/render';
+import { nanoid } from '@plone/volto-slate/utils';
+
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
@@ -8,9 +16,6 @@ import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
-import { Icon } from '@plone/volto/components';
-import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
-import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
 import {
@@ -30,11 +35,8 @@ import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
 import { print } from './reducers';
-import { nanoid } from '@plone/volto-slate/utils';
-import { v4 as uuid } from 'uuid';
 
 import * as eea from './config';
-import React from 'react';
 
 const restrictedBlocks = ['imagesGrid', 'teaser', 'dataFigure', 'plotly_chart'];
 
@@ -329,12 +331,14 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
   }
 
-  // Custom Widgets
   config.widgets.id.other_organisations = TokenWidgetEdit;
+  // Custom Widgets
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
+  config.widgets.vocabulary['plone.app.vocabularies.Users'] =
+    SelectAutoCompleteWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
