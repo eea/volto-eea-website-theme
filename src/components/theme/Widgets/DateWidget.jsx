@@ -5,7 +5,7 @@ import { toBackendLang } from '@plone/volto/helpers';
 import { formatDate } from '@plone/volto/helpers/Utils/Date';
 import config from '@plone/volto/registry';
 
-export const DatetimeWidget = ({ value, children, className }) => {
+export const DateWidget = ({ value, children, className }) => {
   const lang = useSelector((state) => state.intl.locale);
   const backendLang = toBackendLang(lang);
   const locale =
@@ -16,28 +16,15 @@ export const DatetimeWidget = ({ value, children, className }) => {
       year: 'numeric',
       month: 'short',
       day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
     },
     locale,
-    includeTime: true,
-    formatToParts: true,
   };
 
-  let formattedParts = formatDate(formatOptions);
-
-  const formattedDate = formattedParts
-    .map((part) => {
-      if (part.type === 'literal' && part.value === ', ') {
-        return ' ';
-      }
-      return part.value;
-    })
-    .join('');
-
   return value ? (
-    <span className={cx(className, 'datetime', 'widget')}>
-      {children ? children(formattedDate) : formattedDate}
+    <span className={cx(className, 'date', 'widget')}>
+      {children
+        ? children(formatDate(formatOptions))
+        : formatDate(formatOptions)}
     </span>
   ) : (
     ''
