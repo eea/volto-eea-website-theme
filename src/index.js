@@ -6,7 +6,7 @@ import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homep
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
-import { DatetimeWidget } from './components/theme/Widgets/DatetimeWidget';
+import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DatetimeWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
 import { Icon } from '@plone/volto/components';

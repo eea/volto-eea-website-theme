@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import DatetimeWidget from './DatetimeWidget';
+import { DatetimeWidget } from './DatetimeWidget';
 import { Provider } from 'react-intl-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
