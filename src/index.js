@@ -14,6 +14,8 @@ import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homep
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
+import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DateWidget';
+import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DatetimeWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
@@ -333,6 +335,8 @@ const applyConfig = (config) => {
 
   config.widgets.id.other_organisations = TokenWidgetEdit;
   // Custom Widgets
+  config.widgets.views.widget.datetime = DatetimeWidget;
+  config.widgets.views.widget.date = DateWidget;
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
