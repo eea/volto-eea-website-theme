@@ -254,8 +254,8 @@ const applyConfig = (config) => {
       return override_toc && level
         ? [parseInt(level.slice(1)), entry_text]
         : config.settings.slate.topLevelTargetElements.includes(type)
-        ? [parseInt(type.slice(1)), plaintext]
-        : null;
+          ? [parseInt(type.slice(1)), plaintext]
+          : null;
     };
   }
   // Apply accordion block customization
@@ -331,8 +331,8 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
   }
 
-  // Custom Widgets
   config.widgets.id.other_organisations = TokenWidgetEdit;
+  // Custom Widgets
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
