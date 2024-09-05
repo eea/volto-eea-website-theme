@@ -92,6 +92,7 @@ describe('applyConfig', () => {
           },
         },
         widget: {},
+        vocabulary: {},
         id: {},
       },
       settings: {

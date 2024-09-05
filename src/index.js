@@ -330,7 +330,9 @@ const applyConfig = (config) => {
   }
 
   // Custom Widgets
-  config.widgets.id.other_organisations = TokenWidgetEdit;
+  // config.widgets.id.other_organisations = TokenWidgetEdit;
+  config.widgets.vocabulary['eea.coremetadata.other_organisations'] =
+    TokenWidgetEdit;
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
