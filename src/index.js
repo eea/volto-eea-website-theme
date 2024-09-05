@@ -333,8 +333,10 @@ const applyConfig = (config) => {
     config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
   }
 
-  config.widgets.id.other_organisations = TokenWidgetEdit;
   // Custom Widgets
+  // config.widgets.id.other_organisations = TokenWidgetEdit;
+  config.widgets.vocabulary['eea.coremetadata.other_organisations'] =
+    TokenWidgetEdit;
   config.widgets.views.widget.datetime = DatetimeWidget;
   config.widgets.views.widget.date = DateWidget;
   config.widgets.views.id.topics = TopicsWidget;
