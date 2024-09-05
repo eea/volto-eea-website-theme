@@ -4,7 +4,7 @@ exports[`DatetimeWidget renders a date view widget component 1`] = `
 <span
   className="metadata datetime widget"
 >
-  Aug 04, 2020
+  04 Aug 2020
 </span>
 `;
 
@@ -13,7 +13,7 @@ exports[`DatetimeWidget renders a date view widget component with children 1`] =
   className="metadata datetime widget"
 >
   <strong>
-    Aug 04, 2020
+    04 Aug 2020
   </strong>
 </span>
 `;
@@ -22,7 +22,7 @@ exports[`DatetimeWidget renders a date view widget component with custom format 
 <span
   className="metadata datetime widget"
 >
-  Aug 04, 2020
+  04 Aug 2020
 </span>
 `;
 

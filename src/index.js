@@ -329,10 +329,11 @@ const applyConfig = (config) => {
   if (config.blocks.blocksConfig.hero) {
     config.blocks.blocksConfig.hero.copyrightPrefix = 'Image';
   }
-
+  console.log(config.widgets.views.widget);
   // Custom Widgets
   config.widgets.id.other_organisations = TokenWidgetEdit;
   config.widgets.views.widget.datetime = DatetimeWidget;
+  config.widgets.views.widget.date = DatetimeWidget;
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;

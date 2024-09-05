@@ -9,7 +9,7 @@ const mockStore = configureStore([thunk]);
 
 const store = mockStore({
   intl: {
-    locale: 'en',
+    locale: 'en-gb',
     messages: {},
   },
 });
