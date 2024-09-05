@@ -94,7 +94,6 @@ describe('applyConfig', () => {
         widget: {},
         vocabulary: {},
         id: {},
-        vocabulary: {},
       },
       settings: {
         eea: {
