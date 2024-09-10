@@ -25,6 +25,7 @@ const applyConfig = (config) => {
             ...fields,
             'content_type',
             'hero_background',
+            'height',
           ];
 
           schema.properties.content_type = {
@@ -35,6 +36,10 @@ const applyConfig = (config) => {
           schema.properties.hero_background = {
             title: 'Hero Background Image',
             type: 'boolean',
+          };
+          schema.properties.height = {
+            title: 'Height',
+            description: 'Height of the banner',
           };
           return schema;
         },

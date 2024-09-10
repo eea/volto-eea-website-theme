@@ -194,6 +194,7 @@ export const TitleBlockEdit = (props) => {
               [id]: value,
             });
           }}
+          onChangeBlock={props.onChangeBlock}
           formData={props.data}
         />
       </SidebarPortal>

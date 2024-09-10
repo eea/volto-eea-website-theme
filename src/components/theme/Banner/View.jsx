@@ -85,6 +85,7 @@ const View = (props) => {
     subtitle,
     styles,
     content_type,
+    hero_background,
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -112,6 +113,17 @@ const View = (props) => {
     () => getDate(hideModificationDate, 'modified'),
     [getDate, hideModificationDate],
   );
+
+  React.useEffect(() => {
+    const headerNav = document.querySelector('.eea.header .main.bar');
+    if (headerNav) {
+      if (hero_background) {
+        headerNav.classList.add('hero-background');
+      } else {
+        headerNav.classList.remove('hero-background');
+      }
+    }
+  }, [hero_background]);
 
   // Set image source
   const image = contentTypesWithoutHeaderImage.includes(
