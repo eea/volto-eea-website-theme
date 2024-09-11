@@ -1,7 +1,7 @@
 import Edit from './Edit';
 import View from './View';
 import DefaultTemplate from './variations/Default';
-import HeroBackground from './variations/HeroBackground';
+import HeroBackground from './variations/HeroBackground/HeroBackground';
 
 const applyConfig = (config) => {
   config.blocks.blocksConfig.title = {

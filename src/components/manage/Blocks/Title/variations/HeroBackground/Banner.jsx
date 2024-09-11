@@ -84,6 +84,9 @@ const View = (props) => {
     rssLinks,
     subtitle,
     styles,
+    content_type,
+    hero_background,
+    height = '500',
     // contentType,
   } = props.data;
   const copyrightPrefix =
@@ -112,6 +115,28 @@ const View = (props) => {
     [getDate, hideModificationDate],
   );
 
+  React.useEffect(() => {
+    const headerNav = document.querySelector('.eea.header .main.bar');
+    if (headerNav) {
+      if (hero_background) {
+        headerNav.classList.add('hero-background');
+      } else {
+        headerNav.classList.remove('hero-background');
+      }
+    }
+  }, [hero_background]);
+
+  React.useEffect(() => {
+    const banner = document.querySelector('.eea.header .eea.banner');
+    const gradient = document.querySelector('.eea.header .gradient');
+    if (banner && gradient) {
+      if (height) {
+        banner.style.height = `${height}px`;
+        gradient.style.height = `${height}px`;
+      }
+    }
+  }, [height]);
+
   // Set image source
   const image = contentTypesWithoutHeaderImage.includes(
     props.properties['@type'],
@@ -119,7 +144,8 @@ const View = (props) => {
     ? false
     : getImageSource(metadata['image']);
   // Get type
-  const type = metadata.type_title || friendlyId(metadata['@type']);
+  const type =
+    content_type || metadata.type_title || friendlyId(metadata['@type']);
 
   return (
     <Banner {...props} image={image} styles={styles}>
@@ -294,11 +320,7 @@ const View = (props) => {
         {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
         <Title config={banner.title} properties={metadata} />
         <Banner.Metadata>
-          <Banner.MetadataField
-            type="type"
-            hidden={hideContentType}
-            value={type}
-          />
+          <Banner.MetadataField hidden={hideContentType} value={type} />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.created)}

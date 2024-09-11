@@ -8,7 +8,7 @@ import { Portal } from 'react-portal';
 import PropTypes from 'prop-types';
 import { BodyClass } from '@plone/volto/helpers';
 
-import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
+import BannerView from './Banner';
 import './styles.less';
 
 function IsomorphicPortal({ children }) {
