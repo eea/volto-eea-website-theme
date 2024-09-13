@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatetimeWidget removes the comma in the formatted date and shows correct time 1`] = `
+<span
+  className="metadata datetime widget"
+>
+  05 Sept 2024 15:34
+</span>
+`;
+
+exports[`DatetimeWidget renders a datetime view widget component with a date and time 1`] = `
+<span
+  className="metadata datetime widget"
+>
+  05 Sept 2024 15:34
+</span>
+`;
+
+exports[`DatetimeWidget renders a datetime view widget component with children formatting 1`] = `
+<span
+  className="metadata datetime widget"
+>
+  <strong>
+    05 Sept 2024 15:34
+  </strong>
+</span>
+`;
+
+exports[`DatetimeWidget renders an empty datetime view widget component 1`] = `""`;
