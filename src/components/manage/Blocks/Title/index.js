@@ -40,6 +40,7 @@ const applyConfig = (config) => {
           schema.properties.height = {
             title: 'Height',
             description: 'Height of the banner',
+            type: 'boolean',
           };
           return schema;
         },

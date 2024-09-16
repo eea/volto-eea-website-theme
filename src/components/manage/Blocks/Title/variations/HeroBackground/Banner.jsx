@@ -124,18 +124,12 @@ const View = (props) => {
         headerNav.classList.remove('hero-background');
       }
     }
-  }, [hero_background]);
-
-  React.useEffect(() => {
-    const banner = document.querySelector('.eea.header .eea.banner');
-    const gradient = document.querySelector('.eea.header .gradient');
-    if (banner && gradient) {
-      if (height) {
-        banner.style.height = `${height}px`;
-        gradient.style.height = `${height}px`;
+    return () => {
+      if (headerNav) {
+        headerNav.classList.remove('hero-background');
       }
-    }
-  }, [height]);
+    };
+  }, [hero_background]);
 
   // Set image source
   const image = contentTypesWithoutHeaderImage.includes(
@@ -317,8 +311,6 @@ const View = (props) => {
           </>
         }
       >
-        {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
-        <Title config={banner.title} properties={metadata} />
         <Banner.Metadata>
           <Banner.MetadataField hidden={hideContentType} value={type} />
           <Banner.MetadataField
@@ -343,6 +335,9 @@ const View = (props) => {
             />
           ))}
         </Banner.Metadata>
+        <Title config={banner.title} properties={metadata} />
+        {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
+
         {copyright ? (
           <Copyright copyrightPosition={copyrightPosition}>
             <Copyright.Prefix>{copyrightPrefix}</Copyright.Prefix>

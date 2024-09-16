@@ -4,21 +4,10 @@
  */
 
 import React from 'react';
-import { Portal } from 'react-portal';
+
 import PropTypes from 'prop-types';
-import { withBlockExtensions } from '@plone/volto/helpers';
+import { withBlockExtensions, BodyClass } from '@plone/volto/helpers';
 import DefaultTemplate from './variations/Default';
-
-function IsomorphicPortal({ children }) {
-  const [isClient, setIsClient] = React.useState();
-  React.useEffect(() => setIsClient(true), []);
-
-  return isClient ? (
-    <Portal node={document.getElementById('page-header')}>{children}</Portal>
-  ) : (
-    children
-  );
-}
 
 /**
  * View title block class.
@@ -28,7 +17,12 @@ function IsomorphicPortal({ children }) {
 const View = (props = {}) => {
   const { variation, data = {} } = props;
   const Renderer = variation?.view ?? DefaultTemplate;
-  return <Renderer {...props} />;
+  return (
+    <>
+      <BodyClass className="with-title-block" />
+      <Renderer {...props} />
+    </>
+  );
 };
 
 /**

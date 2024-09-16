@@ -6,7 +6,6 @@
 import React from 'react';
 import { Portal } from 'react-portal';
 import PropTypes from 'prop-types';
-import { BodyClass } from '@plone/volto/helpers';
 
 import BannerView from './Banner';
 import './styles.less';
@@ -25,7 +24,6 @@ function IsomorphicPortal({ children }) {
 const HeroBackground = (props) => {
   return (
     <React.Fragment>
-      <BodyClass className="with-title-block" />
       <IsomorphicPortal>
         {/* Implement own BannerView component */}
         <BannerView {...props} />
