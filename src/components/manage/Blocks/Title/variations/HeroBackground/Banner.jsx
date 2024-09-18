@@ -311,8 +311,16 @@ const View = (props) => {
           </>
         }
       >
+        <Banner.MetadataField hidden={hideContentType} value={type} />
+        <Title config={banner.title} properties={metadata} />
+
+        {subtitle && (
+          <Banner.Subtitle>
+            <span className="subtitle-light">{subtitle}</span>
+          </Banner.Subtitle>
+        )}
+
         <Banner.Metadata>
-          <Banner.MetadataField hidden={hideContentType} value={type} />
           <Banner.MetadataField
             type="date"
             label={intl.formatMessage(messages.created)}
@@ -335,8 +343,6 @@ const View = (props) => {
             />
           ))}
         </Banner.Metadata>
-        <Title config={banner.title} properties={metadata} />
-        {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
 
         {copyright ? (
           <Copyright copyrightPosition={copyrightPosition}>
