@@ -197,6 +197,7 @@ export const TitleBlockEdit = (props) => {
           }}
           onChangeBlock={props.onChangeBlock}
           formData={props.data}
+          block={props.block}
         />
       </SidebarPortal>
     </React.Fragment>
@@ -227,4 +228,4 @@ TitleBlockEdit.defaultProps = {
   editable: true,
 };
 
-export default withBlockExtensions(TitleBlockEdit);
+export default TitleBlockEdit;

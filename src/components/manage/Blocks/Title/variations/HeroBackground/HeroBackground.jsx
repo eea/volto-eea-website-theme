@@ -22,11 +22,15 @@ function IsomorphicPortal({ children }) {
 }
 
 const HeroBackground = (props) => {
-  return (
+  return props.isEditMode ? (
+    <BannerView {...props} />
+  ) : (
     <React.Fragment>
       <IsomorphicPortal>
         {/* Implement own BannerView component */}
-        <BannerView {...props} />
+        <div role="banner" className="web_report">
+          <BannerView {...props} />
+        </div>
       </IsomorphicPortal>
     </React.Fragment>
   );

@@ -20,13 +20,16 @@ function IsomorphicPortal({ children }) {
   );
 }
 
-const DefaultTemplate = (props) => (
-  <React.Fragment>
-    <IsomorphicPortal>
-      <BannerView {...props} />
-    </IsomorphicPortal>
-  </React.Fragment>
-);
+const DefaultTemplate = (props) =>
+  props.isEditMode ? (
+    <BannerView {...props} />
+  ) : (
+    <React.Fragment>
+      <IsomorphicPortal>
+        <BannerView {...props} />
+      </IsomorphicPortal>
+    </React.Fragment>
+  );
 
 /**
  * Property types.
