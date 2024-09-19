@@ -11,6 +11,7 @@ import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCS
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
+import WebReportSectionView from '@eeacms/volto-eea-website-theme/components/theme/WebReport/WebReportSectionView';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
@@ -242,6 +243,9 @@ const applyConfig = (config) => {
     homepage_view: 'Homepage view',
     homepage_inverse_view: 'Homepage white view',
   };
+  config.views.contentTypesViews.web_report_section = WebReportSectionView;
+  config.views.layoutViewsNamesMapping.web_report_section =
+    'Web report section';
   config.views.errorViews = {
     ...config.views.errorViews,
     404: NotFound,
