@@ -24,8 +24,7 @@ const applyConfig = (config) => {
           schema.fieldsets[0].fields = [
             ...fields,
             'content_type',
-            'hero_background',
-            'height',
+            'hero_header',
           ];
 
           schema.properties.content_type = {
@@ -33,13 +32,8 @@ const applyConfig = (config) => {
             description:
               'Add a custom content-type name, leave empty for default',
           };
-          schema.properties.hero_background = {
-            title: 'Hero Background Image',
-            type: 'boolean',
-          };
-          schema.properties.height = {
-            title: 'Height',
-            description: 'Height of the banner',
+          schema.properties.hero_header = {
+            title: 'Hero header size',
             type: 'boolean',
           };
           return schema;
