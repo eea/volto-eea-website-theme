@@ -85,7 +85,7 @@ const View = (props) => {
     subtitle,
     styles,
     content_type,
-    hero_background,
+    hero_header,
     height = '500',
     // contentType,
   } = props.data;
@@ -114,22 +114,6 @@ const View = (props) => {
     () => getDate(hideModificationDate, 'modified'),
     [getDate, hideModificationDate],
   );
-
-  React.useEffect(() => {
-    const headerNav = document.querySelector('.eea.header .main.bar');
-    if (headerNav) {
-      if (hero_background) {
-        headerNav.classList.add('hero-background');
-      } else {
-        headerNav.classList.remove('hero-background');
-      }
-    }
-    return () => {
-      if (headerNav) {
-        headerNav.classList.remove('hero-background');
-      }
-    };
-  }, [hero_background]);
 
   // Set image source
   const image = contentTypesWithoutHeaderImage.includes(
@@ -311,7 +295,11 @@ const View = (props) => {
           </>
         }
       >
-        <Banner.MetadataField hidden={hideContentType} value={type} />
+        <Banner.MetadataField
+          hidden={hideContentType}
+          type={'content-type'}
+          value={type}
+        />
         <Title config={banner.title} properties={metadata} />
 
         {subtitle && (

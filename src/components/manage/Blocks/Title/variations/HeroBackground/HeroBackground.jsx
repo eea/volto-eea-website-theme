@@ -10,6 +10,8 @@ import PropTypes from 'prop-types';
 import BannerView from './Banner';
 import './styles.less';
 
+import { BodyClass } from '@plone/volto/helpers';
+
 function IsomorphicPortal({ children }) {
   const [isClient, setIsClient] = React.useState();
   React.useEffect(() => setIsClient(true), []);
@@ -26,6 +28,11 @@ const HeroBackground = (props) => {
     <BannerView {...props} />
   ) : (
     <React.Fragment>
+      <BodyClass
+        className={`homepage homepage-inverse homepage-header ${
+          props.data.hero_header ? 'hero-header' : null
+        }`}
+      />
       <IsomorphicPortal>
         {/* Implement own BannerView component */}
         <div role="banner" className="web_report">
