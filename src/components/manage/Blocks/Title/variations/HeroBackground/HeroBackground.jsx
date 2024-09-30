@@ -25,7 +25,14 @@ function IsomorphicPortal({ children }) {
 
 const HeroBackground = (props) => {
   return props.isEditMode ? (
-    <BannerView {...props} />
+    <>
+      <BodyClass
+        className={`homepage homepage-inverse homepage-header ${
+          props.data.hero_header ? 'hero-header' : null
+        }`}
+      />
+      <BannerView {...props} />
+    </>
   ) : (
     <React.Fragment>
       <BodyClass
