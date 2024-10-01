@@ -2,30 +2,34 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { isInternalURL, flattenToAppURL } from '@plone/volto/helpers';
+import { DefaultView } from '@plone/volto/components/';
 import { Redirect } from 'react-router-dom';
 
-const WebReportSectionView = ({ content }) => {
+const WebReportSectionView = (props) => {
+  const { content, token } = props;
   const history = useHistory();
   const redirectUrl = React.useMemo(() => {
     if (content) {
       const items = content.items;
       const firstItem = items?.[0];
-      return firstItem?.['@id'] ?? content?.['@id'];
+      return firstItem?.['@id'];
     }
   }, [content]);
 
   useEffect(() => {
-    if (isInternalURL(redirectUrl)) {
-      history.replace(flattenToAppURL(redirectUrl));
-    } else if (!__SERVER__) {
-      window.location.href = flattenToAppURL(redirectUrl);
+    if (!token) {
+      if (isInternalURL(redirectUrl)) {
+        history.replace(flattenToAppURL(redirectUrl));
+      } else if (!__SERVER__ && redirectUrl) {
+        window.location.href = flattenToAppURL(redirectUrl);
+      }
     }
   }, [content, history]);
 
-  if (__SERVER__ && redirectUrl) {
+  if (__SERVER__ && redirectUrl && !token) {
     return <Redirect to={redirectUrl} />;
   }
-  return null;
+  return <DefaultView {...props} />;
 };
 
 WebReportSectionView.propTypes = {
