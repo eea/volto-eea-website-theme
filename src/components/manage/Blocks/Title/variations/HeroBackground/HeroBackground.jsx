@@ -7,8 +7,11 @@ import React from 'react';
 import { Portal } from 'react-portal';
 import PropTypes from 'prop-types';
 
-import BannerView from './Banner';
+import { MaybeWrap } from '@plone/volto/components';
+import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
+import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import './styles.less';
+import clsx from 'clsx';
 
 import { BodyClass } from '@plone/volto/helpers';
 
@@ -24,29 +27,34 @@ function IsomorphicPortal({ children }) {
 }
 
 const HeroBackground = (props) => {
-  return props.isEditMode ? (
-    <>
+  return (
+    <MaybeWrap condition={!props.isEditMode} as={IsomorphicPortal}>
       <BodyClass
-        className={`homepage homepage-inverse homepage-header ${
-          props.data.hero_header ? 'hero-header' : null
-        }`}
+        className={clsx(
+          'homepage homepage-inverse homepage-header light-header',
+          props.data.hero_header ? 'hero-header' : '',
+        )}
       />
-      <BannerView {...props} />
-    </>
-  ) : (
-    <React.Fragment>
-      <BodyClass
-        className={`homepage homepage-inverse homepage-header ${
-          props.data.hero_header ? 'hero-header' : null
-        }`}
+      <BannerView
+        {...props}
+        data={{
+          ...props.data,
+          hideContentType: true,
+          aboveTitle: (
+            <div className="content-type">
+              {props.data.content_type || props.properties.type_title}
+            </div>
+          ),
+          belowTitle: (
+            <>
+              <Banner.Subtitle>
+                <span className="subtitle-light">{props.data.subtitle}</span>
+              </Banner.Subtitle>
+            </>
+          ),
+        }}
       />
-      <IsomorphicPortal>
-        {/* Implement own BannerView component */}
-        <div role="banner" className="web_report">
-          <BannerView {...props} />
-        </div>
-      </IsomorphicPortal>
-    </React.Fragment>
+    </MaybeWrap>
   );
 };
 
