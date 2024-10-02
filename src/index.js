@@ -237,6 +237,7 @@ const applyConfig = (config) => {
     ...(config.views.layoutViews || {}),
     homepage_view: HomePageView,
     homepage_inverse_view: HomePageInverseView,
+    web_report_section: WebReportSectionView,
   };
   config.views.layoutViewsNamesMapping = {
     ...(config.views.layoutViewsNamesMapping || {}),
@@ -244,8 +245,7 @@ const applyConfig = (config) => {
     homepage_inverse_view: 'Homepage white view',
   };
   config.views.contentTypesViews.web_report_section = WebReportSectionView;
-  config.views.layoutViewsNamesMapping.web_report_section =
-    'Web report section';
+
   config.views.errorViews = {
     ...config.views.errorViews,
     404: NotFound,
