@@ -237,12 +237,12 @@ const applyConfig = (config) => {
     ...(config.views.layoutViews || {}),
     homepage_view: HomePageView,
     homepage_inverse_view: HomePageInverseView,
-    web_report_section: WebReportSectionView,
   };
   config.views.layoutViewsNamesMapping = {
     ...(config.views.layoutViewsNamesMapping || {}),
     homepage_view: 'Homepage view',
     homepage_inverse_view: 'Homepage white view',
+    web_report_section: 'Web report section',
   };
   config.views.contentTypesViews.web_report_section = WebReportSectionView;
 
