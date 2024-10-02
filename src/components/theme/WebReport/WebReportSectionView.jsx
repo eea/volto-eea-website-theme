@@ -24,7 +24,7 @@ const WebReportSectionView = (props) => {
         window.location.href = flattenToAppURL(redirectUrl);
       }
     }
-  }, [content, history]);
+  }, [history, content, redirectUrl, token]);
 
   if (__SERVER__ && redirectUrl && !token) {
     return <Redirect to={redirectUrl} />;
