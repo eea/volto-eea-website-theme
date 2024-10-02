@@ -15,7 +15,7 @@ import DefaultTemplate from './variations/Default';
  * @extends Component
  */
 const View = (props = {}) => {
-  const { variation, data = {} } = props;
+  const { variation } = props;
   const Renderer = variation?.view ?? DefaultTemplate;
   return (
     <>

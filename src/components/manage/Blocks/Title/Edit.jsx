@@ -10,7 +10,7 @@ import { Editor, createEditor, Transforms, Node, Range } from 'slate';
 import { ReactEditor, Editable, Slate, withReact } from 'slate-react';
 import config from '@plone/volto/registry';
 import { SidebarPortal } from '@plone/volto/components';
-import { BodyClass, withBlockExtensions } from '@plone/volto/helpers';
+import { BodyClass } from '@plone/volto/helpers';
 import View from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title/View';
 import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 import schema from './schema';
