@@ -1,6 +1,6 @@
 /**
- * View title block.
- * @module components/manage/Blocks/Title/View
+ * Web Report title block variation.
+ * @module components/manage/Blocks/Title/variations/WebReport
  */
 
 import React from 'react';
@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import { MaybeWrap } from '@plone/volto/components';
 import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
 import Banner from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
-import './styles.less';
 import clsx from 'clsx';
 
 import { BodyClass } from '@plone/volto/helpers';
@@ -26,7 +25,7 @@ function IsomorphicPortal({ children }) {
   );
 }
 
-const HeroBackground = (props) => {
+const WebReport = (props) => {
   return (
     <MaybeWrap condition={!props.isEditMode} as={IsomorphicPortal}>
       <BodyClass
@@ -63,8 +62,8 @@ const HeroBackground = (props) => {
  * @property {Object} propTypes Property types.
  * @static
  */
-HeroBackground.propTypes = {
+WebReport.propTypes = {
   properties: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default HeroBackground;
+export default WebReport;

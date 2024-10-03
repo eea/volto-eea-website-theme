@@ -1,7 +1,9 @@
 import Edit from './Edit';
 import View from './View';
 import DefaultTemplate from './variations/Default';
-import HeroBackground from './variations/HeroBackground/HeroBackground';
+import WebReport from './variations/WebReport';
+import WebReportPage from './variations/WebReportPage';
+import './variations/styles.less';
 
 const applyConfig = (config) => {
   config.blocks.blocksConfig.title = {
@@ -18,7 +20,7 @@ const applyConfig = (config) => {
       {
         id: 'web_report',
         title: 'Web Report',
-        view: HeroBackground,
+        view: WebReport,
         schemaEnhancer: ({ schema }) => {
           const fields = schema.fieldsets[0].fields;
           schema.fieldsets[0].fields = [
@@ -35,6 +37,22 @@ const applyConfig = (config) => {
           schema.properties.hero_header = {
             title: 'Hero header size',
             type: 'boolean',
+          };
+          return schema;
+        },
+      },
+      {
+        id: 'web_report_page',
+        title: 'Web Report Page',
+        view: WebReportPage,
+        schemaEnhancer: ({ schema }) => {
+          const fields = schema.fieldsets[0].fields;
+          schema.fieldsets[0].fields = [...fields, 'content_type'];
+
+          schema.properties.content_type = {
+            title: 'Content type name',
+            description:
+              'Add a custom content-type name, leave empty for default',
           };
           return schema;
         },
