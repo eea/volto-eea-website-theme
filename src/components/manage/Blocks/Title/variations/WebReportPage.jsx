@@ -27,11 +27,7 @@ function IsomorphicPortal({ children }) {
 const WebReportPage = (props) => {
   return (
     <MaybeWrap condition={!props.isEditMode} as={IsomorphicPortal}>
-      <BodyClass
-        className={clsx(
-          'homepage homepage-inverse homepage-header light-header',
-        )}
-      />
+      <BodyClass className={clsx('homepage homepage-inverse light-header')} />
       <BannerView
         {...props}
         data={{
@@ -42,7 +38,7 @@ const WebReportPage = (props) => {
               <div className="content-type">
                 {props.data.content_type || props.properties.type_title}
               </div>
-              <div className="subtitle">{props.data.subtitle}</div>,
+              <div className="subtitle">{props.data.subtitle}</div>
             </>
           ),
         }}
