@@ -27,6 +27,7 @@ import {
 } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
+import installContextNavigationBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 
 import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
@@ -496,12 +497,6 @@ const applyConfig = (config) => {
     web_report_page: 2,
   };
 
-  // layout settings
-  config = [installLayoutSettingsBlock].reduce(
-    (acc, apply) => apply(acc),
-    config,
-  );
-
   // Group
   if (config.blocks.blocksConfig.group) {
     config.blocks.blocksConfig.group.schemaEnhancer =
@@ -569,8 +564,12 @@ const applyConfig = (config) => {
     GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
   });
 
-  // Custom blocks: Title
-  return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
+  // Custom blocks: Title,Layout settings, Context navigation
+  return [
+    installCustomTitle,
+    installLayoutSettingsBlock,
+    installContextNavigationBlock,
+  ].reduce((acc, apply) => apply(acc), config);
 };
 
 export default applyConfig;

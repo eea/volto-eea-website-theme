@@ -21,7 +21,7 @@ import { hasBlocksData, getBaseUrl } from '@plone/volto/helpers';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { isEqual } from 'lodash';
-import AccordionContextNavigation from '@eeacms/volto-eea-website-policy/components/Blocks/ContextNavigation/variations/Accordion';
+import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
 
 /**
  * Component to display the default view.
