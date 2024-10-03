@@ -245,7 +245,11 @@ const applyConfig = (config) => {
     homepage_inverse_view: 'Homepage white view',
     web_report_section: 'Web report section',
   };
-  config.views.contentTypesViews.web_report_section = WebReportSectionView;
+
+  config.views.contentTypesViews = {
+    ...(config.views.contentTypesViews || {}),
+    web_report_section: WebReportSectionView,
+  };
 
   config.views.errorViews = {
     ...config.views.errorViews,
