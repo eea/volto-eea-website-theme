@@ -30,7 +30,7 @@ const WebReport = (props) => {
     <MaybeWrap condition={!props.isEditMode} as={IsomorphicPortal}>
       <BodyClass
         className={clsx(
-          'homepage homepage-inverse homepage-header light-header',
+          'homepage-inverse homepage-header light-header',
           props.data.hero_header ? 'hero-header' : '',
         )}
       />
