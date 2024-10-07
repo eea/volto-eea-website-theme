@@ -171,5 +171,9 @@ AccordionNavigation.propTypes = {
 export default compose(
   withRouter,
   withContentNavigation,
-  withEEASideMenu,
+  (WrappedComponent) => (props) =>
+    withEEASideMenu(WrappedComponent)({
+      ...props,
+      shouldRender: props.navigation?.items?.length > 0,
+    }),
 )(AccordionNavigation);
