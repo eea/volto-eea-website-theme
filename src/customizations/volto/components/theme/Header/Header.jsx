@@ -35,6 +35,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const router_pathname = useSelector((state) => {
     return removeTrailingSlash(state.router?.location?.pathname) || '';
   });
+  console.log('router_pathname', router_pathname);
 
   const isSubsite = subsite?.['@type'] === 'Subsite';
 
@@ -43,11 +44,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     const has_home_layout =
       layout === 'homepage_inverse_view' ||
       (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
-    return (
-      has_home_layout &&
-      (removeTrailingSlash(pathname) === router_pathname ||
-        router_pathname.endsWith('/edit'))
-    );
+
+    return has_home_layout;
   });
 
   const { eea } = config.settings;
