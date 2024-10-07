@@ -18,9 +18,9 @@ import { getWidget } from '@plone/volto/helpers/Widget/utils';
 import { RenderBlocks } from '@plone/volto/components';
 
 import { hasBlocksData, getBaseUrl } from '@plone/volto/helpers';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
 
 /**
@@ -31,6 +31,15 @@ import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/componen
  */
 const DefaultView = (props) => {
   const { content, location } = props;
+
+  const { contextNavigationActions } = useSelector(
+    (state) => ({
+      contextNavigationActions: state.actions?.actions?.context_navigation,
+    }),
+    shallowEqual,
+  );
+
+  const navigation_paths = contextNavigationActions || [];
   const path = getBaseUrl(location?.pathname || '');
   const dispatch = useDispatch();
   const { views } = config.widgets;
@@ -64,7 +73,9 @@ const DefaultView = (props) => {
 
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
-  const navigation_root_path = '/en/sandbox/david';
+  const matchingNavigationPath = navigation_paths.find((navPath) =>
+    path.includes(navPath.url),
+  );
 
   // If the content is not yet loaded, then do not show anything
   return contentLoaded ? (
@@ -73,17 +84,18 @@ const DefaultView = (props) => {
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        {path.includes(navigation_root_path) && (
+        {matchingNavigationPath && (
           <AccordionContextNavigation
             params={{
-              name: 'Web report content',
-              no_thumbs: true,
-              no_icons: true,
-              root_path: navigation_root_path,
-              includeTop: true,
-              bottomLevel: 3,
-              topLevel: 1,
-              currentFolderOnly: false,
+              name: matchingNavigationPath.title,
+              no_thumbs: matchingNavigationPath.no_thumbs || true,
+              no_icons: matchingNavigationPath.no_icons || true,
+              root_path: matchingNavigationPath.url,
+              includeTop: matchingNavigationPath.includeTop || true,
+              bottomLevel: matchingNavigationPath.bottomLevel || 3,
+              topLevel: matchingNavigationPath.topLevel || 1,
+              currentFolderOnly:
+                matchingNavigationPath.currentFolderOnly || false,
             }}
           />
         )}
