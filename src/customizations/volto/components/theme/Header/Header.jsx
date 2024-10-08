@@ -17,7 +17,6 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 
 import config from '@plone/volto/registry';
 import { compose } from 'recompose';
-import { BodyClass } from '@plone/volto/helpers';
 
 import cx from 'classnames';
 import loadable from '@loadable/component';
@@ -77,7 +76,6 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   return (
     <Header menuItems={items}>
-      {isHomePageInverse && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
           <Image src={eeaFlag} alt="European Union flag"></Image>
