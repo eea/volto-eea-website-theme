@@ -31,6 +31,27 @@ import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/componen
  */
 const DefaultView = (props) => {
   const { content, location } = props;
+  const [hasLightLayout, setHasLightLayout] = React.useState(false);
+
+  React.useEffect(() => {
+    const updateLightLayout = () => {
+      if (__CLIENT__) {
+        setHasLightLayout(document.body.classList.contains('light-header'));
+      }
+    };
+
+    updateLightLayout();
+
+    if (__CLIENT__) {
+      const observer = new MutationObserver(updateLightLayout);
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+
+      return () => observer.disconnect();
+    }
+  }, []);
 
   const { contextNavigationActions } = useSelector(
     (state) => ({
@@ -84,7 +105,7 @@ const DefaultView = (props) => {
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        {matchingNavigationPath && (
+        {hasLightLayout && matchingNavigationPath && (
           <AccordionContextNavigation
             params={{
               name: matchingNavigationPath.title,
