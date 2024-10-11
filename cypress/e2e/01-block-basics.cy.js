@@ -67,6 +67,7 @@ describe('Blocks Tests', () => {
 
     // Add Navigation block
     cy.get('.ui.basic.icon.button.block-add-button').first().click();
+    cy.get('.blocks-chooser input').type('Navigation');
     cy.get('.blocks-chooser .contextNavigation').click();
     cy.get('#field-name').type('Nav title');
     cy.get(
