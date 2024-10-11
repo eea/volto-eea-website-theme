@@ -14,8 +14,10 @@ const SubsiteClass = () => {
 
   return (
     <BodyClass
-      className={cx('subsite', `subsite-${subsite.subsite_css_class?.token}`, {
+      className={cx('subsite', {
         'subsite-root': isSubsiteRoot(location.pathname, subsite),
+        [`subsite-${subsite.subsite_css_class?.token}`]:
+          subsite.subsite_css_class?.token,
       })}
     />
   );

@@ -11,8 +11,8 @@ import { ReactEditor, Editable, Slate, withReact } from 'slate-react';
 import config from '@plone/volto/registry';
 import { SidebarPortal } from '@plone/volto/components';
 import { BodyClass } from '@plone/volto/helpers';
-import InlineForm from '@plone/volto/components/manage/Form/InlineForm';
-import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
+import View from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title/View';
+import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 import schema from './schema';
 
 const messages = defineMessages({
@@ -165,8 +165,9 @@ export const TitleBlockEdit = (props) => {
   return (
     <React.Fragment>
       <BodyClass className="with-title-block" />
-      <BannerView
+      <View
         {...props}
+        isEditMode={true}
         banner={{
           title: {
             view: (
@@ -185,7 +186,7 @@ export const TitleBlockEdit = (props) => {
         fluid
       />
       <SidebarPortal selected={props.selected}>
-        <InlineForm
+        <BlockDataForm
           schema={schema}
           title={schema.title}
           onChangeField={(id, value) => {
@@ -194,7 +195,9 @@ export const TitleBlockEdit = (props) => {
               [id]: value,
             });
           }}
+          onChangeBlock={props.onChangeBlock}
           formData={props.data}
+          block={props.block}
         />
       </SidebarPortal>
     </React.Fragment>

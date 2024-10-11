@@ -11,6 +11,7 @@ import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCS
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
 import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView';
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
+import WebReportSectionView from '@eeacms/volto-eea-website-theme/components/theme/WebReport/WebReportSectionView';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
@@ -26,6 +27,7 @@ import {
 } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 
 import installLayoutSettingsBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/LayoutSettings';
+import installContextNavigationBlock from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation';
 import installCustomTitle from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title';
 
 import FlexGroup from '@eeacms/volto-eea-website-theme/components/manage/Blocks/GroupBlockTemplate/FlexGroup/FlexGroup';
@@ -241,7 +243,14 @@ const applyConfig = (config) => {
     ...(config.views.layoutViewsNamesMapping || {}),
     homepage_view: 'Homepage view',
     homepage_inverse_view: 'Homepage white view',
+    web_report_section: 'Web report section',
   };
+
+  config.views.contentTypesViews = {
+    ...(config.views.contentTypesViews || {}),
+    web_report_section: WebReportSectionView,
+  };
+
   config.views.errorViews = {
     ...config.views.errorViews,
     404: NotFound,
@@ -486,11 +495,11 @@ const applyConfig = (config) => {
     // },
   };
 
-  // layout settings
-  config = [installLayoutSettingsBlock].reduce(
-    (acc, apply) => apply(acc),
-    config,
-  );
+  //If you don't want to show the content type as a link in the breadcrumbs, you can set it to a number
+  // where 1 is the last item in the breadcrumbs, 2 is the second last, etc.
+  config.settings.contentTypeToAvoidAsLinks = {
+    web_report_section: 2,
+  };
 
   // Group
   if (config.blocks.blocksConfig.group) {
@@ -559,8 +568,12 @@ const applyConfig = (config) => {
     GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
   });
 
-  // Custom blocks: Title
-  return [installCustomTitle].reduce((acc, apply) => apply(acc), config);
+  // Custom blocks: Title,Layout settings, Context navigation
+  return [
+    installCustomTitle,
+    installLayoutSettingsBlock,
+    installContextNavigationBlock,
+  ].reduce((acc, apply) => apply(acc), config);
 };
 
 export default applyConfig;
