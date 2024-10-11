@@ -13,7 +13,7 @@ const applyConfig = (config) => {
     view: ContextNavigationView,
     edit: ContextNavigationEdit,
     schema: BlockSettingsSchema,
-    restricted: true,
+    restricted: false,
     variations,
     mostUsed: false,
     blockHasOwnFocusManagement: true,
