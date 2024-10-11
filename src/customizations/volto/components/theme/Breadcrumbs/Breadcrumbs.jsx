@@ -3,7 +3,7 @@
  * @module components/theme/Breadcrumbs/Breadcrumbs
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useLocation } from 'react-router';
@@ -32,9 +32,22 @@ const isContentRoute = (pathname) => {
 const Breadcrumbs = (props) => {
   const dispatch = useDispatch();
   const { items = [], root = '/' } = useSelector((state) => state?.breadcrumbs);
+  const content = useSelector((state) => state?.content?.data);
+
   // const pathname = useSelector((state) => state.location.pathname);
   const location = useLocation();
   const { pathname } = location;
+
+  const linkLevels = useMemo(() => {
+    if (content) {
+      const type = content['@type'];
+      const isContentTypesToAvoid =
+        config.settings.contentTypeToAvoidAsLinks || {};
+      if (isContentTypesToAvoid[type]) {
+        return isContentTypesToAvoid[type];
+      }
+    }
+  }, [content]);
 
   const sections = items.map((item) => ({
     title: item.title,
@@ -54,7 +67,12 @@ const Breadcrumbs = (props) => {
   return (
     <React.Fragment>
       <div id="page-header" />
-      <EEABreadcrumbs pathname={pathname} sections={sections} root={root} />
+      <EEABreadcrumbs
+        pathname={pathname}
+        sections={sections}
+        root={root}
+        linkLevels={linkLevels}
+      />
     </React.Fragment>
   );
 };

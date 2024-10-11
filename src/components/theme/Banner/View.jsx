@@ -291,8 +291,12 @@ const View = (props) => {
           </>
         }
       >
-        {subtitle && <Banner.Subtitle>{subtitle}</Banner.Subtitle>}
+        {!props.data.aboveTitle && subtitle && (
+          <Banner.Subtitle>{subtitle}</Banner.Subtitle>
+        )}
+        {props.data.aboveTitle}
         <Title config={banner.title} properties={metadata} />
+        {props.data.belowTitle}
         <Banner.Metadata>
           <Banner.MetadataField
             type="type"

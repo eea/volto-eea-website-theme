@@ -17,7 +17,6 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 
 import config from '@plone/volto/registry';
 import { compose } from 'recompose';
-import { BodyClass } from '@plone/volto/helpers';
 
 import cx from 'classnames';
 import loadable from '@loadable/component';
@@ -43,10 +42,12 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     const has_home_layout =
       layout === 'homepage_inverse_view' ||
       (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
+
     return (
       has_home_layout &&
       (removeTrailingSlash(pathname) === router_pathname ||
-        router_pathname.endsWith('/edit'))
+        router_pathname.endsWith('/edit') ||
+        router_pathname.endsWith('/add'))
     );
   });
 
@@ -75,7 +76,6 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   return (
     <Header menuItems={items}>
-      {isHomePageInverse && <BodyClass className="homepage" />}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
           <Image src={eeaFlag} alt="European Union flag"></Image>
