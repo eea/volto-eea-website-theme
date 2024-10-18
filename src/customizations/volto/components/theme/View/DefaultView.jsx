@@ -32,10 +32,8 @@ import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/componen
 const DefaultView = (props) => {
   const { content, location } = props;
   const [hasLightLayout, setHasLightLayout] = React.useState(false);
-  console.count('DefaultView');
 
   React.useEffect(() => {
-    console.count('useEffect');
     const updateLightLayout = () => {
       if (__CLIENT__) {
         setHasLightLayout(document.body.classList.contains('light-header'));
@@ -45,7 +43,6 @@ const DefaultView = (props) => {
     updateLightLayout();
 
     if (__CLIENT__) {
-      console.count('if __CLIENT__');
       const observer = new MutationObserver(updateLightLayout);
       observer.observe(document.body, {
         attributes: true,
