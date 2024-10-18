@@ -8,7 +8,7 @@ import { Accordion } from 'semantic-ui-react';
 
 import Slugger from 'github-slugger';
 
-import { Icon, UniversalLink } from '@plone/volto/components';
+import { Icon, UniversalLink, MaybeWrap } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 import withEEASideMenu from '@eeacms/volto-block-toc/hocs/withEEASideMenu';
 import { flattenToAppURL } from '@plone/volto/helpers';
@@ -33,6 +33,8 @@ const AccordionNavigation = ({
   const navOpen = ['mobile', 'tablet'].includes(device) ? false : true;
   const [isNavOpen, setIsNavOpen] = React.useState(navOpen);
   const [activeItems, setActiveItems] = React.useState({});
+  const contextNavigationListRef = React.useRef(null);
+  const summaryRef = React.useRef(null);
 
   const onClickSummary = React.useCallback((e) => {
     e.preventDefault();
@@ -42,6 +44,26 @@ const AccordionNavigation = ({
   React.useEffect(() => {
     if (isMenuOpenOnOutsideClick === false) setIsNavOpen(false);
   }, [isMenuOpenOnOutsideClick]);
+
+  React.useEffect(() => {
+    if (!navOpen) {
+      const handleOutsideClick = (event) => {
+        if (
+          summaryRef.current &&
+          contextNavigationListRef.current &&
+          !summaryRef.current.contains(event.target) &&
+          !contextNavigationListRef.current.contains(event.target)
+        ) {
+          setIsNavOpen(false);
+        }
+      };
+
+      document.addEventListener('click', handleOutsideClick);
+      return () => {
+        document.removeEventListener('click', handleOutsideClick);
+      };
+    }
+  }, [summaryRef, navOpen]);
 
   const onKeyDownSummary = React.useCallback(
     (e) => {
@@ -127,20 +149,36 @@ const AccordionNavigation = ({
 
   return items.length ? (
     <>
-      <nav className="context-navigation">
+      <nav className="context-navigation" aria-label={title}>
         <details open={isNavOpen}>
           {/* eslint-disable-next-line */}
           <summary
             className="context-navigation-header accordion-header"
             onClick={onClickSummary}
             onKeyDown={onKeyDownSummary}
+            ref={summaryRef}
           >
-            {has_custom_name ? title : intl.formatMessage(messages.navigation)}
-            <Icon name={isNavOpen ? upIcon : downIcon} size="40px" />
+            <MaybeWrap
+              condition={!navOpen}
+              className="ui container d-flex flex-items-center"
+            >
+              {has_custom_name
+                ? title
+                : intl.formatMessage(messages.navigation)}
+              <Icon name={isNavOpen ? upIcon : downIcon} size="40px" />
+            </MaybeWrap>
           </summary>
-          <ul className="context-navigation-list accordion-list">
-            {items.map((item) => renderItems({ item }))}
-          </ul>
+          <MaybeWrap
+            condition={!navOpen}
+            className="ui container d-flex flex-items-center"
+          >
+            <ul
+              className="context-navigation-list accordion-list"
+              ref={contextNavigationListRef}
+            >
+              {items.map((item) => renderItems({ item }))}
+            </ul>
+          </MaybeWrap>
         </details>
       </nav>
     </>
@@ -174,6 +212,8 @@ export default compose(
   (WrappedComponent) => (props) =>
     withEEASideMenu(WrappedComponent)({
       ...props,
+      targetParent: '.eea.header ',
+      insertBeforeOnMobile: '.banner',
       shouldRender: props.navigation?.items?.length > 0,
     }),
 )(AccordionNavigation);
