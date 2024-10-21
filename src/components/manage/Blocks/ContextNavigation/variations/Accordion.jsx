@@ -213,6 +213,7 @@ export default compose(
     withEEASideMenu(WrappedComponent)({
       ...props,
       targetParent: '.eea.header ',
+      fixedVisibilitySwitchTarget: '.main.bar',
       insertBeforeOnMobile: '.banner',
       shouldRender: props.navigation?.items?.length > 0,
     }),
