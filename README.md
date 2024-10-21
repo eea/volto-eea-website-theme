@@ -16,6 +16,12 @@
 
 EEA Website [Volto](https://github.com/plone/volto) Theme
 
+## Upgrade
+
+### Upgrading to 3.x.x
+
+* This version removes some Volto customizations and it requires **Volto 17.20.0+**. See [CHANGELOG.md](https://github.com/eea/volto-eea-website-theme/blob/master/CHANGELOG.md)
+
 ## Demo
 
 - https://www.eea.europa.eu
