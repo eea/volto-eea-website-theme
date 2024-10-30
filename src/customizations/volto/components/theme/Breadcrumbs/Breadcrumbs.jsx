@@ -50,8 +50,7 @@ const Breadcrumbs = (props) => {
   }, [content]);
 
   const sections = items.map((item) => ({
-    title: item.title,
-    href: item.url,
+    ...item,
     key: item.title,
   }));
 
