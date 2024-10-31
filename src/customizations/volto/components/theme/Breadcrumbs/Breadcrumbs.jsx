@@ -3,7 +3,7 @@
  * @module components/theme/Breadcrumbs/Breadcrumbs
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useLocation } from 'react-router';
@@ -32,22 +32,14 @@ const isContentRoute = (pathname) => {
 const Breadcrumbs = (props) => {
   const dispatch = useDispatch();
   const { items = [], root = '/' } = useSelector((state) => state?.breadcrumbs);
-  const content = useSelector((state) => state?.content?.data);
+  const token = useSelector((state) => state?.userSession?.token);
 
   // const pathname = useSelector((state) => state.location.pathname);
   const location = useLocation();
   const { pathname } = location;
-
-  const linkLevels = useMemo(() => {
-    if (content) {
-      const type = content['@type'];
-      const isContentTypesToAvoid =
-        config.settings.contentTypeToAvoidAsLinks || {};
-      if (isContentTypesToAvoid[type]) {
-        return isContentTypesToAvoid[type];
-      }
-    }
-  }, [content]);
+  const contentTypesAsBreadcrumbSection = !token
+    ? config.settings.contentTypesAsBreadcrumbSection
+    : [];
 
   const sections = items.map((item) => ({
     ...item,
@@ -70,7 +62,7 @@ const Breadcrumbs = (props) => {
         pathname={pathname}
         sections={sections}
         root={root}
-        linkLevels={linkLevels}
+        contentTypesAsBreadcrumbSection={contentTypesAsBreadcrumbSection}
       />
     </React.Fragment>
   );
