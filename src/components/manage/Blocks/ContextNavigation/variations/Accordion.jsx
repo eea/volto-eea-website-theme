@@ -4,17 +4,14 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { compose } from 'redux';
-import { Accordion } from 'semantic-ui-react';
+import { Accordion, Icon } from 'semantic-ui-react';
 
 import Slugger from 'github-slugger';
 
-import { Icon, UniversalLink, MaybeWrap } from '@plone/volto/components';
+import { UniversalLink, MaybeWrap } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 import withEEASideMenu from '@eeacms/volto-block-toc/hocs/withEEASideMenu';
 import { flattenToAppURL } from '@plone/volto/helpers';
-
-import downIcon from '@plone/volto/icons/down-key.svg';
-import upIcon from '@plone/volto/icons/up-key.svg';
 
 const messages = defineMessages({
   navigation: {
@@ -117,7 +114,11 @@ const AccordionNavigation = ({
               id={`accordion-title-${normalizedTitle}`}
             >
               <span className="title-text">{title}</span>
-              <Icon name={isActive ? upIcon : downIcon} size="32px" />
+              <Icon
+                className={
+                  isActive ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'
+                }
+              />
             </Accordion.Title>
             <Accordion.Content
               active={isActive}
@@ -165,7 +166,11 @@ const AccordionNavigation = ({
               {has_custom_name
                 ? title
                 : intl.formatMessage(messages.navigation)}
-              <Icon name={isNavOpen ? upIcon : downIcon} size="40px" />
+              <Icon
+                className={
+                  isNavOpen ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'
+                }
+              />
             </MaybeWrap>
           </summary>
           <MaybeWrap
