@@ -3,7 +3,6 @@ import View from './View';
 import DefaultTemplate from './variations/Default';
 import WebReport from './variations/WebReport';
 import WebReportPage from './variations/WebReportPage';
-import './variations/styles.less';
 
 const applyConfig = (config) => {
   config.blocks.blocksConfig.title = {
