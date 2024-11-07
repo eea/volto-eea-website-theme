@@ -13,7 +13,7 @@ const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
       blocks: data?.columns?.reduce((acc, current) => {
         return {
           ...acc,
-          [current?.id]: { current, '@type': current['@type'] || 'slate' },
+          [current?.id]: { ...current, '@type': current['@type'] || 'slate' },
         };
       }, {}),
     };
