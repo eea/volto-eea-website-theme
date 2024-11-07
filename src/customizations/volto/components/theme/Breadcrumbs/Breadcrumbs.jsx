@@ -3,7 +3,7 @@
  * @module components/theme/Breadcrumbs/Breadcrumbs
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useLocation } from 'react-router';
