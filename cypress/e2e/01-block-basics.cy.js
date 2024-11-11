@@ -105,6 +105,16 @@ describe('Blocks Tests', () => {
 
     // then the page view should contain our changes
     cy.get('.accordion-header').contains('Nav title');
+
+    // resize window to make tablet or mobile condition work
+    cy.viewport(375, 667);
     cy.get('.accordion-header').click();
+
+    // trigger outside click
+    cy.get('body').click();
+
+    // use enter to open accordion
+    cy.get('.accordion-header').type('{enter}');
+    cy.get('.accordion-header').contains('Nav title');
   });
 });
