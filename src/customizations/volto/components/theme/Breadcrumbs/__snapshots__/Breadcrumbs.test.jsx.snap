@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Breadcrumbs renders a breadcrumbs component 1`] = `
+Array [
+  <div
+    id="page-header"
+  />,
+  <div
+    className="ui vertical attached segment breadcrumbs"
+  >
+    <div
+      className="ui container"
+    >
+      <nav
+        aria-label="Breadcrumbs"
+        className="ui tiny breadcrumb"
+      >
+        <ol
+          aria-label="Breadcrumbs navigation"
+        >
+          <li>
+            <a
+              className="section"
+              href="/"
+              onClick={[Function]}
+              title="Home"
+            >
+              <img
+                alt=""
+                className="ui image"
+                src="home-icon.svg"
+              />
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <a
+              className="section"
+              href=""
+              onClick={[Function]}
+            >
+              Blog
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <div
+              className="active section"
+              onClick={[Function]}
+            >
+              My first blog
+            </div>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>,
+]
+`;
+
+exports[`Breadcrumbs renders breadcrumbs with contentTypesAsBreadcrumbSection 1`] = `
+Array [
+  <div
+    id="page-header"
+  />,
+  <div
+    className="ui vertical attached segment breadcrumbs"
+  >
+    <div
+      className="ui container"
+    >
+      <nav
+        aria-label="Breadcrumbs"
+        className="ui tiny breadcrumb"
+      >
+        <ol
+          aria-label="Breadcrumbs navigation"
+        >
+          <li>
+            <a
+              className="section"
+              href="/"
+              onClick={[Function]}
+              title="Home"
+            >
+              <img
+                alt=""
+                className="ui image"
+                src="home-icon.svg"
+              />
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <a
+              className="section"
+              href=""
+              onClick={[Function]}
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <a
+              className="section"
+              href=""
+              onClick={[Function]}
+            >
+              News
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <div
+              className="active section"
+              onClick={[Function]}
+            >
+              Latest Update
+            </div>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>,
+]
+`;

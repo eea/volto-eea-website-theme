@@ -300,7 +300,9 @@ const View = (props) => {
         <Banner.Metadata>
           <Banner.MetadataField
             type="type"
-            hidden={hideContentType}
+            hidden={
+              hideContentType || props.variation.id.indexOf('report') !== -1
+            }
             value={type}
           />
           <Banner.MetadataField

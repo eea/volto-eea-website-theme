@@ -2,10 +2,18 @@ import alignTopSVG from '@plone/volto/icons/move-up.svg';
 import alignCenterSVG from '@plone/volto/icons/row.svg';
 import alignBottomSVG from '@plone/volto/icons/move-down.svg';
 
+import alignTextLeftSVG from '@plone/volto/icons/align-left.svg';
+import alignTextCenterSVG from '@plone/volto/icons/align-center.svg';
+
 const ALIGN_INFO_MAP_IMAGE_POSITION = {
   'has--bg--top': [alignTopSVG, 'Top'],
   'has--bg--center': [alignCenterSVG, 'Center'],
   'has--bg--bottom': [alignBottomSVG, 'Bottom'],
+};
+
+const ALIGN_INFO_MAP_TEXT_ALIGN = {
+  'has--text--left': [alignTextLeftSVG, 'Left'],
+  'has--text--center': [alignTextCenterSVG, 'Center'],
 };
 
 const infoSchema = {
@@ -145,8 +153,8 @@ const titleSchema = {
     copyrightPosition: {
       title: 'Align',
       widget: 'style_align',
-      actions: ['left', 'right'],
-      defaultValue: 'left',
+      actions: ['left', 'center', 'right'],
+      defaultValue: '',
     },
     styles: {
       widget: 'object',
@@ -156,7 +164,7 @@ const titleSchema = {
           {
             id: 'default',
             title: 'Default',
-            fields: ['bg'],
+            fields: ['bg', 'textAlign'],
           },
         ],
         properties: {
@@ -166,6 +174,13 @@ const titleSchema = {
             actions: Object.keys(ALIGN_INFO_MAP_IMAGE_POSITION),
             actionsInfoMap: ALIGN_INFO_MAP_IMAGE_POSITION,
             defaultValue: 'has--bg--center',
+          },
+          textAlign: {
+            title: 'Text align',
+            widget: 'style_align',
+            actions: Object.keys(ALIGN_INFO_MAP_TEXT_ALIGN),
+            actionsInfoMap: ALIGN_INFO_MAP_TEXT_ALIGN,
+            defaultValue: '',
           },
         },
         required: [],

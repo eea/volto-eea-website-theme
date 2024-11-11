@@ -495,11 +495,9 @@ const applyConfig = (config) => {
     // },
   };
 
-  //If you don't want to show the content type as a link in the breadcrumbs, you can set it to a number
-  // where 1 is the last item in the breadcrumbs, 2 is the second last, etc.
-  config.settings.contentTypeToAvoidAsLinks = {
-    web_report_section: 2,
-  };
+  // If you don't want to show the content type as a link in the breadcrumbs, you can set it
+  // contentTypesAsBreadcrumbSection
+  config.settings.contentTypesAsBreadcrumbSection = ['web_report_section'];
 
   // Group
   if (config.blocks.blocksConfig.group) {

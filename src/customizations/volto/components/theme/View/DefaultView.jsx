@@ -94,8 +94,13 @@ const DefaultView = (props) => {
 
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
-  const matchingNavigationPath = navigation_paths.find((navPath) =>
-    path.includes(navPath.url),
+
+  // choose last matching navigation path in case we get more specific paths
+  const matchingNavigationPath = navigation_paths.reduceRight(
+    (acc, navPath) => {
+      return acc || (path.includes(navPath.url) ? navPath : null);
+    },
+    null,
   );
 
   // If the content is not yet loaded, then do not show anything
@@ -113,7 +118,7 @@ const DefaultView = (props) => {
               no_icons: matchingNavigationPath.no_icons || true,
               root_path: matchingNavigationPath.url,
               includeTop: matchingNavigationPath.includeTop || true,
-              bottomLevel: matchingNavigationPath.bottomLevel || 3,
+              bottomLevel: matchingNavigationPath.bottomLevel || 4,
               topLevel: matchingNavigationPath.topLevel || 1,
               currentFolderOnly:
                 matchingNavigationPath.currentFolderOnly || false,
