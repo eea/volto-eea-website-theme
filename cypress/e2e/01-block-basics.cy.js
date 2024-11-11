@@ -114,7 +114,7 @@ describe('Blocks Tests', () => {
     cy.get('body').click();
 
     // use enter to open accordion
-    cy.get('.accordion-header').type('{enter}');
+    cy.get('.accordion-header').trigger('keydown', { keyCode: 13, which: 13 });
     cy.get('.accordion-header').contains('Nav title');
   });
 });
