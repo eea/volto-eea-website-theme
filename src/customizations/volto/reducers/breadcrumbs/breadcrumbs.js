@@ -1,6 +1,7 @@
 /**
  * Breadcrumbs reducer.
  * @module reducers/breadcrumbs/breadcrumbs
+ * Customized reducer as part of ticket 271001 in order to receive portal_type info
  */
 
 import { map } from 'lodash';
