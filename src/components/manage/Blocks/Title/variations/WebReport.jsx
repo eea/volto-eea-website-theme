@@ -38,11 +38,12 @@ const WebReport = (props) => {
         {...props}
         data={{
           ...props.data,
-          hideContentType: true,
-          aboveTitle: (
+          aboveTitle: !props.data.hideContentType ? (
             <div className="content-type">
               {props.data.content_type || props.properties.type_title}
             </div>
+          ) : (
+            ' '
           ),
           belowTitle: (
             <>
