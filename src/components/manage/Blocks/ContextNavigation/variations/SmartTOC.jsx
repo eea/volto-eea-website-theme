@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { List, Image } from 'semantic-ui-react';
+import { List } from 'semantic-ui-react';
 import { Link as RouterLink } from 'react-router-dom';
 import cx from 'classnames';
 import { compose } from 'redux';
@@ -20,6 +20,12 @@ const messages = defineMessages({
   },
 });
 
+/**
+ * Renders a navigation node as a list item with proper styling and links
+ * @param {Object} node - Navigation node object containing title, href, type etc
+ * @param {number} parentLevel - Parent level in navigation hierarchy
+ * @returns {React.Component} List.Item component with navigation node content
+ */
 function renderNode(node, parentLevel) {
   const level = parentLevel + 1;
   return (
@@ -37,8 +43,10 @@ function renderNode(node, parentLevel) {
               in_path: node.is_in_path,
             })}
           >
-            {node.thumb ? <Image src={flattenToAppURL(node.thumb)} /> : ''}
             {node.title}
+            {node.type === 'file' && node.getObjSize
+              ? ' [' + node.getObjSize + ']'
+              : ''}
             {node.is_current ? (
               <List.Content className="active-indicator">
                 <Icon name={leftIcon} size="30px" />
@@ -62,7 +70,6 @@ function renderNode(node, parentLevel) {
     </List.Item>
   );
 }
-
 /**
  * A navigation slot implementation, similar to the classic Plone navigation
  * portlet. It uses the same API, so the options are similar to
