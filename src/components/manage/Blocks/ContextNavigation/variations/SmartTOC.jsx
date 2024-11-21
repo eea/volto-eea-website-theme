@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { List } from 'semantic-ui-react';
 import { Link as RouterLink } from 'react-router-dom';
 import cx from 'classnames';
 import { compose } from 'redux';
@@ -8,10 +7,8 @@ import { withRouter } from 'react-router';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { flattenToAppURL } from '@plone/volto/helpers';
-import { Icon, UniversalLink, MaybeWrap } from '@plone/volto/components';
+import { UniversalLink, MaybeWrap } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
-
-import leftIcon from '@plone/volto/icons/left-key.svg';
 
 const messages = defineMessages({
   navigation: {
@@ -41,71 +38,61 @@ function handleSummaryClick(e, wrapWithDetails) {
  * Renders a navigation node as a list item with proper styling and links
  * @param {Object} node - Navigation node object containing title, href, type etc
  * @param {number} parentLevel - Parent level in navigation hierarchy
- * @returns {React.Component} List.Item component with navigation node content
+ * @returns {React.Component} UL component with navigation node content
  */
 function renderNode(node, parentLevel) {
   const level = parentLevel + 1;
   const hasChildItems = node.items?.length;
   const nodeType = node.type;
   const isDocument = nodeType === 'document';
-  const wrapWithDetails = isDocument && level >= 2;
+  let wrapWithDetails = isDocument && level > 2;
   return (
-    <List.Item
+    <li
       key={node['@id']}
       active={node.is_current}
-      className={`level-${level}`}
+      className={`list-item level-${level}`}
     >
-      <List.Content>
-        {/* {isDocument && level >= 2 ? } */}
-        <MaybeWrap
-          condition={wrapWithDetails}
-          as="details"
-          className="context-navigation-detail"
-        >
-          {nodeType !== 'link' ? (
-            <MaybeWrap
-              condition={wrapWithDetails}
-              as="summary"
-              className="context-navigation-summary"
+      <MaybeWrap
+        condition={wrapWithDetails}
+        as="details"
+        className="context-navigation-detail"
+      >
+        {nodeType !== 'link' ? (
+          <MaybeWrap
+            condition={wrapWithDetails}
+            as="summary"
+            className="context-navigation-summary"
+          >
+            <RouterLink
+              to={flattenToAppURL(node.href)}
+              tabIndex={wrapWithDetails ? '-1' : 0}
+              title={node.description}
+              className={cx(`list-link contenttype-${nodeType}`, {
+                in_path: node.is_in_path,
+              })}
+              onClick={(e) =>
+                wrapWithDetails && handleSummaryClick(e, wrapWithDetails)
+              }
             >
-              <RouterLink
-                to={flattenToAppURL(node.href)}
-                tabIndex={wrapWithDetails ? '-1' : 0}
-                title={node.description}
-                className={cx(`contenttype-${nodeType}`, {
-                  in_path: node.is_in_path,
-                })}
-                onClick={(e) =>
-                  wrapWithDetails && handleSummaryClick(e, wrapWithDetails)
-                }
-              >
-                {node.title}
-                {nodeType === 'file' && node.getObjSize
-                  ? ' [' + node.getObjSize + ']'
-                  : ''}
-                {node.is_current ? (
-                  <List.Content className="active-indicator">
-                    <Icon name={leftIcon} size="30px" />
-                  </List.Content>
-                ) : (
-                  ''
-                )}
-              </RouterLink>
-            </MaybeWrap>
-          ) : (
-            <UniversalLink href={flattenToAppURL(node.href)}>
               {node.title}
-            </UniversalLink>
-          )}
-          {(hasChildItems && (
-            <List.List>
-              {node.items.map((node) => renderNode(node, level))}
-            </List.List>
-          )) ||
-            ''}
-        </MaybeWrap>
-      </List.Content>
-    </List.Item>
+              {nodeType === 'file' && node.getObjSize
+                ? ' [' + node.getObjSize + ']'
+                : ''}
+            </RouterLink>
+          </MaybeWrap>
+        ) : (
+          <UniversalLink href={flattenToAppURL(node.href)}>
+            {node.title}
+          </UniversalLink>
+        )}
+        {(hasChildItems && (
+          <ul className="list">
+            {node.items.map((node) => renderNode(node, level))}
+          </ul>
+        )) ||
+          ''}
+      </MaybeWrap>
+    </li>
   );
 }
 /**
@@ -119,7 +106,7 @@ export function ContextNavigationComponent(props) {
   const intl = useIntl();
 
   return items.length ? (
-    <nav className="context-navigation">
+    <nav className="context-navigation smart-toc">
       {navigation.has_custom_name ? (
         <div className="context-navigation-header">
           <RouterLink to={flattenToAppURL(navigation.url || '')}>
@@ -131,7 +118,7 @@ export function ContextNavigationComponent(props) {
           {intl.formatMessage(messages.navigation)}
         </div>
       )}
-      <List>{items.map((node) => renderNode(node, 0))}</List>
+      <ul className="list">{items.map((node) => renderNode(node, 0))}</ul>
     </nav>
   ) : (
     ''
