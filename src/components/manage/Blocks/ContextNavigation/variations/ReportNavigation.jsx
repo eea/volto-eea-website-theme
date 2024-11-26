@@ -100,7 +100,7 @@ function renderNode(node, parentLevel) {
  * portlet. It uses the same API, so the options are similar to
  * INavigationPortlet
  */
-export function ContextNavigationComponent(props) {
+export function ReportNavigation(props) {
   const { navigation = {} } = props;
   const { items = [] } = navigation;
   const intl = useIntl();
@@ -125,7 +125,7 @@ export function ContextNavigationComponent(props) {
   );
 }
 
-ContextNavigationComponent.propTypes = {
+ReportNavigation.propTypes = {
   /**
    * Navigation tree returned from @contextnavigation restapi endpoint
    */
@@ -141,7 +141,4 @@ ContextNavigationComponent.propTypes = {
   }),
 };
 
-export default compose(
-  withRouter,
-  withContentNavigation,
-)(ContextNavigationComponent);
+export default compose(withRouter, withContentNavigation)(ReportNavigation);

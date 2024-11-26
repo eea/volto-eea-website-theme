@@ -1,6 +1,6 @@
 import Accordion from './Accordion';
 import Default from './Default';
-import SmartTOC from './SmartTOC';
+import ReportNavigation from './ReportNavigation';
 
 const contextBlockVariations = [
   {
@@ -15,9 +15,9 @@ const contextBlockVariations = [
     view: Accordion,
   },
   {
-    id: 'smartToc',
-    title: 'Smart TOC (Table of Contents)',
-    view: SmartTOC,
+    id: 'report_navigation',
+    title: 'Additional files',
+    view: ReportNavigation,
   },
 ];
 
