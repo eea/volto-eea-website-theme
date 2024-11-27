@@ -4,6 +4,8 @@ import { Icon } from '@plone/volto/components';
 import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
 import SelectAutoCompleteWidget from '@plone/volto/components/manage/Widgets/SelectAutoComplete';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
+import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
+import TableBlockView from '@plone/volto-slate/blocks/Table/TableBlockView';
 import { nanoid } from '@plone/volto-slate/utils';
 
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
@@ -229,6 +231,14 @@ const applyConfig = (config) => {
   // Enable description block (also for cypress)
   config.blocks.blocksConfig.description.restricted = false;
   config.blocks.requiredBlocks = [];
+
+  // 281166 fix paste of tables in edit mode where volto-block-styles was
+  // loading the edit component from the Table block which is draftjs based
+  config.blocks.blocksConfig.table = {
+    ...config.blocks.blocksConfig.table,
+    view: TableBlockView,
+    edit: TableBlockEdit,
+  };
 
   // Date format for EU
   config.settings.dateLocale = 'en-gb';
