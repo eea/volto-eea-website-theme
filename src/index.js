@@ -4,6 +4,8 @@ import { Icon } from '@plone/volto/components';
 import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
 import SelectAutoCompleteWidget from '@plone/volto/components/manage/Widgets/SelectAutoComplete';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
+import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
+import TableBlockView from '@plone/volto-slate/blocks/Table/TableBlockView';
 import { nanoid } from '@plone/volto-slate/utils';
 
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
@@ -229,6 +231,15 @@ const applyConfig = (config) => {
   // Enable description block (also for cypress)
   config.blocks.blocksConfig.description.restricted = false;
   config.blocks.requiredBlocks = [];
+
+  // 281166 fix paste of tables in edit mode where paste action deemed the type
+  // of slate type to be table which in Volto 17 is mapped to the Table block which is draftjs based
+  // with this fix we load the edit and view of the slateTable avoiding any draftjs loading and error
+  config.blocks.blocksConfig.table = {
+    ...config.blocks.blocksConfig.table,
+    view: TableBlockView,
+    edit: TableBlockEdit,
+  };
 
   // Date format for EU
   config.settings.dateLocale = 'en-gb';
@@ -566,7 +577,7 @@ const applyConfig = (config) => {
     GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
   });
 
-  // Custom blocks: Title,Layout settings, Context navigation
+  // Custom blocks: Title, Layout settings, Context navigation
   return [
     installCustomTitle,
     installLayoutSettingsBlock,

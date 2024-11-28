@@ -44,7 +44,7 @@ Array [
             </div>
             <a
               className="section"
-              href=""
+              href="/blog"
               onClick={[Function]}
             >
               Blog
@@ -118,7 +118,7 @@ Array [
             </div>
             <a
               className="section"
-              href=""
+              href="/"
               onClick={[Function]}
             >
               Home
@@ -134,13 +134,12 @@ Array [
                 onClick={[Function]}
               />
             </div>
-            <a
+            <div
               className="section"
-              href=""
               onClick={[Function]}
             >
               News
-            </a>
+            </div>
           </li>
           <li>
             <div
