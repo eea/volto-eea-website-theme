@@ -232,8 +232,9 @@ const applyConfig = (config) => {
   config.blocks.blocksConfig.description.restricted = false;
   config.blocks.requiredBlocks = [];
 
-  // 281166 fix paste of tables in edit mode where volto-block-styles was
-  // loading the edit component from the Table block which is draftjs based
+  // 281166 fix paste of tables in edit mode where paste action deemed the type
+  // of slate type to be table which in Volto 17 is mapped to the Table block which is draftjs based
+  // with this fix we load the edit and view of the slateTable avoiding any draftjs loading and error
   config.blocks.blocksConfig.table = {
     ...config.blocks.blocksConfig.table,
     view: TableBlockView,
@@ -576,7 +577,7 @@ const applyConfig = (config) => {
     GET_CONTENT: ['breadcrumbs'], // 'navigation', 'actions', 'types'],
   });
 
-  // Custom blocks: Title,Layout settings, Context navigation
+  // Custom blocks: Title, Layout settings, Context navigation
   return [
     installCustomTitle,
     installLayoutSettingsBlock,
