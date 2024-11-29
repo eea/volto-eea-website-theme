@@ -4,18 +4,10 @@ import { Link as RouterLink } from 'react-router-dom';
 import cx from 'classnames';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
-import { defineMessages, useIntl } from 'react-intl';
 
 import { flattenToAppURL } from '@plone/volto/helpers';
 import { UniversalLink, MaybeWrap } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
-
-const messages = defineMessages({
-  navigation: {
-    id: 'Navigation',
-    defaultMessage: 'Navigation',
-  },
-});
 
 /**
  * Handles click on summary links and closes parent details elements
@@ -103,7 +95,6 @@ function renderNode(node, parentLevel) {
 export function ReportNavigation(props) {
   const { navigation = {} } = props;
   const { items = [] } = navigation;
-  const intl = useIntl();
 
   return items.length ? (
     <nav className="context-navigation smart-toc">
@@ -114,9 +105,7 @@ export function ReportNavigation(props) {
           </RouterLink>
         </div>
       ) : (
-        <div className="context-navigation-header">
-          {intl.formatMessage(messages.navigation)}
-        </div>
+        ''
       )}
       <ul className="list">{items.map((node) => renderNode(node, 0))}</ul>
     </nav>
