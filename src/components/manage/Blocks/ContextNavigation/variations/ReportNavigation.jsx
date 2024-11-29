@@ -97,8 +97,8 @@ export function ReportNavigation(props) {
   const { items = [] } = navigation;
 
   return items.length ? (
-    <nav className="context-navigation smart-toc">
-      {navigation.has_custom_name ? (
+    <nav className="context-navigation report-navigation">
+      {navigation.title ? (
         <div className="context-navigation-header">
           <RouterLink to={flattenToAppURL(navigation.url || '')}>
             {navigation.title}
