@@ -9,7 +9,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 
 const ContextNavigationFillEdit = (props) => {
   const contentTypes = useSelector(
-    (state) => state.content?.data?.['@components']?.types || [],
+    (state) => state.types?.types || [],
     shallowEqual,
   );
   const availableTypes = React.useMemo(
