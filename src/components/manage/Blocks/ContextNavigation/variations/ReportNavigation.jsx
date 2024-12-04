@@ -41,8 +41,7 @@ function renderNode(node, parentLevel) {
   return (
     <li
       key={node['@id']}
-      active={node.is_current}
-      className={`list-item level-${level}`}
+      className={`list-item level-${level} ${node.is_current ? 'active' : ''}`}
     >
       <MaybeWrap
         condition={wrapWithDetails}
