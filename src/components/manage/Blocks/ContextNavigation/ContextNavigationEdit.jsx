@@ -5,8 +5,21 @@ import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 
 import ContextNavigationView from './ContextNavigationView';
 
+import { useSelector, shallowEqual } from 'react-redux';
+
+function arePropsEqual(oldProps, newProps) {
+  return (
+    newProps.selected === oldProps.selected &&
+    newProps.data === oldProps.data &&
+    newProps.id === oldProps.id
+  );
+}
+
 const ContextNavigationFillEdit = (props) => {
-  const contentTypes = props.properties?.['@components']?.types;
+  const contentTypes = useSelector(
+    (state) => state.types?.types || [],
+    shallowEqual,
+  );
   const availableTypes = React.useMemo(
     () => contentTypes?.map((type) => [type.id, type.title || type.name]),
     [contentTypes],
@@ -42,4 +55,4 @@ const ContextNavigationFillEdit = (props) => {
   );
 };
 
-export default ContextNavigationFillEdit;
+export default React.memo(ContextNavigationFillEdit, arePropsEqual);
