@@ -7,6 +7,14 @@ import ContextNavigationView from './ContextNavigationView';
 
 import { useSelector, shallowEqual } from 'react-redux';
 
+function arePropsEqual(oldProps, newProps) {
+  return (
+    newProps.selected === oldProps.selected &&
+    newProps.data === oldProps.data &&
+    newProps.id === oldProps.id
+  );
+}
+
 const ContextNavigationFillEdit = (props) => {
   const contentTypes = useSelector(
     (state) => state.types?.types || [],
@@ -16,6 +24,7 @@ const ContextNavigationFillEdit = (props) => {
     () => contentTypes?.map((type) => [type.id, type.title || type.name]),
     [contentTypes],
   );
+
   const schema = React.useMemo(
     () => EditSchema({ availableTypes }),
     [availableTypes],
@@ -46,4 +55,4 @@ const ContextNavigationFillEdit = (props) => {
   );
 };
 
-export default ContextNavigationFillEdit;
+export default React.memo(ContextNavigationFillEdit, arePropsEqual);
