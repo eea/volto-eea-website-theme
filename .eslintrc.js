@@ -54,7 +54,7 @@ const defaultConfig = {
         allowReferrer: true,
       },
     ],
-  }
+  },
 };
 
 const config = addonExtenders.reduce(
