@@ -4,18 +4,10 @@ import { Link as RouterLink } from 'react-router-dom';
 import cx from 'classnames';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
-import { defineMessages, useIntl } from 'react-intl';
 
 import { flattenToAppURL } from '@plone/volto/helpers';
 import { UniversalLink, MaybeWrap } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
-
-const messages = defineMessages({
-  navigation: {
-    id: 'Navigation',
-    defaultMessage: 'Navigation',
-  },
-});
 
 /**
  * Handles click on summary links and closes parent details elements
@@ -49,8 +41,7 @@ function renderNode(node, parentLevel) {
   return (
     <li
       key={node['@id']}
-      active={node.is_current}
-      className={`list-item level-${level}`}
+      className={`list-item level-${level} ${node.is_current ? 'active' : ''}`}
     >
       <MaybeWrap
         condition={wrapWithDetails}
@@ -103,20 +94,17 @@ function renderNode(node, parentLevel) {
 export function ReportNavigation(props) {
   const { navigation = {} } = props;
   const { items = [] } = navigation;
-  const intl = useIntl();
 
   return items.length ? (
-    <nav className="context-navigation smart-toc">
-      {navigation.has_custom_name ? (
+    <nav className="context-navigation report-navigation">
+      {navigation.title ? (
         <div className="context-navigation-header">
           <RouterLink to={flattenToAppURL(navigation.url || '')}>
             {navigation.title}
           </RouterLink>
         </div>
       ) : (
-        <div className="context-navigation-header">
-          {intl.formatMessage(messages.navigation)}
-        </div>
+        ''
       )}
       <ul className="list">{items.map((node) => renderNode(node, 0))}</ul>
     </nav>

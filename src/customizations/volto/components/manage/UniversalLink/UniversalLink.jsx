@@ -68,7 +68,8 @@ const UniversalLink = ({
   }
 
   const isExternal = !isInternalURL(url);
-  const isDownload = !isExternal && url && url.includes('@@download');
+  const isDownload =
+    (!isExternal && url && url.includes('@@download')) || download;
 
   const isDisplayFile =
     (!isExternal && url.includes('@@display-file')) || false;
