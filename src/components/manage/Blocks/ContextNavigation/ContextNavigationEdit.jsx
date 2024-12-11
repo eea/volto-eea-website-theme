@@ -20,8 +20,12 @@ const ContextNavigationFillEdit = (props) => {
     (state) => state.types?.types || [],
     shallowEqual,
   );
+
   const availableTypes = React.useMemo(
-    () => contentTypes?.map((type) => [type.id, type.title || type.name]),
+    () =>
+      Array.isArray(contentTypes)
+        ? contentTypes.map((type) => [type.id, type.title || type.name])
+        : [],
     [contentTypes],
   );
 
