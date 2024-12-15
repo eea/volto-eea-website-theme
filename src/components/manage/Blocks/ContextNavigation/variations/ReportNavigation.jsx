@@ -37,7 +37,7 @@ function renderNode(node, parentLevel) {
   const hasChildItems = node.items?.length;
   const nodeType = node.type;
   const isDocument = nodeType === 'document';
-  let wrapWithDetails = isDocument && level > 2;
+  let wrapWithDetails = isDocument && level > 2 && hasChildItems;
   return (
     <li
       key={node['@id']}
