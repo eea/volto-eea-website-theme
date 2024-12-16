@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import cx from 'classnames';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
 
 import { flattenToAppURL } from '@plone/volto/helpers';
-import { UniversalLink, MaybeWrap } from '@plone/volto/components';
+import { UniversalLink, MaybeWrap, Icon } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
+
+import downloadSVG from '@plone/volto/icons/download.svg';
 
 /**
  * Handles click on summary links and closes parent details elements
@@ -37,6 +38,7 @@ function renderNode(node, parentLevel) {
   const hasChildItems = node.items?.length;
   const nodeType = node.type;
   const isDocument = nodeType === 'document';
+  const isFile = nodeType === 'file';
   let wrapWithDetails = isDocument && level > 2 && hasChildItems;
   return (
     <li
@@ -48,34 +50,28 @@ function renderNode(node, parentLevel) {
         as="details"
         className="context-navigation-detail"
       >
-        {nodeType !== 'link' ? (
-          <MaybeWrap
-            condition={wrapWithDetails}
-            as="summary"
-            className="context-navigation-summary"
+        <MaybeWrap
+          condition={wrapWithDetails}
+          as="summary"
+          className="context-navigation-summary"
+        >
+          <UniversalLink
+            href={flattenToAppURL(node.href)}
+            download={isFile}
+            tabIndex={wrapWithDetails ? '-1' : 0}
+            title={node.description}
+            className={cx(`list-link contenttype-${nodeType}`, {
+              in_path: node.is_in_path,
+            })}
+            onClick={(e) =>
+              wrapWithDetails && handleSummaryClick(e, wrapWithDetails)
+            }
           >
-            <RouterLink
-              to={flattenToAppURL(node.href)}
-              tabIndex={wrapWithDetails ? '-1' : 0}
-              title={node.description}
-              className={cx(`list-link contenttype-${nodeType}`, {
-                in_path: node.is_in_path,
-              })}
-              onClick={(e) =>
-                wrapWithDetails && handleSummaryClick(e, wrapWithDetails)
-              }
-            >
-              {node.title}
-              {nodeType === 'file' && node.getObjSize
-                ? ' [' + node.getObjSize + ']'
-                : ''}
-            </RouterLink>
-          </MaybeWrap>
-        ) : (
-          <UniversalLink href={flattenToAppURL(node.href)}>
+            {isFile && <Icon name={downloadSVG} size="16px" />}
             {node.title}
+            {isFile && node.getObjSize ? ' [' + node.getObjSize + ']' : ''}
           </UniversalLink>
-        )}
+        </MaybeWrap>
         {(hasChildItems && (
           <ul className="list">
             {node.items.map((node) => renderNode(node, level))}
@@ -99,9 +95,9 @@ export function ReportNavigation(props) {
     <nav className="context-navigation report-navigation">
       {navigation.title ? (
         <div className="context-navigation-header">
-          <RouterLink to={flattenToAppURL(navigation.url || '')}>
+          <UniversalLink href={flattenToAppURL(navigation.url || '')}>
             {navigation.title}
-          </RouterLink>
+          </UniversalLink>
         </div>
       ) : (
         ''
