@@ -127,6 +127,7 @@ const UniversalLink = ({
       <a
         href={flattenToAppURL(url)}
         title={title}
+        target={!(openLinkInNewTab === false) ? '_blank' : null}
         rel="noopener"
         className={className}
         {...props}
