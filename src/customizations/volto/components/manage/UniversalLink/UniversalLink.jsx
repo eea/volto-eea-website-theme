@@ -67,7 +67,7 @@ const UniversalLink = ({
     }
   }
 
-  if (isInternalURL(url) && download) {
+  if (download && isInternalURL(url)) {
     url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
   }
 
