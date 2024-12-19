@@ -67,6 +67,10 @@ const UniversalLink = ({
     }
   }
 
+  if (url && download) {
+    url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
+  }
+
   const isExternal = !isInternalURL(url);
   const isDownload =
     (!isExternal && url && url.includes('@@download')) || download;
