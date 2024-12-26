@@ -42,18 +42,7 @@ export const RichTextWidget = (props) => {
     readOnly = false,
   } = props;
   const [selected, setSelected] = React.useState(focus);
-  const { textblockExtensions } = config.settings.slate;
-
-  const withBlockProperties = React.useCallback(
-    (editor) => {
-      editor.getBlockProps = () => ({
-        ...props,
-        detached: true,
-      });
-      return editor;
-    },
-    [props],
-  );
+  const { slateWidgetExtensions } = config.settings.slate;
 
   return (
     <FormFieldWrapper {...props} draggable={false} className="slate_wysiwyg">
@@ -80,8 +69,7 @@ export const RichTextWidget = (props) => {
           selected={selected}
           properties={properties}
           placeholder={placeholder}
-          extensions={textblockExtensions}
-          renderExtensions={[withBlockProperties]}
+          extensions={slateWidgetExtensions}
           onKeyDown={handleKeyDetached}
           editableProps={{ 'aria-multiline': 'true' }}
         />
