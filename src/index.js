@@ -18,6 +18,7 @@ import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DateWidget';
+import { RichTextWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/RichTextWidget';
 import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DatetimeWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 
@@ -365,6 +366,9 @@ const applyConfig = (config) => {
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] =
     SelectAutoCompleteWidget;
+
+  config.widgets.widget.slate = RichTextWidget;
+  config.widgets.widget.slate_richtext = RichTextWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
