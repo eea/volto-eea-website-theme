@@ -16,8 +16,6 @@ import {
 import { handleKeyDetached } from '@plone/volto-slate/blocks/Text/keyboard';
 import config from '@plone/volto/registry';
 
-//import './style.css';
-
 const getValue = (value) => {
   if (isUndefined(value) || !isUndefined(value?.data)) {
     return [createEmptyParagraph()];
