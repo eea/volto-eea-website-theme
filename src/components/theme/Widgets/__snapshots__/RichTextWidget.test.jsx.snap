@@ -1,0 +1,178 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RichTextWidget renders a rich text view widget component with children 1`] = `
+<div
+  className="inline field slate_wysiwyg field-wrapper-undefined"
+>
+  <div
+    className="ui grid"
+  >
+    <div
+      className="stretched row"
+    >
+      <div
+        className="four wide column"
+      >
+        <div
+          className="wrapper"
+        >
+          <label
+            htmlFor="field-undefined"
+            id="fieldset-undefined-field-label-undefined"
+          />
+        </div>
+      </div>
+      <div
+        className="eight wide column"
+      >
+        <div
+          className="slate_wysiwyg_box"
+          onClick={[Function]}
+          onKeyDown={[Function]}
+          role="textbox"
+          style={
+            Object {
+              "boxSizing": "initial",
+            }
+          }
+          tabIndex="-1"
+        >
+          <div
+            data-testid="slate-editor"
+          >
+            <span>
+              Mocked Slate Editor
+            </span>
+            <span>
+              Selected: 
+              false
+            </span>
+            <span>
+              Value: 
+              [{"children":[{"text":""}]}]
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RichTextWidget renders a rich text widget component 1`] = `
+<div
+  className="inline field slate_wysiwyg field-wrapper-undefined"
+>
+  <div
+    className="ui grid"
+  >
+    <div
+      className="stretched row"
+    >
+      <div
+        className="four wide column"
+      >
+        <div
+          className="wrapper"
+        >
+          <label
+            htmlFor="field-undefined"
+            id="fieldset-undefined-field-label-undefined"
+          />
+        </div>
+      </div>
+      <div
+        className="eight wide column"
+      >
+        <div
+          className="slate_wysiwyg_box"
+          onClick={[Function]}
+          onKeyDown={[Function]}
+          role="textbox"
+          style={
+            Object {
+              "boxSizing": "initial",
+            }
+          }
+          tabIndex="-1"
+        >
+          <div
+            data-testid="slate-editor"
+          >
+            <span>
+              Mocked Slate Editor
+            </span>
+            <span>
+              Selected: 
+              false
+            </span>
+            <span>
+              Value: 
+              [{"children":[{"text":""}]}]
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RichTextWidget renders an empty rich text widget component 1`] = `
+<div
+  className="inline field slate_wysiwyg field-wrapper-test-rich-text"
+>
+  <div
+    className="ui grid"
+  >
+    <div
+      className="stretched row"
+    >
+      <div
+        className="four wide column"
+      >
+        <div
+          className="wrapper"
+        >
+          <label
+            htmlFor="field-test-rich-text"
+            id="fieldset-undefined-field-label-test-rich-text"
+          />
+        </div>
+      </div>
+      <div
+        className="eight wide column"
+      >
+        <div
+          className="slate_wysiwyg_box"
+          onClick={[Function]}
+          onKeyDown={[Function]}
+          role="textbox"
+          style={
+            Object {
+              "boxSizing": "initial",
+            }
+          }
+          tabIndex="-1"
+        >
+          <div
+            data-testid="slate-editor"
+          >
+            <span>
+              Mocked Slate Editor
+            </span>
+            <span>
+              Selected: 
+              false
+            </span>
+            <span>
+              Value: 
+              [{"children":[{"text":""}]}]
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
