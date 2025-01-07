@@ -16,6 +16,9 @@ const applyConfig = (config) => {
     restricted: false,
     variations,
     mostUsed: false,
+    blockHasValue: (blockData) => {
+      return blockData.results ?? false;
+    },
     blockHasOwnFocusManagement: true,
     sidebarTab: 1,
     security: {
