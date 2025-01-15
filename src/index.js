@@ -44,7 +44,15 @@ import { print } from './reducers';
 
 import * as eea from './config';
 
-const restrictedBlocks = ['imagesGrid', 'teaser', 'dataFigure', 'plotly_chart'];
+const restrictedBlocks = [
+  'imagesGrid',
+  'teaser',
+  'dataFigure',
+  'plotly_chart',
+  'html',
+  'video',
+  'maps',
+];
 
 /**
  * Customizes the variations of a tabs block by modifying their schema and semantic icons.
