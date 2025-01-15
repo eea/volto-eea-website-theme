@@ -315,7 +315,7 @@ class Edit extends Component {
         ) : (
           <Editor
             value={this.getValue()}
-            readOnly={!this.props.editable}
+            readOnly={true}
             placeholder={placeholder}
             onValueChange={(code) => this.onChangeCode(code)}
             highlight={
