@@ -246,7 +246,8 @@ class Edit extends Component {
       <>
         {this.props.selected && value && (
           <div className="toolbar">
-            <Popup
+            {/* Hide temporary this feature in toolbar.*/}
+            {/* <Popup
               trigger={
                 <Button
                   icon
@@ -261,7 +262,7 @@ class Edit extends Component {
               position="top center"
               content={this.props.intl.formatMessage(messages.code)}
               size="mini"
-            />
+            /> */}
             <Popup
               trigger={
                 <Button
@@ -278,7 +279,8 @@ class Edit extends Component {
               content={this.props.intl.formatMessage(messages.preview)}
               size="mini"
             />
-            <Popup
+            {/* Hide temporary this feature in toolbar. */}
+            {/* <Popup
               trigger={
                 <Button
                   icon
@@ -305,7 +307,7 @@ class Edit extends Component {
               position="top center"
               content={this.props.intl.formatMessage(messages.clear)}
               size="mini"
-            />
+            /> */}
           </div>
         )}
         {this.state.isPreview ? (
