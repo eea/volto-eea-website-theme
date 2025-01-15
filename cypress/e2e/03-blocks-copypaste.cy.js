@@ -6,25 +6,34 @@ describe('Blocks copy/paste', () => {
 
   it('Copy/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get('.blocks-chooser .title').contains('Common').click();
-    cy.get('.content.active.common .button.accordion')
-      .contains('Accordion')
-      .click({ force: true });
+    cy.getSlate().click();
+    cy.get('.ui.basic.icon.button.block-add-button').click();
+    cy.get('.ui.basic.icon.button.image').contains('Image').click();
+    cy.get('.block.image .ui.input input[type="text"]').type(
+      `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
+    );
+    cy.get('#toolbar-save').click();
+    cy.url().should('eq', Cypress.config().baseUrl + '/my-page');
 
-    // By default all should be collapsed (no active class on first)
-    cy.get('.accordion:nth-child(2)').should('not.have.class', 'active');
+    // then the page view should contain the image block
+    cy.get('#page-document img').should(
+      'have.attr',
+      'src',
+      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
+    );
 
-    cy.get('.accordion:nth-child(2) > .title input')
-      .click()
-      .type('Accordion panel 1')
-      .should('have.value', 'Accordion panel 1');
+    cy.get('#page-document img')
+      .should('be.visible')
+      .and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0);
+      });
 
     cy.getSlate().click();
 
     // WHEN: I copy paste them
     cy.getSlateTitle().focus().click().type('{shift}', { release: false });
-    cy.get('.block-editor-accordion').click();
+    cy.get('.block-editor-image').click();
     cy.get('#toolbar-copy-blocks').click();
 
     cy.getSlateEditorAndType('{shift}').click();
@@ -36,7 +45,7 @@ describe('Blocks copy/paste', () => {
       expect($blocks).to.have.length(2);
     });
 
-    cy.get('.block-editor-accordion').should(($blocks) => {
+    cy.get('.block-editor-image').should(($blocks) => {
       expect($blocks).to.have.length(2);
     });
   });
@@ -44,24 +53,33 @@ describe('Blocks copy/paste', () => {
   it('Cut/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
 
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get('.blocks-chooser .title').contains('Common').click();
-    cy.get('.content.active.common .button.accordion')
-      .contains('Accordion')
-      .click({ force: true });
+    cy.getSlate().click();
+    cy.get('.ui.basic.icon.button.block-add-button').click();
+    cy.get('.ui.basic.icon.button.image').contains('Image').click();
+    cy.get('.block.image .ui.input input[type="text"]').type(
+      `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
+    );
+    cy.get('#toolbar-save').click();
+    cy.url().should('eq', Cypress.config().baseUrl + '/my-page');
 
-    // By default all should be collapsed (no active class on first)
-    cy.get('.accordion:nth-child(2)').should('not.have.class', 'active');
+    // then the page view should contain the image block
+    cy.get('#page-document img').should(
+      'have.attr',
+      'src',
+      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
+    );
 
-    cy.get('.accordion:nth-child(2) > .title input')
-      .click()
-      .type('Accordion panel 1')
-      .should('have.value', 'Accordion panel 1');
+    cy.get('#page-document img')
+      .should('be.visible')
+      .and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0);
+      });
 
     cy.getSlate().click();
 
     cy.getSlateTitle().focus().click().type('{shift}', { release: false });
-    cy.get('.block-editor-accordion').click();
+    cy.get('.block-editor-image').click();
     cy.get('#toolbar-cut-blocks').click();
 
     cy.getSlateEditorAndType('{shift}').click();
@@ -74,31 +92,40 @@ describe('Blocks copy/paste', () => {
       expect($blocks).to.have.length(1);
     });
 
-    cy.get('.block-editor-accordion').should(($blocks) => {
+    cy.get('.block-editor-image').should(($blocks) => {
       expect($blocks).to.have.length(1);
     });
   });
 
   it('Delete multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get('.blocks-chooser .title').contains('Common').click();
-    cy.get('.content.active.common .button.accordion')
-      .contains('Accordion')
-      .click({ force: true });
+    cy.getSlate().click();
+    cy.get('.ui.basic.icon.button.block-add-button').click();
+    cy.get('.ui.basic.icon.button.image').contains('Image').click();
+    cy.get('.block.image .ui.input input[type="text"]').type(
+      `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
+    );
+    cy.get('#toolbar-save').click();
+    cy.url().should('eq', Cypress.config().baseUrl + '/my-page');
 
-    // By default all should be collapsed (no active class on first)
-    cy.get('.accordion:nth-child(2)').should('not.have.class', 'active');
+    // then the page view should contain the image block
+    cy.get('#page-document img').should(
+      'have.attr',
+      'src',
+      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
+    );
 
-    cy.get('.accordion:nth-child(2) > .title input')
-      .click()
-      .type('Accordion panel 1')
-      .should('have.value', 'Accordion panel 1');
+    cy.get('#page-document img')
+      .should('be.visible')
+      .and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0);
+      });
 
     cy.getSlate().click();
 
     cy.getSlateTitle().focus().type('{shift}', { release: false });
-    cy.get('.block-editor-accordion').click();
+    cy.get('.block-editor-image').click();
     cy.get('#toolbar-delete-blocks').should('be.visible');
     cy.get('#toolbar-delete-blocks').click();
 
@@ -107,7 +134,7 @@ describe('Blocks copy/paste', () => {
       expect($blocks).to.have.length(0);
     });
 
-    cy.get('.block-editor-accordion').should(($blocks) => {
+    cy.get('.block-editor-image').should(($blocks) => {
       expect($blocks).to.have.length(0);
     });
   });
