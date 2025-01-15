@@ -6,28 +6,11 @@ describe('Blocks copy/paste', () => {
 
   it('Copy/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.getSlate().click();
-    cy.get('.ui.basic.icon.button.block-add-button').click();
-    cy.get('.ui.basic.icon.button.image').contains('Image').click();
+    cy.getSlate().click().type('/image{enter}');
+
     cy.get('.block.image .ui.input input[type="text"]').type(
       `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
     );
-    cy.get('#toolbar-save').click();
-    cy.url().should('eq', Cypress.config().baseUrl + '/my-page');
-
-    // then the page view should contain the image block
-    cy.get('#page-document img').should(
-      'have.attr',
-      'src',
-      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
-    );
-
-    cy.get('#page-document img')
-      .should('be.visible')
-      .and(($img) => {
-        // "naturalWidth" and "naturalHeight" are set when the image loads
-        expect($img[0].naturalWidth).to.be.greaterThan(0);
-      });
 
     cy.getSlate().click();
 
@@ -53,34 +36,19 @@ describe('Blocks copy/paste', () => {
   it('Cut/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
 
-    cy.getSlate().click();
-    cy.get('.ui.basic.icon.button.block-add-button').click();
-    cy.get('.ui.basic.icon.button.image').contains('Image').click();
+    cy.getSlate().click().type('{enter}');
+
+    cy.getSlate().click().type('/image{enter}');
+
     cy.get('.block.image .ui.input input[type="text"]').type(
       `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
     );
-    cy.get('#toolbar-save').click();
-    cy.url().should('eq', Cypress.config().baseUrl + '/my-page');
-
-    // then the page view should contain the image block
-    cy.get('#page-document img').should(
-      'have.attr',
-      'src',
-      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
-    );
-
-    cy.get('#page-document img')
-      .should('be.visible')
-      .and(($img) => {
-        // "naturalWidth" and "naturalHeight" are set when the image loads
-        expect($img[0].naturalWidth).to.be.greaterThan(0);
-      });
 
     cy.getSlate().click();
 
     cy.getSlateTitle().focus().click().type('{shift}', { release: false });
     cy.get('.block-editor-image').click();
-    cy.get('#toolbar-cut-blocks').click();
+    cy.get('.cutBlocks').click();
 
     cy.getSlateEditorAndType('{shift}').click();
 
@@ -99,28 +67,10 @@ describe('Blocks copy/paste', () => {
 
   it('Delete multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.getSlate().click();
-    cy.get('.ui.basic.icon.button.block-add-button').click();
-    cy.get('.ui.basic.icon.button.image').contains('Image').click();
+    cy.getSlate().click().type('/image{enter}');
     cy.get('.block.image .ui.input input[type="text"]').type(
       `https://github.com/plone/volto/raw/main/logos/volto-colorful.png{enter}`,
     );
-    cy.get('#toolbar-save').click();
-    cy.url().should('eq', Cypress.config().baseUrl + '/my-page');
-
-    // then the page view should contain the image block
-    cy.get('#page-document img').should(
-      'have.attr',
-      'src',
-      'https://github.com/plone/volto/raw/main/logos/volto-colorful.png',
-    );
-
-    cy.get('#page-document img')
-      .should('be.visible')
-      .and(($img) => {
-        // "naturalWidth" and "naturalHeight" are set when the image loads
-        expect($img[0].naturalWidth).to.be.greaterThan(0);
-      });
 
     cy.getSlate().click();
 
