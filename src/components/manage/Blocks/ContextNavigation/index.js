@@ -17,7 +17,11 @@ const applyConfig = (config) => {
     variations,
     mostUsed: false,
     blockHasValue: (blockData) => {
-      return blockData.results ?? false;
+      const { variation } = blockData;
+      if (variation && variation === 'report_navigation') {
+        return blockData.results ?? false;
+      }
+      return true; //default behavior
     },
     blockHasOwnFocusManagement: true,
     sidebarTab: 1,
