@@ -1,6 +1,5 @@
 import React from 'react';
 import cx from 'classnames';
-import { List } from 'semantic-ui-react';
 import {
   MarkElementButton,
   ToolbarButton,
@@ -275,15 +274,21 @@ export default function installSlate(config) {
 
     // Align Slate Lists to EEA Design System
     config.settings.slate.elements.ul = ({ attributes, children }) => (
-      <List bulleted as="ul" {...attributes}>
+      <ul
+        {...attributes}
+        className={cx('ui bulleted list', attributes?.className)}
+      >
         {children}
-      </List>
+      </ul>
     );
 
     config.settings.slate.elements.ol = ({ attributes, children }) => (
-      <List ordered as="ol" {...attributes}>
+      <ol
+        {...attributes}
+        className={cx('ui ordered list', attributes?.className)}
+      >
         {children}
-      </List>
+      </ol>
     );
 
     config.settings.slate.allowedHeadlineElements.push('zotero');
