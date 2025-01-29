@@ -1,6 +1,5 @@
 import React from 'react';
 import cx from 'classnames';
-import { List } from 'semantic-ui-react';
 import {
   MarkElementButton,
   ToolbarButton,
