@@ -274,7 +274,7 @@ export default function installSlate(config) {
     }
 
     // Align Slate Lists to EEA Design System
-     config.settings.slate.elements.ul = ({ attributes, children }) => (
+    config.settings.slate.elements.ul = ({ attributes, children }) => (
       <ul
         {...attributes}
         className={cx('ui bulleted list', attributes?.className)}
