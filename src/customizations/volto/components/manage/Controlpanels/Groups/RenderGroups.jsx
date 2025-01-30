@@ -77,7 +77,9 @@ class RenderGroups extends Component {
   render() {
     return (
       <Table.Row key={this.props.group.title}>
-        <Table.Cell>{this.props.group.groupname}</Table.Cell>
+        <Table.Cell>
+          {this.props.group.title || this.props.group.groupname}
+        </Table.Cell>
         {this.props.roles.map((role) => (
           <Table.Cell key={role.id}>
             {this.props.inheritedRole &&

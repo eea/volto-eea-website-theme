@@ -1,0 +1,15 @@
+diff --git a/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.jsx b/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.jsx
+index 816ad59..3b4df8f 100644
+--- a/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.jsx
++++ b/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.jsx
+@@ -77,7 +77,9 @@ class RenderGroups extends Component {
+   render() {
+     return (
+       <Table.Row key={this.props.group.title}>
+-        <Table.Cell>{this.props.group.groupname}</Table.Cell>
++        <Table.Cell>
++          {this.props.group.title || this.props.group.groupname}
++        </Table.Cell>
+         {this.props.roles.map((role) => (
+           <Table.Cell key={role.id}>
+             {this.props.inheritedRole &&
