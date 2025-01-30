@@ -19,6 +19,7 @@ import lightIcon from './icons/light.svg';
 import smallIcon from './icons/small.svg';
 import clearIcon from './icons/eraser.svg';
 import fontMono from './icons/font-mono.svg';
+import { breakList } from './helpers/slate-extensions';
 
 const installSlateToolbarButton = ({
   config,
@@ -416,6 +417,10 @@ export default function installSlate(config) {
         'clearformatting',
       ];
     }
+    config.settings.slate.slateWidgetExtensions = [
+      ...(config.settings.slate.slateWidgetExtensions || []),
+      breakList,
+    ];
   }
 
   return config;
