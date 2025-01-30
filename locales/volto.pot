@@ -1,74 +1,134 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2023-12-05T09:30:23.741Z\n"
+"POT-Creation-Date: 2025-01-30T18:15:27.602Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
-"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
 
+#. Default: "Choices"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Choices"
+msgstr ""
+
+#. Default: "Close"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Close"
+msgstr ""
+
+#. Default: "Created"
 #: components/theme/Banner/View
-# defaultMessage: Created
 msgid "Created"
 msgstr ""
 
+#. Default: "Default"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Default"
+msgstr ""
+
+#. Default: "Description"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Description"
+msgstr ""
+
+#. Default: "Download"
 #: components/theme/Banner/View
-# defaultMessage: Download
 msgid "Download"
 msgstr ""
 
+#. Default: "European Environment Agency"
 #: components/theme/Logo
-# defaultMessage: European Environment Agency
 msgid "European Environment Agency"
 msgstr ""
 
+#. Default: "Invalid block - Will be removed on saving"
 #: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
-# defaultMessage: Invalid block - Will be removed on saving
 msgid "Invalid Block"
 msgstr ""
 
+#. Default: "Modified"
 #: components/theme/Banner/View
-# defaultMessage: Modified
 msgid "Modified"
 msgstr ""
 
+#. Default: "Navigation"
+#: components/manage/Blocks/ContextNavigation/variations/Accordion
+msgid "Navigation"
+msgstr ""
+
+#. Default: "No options"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "No options"
+msgstr ""
+
+#. Default: "No value"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "No value"
+msgstr ""
+
+#. Default: "Published"
 #: components/theme/Banner/View
-# defaultMessage: Published
 msgid "Published"
 msgstr ""
 
+#. Default: "Required"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Required"
+msgstr ""
+
+#. Default: "Select…"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Select…"
+msgstr ""
+
+#. Default: "Share"
 #: components/theme/Banner/View
-# defaultMessage: Share
 msgid "Share"
 msgstr ""
 
+#. Default: "Share to"
 #: components/theme/Banner/View
-# defaultMessage: Share to
 msgid "Share to"
 msgstr ""
 
+#. Default: "Short Name"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Short Name"
+msgstr ""
+
+#. Default: "Site"
 #: components/theme/Logo
-# defaultMessage: Site
 msgid "Site"
 msgstr ""
 
+#. Default: "Title"
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Title"
+msgstr ""
+
+#. Default: "Type the title…"
 #: components/manage/Blocks/Title/Edit
-# defaultMessage: Type the title…
 msgid "Type the title…"
 msgstr ""
 
+#. Default: "Unknown Block {block}"
 #: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
-# defaultMessage: Unknown Block {block}
 msgid "Unknown Block"
 msgstr ""
 
+#. Default: "Used for programmatic access to the fieldset."
+#: components/theme/Widgets/CreatableSelectWidget
+msgid "Used for programmatic access to the fieldset."
+msgstr ""
+
+#. Default: "RSS Feed"
 #: components/theme/Banner/View
-# defaultMessage: RSS Feed
 msgid "rssFeed"
 msgstr ""
