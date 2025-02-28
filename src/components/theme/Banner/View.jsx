@@ -199,37 +199,52 @@ const View = (props) => {
                         'visualization-wrapper',
                       );
                       if (plotlyCharts.length > 0) {
-                        timeoutValue = timeoutValue + 1000;
+                        timeoutValue += 1000;
                       }
                     }, timeoutValue);
 
                     // scroll to iframes to make them be in the viewport
                     // use timeout to wait for load
-                    setTimeout(() => {
+                    const handleIframes = () => {
                       const iframes = document.getElementsByTagName('iframe');
                       if (iframes.length > 0) {
-                        timeoutValue = timeoutValue + 2000;
-                        Array.from(iframes).forEach((element, index) => {
+                        timeoutValue += 2000;
+                        Array.from(iframes).forEach((iframe, index) => {
                           setTimeout(() => {
-                            element.scrollIntoView({
+                            iframe.scrollIntoView({
                               behavior: 'instant',
                               block: 'nearest',
                               inline: 'center',
                             });
                           }, timeoutValue);
-                          timeoutValue = timeoutValue + 3000;
+                          timeoutValue += 3000;
                         });
-                        timeoutValue = timeoutValue + 1000;
+                        timeoutValue += 1000;
                       }
+                    };
+
+                    const handleImages = () => {
+                      const lazyImages = document.querySelectorAll(
+                        'img[loading="lazy"]',
+                      );
+                      lazyImages.forEach((img) => {
+                        if (img.src) {
+                          img.setAttribute('loading', 'eager');
+                        }
+                      });
+                    };
+
+                    setTimeout(() => {
+                      handleIframes();
+                      handleImages();
 
                       setTimeout(() => {
-                        window.scrollTo({
-                          top: 0,
-                        });
+                        window.scrollTo({ top: 0 });
                         Array.from(tabs).forEach((tab) => {
                           tab.style.display = '';
                         });
                         printLoader.style.display = 'none';
+
                         dispatch(setIsPrint(false));
                         window.print();
                       }, timeoutValue);
