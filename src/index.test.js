@@ -33,6 +33,10 @@ jest.mock(
     TopicsWidget: 'MockedThemesWidget',
   }),
 );
+jest.mock(
+  '@eeacms/volto-eea-website-theme/components/theme/PrintLazyImages/PrintLazyImages',
+  () => 'MockedPrintLazyImages',
+);
 jest.mock('./components/theme/SubsiteClass', () => 'MockedSubsiteClass');
 jest.mock(
   '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView',
@@ -143,6 +147,7 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
       { match: '', component: BaseTag },
+      { match: '', component: 'MockedPrintLazyImages' },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
@@ -309,6 +314,7 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
       { match: '', component: BaseTag },
+      { match: '', component: 'MockedPrintLazyImages' },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
