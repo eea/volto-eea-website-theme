@@ -15,6 +15,8 @@ import {
 } from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 import { setIsPrint } from '@eeacms/volto-eea-website-theme/actions/print';
+import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
+
 import cx from 'classnames';
 import './styles.less';
 
@@ -223,20 +225,9 @@ const View = (props) => {
                       }
                     };
 
-                    const handleImages = () => {
-                      const lazyImages = document.querySelectorAll(
-                        'img[loading="lazy"]',
-                      );
-                      lazyImages.forEach((img) => {
-                        if (img.src) {
-                          img.setAttribute('loading', 'eager');
-                        }
-                      });
-                    };
-
                     setTimeout(() => {
                       handleIframes();
-                      handleImages();
+                      loadLazyImages();
 
                       setTimeout(() => {
                         window.scrollTo({ top: 0 });
@@ -244,7 +235,6 @@ const View = (props) => {
                           tab.style.display = '';
                         });
                         printLoader.style.display = 'none';
-
                         dispatch(setIsPrint(false));
                         window.print();
                       }, timeoutValue);
