@@ -146,8 +146,8 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedCustomCSS' },
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
-      { match: '', component: 'MockedPrintLazyImages' },
       { match: '', component: BaseTag },
+      { match: '', component: 'MockedPrintLazyImages' },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
@@ -313,8 +313,8 @@ describe('applyConfig', () => {
       { match: '', component: 'MockedCustomCSS' },
       { match: '', component: 'MockedDraftBackground' },
       { match: '', component: 'MockedSubsiteClass' },
-      { match: '', component: 'MockedPrintLazyImages' },
       { match: '', component: BaseTag },
+      { match: '', component: 'MockedPrintLazyImages' },
     ]);
     expect(config.settings.available_colors).toEqual(eea.colors);
     expect(config.settings.hasLanguageDropdown).toBe(false);
