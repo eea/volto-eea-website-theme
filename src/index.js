@@ -20,6 +20,7 @@ import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/W
 import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DateWidget';
 import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DatetimeWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
+import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/UserSelectWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -371,8 +372,7 @@ const applyConfig = (config) => {
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
-  config.widgets.vocabulary['plone.app.vocabularies.Users'] =
-    SelectAutoCompleteWidget;
+  config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
 
   // /voltoCustom.css express-middleware
   // /ok express-middleware - see also: https://github.com/plone/volto/pull/4432
