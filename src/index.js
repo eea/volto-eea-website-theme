@@ -2,7 +2,6 @@ import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { Icon } from '@plone/volto/components';
 import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
-import SelectAutoCompleteWidget from '@plone/volto/components/manage/Widgets/SelectAutoComplete';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
 import TableBlockView from '@plone/volto-slate/blocks/Table/TableBlockView';
