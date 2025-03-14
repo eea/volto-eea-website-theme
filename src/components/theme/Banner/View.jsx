@@ -15,6 +15,8 @@ import {
 } from '@eeacms/volto-eea-design-system/ui/Banner/Banner';
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 import { setIsPrint } from '@eeacms/volto-eea-website-theme/actions/print';
+import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
+
 import cx from 'classnames';
 import './styles.less';
 
@@ -199,33 +201,36 @@ const View = (props) => {
                         'visualization-wrapper',
                       );
                       if (plotlyCharts.length > 0) {
-                        timeoutValue = timeoutValue + 1000;
+                        timeoutValue += 1000;
                       }
                     }, timeoutValue);
 
                     // scroll to iframes to make them be in the viewport
                     // use timeout to wait for load
-                    setTimeout(() => {
+                    const handleIframes = () => {
                       const iframes = document.getElementsByTagName('iframe');
                       if (iframes.length > 0) {
-                        timeoutValue = timeoutValue + 2000;
-                        Array.from(iframes).forEach((element, index) => {
+                        timeoutValue += 2000;
+                        Array.from(iframes).forEach((iframe, index) => {
                           setTimeout(() => {
-                            element.scrollIntoView({
+                            iframe.scrollIntoView({
                               behavior: 'instant',
                               block: 'nearest',
                               inline: 'center',
                             });
                           }, timeoutValue);
-                          timeoutValue = timeoutValue + 3000;
+                          timeoutValue += 3000;
                         });
-                        timeoutValue = timeoutValue + 1000;
+                        timeoutValue += 1000;
                       }
+                    };
+
+                    setTimeout(() => {
+                      handleIframes();
+                      loadLazyImages();
 
                       setTimeout(() => {
-                        window.scrollTo({
-                          top: 0,
-                        });
+                        window.scrollTo({ top: 0 });
                         Array.from(tabs).forEach((tab) => {
                           tab.style.display = '';
                         });
