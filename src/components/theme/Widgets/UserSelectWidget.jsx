@@ -7,9 +7,9 @@ import React, { Component } from 'react';
 import { defineMessages, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
-import { Popup } from 'semantic-ui-react'; // Import Popup for tooltip
+import { Popup } from 'semantic-ui-react';
 import {
   normalizeValue,
   convertValueToVocabQuery,
@@ -80,11 +80,11 @@ export const normalizeChoices = (items, intl) =>
  * Custom Option component with a tooltip
  */
 const Option = (props) => {
-  const { data, innerRef, innerProps, isFocused, isSelected } = props;
+  const { data, innerRef, innerProps } = props;
 
   return (
     <Popup
-      content={data?.email} // Tooltip on hover
+      content={data?.email}
       position="top left"
       trigger={
         <div ref={innerRef} {...innerProps}>
@@ -250,7 +250,7 @@ class SelectAutoComplete extends Component {
             MultiValueContainer,
             ClearIndicator,
             DropdownIndicator,
-            Option, // Use the fixed Option component
+            Option,
           }}
           value={selectedOption || []}
           placeholder={
