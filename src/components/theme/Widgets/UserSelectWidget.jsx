@@ -12,7 +12,6 @@ import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import { Popup } from 'semantic-ui-react'; // Import Popup for tooltip
 import {
   normalizeValue,
-  normalizeChoices,
   convertValueToVocabQuery,
 } from '@plone/volto/components/manage/Widgets/SelectUtils';
 
@@ -49,17 +48,44 @@ const messages = defineMessages({
   },
 });
 
+export const normalizeSingleSelectOption = (value, intl) => {
+  if (!value) return value;
+
+  if (Array.isArray(value)) {
+    // Assuming [token, title] pair.
+    if (value.length === 2)
+      return { value: value[0], label: value[1] || value[0], email: '' };
+
+    throw new Error(`Unknown value type of select widget: ${value}`);
+  }
+
+  const token = value.token ?? value.value ?? value.UID ?? 'no-value';
+  const label =
+    (value.title && value.title !== 'None' ? value.title : undefined) ??
+    value.label ??
+    value.token ??
+    intl.formatMessage(messages.no_value);
+
+  return {
+    value: token,
+    label,
+    email: value.email ?? 'No email available',
+  };
+};
+
+export const normalizeChoices = (items, intl) =>
+  items.map((item) => normalizeSingleSelectOption(item, intl));
+
 /**
  * Custom Option component with a tooltip
  */
 const Option = (props) => {
   const { data, innerRef, innerProps, isFocused, isSelected } = props;
-  const color = isFocused && !isSelected ? '#b8c6c8' : '#007bc1';
 
   return (
     <Popup
-      content={data.label} // Tooltip on hover
-      position="top center"
+      content={data?.email} // Tooltip on hover
+      position="top left"
       trigger={
         <div ref={innerRef} {...innerProps}>
           <span style={{ flexGrow: 1 }}>{data.label}</span>
@@ -185,7 +211,6 @@ class SelectAutoComplete extends Component {
       size: -1,
       subrequest: this.props.lang,
     });
-
     return normalizeChoices(resp.items || [], this.props.intl);
   };
 
