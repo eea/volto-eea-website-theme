@@ -137,7 +137,7 @@ test('normalizes an object with missing email', () => {
   expect(result).toEqual({
     value: 'user2',
     label: 'User Two',
-    email: 'No email available', // ✅ Should default to this
+    email: 'No email available',
   });
 });
 
@@ -149,7 +149,7 @@ test('normalizes an array [token, title]', () => {
   expect(result).toEqual({
     value: 'user3',
     label: 'User Three',
-    email: '', // ✅ Should be empty when passed as an array
+    email: '',
   });
 });
 
@@ -177,4 +177,79 @@ test('normalizes an object with only token', () => {
 test('returns input when value is null or undefined', () => {
   expect(normalizeSingleSelectOption(null, {})).toBe(null);
   expect(normalizeSingleSelectOption(undefined, {})).toBe(undefined);
+});
+
+// Test normalizeSingleSelectOption with an object missing title
+test('normalizes an object with missing title', () => {
+  const result = normalizeSingleSelectOption(
+    { token: 'user5', email: 'user5@example.com' },
+    { formatMessage: (msg) => msg.defaultMessage },
+  );
+
+  expect(result).toEqual({
+    value: 'user5',
+    label: 'user5',
+    email: 'user5@example.com',
+  });
+});
+
+// Test normalizeChoices with an empty array
+test('handles empty array correctly in normalizeChoices', () => {
+  const result = normalizeChoices([], {
+    formatMessage: (msg) => msg.defaultMessage,
+  });
+
+  expect(result).toEqual([]);
+});
+
+// Test normalizeSingleSelectOption when title is "None"
+test('defaults label to token when title is "None"', () => {
+  const result = normalizeSingleSelectOption(
+    { token: 'user6', title: 'None', email: 'user6@example.com' },
+    { formatMessage: (msg) => msg.defaultMessage },
+  );
+
+  expect(result).toEqual({
+    value: 'user6',
+    label: 'user6',
+    email: 'user6@example.com',
+  });
+});
+
+// Test normalizeSingleSelectOption with both token and value fields
+test('handles object with both token and value', () => {
+  const result = normalizeSingleSelectOption(
+    { token: 'user7', value: 'actualValue', title: 'User Seven' },
+    { formatMessage: (msg) => msg.defaultMessage },
+  );
+
+  expect(result).toEqual({
+    value: 'user7',
+    label: 'User Seven',
+    email: 'No email available',
+  });
+});
+
+// Test normalizeChoices with nested objects (should gracefully ignore extra data)
+test('ignores extra nested data in normalizeChoices', () => {
+  const mockData = [
+    {
+      email: 'nested@example.com',
+      token: 'nestedUser',
+      title: 'Nested User',
+      extraField: { something: 'should be ignored' },
+    },
+  ];
+
+  const result = normalizeChoices(mockData, {
+    formatMessage: (msg) => msg.defaultMessage,
+  });
+
+  expect(result).toEqual([
+    {
+      value: 'nestedUser',
+      label: 'Nested User',
+      email: 'nested@example.com',
+    },
+  ]);
 });
