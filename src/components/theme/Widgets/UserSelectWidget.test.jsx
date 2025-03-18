@@ -3,7 +3,10 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 import { waitFor, render, screen } from '@testing-library/react';
 
-import UserSelectWidget, { normalizeChoices } from './UserSelectWidget';
+import UserSelectWidget, {
+  normalizeChoices,
+  normalizeSingleSelectOption,
+} from './UserSelectWidget';
 
 const mockStore = configureStore();
 
@@ -110,4 +113,68 @@ test('filters choices based on search query', () => {
   expect(filteredResults).toEqual([
     { value: 'george', label: 'George', email: 'george@example.com' },
   ]);
+});
+
+test('normalizes a valid object with email', () => {
+  const result = normalizeSingleSelectOption(
+    { token: 'user1', title: 'User One', email: 'user1@example.com' },
+    { formatMessage: (msg) => msg.defaultMessage },
+  );
+
+  expect(result).toEqual({
+    value: 'user1',
+    label: 'User One',
+    email: 'user1@example.com',
+  });
+});
+
+test('normalizes an object with missing email', () => {
+  const result = normalizeSingleSelectOption(
+    { token: 'user2', title: 'User Two' },
+    { formatMessage: (msg) => msg.defaultMessage },
+  );
+
+  expect(result).toEqual({
+    value: 'user2',
+    label: 'User Two',
+    email: 'No email available', // ✅ Should default to this
+  });
+});
+
+test('normalizes an array [token, title]', () => {
+  const result = normalizeSingleSelectOption(['user3', 'User Three'], {
+    formatMessage: (msg) => msg.defaultMessage,
+  });
+
+  expect(result).toEqual({
+    value: 'user3',
+    label: 'User Three',
+    email: '', // ✅ Should be empty when passed as an array
+  });
+});
+
+test('throws an error for unexpected array format', () => {
+  expect(() => {
+    normalizeSingleSelectOption(['wrongFormat'], {
+      formatMessage: (msg) => msg.defaultMessage,
+    });
+  }).toThrow('Unknown value type of select widget: wrongFormat');
+});
+
+test('normalizes an object with only token', () => {
+  const result = normalizeSingleSelectOption(
+    { token: 'user4' },
+    { formatMessage: (msg) => msg.defaultMessage },
+  );
+
+  expect(result).toEqual({
+    value: 'user4',
+    label: 'user4',
+    email: 'No email available',
+  });
+});
+
+test('returns input when value is null or undefined', () => {
+  expect(normalizeSingleSelectOption(null, {})).toBe(null);
+  expect(normalizeSingleSelectOption(undefined, {})).toBe(undefined);
 });
