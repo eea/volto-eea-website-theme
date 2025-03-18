@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Loader } from 'semantic-ui-react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPrintLoading } from '@eeacms/volto-eea-website-theme/actions/print';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 import { setupPrintView } from '@eeacms/volto-eea-website-theme/helpers/setupPrintView';
 
@@ -28,7 +27,6 @@ const PrintLoader = () => {
     const handleKeyDown = (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
         event.preventDefault();
-        dispatch(setPrintLoading(true));
         setupPrintView(dispatch);
       }
     };
