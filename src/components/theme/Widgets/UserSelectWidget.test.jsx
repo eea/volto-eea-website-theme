@@ -3,7 +3,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 import { waitFor, render, screen } from '@testing-library/react';
 
-import UserSelectWidget from './UserSelectWidget';
+import UserSelectWidget, { normalizeChoices } from './UserSelectWidget';
 
 const mockStore = configureStore();
 
@@ -60,4 +60,34 @@ test('renders a select widget component', async () => {
 
   await waitFor(() => screen.getByText('My field'));
   expect(container).toMatchSnapshot();
+});
+
+// Test normalization of choices
+test('normalizes vocabulary API response correctly', () => {
+  const mockData = [
+    { email: 'charlie@example.com', token: 'charlie', title: 'Charlie' },
+    { email: 'dana@example.com', token: 'dana', title: 'Dana' },
+  ];
+
+  const result = normalizeChoices(mockData, {
+    formatMessage: (msg) => msg.defaultMessage,
+  });
+
+  expect(result).toEqual([
+    { value: 'charlie', label: 'Charlie', email: 'charlie@example.com' },
+    { value: 'dana', label: 'Dana', email: 'dana@example.com' },
+  ]);
+});
+
+// Test missing email default handling
+test('defaults missing email to "No email available"', () => {
+  const mockData = [{ token: 'no-email', title: 'No Email User' }];
+
+  const result = normalizeChoices(mockData, {
+    formatMessage: (msg) => msg.defaultMessage,
+  });
+
+  expect(result).toEqual([
+    { value: 'no-email', label: 'No Email User', email: 'No email available' },
+  ]);
 });
