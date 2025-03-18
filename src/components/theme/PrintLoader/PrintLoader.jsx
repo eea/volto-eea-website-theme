@@ -40,7 +40,7 @@ const PrintLoader = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('beforeprint', handleBeforePrint);
     };
-  }, []);
+  }, [dispatch]);
 
   return showLoader ? (
     <div id="download-print-loader" className="ui warning message">
