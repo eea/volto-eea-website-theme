@@ -1,5 +1,6 @@
 /**
- *
+ * Sets up the document for printing by handling iframes
+ * and lazy-loaded images, and triggering the print dialog.
  */
 
 import {

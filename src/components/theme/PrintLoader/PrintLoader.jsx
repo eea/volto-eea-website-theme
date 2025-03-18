@@ -1,13 +1,22 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from 'semantic-ui-react';
+import { defineMessages, useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPrintLoading } from '@eeacms/volto-eea-website-theme/actions/print';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 import { setupPrintView } from '@eeacms/volto-eea-website-theme/helpers/setupPrintView';
-import { setPrintLoading } from '@eeacms/volto-eea-website-theme/actions/print';
 
 import './style.less';
 
+const messages = defineMessages({
+  preparingDownload: {
+    id: 'Preparing download',
+    defaultMessage: 'Preparing download',
+  },
+});
+
 const PrintLoader = () => {
+  const intl = useIntl();
   const dispatch = useDispatch();
   const showLoader = useSelector((state) => state.print.isPrintLoading);
 
@@ -19,7 +28,6 @@ const PrintLoader = () => {
     const handleKeyDown = (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
         event.preventDefault();
-        loadLazyImages();
         dispatch(setPrintLoading(true));
         setupPrintView(dispatch);
       }
@@ -37,7 +45,7 @@ const PrintLoader = () => {
   return showLoader ? (
     <div id="download-print-loader" className="ui warning message">
       <Loader active inline size="medium" />
-      <div>Preparing download</div>
+      <div>{intl.formatMessage(messages.preparingDownload)}</div>
     </div>
   ) : null;
 };
