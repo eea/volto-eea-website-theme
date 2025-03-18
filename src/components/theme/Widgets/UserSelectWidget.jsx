@@ -1,6 +1,6 @@
 /**
- * SelectAutoComplete component.
- * @module components/manage/Widgets/SelectAutoComplete
+ * UserSelectWidget component.
+ * @module components/manage/Widgets/UserSelectWidget
  */
 
 import React, { Component } from 'react';
@@ -96,11 +96,11 @@ const Option = (props) => {
 };
 
 /**
- * SelectAutoComplete component class.
- * @class SelectAutoComplete
+ * UserSelectWidget component class.
+ * @class UserSelectWidget
  * @extends Component
  */
-class SelectAutoComplete extends Component {
+class UserSelectWidget extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
@@ -265,8 +265,6 @@ class SelectAutoComplete extends Component {
   }
 }
 
-export const SelectAutoCompleteComponent = injectIntl(SelectAutoComplete);
-
 export default compose(
   injectIntl,
   injectLazyLibs(['reactSelectAsync']),
@@ -294,4 +292,4 @@ export default compose(
     },
     { getVocabulary, getVocabularyTokenTitle },
   ),
-)(SelectAutoComplete);
+)(UserSelectWidget);

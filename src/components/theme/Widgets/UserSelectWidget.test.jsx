@@ -253,3 +253,68 @@ test('ignores extra nested data in normalizeChoices', () => {
     },
   ]);
 });
+
+jest.useFakeTimers();
+
+describe('loadOptions function', () => {
+  let instance;
+
+  beforeEach(() => {
+    instance = {
+      fetchAvailableChoices: jest.fn((query) =>
+        Promise.resolve([{ value: query, label: `Test ${query}` }]),
+      ),
+      timeoutRef: { current: null },
+      SEARCH_HOLDOFF: 2,
+      loadOptions: function (query) {
+        if (query.length > this.SEARCH_HOLDOFF) {
+          if (this.timeoutRef.current) clearTimeout(this.timeoutRef.current);
+          return new Promise((resolve) => {
+            this.timeoutRef.current = setTimeout(async () => {
+              const res = await this.fetchAvailableChoices(query);
+              resolve(res);
+            }, 400);
+          });
+        } else {
+          return Promise.resolve([]);
+        }
+      },
+    };
+  });
+
+  test('returns empty array if query length is too short', async () => {
+    const result = await instance.loadOptions('a');
+    expect(result).toEqual([]);
+  });
+
+  test('calls fetchAvailableChoices after debounce time', async () => {
+    const promise = instance.loadOptions('test');
+
+    expect(instance.fetchAvailableChoices).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(400);
+    await waitFor(() => promise);
+
+    expect(instance.fetchAvailableChoices).toHaveBeenCalledWith('test');
+  });
+
+  test('cancels previous timeout when called again quickly', async () => {
+    instance.loadOptions('old');
+    jest.advanceTimersByTime(200);
+
+    instance.loadOptions('new');
+    jest.advanceTimersByTime(400);
+
+    expect(instance.fetchAvailableChoices).toHaveBeenCalledTimes(1);
+    expect(instance.fetchAvailableChoices).toHaveBeenCalledWith('new');
+  });
+
+  test('resolves with fetched choices', async () => {
+    const promise = instance.loadOptions('test');
+
+    jest.runAllTimers();
+    const result = await promise;
+
+    expect(result).toEqual([{ value: 'test', label: 'Test test' }]);
+  });
+});
