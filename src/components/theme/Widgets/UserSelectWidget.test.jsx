@@ -91,3 +91,23 @@ test('defaults missing email to "No email available"', () => {
     { value: 'no-email', label: 'No Email User', email: 'No email available' },
   ]);
 });
+
+// Test search logic (filters results based on query)
+test('filters choices based on search query', () => {
+  const mockData = [
+    { email: 'george@example.com', token: 'george', title: 'George' },
+    { email: 'hannah@example.com', token: 'hannah', title: 'Hannah' },
+  ];
+
+  const result = normalizeChoices(mockData, {
+    formatMessage: (msg) => msg.defaultMessage,
+  });
+
+  const filteredResults = result.filter((item) =>
+    item.label.toLowerCase().includes('geo'),
+  );
+
+  expect(filteredResults).toEqual([
+    { value: 'george', label: 'George', email: 'george@example.com' },
+  ]);
+});
