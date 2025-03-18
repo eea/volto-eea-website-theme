@@ -15,7 +15,7 @@ import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/them
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import WebReportSectionView from '@eeacms/volto-eea-website-theme/components/theme/WebReport/WebReportSectionView';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
-import PrintLazyImages from '@eeacms/volto-eea-website-theme/components/theme/PrintLazyImages/PrintLazyImages';
+import PrintLoader from '@eeacms/volto-eea-website-theme/components/theme/PrintLoader/PrintLoader';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DateWidget';
@@ -411,7 +411,7 @@ const applyConfig = (config) => {
     },
     {
       match: '',
-      component: PrintLazyImages,
+      component: PrintLoader,
     },
   ];
 
