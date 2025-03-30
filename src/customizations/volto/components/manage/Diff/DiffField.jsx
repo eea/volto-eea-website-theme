@@ -135,6 +135,17 @@ const formatDiffPart = (part, value, side) => {
   }
 };
 
+const getWidgetByBehavior = (behavior) =>
+  config.widgets.views.behavior?.[behavior] || null;
+
+const getWidgetByFactory = (factory) =>
+  config.widgets.views.factory?.[factory] || null;
+
+const getDefaultWidget =
+  () =>
+  ({ diff }) =>
+    diff;
+
 /**
  * Diff field component.
  * @function DiffField
@@ -164,10 +175,11 @@ const DiffField = ({
       splitWords(String(twoStr)),
     );
   };
-
-  let renderedContent;
   let parts, oneArray, twoArray;
-
+  const Widget =
+    getWidgetByBehavior(schema.behavior) ||
+    getWidgetByFactory(schema.factory) ||
+    getDefaultWidget();
   if (schema.widget) {
     switch (schema.widget) {
       case 'richtext':
@@ -187,25 +199,21 @@ const DiffField = ({
         const api = new Api();
         const history = createBrowserHistory();
         const store = configureStore(window.__data, history, api);
-        renderedContent = (
-          <Grid>
-            <Grid.Row columns={2} divided>
-              <Grid.Column width={6}>
-                <Provider store={store}>
-                  <ConnectedRouter history={history}>
-                    <RenderBlocks content={contentOne} />
-                  </ConnectedRouter>
-                </Provider>
-              </Grid.Column>
-              <Grid.Column width={6}>
-                <Provider store={store}>
-                  <ConnectedRouter history={history}>
-                    <RenderBlocks content={contentTwo} />
-                  </ConnectedRouter>
-                </Provider>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
+        parts = diffWords(
+          ReactDOMServer.renderToStaticMarkup(
+            <Provider store={store}>
+              <ConnectedRouter history={history}>
+                <RenderBlocks content={contentOne} />
+              </ConnectedRouter>
+            </Provider>,
+          ),
+          ReactDOMServer.renderToStaticMarkup(
+            <Provider store={store}>
+              <ConnectedRouter history={history}>
+                <RenderBlocks content={contentTwo} />
+              </ConnectedRouter>
+            </Provider>,
+          ),
         );
         break;
       }
@@ -270,74 +278,91 @@ const DiffField = ({
   }
 
   return (
-    renderedContent || (
-      <Grid data-testid="DiffField">
+    <Grid data-testid="DiffField">
+      <Grid.Row>
+        <Grid.Column width={12}>{schema.title}</Grid.Column>
+      </Grid.Row>
+
+      {view === 'split' && (
         <Grid.Row>
-          <Grid.Column width={12}>{schema.title}</Grid.Column>
+          <Grid.Column width={6} verticalAlign="top">
+            <Widget
+              value={one}
+              diff={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: join(
+                      map(parts, (part) => {
+                        let combined = (part.value || []).reduce(
+                          (acc, value) => {
+                            return acc + formatDiffPart(part, value, 'left');
+                          },
+                          '',
+                        );
+                        return combined;
+                      }),
+                      '',
+                    ),
+                  }}
+                />
+              }
+            />
+          </Grid.Column>
+          <Grid.Column width={6} verticalAlign="top">
+            <Widget
+              value={two}
+              diff={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: join(
+                      map(parts, (part) => {
+                        let combined = (part.value || []).reduce(
+                          (acc, value) => {
+                            return acc + formatDiffPart(part, value, 'right');
+                          },
+                          '',
+                        );
+                        return combined;
+                      }),
+                      '',
+                    ),
+                  }}
+                />
+              }
+            />
+          </Grid.Column>
         </Grid.Row>
-
-        {view === 'split' && (
-          <Grid.Row>
-            <Grid.Column width={6} verticalAlign="top">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: join(
-                    map(parts, (part) => {
-                      let combined = (part.value || []).reduce(
-                        (acc, value) =>
-                          acc + formatDiffPart(part, value, 'left'),
-                        '',
-                      );
-                      return combined;
-                    }),
-                    '',
-                  ),
-                }}
-              />
-            </Grid.Column>
-            <Grid.Column width={6} verticalAlign="top">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: join(
-                    map(parts, (part) => {
-                      let combined = (part.value || []).reduce(
-                        (acc, value) =>
-                          acc + formatDiffPart(part, value, 'right'),
-                        '',
-                      );
-                      return combined;
-                    }),
-                    '',
-                  ),
-                }}
-              />
-            </Grid.Column>
-          </Grid.Row>
-        )}
-
-        {view === 'unified' && (
-          <Grid.Row>
-            <Grid.Column width={16} verticalAlign="top">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: join(
-                    map(parts, (part) => {
-                      let combined = (part.value || []).reduce(
-                        (acc, value) =>
-                          acc + formatDiffPart(part, value, 'unified'),
-                        '',
-                      );
-                      return combined;
-                    }),
-                    '',
-                  ),
-                }}
-              />
-            </Grid.Column>
-          </Grid.Row>
-        )}
-      </Grid>
-    )
+      )}
+      {view === 'unified' && (
+        <Grid.Row>
+          <Grid.Column width={16} verticalAlign="top">
+            <Widget
+              value={two}
+              one={one}
+              two={two}
+              diff={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: join(
+                      map(parts, (part) => {
+                        let combined = (part.value || []).reduce(
+                          (acc, value) => {
+                            return acc + formatDiffPart(part, value, 'unified');
+                          },
+                          '',
+                        );
+                        return combined;
+                      }),
+                      '',
+                    ),
+                  }}
+                />
+              }
+            />
+          </Grid.Column>
+        </Grid.Row>
+      )}
+    </Grid>
   );
 };
 
