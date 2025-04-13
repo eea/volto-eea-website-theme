@@ -1,0 +1,1 @@
+Customize DiffField.jsx from @plone/volto 17.21.0. See https://taskman.eionet.europa.eu/issues/281229
