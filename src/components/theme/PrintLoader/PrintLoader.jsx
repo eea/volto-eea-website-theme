@@ -41,7 +41,12 @@ const PrintLoader = () => {
   }, [dispatch]);
 
   return showLoader ? (
-    <div id="download-print-loader" className="ui warning message">
+    <div
+      id="download-print-loader"
+      className="ui warning message"
+      role="status"
+      aria-live="polite"
+    >
       <Loader active inline size="medium" />
       <div>{intl.formatMessage(messages.preparingDownload)}</div>
     </div>

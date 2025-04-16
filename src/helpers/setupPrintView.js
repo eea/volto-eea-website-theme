@@ -1,6 +1,7 @@
 /**
  * Sets up the document for printing by handling iframes
  * and lazy-loaded images, and triggering the print dialog.
+ * Uses proper event listeners to ensure all content is loaded before printing.
  */
 
 import {
@@ -19,48 +20,107 @@ export const setupPrintView = (dispatch) => {
   dispatch(setIsPrint(true));
   dispatch(setPrintLoading(true));
 
-  let timeoutValue = 1000;
-  // if we have plotlycharts increase timeout
-  setTimeout(() => {
+  // Load all lazy images
+  loadLazyImages();
+
+  // Create a promise that resolves when all iframes are loaded
+  const waitForIframes = () => {
+    const iframes = document.getElementsByTagName('iframe');
+    if (iframes.length === 0) {
+      return Promise.resolve();
+    }
+
+    const iframePromises = Array.from(iframes).map((iframe) => {
+      return new Promise((resolve) => {
+        // If iframe is already loaded, resolve immediately
+        if (iframe.contentDocument?.readyState === 'complete') {
+          resolve();
+          return;
+        }
+
+        // Otherwise wait for load event
+        iframe.addEventListener(
+          'load',
+          () => {
+            // Scroll iframe into view to ensure content loads
+            iframe.scrollIntoView({
+              behavior: 'instant',
+              block: 'nearest',
+              inline: 'center',
+            });
+            resolve();
+          },
+          { once: true },
+        );
+
+        // Set a timeout as a fallback in case the load event doesn't fire
+        setTimeout(resolve, 5000);
+      });
+    });
+
+    return Promise.all(iframePromises);
+  };
+
+  // Create a promise that resolves when all images are loaded
+  const waitForImages = () => {
+    const images = document.getElementsByTagName('img');
+    if (images.length === 0) {
+      return Promise.resolve();
+    }
+
+    const imagePromises = Array.from(images).map((img) => {
+      return new Promise((resolve) => {
+        // If image is already loaded, resolve immediately
+        if (img.complete) {
+          resolve();
+          return;
+        }
+
+        // Otherwise wait for load event
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true }); // Also handle error case
+
+        // Set a timeout as a fallback
+        setTimeout(resolve, 3000);
+      });
+    });
+
+    return Promise.all(imagePromises);
+  };
+
+  // Wait for plotly charts if they exist
+  const waitForPlotlyCharts = () => {
     const plotlyCharts = document.getElementsByClassName(
       'visualization-wrapper',
     );
-    if (plotlyCharts.length > 0) {
-      timeoutValue += 1000;
+    if (plotlyCharts.length === 0) {
+      return Promise.resolve();
     }
-  }, timeoutValue);
 
-  // scroll to iframes to make them be in the viewport
-  // use timeout to wait for load
-  const handleIframes = () => {
-    const iframes = document.getElementsByTagName('iframe');
-    if (iframes.length > 0) {
-      timeoutValue += 2000;
-      Array.from(iframes).forEach((iframe, index) => {
-        setTimeout(() => {
-          iframe.scrollIntoView({
-            behavior: 'instant',
-            block: 'nearest',
-            inline: 'center',
-          });
-        }, timeoutValue);
-        timeoutValue += 3000;
-      });
-      timeoutValue += 1000;
-    }
+    // Give plotly charts some time to render
+    return new Promise((resolve) => setTimeout(resolve, 2000));
   };
 
-  setTimeout(() => {
-    handleIframes();
-    loadLazyImages();
-    setTimeout(() => {
+  // Wait for all content to load before printing
+  Promise.all([waitForIframes(), waitForImages(), waitForPlotlyCharts()])
+    .then(() => {
+      // Scroll back to top
       window.scrollTo({ top: 0 });
+
+      // Reset tab display
       Array.from(tabs).forEach((tab) => {
         tab.style.display = '';
       });
+
+      // Update state and trigger print
       dispatch(setPrintLoading(false));
       dispatch(setIsPrint(false));
       window.print();
-    }, timeoutValue);
-  }, timeoutValue);
+    })
+    .catch(() => {
+      // Still try to print even if there was an error
+      dispatch(setPrintLoading(false));
+      dispatch(setIsPrint(false));
+      window.print();
+    });
 };
