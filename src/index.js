@@ -21,6 +21,8 @@ import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Wid
 import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DatetimeWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
+import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
+import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -371,6 +373,8 @@ const applyConfig = (config) => {
   config.widgets.views.id.topics = TopicsWidget;
   config.widgets.views.id.subjects = TokenWidget;
   config.widgets.views.widget.tags = TokenWidget;
+  config.widgets.views.id.creators = CreatorsViewWidget;
+  config.widgets.views.id.contributors = ContributorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] =
     SelectAutoCompleteWidget;
