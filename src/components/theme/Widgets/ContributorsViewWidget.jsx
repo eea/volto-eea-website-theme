@@ -1,11 +1,10 @@
-import React from 'react';
 import cx from 'classnames';
 
-const ContributorsViewWidget = ({ content, children, className }) => {
-  const value = content?.contributors_fullname || null;
-  return value ? (
+const ContributorsViewWidget = ({ value, content, children, className }) => {
+  const resolvedValue = content?.contributors_fullname || value || [];
+  return resolvedValue ? (
     <span className={cx(className, 'array', 'widget')}>
-      {value.map((item, key) => (
+      {resolvedValue.map((item, key) => (
         <>
           {key ? ', ' : ''}
           <span key={item.token || item.title || item}>

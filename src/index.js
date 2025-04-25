@@ -375,6 +375,8 @@ const applyConfig = (config) => {
   config.widgets.views.widget.tags = TokenWidget;
   config.widgets.views.id.creators = CreatorsViewWidget;
   config.widgets.views.id.contributors = ContributorsViewWidget;
+  config.widgets.views.widget.contributors = ContributorsViewWidget;
+  config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] =
     SelectAutoCompleteWidget;

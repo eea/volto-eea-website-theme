@@ -1,11 +1,10 @@
-import React from 'react';
 import cx from 'classnames';
 
-const CreatorsViewWidget = ({ content, children, className }) => {
-  const value = content?.creators_fullname || null;
-  return value ? (
+const CreatorsViewWidget = ({ value, content, children, className }) => {
+  const resolvedValue = content?.creators_fullname || value || [];
+  return resolvedValue ? (
     <span className={cx(className, 'array', 'widget')}>
-      {value.map((item, key) => (
+      {resolvedValue.map((item, key) => (
         <>
           {key ? ', ' : ''}
           <span key={item.token || item.title || item}>
