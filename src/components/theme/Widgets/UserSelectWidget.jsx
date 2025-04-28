@@ -69,7 +69,7 @@ export const normalizeSingleSelectOption = (value, intl) => {
   return {
     value: token,
     label,
-    email: value.email ?? 'No email available',
+    email: value.email ? value.email : 'No email available',
   };
 };
 
@@ -169,7 +169,8 @@ class UserSelectWidget extends Component {
     if (
       this.state.termsPairsCache.length === 0 &&
       value?.length > 0 &&
-      choices?.length > 0
+      choices?.length > 0 &&
+      (value !== prevProps.value || choices !== prevProps.choices)
     ) {
       this.setState((state) => ({
         termsPairsCache: [...state.termsPairsCache, ...choices],
@@ -177,6 +178,19 @@ class UserSelectWidget extends Component {
     }
   }
 
+  componentWillUnmount() {
+    if (this.timeoutRef.current) {
+      clearTimeout(this.timeoutRef.current);
+    }
+  }
+
+  /**
+   * Handle the field change, store it in the local state and back to simple
+   * array of tokens for correct serialization
+   * @method handleChange
+   * @param {array} selectedOption The selected options (already aggregated).
+   * @returns {undefined}
+   */
   handleChange(selectedOption) {
     this.props.onChange(
       this.props.id,
@@ -188,9 +202,11 @@ class UserSelectWidget extends Component {
   }
 
   timeoutRef = React.createRef();
+  // How many characters to hold off searching from. Search tarts at this plus one.
   SEARCH_HOLDOFF = 2;
 
   loadOptions = (query) => {
+    // Implement a debounce of 400ms and a min search of 3 chars
     if (query.length > this.SEARCH_HOLDOFF) {
       if (this.timeoutRef.current) clearTimeout(this.timeoutRef.current);
       return new Promise((resolve) => {
