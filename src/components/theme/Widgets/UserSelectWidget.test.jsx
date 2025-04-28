@@ -83,7 +83,7 @@ test('normalizes vocabulary API response correctly', () => {
 });
 
 // Test missing email default handling
-test('defaults missing email to "No email available"', () => {
+test('defaults missing email to label or token', () => {
   const mockData = [{ token: 'no-email', title: 'No Email User' }];
 
   const result = normalizeChoices(mockData, {
@@ -91,7 +91,7 @@ test('defaults missing email to "No email available"', () => {
   });
 
   expect(result).toEqual([
-    { value: 'no-email', label: 'No Email User', email: 'No email available' },
+    { value: 'no-email', label: 'No Email User', email: 'No Email User' },
   ]);
 });
 
@@ -128,7 +128,7 @@ test('normalizes a valid object with email', () => {
   });
 });
 
-test('normalizes an object with missing email', () => {
+test('normalizes an object with missing email using label fallback', () => {
   const result = normalizeSingleSelectOption(
     { token: 'user2', title: 'User Two' },
     { formatMessage: (msg) => msg.defaultMessage },
@@ -137,7 +137,7 @@ test('normalizes an object with missing email', () => {
   expect(result).toEqual({
     value: 'user2',
     label: 'User Two',
-    email: 'No email available',
+    email: 'User Two',
   });
 });
 
@@ -161,7 +161,7 @@ test('throws an error for unexpected array format', () => {
   }).toThrow('Unknown value type of select widget: wrongFormat');
 });
 
-test('normalizes an object with only token', () => {
+test('normalizes an object with only token and falls back correctly', () => {
   const result = normalizeSingleSelectOption(
     { token: 'user4' },
     { formatMessage: (msg) => msg.defaultMessage },
@@ -170,7 +170,7 @@ test('normalizes an object with only token', () => {
   expect(result).toEqual({
     value: 'user4',
     label: 'user4',
-    email: 'No email available',
+    email: 'user4',
   });
 });
 
@@ -180,7 +180,7 @@ test('returns input when value is null or undefined', () => {
 });
 
 // Test normalizeSingleSelectOption with an object missing title
-test('normalizes an object with missing title', () => {
+test('normalizes an object with missing title and fallback to token', () => {
   const result = normalizeSingleSelectOption(
     { token: 'user5', email: 'user5@example.com' },
     { formatMessage: (msg) => msg.defaultMessage },
@@ -217,7 +217,7 @@ test('defaults label to token when title is "None"', () => {
 });
 
 // Test normalizeSingleSelectOption with both token and value fields
-test('handles object with both token and value', () => {
+test('handles object with both token and value fields', () => {
   const result = normalizeSingleSelectOption(
     { token: 'user7', value: 'actualValue', title: 'User Seven' },
     { formatMessage: (msg) => msg.defaultMessage },
@@ -226,7 +226,7 @@ test('handles object with both token and value', () => {
   expect(result).toEqual({
     value: 'user7',
     label: 'User Seven',
-    email: 'No email available',
+    email: 'User Seven',
   });
 });
 
