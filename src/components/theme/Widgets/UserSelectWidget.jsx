@@ -65,11 +65,10 @@ export const normalizeSingleSelectOption = (value, intl) => {
     value.label ??
     value.token ??
     intl.formatMessage(messages.no_value);
-
   return {
     value: token,
     label,
-    email: value.email ? value.email : 'No email available',
+    email: value.email ? value.email : label || token,
   };
 };
 
