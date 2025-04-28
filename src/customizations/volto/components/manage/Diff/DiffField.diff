@@ -1,0 +1,150 @@
+diff --git a/src/customizations/volto/components/manage/Diff/DiffField.jsx b/src/customizations/volto/components/manage/Diff/DiffField.jsx
+index a9bad2a..5d306e5 100644
+--- a/src/customizations/volto/components/manage/Diff/DiffField.jsx
++++ b/src/customizations/volto/components/manage/Diff/DiffField.jsx
+@@ -135,6 +135,17 @@ const formatDiffPart = (part, value, side) => {
+   }
+ };
+ 
++const getWidgetByBehavior = (behavior) =>
++  config.widgets.views.behavior?.[behavior] || null;
++
++const getWidgetByFactory = (factory) =>
++  config.widgets.views.factory?.[factory] || null;
++
++const getDefaultWidget =
++  () =>
++  ({ diff }) =>
++    diff;
++
+ /**
+  * Diff field component.
+  * @function DiffField
+@@ -164,8 +175,11 @@ const DiffField = ({
+       splitWords(String(twoStr)),
+     );
+   };
+-
+   let parts, oneArray, twoArray;
++  const Widget =
++    getWidgetByBehavior(schema.behavior) ||
++    getWidgetByFactory(schema.factory) ||
++    getDefaultWidget();
+   if (schema.widget) {
+     switch (schema.widget) {
+       case 'richtext':
+@@ -272,33 +286,49 @@ const DiffField = ({
+       {view === 'split' && (
+         <Grid.Row>
+           <Grid.Column width={6} verticalAlign="top">
+-            <span
+-              dangerouslySetInnerHTML={{
+-                __html: join(
+-                  map(parts, (part) => {
+-                    let combined = (part.value || []).reduce((acc, value) => {
+-                      return acc + formatDiffPart(part, value, 'left');
+-                    }, '');
+-                    return combined;
+-                  }),
+-                  '',
+-                ),
+-              }}
++            <Widget
++              value={one}
++              diff={
++                <span
++                  dangerouslySetInnerHTML={{
++                    __html: join(
++                      map(parts, (part) => {
++                        let combined = (part.value || []).reduce(
++                          (acc, value) => {
++                            return acc + formatDiffPart(part, value, 'left');
++                          },
++                          '',
++                        );
++                        return combined;
++                      }),
++                      '',
++                    ),
++                  }}
++                />
++              }
+             />
+           </Grid.Column>
+           <Grid.Column width={6} verticalAlign="top">
+-            <span
+-              dangerouslySetInnerHTML={{
+-                __html: join(
+-                  map(parts, (part) => {
+-                    let combined = (part.value || []).reduce((acc, value) => {
+-                      return acc + formatDiffPart(part, value, 'right');
+-                    }, '');
+-                    return combined;
+-                  }),
+-                  '',
+-                ),
+-              }}
++            <Widget
++              value={two}
++              diff={
++                <span
++                  dangerouslySetInnerHTML={{
++                    __html: join(
++                      map(parts, (part) => {
++                        let combined = (part.value || []).reduce(
++                          (acc, value) => {
++                            return acc + formatDiffPart(part, value, 'right');
++                          },
++                          '',
++                        );
++                        return combined;
++                      }),
++                      '',
++                    ),
++                  }}
++                />
++              }
+             />
+           </Grid.Column>
+         </Grid.Row>
+@@ -306,18 +336,28 @@ const DiffField = ({
+       {view === 'unified' && (
+         <Grid.Row>
+           <Grid.Column width={16} verticalAlign="top">
+-            <span
+-              dangerouslySetInnerHTML={{
+-                __html: join(
+-                  map(parts, (part) => {
+-                    let combined = (part.value || []).reduce((acc, value) => {
+-                      return acc + formatDiffPart(part, value, 'unified');
+-                    }, '');
+-                    return combined;
+-                  }),
+-                  '',
+-                ),
+-              }}
++            <Widget
++              value={two}
++              one={one}
++              two={two}
++              diff={
++                <span
++                  dangerouslySetInnerHTML={{
++                    __html: join(
++                      map(parts, (part) => {
++                        let combined = (part.value || []).reduce(
++                          (acc, value) => {
++                            return acc + formatDiffPart(part, value, 'unified');
++                          },
++                          '',
++                        );
++                        return combined;
++                      }),
++                      '',
++                    ),
++                  }}
++                />
++              }
+             />
+           </Grid.Column>
+         </Grid.Row>
