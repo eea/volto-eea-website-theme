@@ -2,7 +2,6 @@ import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { Icon } from '@plone/volto/components';
 import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
-import SelectAutoCompleteWidget from '@plone/volto/components/manage/Widgets/SelectAutoComplete';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
 import TableBlockView from '@plone/volto-slate/blocks/Table/TableBlockView';
@@ -20,6 +19,7 @@ import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/W
 import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DateWidget';
 import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DatetimeWidget';
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
+import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/UserSelectWidget';
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
@@ -378,8 +378,7 @@ const applyConfig = (config) => {
   config.widgets.views.widget.contributors = ContributorsViewWidget;
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
-  config.widgets.vocabulary['plone.app.vocabularies.Users'] =
-    SelectAutoCompleteWidget;
+  config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
 
   config.widgets.views.factory = {
     ...(config.widgets.views.factory || {}),
