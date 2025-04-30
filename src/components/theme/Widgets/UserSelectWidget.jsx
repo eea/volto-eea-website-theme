@@ -26,7 +26,6 @@ import {
 import { getVocabulary, getVocabularyTokenTitle } from '@plone/volto/actions';
 
 import {
-  Option,
   ClearIndicator,
   DropdownIndicator,
   MultiValueContainer,
