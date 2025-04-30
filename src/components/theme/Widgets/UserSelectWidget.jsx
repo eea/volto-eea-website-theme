@@ -14,6 +14,9 @@ import {
   normalizeValue,
   convertValueToVocabQuery,
 } from '@plone/volto/components/manage/Widgets/SelectUtils';
+import checkSVG from '@plone/volto/icons/check.svg';
+import checkBlankSVG from '@plone/volto/icons/check-blank.svg';
+import { Icon } from '@plone/volto/components';
 
 import {
   getVocabFromHint,
@@ -23,6 +26,7 @@ import {
 import { getVocabulary, getVocabularyTokenTitle } from '@plone/volto/actions';
 
 import {
+  Option,
   ClearIndicator,
   DropdownIndicator,
   MultiValueContainer,
@@ -78,21 +82,39 @@ export const normalizeChoices = (items, intl) =>
 /**
  * Custom Option component with a tooltip
  */
-const Option = (props) => {
+const CustomOption = injectLazyLibs('reactSelect')((props) => {
+  const { Option } = props.reactSelect.components;
+  const color = props.isFocused && !props.isSelected ? '#b8c6c8' : '#007bc1';
+  const svgIcon =
+    props.isFocused || props.isSelected ? checkSVG : checkBlankSVG;
+
   const { data, innerRef, innerProps } = props;
+  const { label, email } = data;
 
   return (
-    <Popup
-      content={data?.email}
-      position="top left"
-      trigger={
-        <div ref={innerRef} {...innerProps}>
-          <span style={{ flexGrow: 1 }}>{data.label}</span>
-        </div>
-      }
-    />
+    <Option {...props}>
+      <div ref={innerRef} {...innerProps}>
+        <Popup
+          content={email}
+          position="top center"
+          trigger={
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.5rem',
+              }}
+            >
+              <span>{label}</span>
+              <Icon name={svgIcon} size="20px" color={color} />
+            </div>
+          }
+        />
+      </div>
+    </Option>
   );
-};
+});
 
 /**
  * UserSelectWidget component class.
@@ -265,7 +287,7 @@ class UserSelectWidget extends Component {
             MultiValueContainer,
             ClearIndicator,
             DropdownIndicator,
-            Option,
+            Option: CustomOption,
           }}
           value={selectedOption || []}
           placeholder={
