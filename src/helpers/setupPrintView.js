@@ -11,7 +11,7 @@ import {
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 
 export const setupPrintView = (dispatch) => {
-  // set tabs to be visible
+  // Set tabs to be visible
   const tabs = document.getElementsByClassName('ui tab');
   Array.from(tabs).forEach((tab) => {
     tab.style.display = 'block';
@@ -102,25 +102,33 @@ export const setupPrintView = (dispatch) => {
   };
 
   // Wait for all content to load before printing
-  Promise.all([waitForIframes(), waitForImages(), waitForPlotlyCharts()])
-    .then(() => {
-      // Scroll back to top
-      window.scrollTo({ top: 0 });
+  const waitForAllContentToLoad = async () => {
+    // Wait for iframes, images, and Plotly charts to load
+    Promise.all([waitForIframes(), waitForImages(), waitForPlotlyCharts()])
+      .then(() => {
+        // Scroll back to top
+        window.scrollTo({ top: 0 });
 
-      // Reset tab display
-      Array.from(tabs).forEach((tab) => {
-        tab.style.display = '';
+        // Reset tab display
+        Array.from(tabs).forEach((tab) => {
+          tab.style.display = '';
+        });
+
+        // Update state and trigger print
+        dispatch(setPrintLoading(false));
+        dispatch(setIsPrint(false));
+        window.print();
+      })
+      .catch(() => {
+        // Still try to print even if there was an error
+        dispatch(setPrintLoading(false));
+        dispatch(setIsPrint(false));
+        window.print();
       });
+  };
 
-      // Update state and trigger print
-      dispatch(setPrintLoading(false));
-      dispatch(setIsPrint(false));
-      window.print();
-    })
-    .catch(() => {
-      // Still try to print even if there was an error
-      dispatch(setPrintLoading(false));
-      dispatch(setIsPrint(false));
-      window.print();
-    });
+  // Delay the initial call to ensure everything is rendered
+  setTimeout(() => {
+    waitForAllContentToLoad();
+  }, 100);
 };
