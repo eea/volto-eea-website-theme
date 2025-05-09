@@ -53,6 +53,7 @@ const View = ({ data, properties }) => {
                       )}
                       alt={properties.image_caption || ''}
                       responsive={true}
+                      loading="lazy"
                     />
                     <div
                       className={`copyright-wrapper ${
