@@ -130,5 +130,5 @@ export const setupPrintView = (dispatch) => {
   // Delay the initial call to ensure everything is rendered
   setTimeout(() => {
     waitForAllContentToLoad();
-  }, 100);
+  }, 1000);
 };
