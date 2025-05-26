@@ -11,7 +11,7 @@ import ReactDOMServer from 'react-dom/server';
 import { Provider } from 'react-intl-redux';
 import { createBrowserHistory } from 'history';
 import { ConnectedRouter } from 'connected-react-router';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 import config from '@plone/volto/registry';
 import { Api } from '@plone/volto/helpers';
 import configureStore from '@plone/volto/store';
@@ -164,6 +164,7 @@ const DiffField = ({
   schema,
   diffLib,
 }) => {
+  const reduxStore = useStore();
   const language = useSelector((state) => state.intl.locale);
   const readable_date_format = {
     dateStyle: 'full',
@@ -198,7 +199,8 @@ const DiffField = ({
       case 'json': {
         const api = new Api();
         const history = createBrowserHistory();
-        const store = configureStore(window.__data, history, api);
+        const currentState = reduxStore.getState();
+        const store = configureStore(currentState, history, api); //decouple the store from the redux store
         parts = diffWords(
           ReactDOMServer.renderToStaticMarkup(
             <Provider store={store}>
@@ -220,7 +222,8 @@ const DiffField = ({
       case 'slate': {
         const api = new Api();
         const history = createBrowserHistory();
-        const store = configureStore(window.__data, history, api);
+        const currentState = reduxStore.getState();
+        const store = configureStore(currentState, history, api);
         parts = diffWords(
           ReactDOMServer.renderToStaticMarkup(
             <Provider store={store}>
@@ -246,7 +249,8 @@ const DiffField = ({
         if (Widget) {
           const api = new Api();
           const history = createBrowserHistory();
-          const store = configureStore(window.__data, history, api);
+          const currentState = reduxStore.getState();
+          const store = configureStore(currentState, history, api);
           parts = diffWords(
             ReactDOMServer.renderToStaticMarkup(
               <Provider store={store}>
