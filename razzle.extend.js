@@ -1,8 +1,10 @@
 const path = require('path');
+const webpack = require('webpack');
+
 const plugins = (defaultPlugins) => {
   return defaultPlugins;
 };
-const modify = (config, { target, dev }, webpack) => {
+const modify = (config, { target, dev }) => {
   const themeConfigPath = `${__dirname}/theme/theme.config`;
   const { alias } = config.resolve;
   alias['../../theme.config$'] = themeConfigPath;
@@ -24,6 +26,14 @@ const modify = (config, { target, dev }, webpack) => {
   alias['eea-volto-theme-folder'] = alias['eea-volto-themes']
     ? themeLessPath
     : semanticLessPath;
+
+  if (target === 'web') {
+    config.plugins.unshift(
+      new webpack.DefinePlugin({
+        __webpack_nonce__: 'window.__webpack_nonce__',
+      }),
+    );
+  }
 
   return config;
 };
