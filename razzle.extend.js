@@ -1,11 +1,11 @@
 const path = require('path');
 
-//const webpack = require('webpack');
+const webpack = require('webpack');
 
 const plugins = (defaultPlugins) => {
   return defaultPlugins;
 };
-const modify = (config, { target, dev }, webpack) => {
+const modify = (config, { target, dev }, webpackConfig) => {
   const themeConfigPath = `${__dirname}/theme/theme.config`;
   const { alias } = config.resolve;
   alias['../../theme.config$'] = themeConfigPath;
