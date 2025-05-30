@@ -97,12 +97,6 @@ class Html extends Component {
     return (
       <html lang={htmlAttributes.lang}>
         <head>
-          {React.createElement('script', {
-            nonce: nonce,
-            dangerouslySetInnerHTML: {
-              __html: `window.__webpack_nonce__ = "${nonce}";`,
-            },
-          })}
           <meta charSet="utf-8" />
           {head.base.toComponent()}
           {head.title.toComponent()}

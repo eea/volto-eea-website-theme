@@ -46,7 +46,7 @@ import {
 } from '@plone/volto/helpers/AsyncConnect';
 
 let locales = {};
-const isCSP = process.env.RAZZLE_CSP_HEADER || config.settings.serverConfig.csp;
+const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
 
 if (config.settings) {
   config.settings.supportedLanguages.forEach((lang) => {
@@ -107,7 +107,7 @@ server.use(function (err, req, res, next) {
 
 function buildCSPHeader(opts, nonce) {
   if (typeof opts === 'string') {
-    //RAZZLE_CSP_HEADER
+    //CSP_HEADER
     return opts.replaceAll('{nonce}', `'nonce-${nonce}'`);
   }
   return Object.keys(opts)
