@@ -252,12 +252,13 @@ const applyConfig = (config) => {
       },
       allow_view: {
         title: 'Allow View',
-        description: 'Select groups that are allowed to view this block',
+        description: 'Select groups/users that are allowed to view this block',
         widget: 'ad_user_group_select',
       },
       deny_view: {
         title: 'Deny View',
-        description: 'Select groups that are denied access to view this block',
+        description:
+          'Select groups/users that are denied access to view this block',
         widget: 'ad_user_group_select',
       },
     };

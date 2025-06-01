@@ -117,8 +117,8 @@ const sortEntriesByRelevance = (entries, searchText = '') => {
     const typeA = (a.type || 'user').toLowerCase();
     const typeB = (b.type || 'user').toLowerCase();
 
-    if (typeA === 'user' && typeB === 'group') return 1;
-    if (typeA === 'group' && typeB === 'user') return -1;
+    if (typeA === 'user' && typeB === 'group') return -1;
+    if (typeA === 'group' && typeB === 'user') return 1;
 
     // Then sort by relevance score
     const scoreA = calculateRelevanceScore(
@@ -253,7 +253,10 @@ class ADUserGroupSelectWidget extends Component {
     error: PropTypes.arrayOf(PropTypes.string),
     getSharing: PropTypes.func.isRequired,
     value: PropTypes.arrayOf(
-      PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+      PropTypes.oneOfType([
+        PropTypes.object, // Complete objects with {id, title, login, email, type}
+        PropTypes.string, // Simple string IDs (backward compatibility)
+      ]),
     ),
     onChange: PropTypes.func.isRequired,
     wrapped: PropTypes.bool,
@@ -281,32 +284,18 @@ class ADUserGroupSelectWidget extends Component {
   }
 
   componentDidMount() {
-    // Initialize with empty search to get some default entries if needed
+    // If we have values, add them to cache immediately for display
     if (this.props.value && this.props.value.length > 0) {
-      this.fetchAvailableChoices('');
+      this.initializeFromSavedValues();
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { value } = this.props;
 
-    // Cache any selected values that come from props
-    if (
-      value?.length > 0 &&
-      prevProps.value !== value &&
-      this.state.entriesCache.length === 0
-    ) {
-      // Convert value to entries format if they're simple strings
-      const valueEntries = value.map((val) => {
-        if (typeof val === 'string') {
-          return { id: val, title: val, type: 'user' };
-        }
-        return val;
-      });
-
-      this.setState((state) => ({
-        entriesCache: [...state.entriesCache, ...valueEntries],
-      }));
+    // If value changed, update cache with new complete objects
+    if (value?.length > 0 && prevProps.value !== value) {
+      this.initializeFromSavedValues();
     }
   }
 
@@ -317,17 +306,26 @@ class ADUserGroupSelectWidget extends Component {
   }
 
   /**
-   * Handle the field change, store it in the local state and back to simple
-   * array of tokens for correct serialization
+   * Handle the field change, store complete objects instead of just tokens
    * @method handleChange
    * @param {array} selectedOption The selected options (already aggregated).
    * @returns {undefined}
    */
   handleChange(selectedOption) {
-    this.props.onChange(
-      this.props.id,
-      selectedOption ? selectedOption.map((item) => item.value) : null,
-    );
+    // Save complete objects with all necessary information
+    const completeValues = selectedOption
+      ? selectedOption.map((item) => ({
+          id: item.value,
+          value: item.value, // Keep for backward compatibility
+          title: item.originalEntry?.title || item.label.split(' (')[0], // Remove login part from label
+          login: item.originalEntry?.login || item.value,
+          email: item.originalEntry?.email || item.email,
+          type: item.type || 'user',
+          label: item.label, // Keep formatted label
+        }))
+      : null;
+
+    this.props.onChange(this.props.id, completeValues);
 
     // Update cache with selected entries
     if (selectedOption) {
@@ -341,7 +339,9 @@ class ADUserGroupSelectWidget extends Component {
             (option) =>
               option.originalEntry || {
                 id: option.value,
-                title: option.label,
+                title: option.label.split(' (')[0],
+                login: option.value,
+                email: option.email,
                 type: option.type || 'user',
               },
           ),
@@ -353,6 +353,132 @@ class ADUserGroupSelectWidget extends Component {
   timeoutRef = React.createRef();
   // How many characters to hold off searching from. Search starts at this plus one.
   SEARCH_HOLDOFF = 2;
+
+  /**
+   * Initialize cache from saved complete objects
+   * @method initializeFromSavedValues
+   * @returns {undefined}
+   */
+  initializeFromSavedValues = () => {
+    if (!this.props.value || this.props.value.length === 0) return;
+
+    const savedEntries = this.props.value.map((val) => {
+      // If it's already a complete object, use it
+      if (typeof val === 'object' && val !== null && (val.title || val.login)) {
+        return {
+          id: val.id || val.value || val.login,
+          title: val.title || val.login || val.id,
+          login: val.login || val.id || val.value,
+          email: val.email || val.login || val.id,
+          type: val.type || 'user',
+        };
+      }
+
+      // If it's just a string/ID, create a minimal entry
+      const stringVal = typeof val === 'string' ? val : val?.id || val?.value;
+      return {
+        id: stringVal,
+        title: stringVal,
+        login: stringVal,
+        email: stringVal,
+        type: 'user', // Default to user
+      };
+    });
+
+    this.setState((state) => ({
+      entriesCache: [
+        ...state.entriesCache.filter(
+          (cached) => !savedEntries.find((entry) => entry.id === cached.id),
+        ),
+        ...savedEntries,
+      ],
+    }));
+  };
+
+  /**
+   * Fetch details for currently selected values (fallback method)
+   * @method fetchSelectedValues
+   * @returns {Promise}
+   */
+  fetchSelectedValues = async () => {
+    if (!this.props.value || this.props.value.length === 0) return;
+
+    const valuesToFetch = this.props.value.filter((val) => {
+      const valId = typeof val === 'string' ? val : val?.id || val?.value;
+      return !this.state.entriesCache.find(
+        (cached) =>
+          cached.id === valId ||
+          cached.login === valId ||
+          cached.title === valId,
+      );
+    });
+
+    if (valuesToFetch.length === 0) return;
+
+    try {
+      const baseUrl = this.props.pathname
+        ? getBaseUrl(this.props.pathname)
+        : '/';
+
+      // Try to fetch each selected value
+      const fetchPromises = valuesToFetch.map(async (val) => {
+        const searchTerm =
+          typeof val === 'string' ? val : val?.id || val?.value || '';
+        if (!searchTerm) return null;
+
+        try {
+          const response = await this.props.getSharing(baseUrl, searchTerm);
+          const entries = response?.entries || [];
+
+          // Find exact match or best match
+          let matchedEntry = entries.find(
+            (entry) =>
+              entry.id === searchTerm ||
+              entry.login === searchTerm ||
+              entry.title === searchTerm,
+          );
+
+          // If no exact match, try partial match
+          if (!matchedEntry && entries.length > 0) {
+            matchedEntry = entries.find(
+              (entry) =>
+                (entry.login &&
+                  entry.login
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())) ||
+                (entry.title &&
+                  entry.title
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())) ||
+                (entry.email &&
+                  entry.email.toLowerCase().includes(searchTerm.toLowerCase())),
+            );
+          }
+
+          return matchedEntry || null;
+        } catch (error) {
+          console.warn(`Error fetching details for ${searchTerm}:`, error);
+          return null;
+        }
+      });
+
+      const results = await Promise.all(fetchPromises);
+      const validEntries = results.filter(Boolean);
+
+      if (validEntries.length > 0) {
+        this.setState((state) => ({
+          entriesCache: [
+            ...state.entriesCache.filter(
+              (cached) => !validEntries.find((entry) => entry.id === cached.id),
+            ),
+            ...validEntries,
+          ],
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching selected values:', error);
+    }
+  };
 
   loadOptions = (query) => {
     // Update current search text for sorting
@@ -402,33 +528,56 @@ class ADUserGroupSelectWidget extends Component {
   };
 
   render() {
-    // Normalize selected values using cached entries
+    // Normalize selected values using saved complete objects or cached entries
     const selectedOption =
       this.props.value
         ?.map((val) => {
+          // If val is already a complete object with title/login, use it directly
+          if (
+            typeof val === 'object' &&
+            val !== null &&
+            (val.title || val.login)
+          ) {
+            return {
+              value: val.id || val.value || val.login,
+              label:
+                val.label ||
+                `${val.title || val.login}${
+                  val.login && val.login !== (val.title || val.login)
+                    ? ` (${val.login})`
+                    : ''
+                }`,
+              type: val.type || 'user',
+              email: val.email || val.login || val.title,
+              originalEntry: val,
+            };
+          }
+
+          // Try to find in cache
+          const valId = typeof val === 'string' ? val : val?.id || val?.value;
           const cached = this.state.entriesCache.find(
             (entry) =>
-              entry.id === val ||
-              entry.id === val?.value ||
-              entry.id === val?.id,
+              entry.id === valId ||
+              entry.login === valId ||
+              entry.title === valId,
           );
 
           if (cached) {
             return normalizeSharingEntry(cached, this.props.intl);
           }
 
-          // Fallback for values not in cache
+          // Fallback for simple string values (should be rare now)
           if (typeof val === 'string') {
             return {
               value: val,
               label: val,
               type: 'user',
               email: val,
-              originalEntry: { id: val, title: val, type: 'user' },
+              originalEntry: { id: val, title: val, login: val, type: 'user' },
             };
           }
 
-          return normalizeSharingEntry(val, this.props.intl);
+          return null;
         })
         .filter(Boolean) || [];
 
