@@ -216,18 +216,23 @@ const applyConfig = (config) => {
       (fieldset) => fieldset.id === 'styling',
     );
 
+    const securityFields = ['restrictedBlock'];
+    if (formData?.restrictedBlock) {
+      securityFields.push('allow_view', 'deny_view');
+    }
+
     if (stylingIndex !== -1) {
       enhancedSchema.fieldsets.splice(stylingIndex, 0, {
         id: 'security',
         title: 'Security',
-        fields: ['restrictedBlock'],
+        fields: securityFields,
       });
     } else {
       // fallback dacă 'styling' nu e găsit – adaugă la final
       enhancedSchema.fieldsets.push({
         id: 'security',
         title: 'Security',
-        fields: ['restrictedBlock'],
+        fields: securityFields,
       });
     }
     // Adaugă proprietatea restrictedBlock
@@ -244,6 +249,16 @@ const applyConfig = (config) => {
           restrictedBlockMessages.restrictedBlockDescription.defaultMessage,
         type: 'boolean',
         default: false,
+      },
+      allow_view: {
+        title: 'Allow View',
+        description: 'Select groups that are allowed to view this block',
+        widget: 'ad_user_group_select',
+      },
+      deny_view: {
+        title: 'Deny View',
+        description: 'Select groups that are denied access to view this block',
+        widget: 'ad_user_group_select',
       },
     };
 
