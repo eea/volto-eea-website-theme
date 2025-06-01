@@ -53,6 +53,98 @@ const messages = defineMessages({
   },
 });
 
+/**
+ * Calculate relevance score for search matching
+ * @param {string} searchText - The search query
+ * @param {string} title - The title to match against
+ * @param {string} login - The login to match against
+ * @param {string} email - The email to match against
+ * @returns {number} - Higher score means better match
+ */
+const calculateRelevanceScore = (
+  searchText,
+  title = '',
+  login = '',
+  email = '',
+) => {
+  if (!searchText) return 0;
+
+  const query = searchText.toLowerCase();
+  const titleLower = (title || '').toLowerCase();
+  const loginLower = (login || '').toLowerCase();
+  const emailLower = (email || '').toLowerCase();
+
+  let score = 0;
+
+  // Exact matches get highest score
+  if (titleLower === query) score += 100;
+  if (loginLower === query) score += 100;
+  if (emailLower === query) score += 100;
+
+  // Starts with matches get high score
+  if (titleLower.startsWith(query)) score += 50;
+  if (loginLower.startsWith(query)) score += 50;
+  if (emailLower.startsWith(query)) score += 50;
+
+  // Contains matches get medium score
+  if (titleLower.includes(query)) score += 25;
+  if (loginLower.includes(query)) score += 25;
+  if (emailLower.includes(query)) score += 25;
+
+  // Word boundary matches get bonus points
+  const words = query.split(' ');
+  words.forEach((word) => {
+    if (word.length > 1) {
+      const wordRegex = new RegExp(`\\b${word}`, 'i');
+      if (wordRegex.test(title)) score += 15;
+      if (wordRegex.test(login)) score += 15;
+      if (wordRegex.test(email)) score += 15;
+    }
+  });
+
+  return score;
+};
+
+/**
+ * Sort entries by type (users first) and relevance
+ * @param {Array} entries - Array of entries to sort
+ * @param {string} searchText - Current search text
+ * @returns {Array} - Sorted entries
+ */
+const sortEntriesByRelevance = (entries, searchText = '') => {
+  return entries.sort((a, b) => {
+    // First sort by type: users before groups
+    const typeA = (a.type || 'user').toLowerCase();
+    const typeB = (b.type || 'user').toLowerCase();
+
+    if (typeA === 'user' && typeB === 'group') return 1;
+    if (typeA === 'group' && typeB === 'user') return -1;
+
+    // Then sort by relevance score
+    const scoreA = calculateRelevanceScore(
+      searchText,
+      a.title || a.login,
+      a.login,
+      a.email,
+    );
+    const scoreB = calculateRelevanceScore(
+      searchText,
+      b.title || b.login,
+      b.login,
+      b.email,
+    );
+
+    if (scoreA !== scoreB) {
+      return scoreB - scoreA; // Higher score first
+    }
+
+    // Finally, sort alphabetically by title/login
+    const nameA = (a.title || a.login || '').toLowerCase();
+    const nameB = (b.title || b.login || '').toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+};
+
 export const normalizeSharingEntry = (entry, intl) => {
   if (!entry) return entry;
 
@@ -71,8 +163,11 @@ export const normalizeSharingEntry = (entry, intl) => {
   };
 };
 
-export const normalizeSharingChoices = (entries, intl) =>
-  entries.map((entry) => normalizeSharingEntry(entry, intl));
+export const normalizeSharingChoices = (entries, intl, searchText = '') => {
+  // Sort entries before normalizing
+  const sortedEntries = sortEntriesByRelevance(entries, searchText);
+  return sortedEntries.map((entry) => normalizeSharingEntry(entry, intl));
+};
 
 /**
  * Custom Option component with icon and tooltip for users/groups
@@ -108,7 +203,7 @@ const CustomSharingOption = injectLazyLibs('reactSelect')((props) => {
                 <Icon
                   name={typeIcon}
                   size="16px"
-                  color="#666"
+                  color={type === 'user' ? '#007bc1' : '#666'}
                   title={type === 'user' ? 'User' : 'Group'}
                 />
                 <span>{label}</span>
@@ -133,7 +228,11 @@ const CustomMultiValue = injectLazyLibs('reactSelect')((props) => {
   return (
     <MultiValue {...props}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-        <Icon name={typeIcon} size="12px" color="#666" />
+        <Icon
+          name={typeIcon}
+          size="12px"
+          color={data.type === 'user' ? '#007bc1' : '#666'}
+        />
         <span>{data.label}</span>
       </div>
     </MultiValue>
@@ -177,6 +276,7 @@ class ADUserGroupSelectWidget extends Component {
     this.state = {
       searchLength: 0,
       entriesCache: [],
+      currentSearchText: '', // Track current search for sorting
     };
   }
 
@@ -255,6 +355,9 @@ class ADUserGroupSelectWidget extends Component {
   SEARCH_HOLDOFF = 2;
 
   loadOptions = (query) => {
+    // Update current search text for sorting
+    this.setState({ currentSearchText: query });
+
     // Implement a debounce of 400ms and a min search of 3 chars
     if (query.length > this.SEARCH_HOLDOFF) {
       if (this.timeoutRef.current) clearTimeout(this.timeoutRef.current);
@@ -290,7 +393,8 @@ class ADUserGroupSelectWidget extends Component {
         ],
       }));
 
-      return normalizeSharingChoices(entries, this.props.intl);
+      // Pass the current search query for proper sorting
+      return normalizeSharingChoices(entries, this.props.intl, query);
     } catch (error) {
       console.error('Error fetching users/groups:', error);
       return [];
@@ -342,7 +446,10 @@ class ADUserGroupSelectWidget extends Component {
           defaultOptions={[]}
           loadOptions={this.loadOptions}
           onInputChange={(search) =>
-            this.setState({ searchLength: search.length })
+            this.setState({
+              searchLength: search.length,
+              currentSearchText: search,
+            })
           }
           noOptionsMessage={() =>
             this.props.intl.formatMessage(
