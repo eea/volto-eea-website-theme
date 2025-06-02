@@ -306,6 +306,7 @@ const DiffField = ({
                   }}
                 />
               }
+              newValue={two}
             />
           </Grid.Column>
           <Grid.Column width={6} verticalAlign="top">
@@ -329,6 +330,7 @@ const DiffField = ({
                   }}
                 />
               }
+              oldValue={one}
             />
           </Grid.Column>
         </Grid.Row>
