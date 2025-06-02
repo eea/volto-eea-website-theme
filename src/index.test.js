@@ -46,6 +46,12 @@ jest.mock('@plone/volto/components', () => ({
   Icon: 'MockedIcon',
 }));
 
+jest.mock('uuid', () => {
+  return {
+    v4: () => 'mock-uuid-' + Math.random().toString(36).substr(2, 9),
+  };
+});
+
 global.__SERVER__ = true;
 
 describe('applyConfig', () => {
