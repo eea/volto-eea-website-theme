@@ -21,6 +21,7 @@ import { Button, Comment, Container, Icon } from 'semantic-ui-react';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import { formatRelativeDate } from '@plone/volto/helpers/Utils/Date';
 import config from '@plone/volto/registry';
+import './comments.less';
 // import { Button, Grid, Segment, Container } from 'semantic-ui-react';
 
 const messages = defineMessages({
@@ -341,7 +342,8 @@ class Comments extends Component {
           <Comment.Actions>
             {comment.can_reply && (
               <Comment.Action
-                as="a"
+                as="button"
+                type="button"
                 aria-label={this.props.intl.formatMessage(messages.reply)}
                 onClick={() => this.setReplyTo(comment.comment_id)}
               >
@@ -367,6 +369,8 @@ class Comments extends Component {
             )}
             {comment.is_deletable && (
               <Comment.Action
+                as="button"
+                type="button"
                 aria-label={this.props.intl.formatMessage(messages.delete)}
                 onClick={() => this.onDelete(flattenToAppURL(comment['@id']))}
                 color="red"
@@ -380,7 +384,8 @@ class Comments extends Component {
               </Comment.Action>
             )}
             <Comment.Action
-              as="a"
+              as="button"
+              type="button"
               onClick={() => this.hideReply(comment.comment_id)}
             >
               {allCommentsWithCildren[comment.comment_id].children.length >
