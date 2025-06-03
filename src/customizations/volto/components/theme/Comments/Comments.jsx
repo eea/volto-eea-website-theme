@@ -352,6 +352,8 @@ class Comments extends Component {
             )}
             {comment.is_editable && (
               <Comment.Action
+                as="button"
+                type="button"
                 onClick={() =>
                   this.onEdit({
                     id: flattenToAppURL(comment['@id']),
