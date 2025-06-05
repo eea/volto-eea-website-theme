@@ -566,6 +566,11 @@ const applyConfig = (config) => {
     print,
   };
 
+  // Menu items layouts
+  if (!config.settings.menuItemsLayouts) {
+    config.settings.menuItemsLayouts = {};
+  }
+
   // Breadcrumbs
   config.settings.apiExpanders.push({
     match: '',
