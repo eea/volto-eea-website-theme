@@ -566,7 +566,7 @@ const applyConfig = (config) => {
     print,
   };
 
-  // Mega menu object 
+  // Mega menu object
   if (!config.settings.menuItemsLayouts) {
     config.settings.menuItemsLayouts = {};
   }
