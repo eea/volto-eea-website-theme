@@ -501,31 +501,6 @@ const applyConfig = (config) => {
     },
   ];
 
-  // mega menu layout settings
-  config.settings.menuItemsLayouts = {
-    '/en/topics': {
-      menuItemChildrenListColumns: [1, 4],
-      menuItemColumns: [
-        'at-a-glance three wide column',
-        'topics-right-column nine wide column',
-      ],
-      hideChildrenFromNavigation: false,
-    },
-    '/en/countries': {
-      menuItemColumns: ['eight wide column', 'four wide column'],
-      menuItemChildrenListColumns: [5, 2],
-      appendExtraMenuItemsToLastColumn: true,
-      hideChildrenFromNavigation: false,
-    },
-    '/en/about': {
-      hideChildrenFromNavigation: false,
-    },
-    // if you want to set default settings for all menu items that don't have a specific path
-    // '*': {
-    //   hideChildrenFromNavigation: false,
-    // },
-  };
-
   // If you don't want to show the content type as a link in the breadcrumbs, you can set it
   // contentTypesAsBreadcrumbSection
   config.settings.contentTypesAsBreadcrumbSection = ['web_report_section'];
