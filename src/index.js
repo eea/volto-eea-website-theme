@@ -6,7 +6,7 @@ import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
 import TableBlockView from '@plone/volto-slate/blocks/Table/TableBlockView';
 import { nanoid } from '@plone/volto-slate/utils';
-
+import { defineMessages } from 'react-intl';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
@@ -23,6 +23,7 @@ import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/W
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
+import ADUserGroupSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ADUserGroupSelectWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -140,6 +141,17 @@ function tabVariationCustomization(tabs_block_variations, config) {
   };
 }
 
+const restrictedBlockMessages = defineMessages({
+  restrictedBlockTitle: {
+    id: 'restrictedBlockTitle',
+    defaultMessage: 'Restricted block',
+  },
+  restrictedBlockDescription: {
+    id: 'restrictedBlockDescription',
+    defaultMessage: 'Restrict access to this block based on user permissions',
+  },
+});
+
 const applyConfig = (config) => {
   // EEA specific settings
   config.settings.eea = {
@@ -195,6 +207,98 @@ const applyConfig = (config) => {
     };
   }
 
+  // Restricted block schema enhancer
+  const addRestrictedBlockSchemaEnhancer = ({ schema, formData, intl }) => {
+    const enhancedSchema = { ...schema };
+
+    // Adaugă fieldset-ul de securitate pentru restrictedBlock
+    const stylingIndex = enhancedSchema.fieldsets.findIndex(
+      (fieldset) => fieldset.id === 'styling',
+    );
+
+    const securityFields = ['restrictedBlock'];
+    if (formData?.restrictedBlock) {
+      securityFields.push('allow_view', 'deny_view');
+    }
+
+    if (stylingIndex !== -1) {
+      enhancedSchema.fieldsets.splice(stylingIndex, 0, {
+        id: 'security',
+        title: 'Security',
+        fields: securityFields,
+      });
+    } else {
+      // fallback dacă 'styling' nu e găsit – adaugă la final
+      enhancedSchema.fieldsets.push({
+        id: 'security',
+        title: 'Security',
+        fields: securityFields,
+      });
+    }
+    // Adaugă proprietatea restrictedBlock
+    enhancedSchema.properties = {
+      ...enhancedSchema.properties,
+      restrictedBlock: {
+        title:
+          intl?.formatMessage?.(restrictedBlockMessages.restrictedBlockTitle) ||
+          restrictedBlockMessages.restrictedBlockTitle.defaultMessage,
+        description:
+          intl?.formatMessage?.(
+            restrictedBlockMessages.restrictedBlockDescription,
+          ) ||
+          restrictedBlockMessages.restrictedBlockDescription.defaultMessage,
+        type: 'boolean',
+        default: false,
+      },
+      allow_view: {
+        title: 'Allow View',
+        description: 'Select groups/users that are allowed to view this block',
+        widget: 'ad_user_group_select',
+      },
+      deny_view: {
+        title: 'Deny View',
+        description:
+          'Select groups/users that are denied access to view this block',
+        widget: 'ad_user_group_select',
+      },
+    };
+
+    return enhancedSchema;
+  };
+
+  if (config.blocks.blocksConfig.group) {
+    // Păstrează enhancer-ul original
+    const originalGroupSchemaEnhancer =
+      config.blocks.blocksConfig.group.schemaEnhancer;
+
+    // Combină enhancer-ele într-o singură funcție
+    config.blocks.blocksConfig.group.schemaEnhancer = ({
+      schema,
+      formData,
+      intl,
+    }) => {
+      // Aplică enhancer-ul original mai întâi
+      let enhancedSchema = originalGroupSchemaEnhancer
+        ? originalGroupSchemaEnhancer({ schema, formData, intl })
+        : schema;
+
+      // Aplică styling fieldset enhancer
+      enhancedSchema = addStylingFieldsetSchemaEnhancer({
+        schema: enhancedSchema,
+        formData,
+        intl,
+      });
+
+      // Aplică restricted block enhancer
+      enhancedSchema = addRestrictedBlockSchemaEnhancer({
+        schema: enhancedSchema,
+        formData,
+        intl,
+      });
+
+      return enhancedSchema;
+    };
+  }
   // Disable tags on View
   config.settings.showTags = false;
 
@@ -242,7 +346,6 @@ const applyConfig = (config) => {
   // Enable description block (also for cypress)
   config.blocks.blocksConfig.description.restricted = false;
   config.blocks.requiredBlocks = [];
-
   // 281166 fix paste of tables in edit mode where paste action deemed the type
   // of slate type to be table which in Volto 17 is mapped to the Table block which is draftjs based
   // with this fix we load the edit and view of the slateTable avoiding any draftjs loading and error
@@ -380,6 +483,7 @@ const applyConfig = (config) => {
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
+  config.widgets.widget.ad_user_group_select = ADUserGroupSelectWidget;
 
   config.widgets.views.factory = {
     ...(config.widgets.views.factory || {}),
@@ -504,12 +608,6 @@ const applyConfig = (config) => {
   // If you don't want to show the content type as a link in the breadcrumbs, you can set it
   // contentTypesAsBreadcrumbSection
   config.settings.contentTypesAsBreadcrumbSection = ['web_report_section'];
-
-  // Group
-  if (config.blocks.blocksConfig.group) {
-    config.blocks.blocksConfig.group.schemaEnhancer =
-      addStylingFieldsetSchemaEnhancer;
-  }
 
   // Columns
   if (config.blocks.blocksConfig.columnsBlock) {
