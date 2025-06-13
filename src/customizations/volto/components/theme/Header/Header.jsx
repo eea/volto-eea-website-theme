@@ -210,7 +210,7 @@ export default compose(
     (state) => ({
       token: state.userSession.token,
       items:
-        state?.navroot?.data?.navroot?.hideChildrenFromNavigation == true
+        state?.navroot?.data?.navroot?.hideChildrenFromNavigation === true
           ? state.navigation.items?.map((item) => ({
               ...item,
               items:
