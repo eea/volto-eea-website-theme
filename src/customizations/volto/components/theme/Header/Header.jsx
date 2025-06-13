@@ -39,6 +39,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
+
     const has_home_layout =
       layout === 'homepage_inverse_view' ||
       (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
@@ -53,26 +54,27 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   const { eea } = config.settings;
   const headerOpts = eea.headerOpts || {};
+  const state = useSelector((state) => state);
+  console.log({ state });
   const headerSearchBox = eea.headerSearchBox || [];
   const { logo, logoWhite } = headerOpts;
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
+  // React.useEffect(() => {
+  //   const base_url = getBaseUrl(pathname);
+  //   const { settings } = config;
+  //   // Check if navigation data needs to be fetched based on the API expander availability
+  //   if (!hasApiExpander('navigation', base_url)) {
 
-  React.useEffect(() => {
-    const base_url = getBaseUrl(pathname);
-    const { settings } = config;
+  //     dispatch(getNavigation(base_url, settings.navDepth));
+  //   }
 
-    // Check if navigation data needs to be fetched based on the API expander availability
-    if (!hasApiExpander('navigation', base_url)) {
-      dispatch(getNavigation(base_url, settings.navDepth));
-    }
-
-    // Additional check for token changes
-    if (token !== previousToken) {
-      dispatch(getNavigation(base_url, settings.navDepth));
-    }
-  }, [pathname, token, dispatch, previousToken]);
+  //   // Additional check for token changes
+  //   if (token !== previousToken) {
+  //     dispatch(getNavigation(base_url, settings.navDepth));
+  //   }
+  // }, [pathname, token, dispatch, previousToken]);
 
   return (
     <Header menuItems={items}>
@@ -210,7 +212,14 @@ export default compose(
   connect(
     (state) => ({
       token: state.userSession.token,
-      items: state.navigation.items,
+      items:
+        state?.navroot?.data?.navroot?.hideChildrenFromNavigation == true
+          ? state.navigation.items?.map((item) => ({
+              ...item,
+              items:
+                item.items?.map((child) => ({ ...child, items: [] })) || [],
+            }))
+          : state.navigation.items,
       subsite: state.content.data?.['@components']?.subsite,
     }),
     { getNavigation },
