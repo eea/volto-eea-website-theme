@@ -54,27 +54,24 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   const { eea } = config.settings;
   const headerOpts = eea.headerOpts || {};
-  const state = useSelector((state) => state);
-  console.log({ state });
   const headerSearchBox = eea.headerSearchBox || [];
   const { logo, logoWhite } = headerOpts;
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
-  // React.useEffect(() => {
-  //   const base_url = getBaseUrl(pathname);
-  //   const { settings } = config;
-  //   // Check if navigation data needs to be fetched based on the API expander availability
-  //   if (!hasApiExpander('navigation', base_url)) {
+  React.useEffect(() => {
+    const base_url = getBaseUrl(pathname);
+    const { settings } = config;
+    // Check if navigation data needs to be fetched based on the API expander availability
+    if (!hasApiExpander('navigation', base_url)) {
+      dispatch(getNavigation(base_url, settings.navDepth));
+    }
 
-  //     dispatch(getNavigation(base_url, settings.navDepth));
-  //   }
-
-  //   // Additional check for token changes
-  //   if (token !== previousToken) {
-  //     dispatch(getNavigation(base_url, settings.navDepth));
-  //   }
-  // }, [pathname, token, dispatch, previousToken]);
+    // Additional check for token changes
+    if (token !== previousToken) {
+      dispatch(getNavigation(base_url, settings.navDepth));
+    }
+  }, [pathname, token, dispatch, previousToken]);
 
   return (
     <Header menuItems={items}>
