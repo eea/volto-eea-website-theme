@@ -39,7 +39,6 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
-
     const has_home_layout =
       layout === 'homepage_inverse_view' ||
       (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
