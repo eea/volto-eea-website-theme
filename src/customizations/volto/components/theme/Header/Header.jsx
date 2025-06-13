@@ -58,6 +58,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
+  
   React.useEffect(() => {
     const base_url = getBaseUrl(pathname);
     const { settings } = config;
