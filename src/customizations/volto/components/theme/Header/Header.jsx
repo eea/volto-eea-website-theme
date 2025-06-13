@@ -52,7 +52,6 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   });
 
   const { eea } = config.settings;
-
   const headerOpts = eea.headerOpts || {};
   const headerSearchBox = eea.headerSearchBox || [];
   const { logo, logoWhite } = headerOpts;
@@ -63,6 +62,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   React.useEffect(() => {
     const base_url = getBaseUrl(pathname);
     const { settings } = config;
+
     // Check if navigation data needs to be fetched based on the API expander availability
     if (!hasApiExpander('navigation', base_url)) {
       dispatch(getNavigation(base_url, settings.navDepth));
