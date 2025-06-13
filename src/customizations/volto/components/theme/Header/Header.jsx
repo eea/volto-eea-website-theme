@@ -52,6 +52,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   });
 
   const { eea } = config.settings;
+
   const headerOpts = eea.headerOpts || {};
   const headerSearchBox = eea.headerSearchBox || [];
   const { logo, logoWhite } = headerOpts;
