@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Portal } from 'react-portal';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
 import { MaybeWrap } from '@plone/volto/components';
@@ -18,11 +18,9 @@ function IsomorphicPortal({ children }) {
   const [isClient, setIsClient] = React.useState();
   React.useEffect(() => setIsClient(true), []);
 
-  return isClient ? (
-    <Portal node={document.querySelector('.eea.header')}>{children}</Portal>
-  ) : (
-    children
-  );
+  return isClient
+    ? createPortal(children, document.querySelector('.eea.header'))
+    : children;
 }
 
 const WebReport = (props) => {

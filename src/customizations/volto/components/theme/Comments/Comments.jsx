@@ -14,7 +14,7 @@ import { flattenToAppURL, getBaseUrl, getColor } from '@plone/volto/helpers';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
-import { Portal } from 'react-portal';
+import { createPortal } from 'react-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { Button, Comment, Container, Icon } from 'semantic-ui-react';
@@ -457,22 +457,17 @@ class Comments extends Component {
           </Button>
         )}
 
-        {this.state.replyTo && (
-          <Portal
-            node={
-              document &&
-              document.getElementById(`reply-place-${this.state.replyTo}`)
-            }
-          >
+        {this.state.replyTo &&
+          createPortal(
             <Form
               onSubmit={this.onSubmit}
               onCancel={this.onEditCancel}
               submitLabel={this.props.intl.formatMessage(messages.comment)}
               resetAfterSubmit
               schema={makeFormSchema(this.props.intl)}
-            />
-          </Portal>
-        )}
+            />,
+            document.getElementById(`reply-place-${this.state.replyTo}`),
+          )}
       </Container>
     );
   }

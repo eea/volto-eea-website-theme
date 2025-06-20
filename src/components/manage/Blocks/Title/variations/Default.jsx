@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Portal } from 'react-portal';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
 import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
@@ -13,11 +13,9 @@ function IsomorphicPortal({ children }) {
   const [isClient, setIsClient] = React.useState();
   React.useEffect(() => setIsClient(true), []);
 
-  return isClient ? (
-    <Portal node={document.getElementById('page-header')}>{children}</Portal>
-  ) : (
-    children
-  );
+  return isClient
+    ? createPortal(children, document.getElementById('page-header'))
+    : children;
 }
 
 const DefaultTemplate = (props) =>

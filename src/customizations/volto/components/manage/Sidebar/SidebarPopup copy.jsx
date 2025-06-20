@@ -1,6 +1,6 @@
 // Check this https://github.com/plone/volto/pull/5520
 import React from 'react';
-import { Portal } from 'react-portal';
+import { createPortal } from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import PropTypes from 'prop-types';
 import { doesNodeContainClick } from 'semantic-ui-react/dist/commonjs/lib';
@@ -33,9 +33,10 @@ const SidebarPopup = (props) => {
           classNames="overlay-container"
           unmountOnExit
         >
-          <Portal node={document?.body}>
-            <div className="overlay-container"></div>
-          </Portal>
+          {createPortal(
+            <div className="overlay-container"></div>,
+            document?.body,
+          )}
         </CSSTransition>
       )}
       <CSSTransition
