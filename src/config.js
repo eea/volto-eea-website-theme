@@ -112,6 +112,8 @@ export const footerOpts = {
         tablet: 6,
         computer: 4,
       },
+      width: 270,
+      height: 100,
     },
     {
       url: 'https://www.eionet.europa.eu/',
@@ -123,6 +125,8 @@ export const footerOpts = {
         tablet: 6,
         computer: 4,
       },
+      width: 330,
+      height: 100,
     },
   ],
   social: [
@@ -240,6 +244,8 @@ export const headerOpts = {
       },
     ],
   },
+  logoWidth: 350,
+  logoHeight: 130,
 };
 
 export const languages = [
