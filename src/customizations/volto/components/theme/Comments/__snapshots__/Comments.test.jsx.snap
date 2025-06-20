@@ -155,17 +155,19 @@ exports[`Comments renders a comments component 1`] = `
         <div
           className="actions"
         >
-          <a
+          <button
             aria-label="Reply"
             className=""
             onClick={[Function]}
+            type="button"
           >
             Reply
-          </a>
-          <a
+          </button>
+          <button
             aria-label="Edit"
             className=""
             onClick={[Function]}
+            type="button"
             value={
               Object {
                 "id": "someurl",
@@ -174,12 +176,13 @@ exports[`Comments renders a comments component 1`] = `
             }
           >
             Edit
-          </a>
-          <a
+          </button>
+          <button
             aria-label="Delete"
             className=""
             color="red"
             onClick={[Function]}
+            type="button"
           >
             <i
               aria-hidden="true"
@@ -187,10 +190,11 @@ exports[`Comments renders a comments component 1`] = `
               onClick={[Function]}
             />
             Delete
-          </a>
-          <a
+          </button>
+          <button
             className=""
             onClick={[Function]}
+            type="button"
           />
         </div>
         <div
@@ -261,17 +265,19 @@ exports[`Comments renders a comments component 1`] = `
         <div
           className="actions"
         >
-          <a
+          <button
             aria-label="Reply"
             className=""
             onClick={[Function]}
+            type="button"
           >
             Reply
-          </a>
-          <a
+          </button>
+          <button
             aria-label="Edit"
             className=""
             onClick={[Function]}
+            type="button"
             value={
               Object {
                 "id": "someurl",
@@ -280,12 +286,13 @@ exports[`Comments renders a comments component 1`] = `
             }
           >
             Edit
-          </a>
-          <a
+          </button>
+          <button
             aria-label="Delete"
             className=""
             color="red"
             onClick={[Function]}
+            type="button"
           >
             <i
               aria-hidden="true"
@@ -293,10 +300,11 @@ exports[`Comments renders a comments component 1`] = `
               onClick={[Function]}
             />
             Delete
-          </a>
-          <a
+          </button>
+          <button
             className=""
             onClick={[Function]}
+            type="button"
           />
         </div>
         <div
