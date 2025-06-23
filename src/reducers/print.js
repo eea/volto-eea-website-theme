@@ -3,19 +3,29 @@
  * @module reducers/print
  */
 
-import { SET_ISPRINT } from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
+import {
+  SET_ISPRINT,
+  SET_PRINT_LOADING,
+} from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
 
 const initialState = {
   isPrint: false,
+  isPrintLoading: false,
 };
 
 export default function print(state = initialState, action) {
-  if (action.type === SET_ISPRINT) {
-    return {
-      ...state,
-      isPrint: action.payload,
-    };
-  } else {
-    return state;
+  switch (action.type) {
+    case SET_ISPRINT:
+      return {
+        ...state,
+        isPrint: action.payload,
+      };
+    case SET_PRINT_LOADING:
+      return {
+        ...state,
+        isPrintLoading: action.payload,
+      };
+    default:
+      return state;
   }
 }
