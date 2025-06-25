@@ -3,7 +3,10 @@
  * @module actions/print
  */
 
-import { SET_ISPRINT } from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
+import {
+  SET_ISPRINT,
+  SET_PRINT_LOADING,
+} from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
 
 export const setIsPrint = (data) => {
   return {
@@ -11,3 +14,8 @@ export const setIsPrint = (data) => {
     payload: data,
   };
 };
+
+export const setPrintLoading = (isLoading) => ({
+  type: SET_PRINT_LOADING,
+  payload: isLoading,
+});

@@ -24,10 +24,12 @@ const AccordionNavigation = ({
   navigation = {},
   device,
   isMenuOpenOnOutsideClick,
+  insertBefore,
 }) => {
   const { items = [], title, has_custom_name } = navigation;
   const intl = useIntl();
-  const navOpen = ['mobile', 'tablet'].includes(device) ? false : true;
+  const navOpen =
+    ['mobile', 'tablet'].includes(device) || insertBefore ? false : true;
   const [isNavOpen, setIsNavOpen] = React.useState(navOpen);
   const [activeItems, setActiveItems] = React.useState({});
   const contextNavigationListRef = React.useRef(null);
@@ -220,6 +222,7 @@ export default compose(
       targetParent: '.eea.header ',
       fixedVisibilitySwitchTarget: '.main.bar',
       insertBeforeOnMobile: '.banner',
+      insertBefore: props.insertBefore,
       shouldRender: props.navigation?.items?.length > 0,
     }),
 )(AccordionNavigation);
