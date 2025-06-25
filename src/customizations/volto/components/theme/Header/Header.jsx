@@ -210,7 +210,14 @@ export default compose(
   connect(
     (state) => ({
       token: state.userSession.token,
-      items: state.navigation.items,
+      items:
+        state?.navroot?.data?.navroot?.hideChildrenFromNavigation === true
+          ? state.navigation.items?.map((item) => ({
+              ...item,
+              items:
+                item.items?.map((child) => ({ ...child, items: [] })) || [],
+            }))
+          : state.navigation.items,
       subsite: state.content.data?.['@components']?.subsite,
     }),
     { getNavigation },
