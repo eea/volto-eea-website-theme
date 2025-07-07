@@ -112,6 +112,7 @@ const DefaultView = (props) => {
         </Container>
         {hasLightLayout && matchingNavigationPath && (
           <AccordionContextNavigation
+            insertBefore={matchingNavigationPath.insertBefore}
             params={{
               name: matchingNavigationPath.title,
               no_thumbs: matchingNavigationPath.no_thumbs || true,
