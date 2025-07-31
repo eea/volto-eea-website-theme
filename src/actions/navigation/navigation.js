@@ -1,4 +1,3 @@
-
 import { GET_NAVIGATION_SETTINGS } from '../../constants/ActionTypes';
 import config from '@plone/registry';
 
