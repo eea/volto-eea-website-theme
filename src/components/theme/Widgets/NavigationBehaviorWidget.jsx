@@ -136,6 +136,9 @@ const NavigationBehaviorWidget = (props) => {
   const navigation = useSelector((state) => state.navigation?.items || []);
   const navigationLoaded = useSelector((state) => state.navigation?.loaded);
 
+  const navigation = useSelector((state) => state.navigation?.items || []);
+  const navigationLoaded = useSelector((state) => state.navigation?.loaded);
+
   // Parse JSON string to object
   const parseValue = (val) => {
     try {
@@ -201,14 +204,20 @@ const NavigationBehaviorWidget = (props) => {
         ...(routeSettings[routeId] || defaultRouteSettings),
       };
 
+
       routes.push(route);
+
 
       if (item.items && item.items.length > 0) {
         routes = routes.concat(
           flattenNavigationToRoutes(item.items, currentPath, level + 1),
         );
+        routes = routes.concat(
+          flattenNavigationToRoutes(item.items, currentPath, level + 1),
+        );
       }
     });
+
 
     return routes;
   };
@@ -216,6 +225,7 @@ const NavigationBehaviorWidget = (props) => {
   const allRoutes = React.useMemo(() => {
     const routes = flattenNavigationToRoutes(navigation);
     // Filter to show only level 2 routes (sub-pages that can be expanded/collapsed)
+    return routes.filter((route) => route.level === 1); // level 1 = second level (0-indexed)
     return routes.filter((route) => route.level === 1); // level 1 = second level (0-indexed)
   }, [navigation, routeSettings]);
 
@@ -232,6 +242,9 @@ const NavigationBehaviorWidget = (props) => {
               onClick={handleChangeActiveObject}
             >
               <div className="label">
+                <Icon
+                  name={route.hasChildren ? 'folder' : 'file outline'}
+                  color={route.hasChildren ? 'orange' : 'blue'}
                 <Icon
                   name={route.hasChildren ? 'folder' : 'file outline'}
                   color={route.hasChildren ? 'orange' : 'blue'}
@@ -300,6 +313,16 @@ const NavigationBehaviorWidget = (props) => {
         >
           No level 2 navigation routes found. Click "Load Level 2 Navigation
           Routes" to populate with sub-pages that can be expanded/collapsed.
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            color: '#666',
+            fontStyle: 'italic',
+          }}
+        >
+          No level 2 navigation routes found. Click "Load Level 2 Navigation
+          Routes" to populate with sub-pages that can be expanded/collapsed.
         </div>
       )}
     </div>
@@ -307,3 +330,4 @@ const NavigationBehaviorWidget = (props) => {
 };
 
 export default NavigationBehaviorWidget;
+
