@@ -55,12 +55,14 @@ const defaultRouteSettings = {
 // Get settings from config.settings.menuItemsLayouts
 const getConfigSettingsForRoute = (routePath) => {
   const menuItemsLayouts = config.settings?.menuItemsLayouts || {};
-  const routeConfig = menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
-  
+  const routeConfig =
+    menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
+
   return {
-    hideChildrenFromNavigation: routeConfig.hideChildrenFromNavigation !== undefined 
-      ? routeConfig.hideChildrenFromNavigation 
-      : true,
+    hideChildrenFromNavigation:
+      routeConfig.hideChildrenFromNavigation !== undefined
+        ? routeConfig.hideChildrenFromNavigation
+        : true,
     includeInNavigation: true,
     expandChildren: false,
     navigationDepth: 0,
@@ -136,9 +138,6 @@ const NavigationBehaviorWidget = (props) => {
   const navigation = useSelector((state) => state.navigation?.items || []);
   const navigationLoaded = useSelector((state) => state.navigation?.loaded);
 
-  const navigation = useSelector((state) => state.navigation?.items || []);
-  const navigationLoaded = useSelector((state) => state.navigation?.loaded);
-
   // Parse JSON string to object
   const parseValue = (val) => {
     try {
@@ -169,17 +168,21 @@ const NavigationBehaviorWidget = (props) => {
 
   // Auto-populate from config if no settings exist
   useEffect(() => {
-    if (navigationLoaded && navigation.length > 0 && Object.keys(routeSettings).length === 0) {
+    if (
+      navigationLoaded &&
+      navigation.length > 0 &&
+      Object.keys(routeSettings).length === 0
+    ) {
       const routes = flattenNavigationToRoutes(navigation);
       const level2Routes = routes.filter((route) => route.level === 1);
-      
+
       if (level2Routes.length > 0) {
         const newSettings = {};
         level2Routes.forEach((route) => {
           const configSettings = getConfigSettingsForRoute(route.path);
           newSettings[route['@id']] = configSettings;
         });
-        
+
         onChange(id, JSON.stringify(newSettings));
       }
     }
@@ -204,28 +207,22 @@ const NavigationBehaviorWidget = (props) => {
         ...(routeSettings[routeId] || defaultRouteSettings),
       };
 
-
       routes.push(route);
 
-
       if (item.items && item.items.length > 0) {
-        routes = routes.concat(
-          flattenNavigationToRoutes(item.items, currentPath, level + 1),
-        );
         routes = routes.concat(
           flattenNavigationToRoutes(item.items, currentPath, level + 1),
         );
       }
     });
 
-
     return routes;
   };
 
   const allRoutes = React.useMemo(() => {
     const routes = flattenNavigationToRoutes(navigation);
+    console.log(routes.filter((route) => route.level === 1));
     // Filter to show only level 2 routes (sub-pages that can be expanded/collapsed)
-    return routes.filter((route) => route.level === 1); // level 1 = second level (0-indexed)
     return routes.filter((route) => route.level === 1); // level 1 = second level (0-indexed)
   }, [navigation, routeSettings]);
 
@@ -242,9 +239,6 @@ const NavigationBehaviorWidget = (props) => {
               onClick={handleChangeActiveObject}
             >
               <div className="label">
-                <Icon
-                  name={route.hasChildren ? 'folder' : 'file outline'}
-                  color={route.hasChildren ? 'orange' : 'blue'}
                 <Icon
                   name={route.hasChildren ? 'folder' : 'file outline'}
                   color={route.hasChildren ? 'orange' : 'blue'}
@@ -301,33 +295,8 @@ const NavigationBehaviorWidget = (props) => {
           </Accordion>
         ))}
       </div>
-
-      {allRoutes.length === 0 && navigationLoaded && (
-        <div
-          style={{
-            padding: '2rem',
-            textAlign: 'center',
-            color: '#666',
-            fontStyle: 'italic',
-          }}
-        >
-          No level 2 navigation routes found. Click "Load Level 2 Navigation
-          Routes" to populate with sub-pages that can be expanded/collapsed.
-        <div
-          style={{
-            padding: '2rem',
-            textAlign: 'center',
-            color: '#666',
-            fontStyle: 'italic',
-          }}
-        >
-          No level 2 navigation routes found. Click "Load Level 2 Navigation
-          Routes" to populate with sub-pages that can be expanded/collapsed.
-        </div>
-      )}
     </div>
   );
 };
 
 export default NavigationBehaviorWidget;
-
