@@ -46,6 +46,7 @@ import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
 import { print } from './reducers';
+import navigationSettings from './reducers/navigation/navigation';
 
 import * as eea from './config';
 
@@ -597,6 +598,7 @@ const applyConfig = (config) => {
   config.addonReducers = {
     ...(config.addonReducers || {}),
     print,
+    navigationSettings,
   };
 
   // Mega menu object
