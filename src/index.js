@@ -437,6 +437,32 @@ const applyConfig = (config) => {
 
   // hide language dropdown by default
   config.settings.hasLanguageDropdown = false;
+  config.settings.menuItemsLayouts = {
+    '/g/teta': {
+      menuItemChildrenListColumns: [1, 4],
+      menuItemColumns: [
+        'at-a-glance three wide column',
+        'topics-right-column nine wide column',
+      ],
+      hideChildrenFromNavigation: false,
+    },
+    '/en/countries': {
+      menuItemColumns: ['eight wide column', 'four wide column'],
+      menuItemChildrenListColumns: [5, 2],
+      appendExtraMenuItemsToLastColumn: true,
+      hideChildrenFromNavigation: false,
+    },
+    '/en/about': {
+      hideChildrenFromNavigation: false,
+    },
+    '/en/ghg-knowledge-hub': {
+      hideChildrenFromNavigation: false,
+    },
+    // if you want to set default settings for all menu items that don't have a specific path
+    // '*': {
+    //   hideChildrenFromNavigation: false,
+    // },
+  };
 
   // Site theme colors
   config.settings.themeColors = [
