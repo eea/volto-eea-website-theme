@@ -59,12 +59,12 @@ const getRouteSettingsSchema = (intl) => ({
       id: 'default',
       title: 'Default',
       fields: [
-        'showChildren', 
-        'includeInNavigation', 
-        'expandChildren', 
-        'navigationDepth', 
-        'showIcons', 
-        'showThumbnails'
+        'showChildren',
+        'includeInNavigation',
+        'expandChildren',
+        'navigationDepth',
+        'showIcons',
+        'showThumbnails',
       ],
     },
   ],
@@ -115,9 +115,9 @@ const NavigationBehaviorWidget = (props) => {
   const { value = '{}', id, onChange, schema } = props;
   const intl = useIntl();
   const dispatch = useDispatch();
-  const navigation = useSelector(state => state.navigation?.items || []);
-  const navigationLoaded = useSelector(state => state.navigation?.loaded);
-  
+  const navigation = useSelector((state) => state.navigation?.items || []);
+  const navigationLoaded = useSelector((state) => state.navigation?.loaded);
+
   // Parse JSON string to object
   const parseValue = (val) => {
     try {
@@ -148,9 +148,11 @@ const NavigationBehaviorWidget = (props) => {
 
   const flattenNavigationToRoutes = (items, path = '', level = 0) => {
     let routes = [];
-    
-    items.forEach(item => {
-      const currentPath = path ? `${path}/${item.url || item.id}` : (item.url || item.id);
+
+    items.forEach((item) => {
+      const currentPath = path
+        ? `${path}/${item.url || item.id}`
+        : item.url || item.id;
       const routeId = item['@id'] || item.url || item.id || uuid();
       const route = {
         '@id': routeId,
@@ -163,44 +165,52 @@ const NavigationBehaviorWidget = (props) => {
         // Include existing settings or defaults
         ...(routeSettings[routeId] || defaultRouteSettings),
       };
-      
+
       routes.push(route);
-      
+
       if (item.items && item.items.length > 0) {
-        routes = routes.concat(flattenNavigationToRoutes(item.items, currentPath, level + 1));
+        routes = routes.concat(
+          flattenNavigationToRoutes(item.items, currentPath, level + 1),
+        );
       }
     });
-    
+
     return routes;
   };
 
   const allRoutes = React.useMemo(() => {
     const routes = flattenNavigationToRoutes(navigation);
     // Filter to show only level 2 routes (sub-pages that can be expanded/collapsed)
-    return routes.filter(route => route.level === 1); // level 1 = second level (0-indexed)
+    return routes.filter((route) => route.level === 1); // level 1 = second level (0-indexed)
   }, [navigation, routeSettings]);
 
   const loadNavigationRoutes = () => {
     const routes = flattenNavigationToRoutes(navigation);
     const newSettings = {};
-    
+
     // Only save settings for level 2 routes (the ones that matter for navigation behavior)
     routes
-      .filter(route => route.level === 1) // level 1 = second level (0-indexed)
-      .forEach(route => {
-        const { '@id': routeId, title, path, url, level, hasChildren, portal_type, ...settings } = route;
+      .filter((route) => route.level === 1) // level 1 = second level (0-indexed)
+      .forEach((route) => {
+        const {
+          '@id': routeId,
+          title,
+          path,
+          url,
+          level,
+          hasChildren,
+          portal_type,
+          ...settings
+        } = route;
         newSettings[routeId] = settings;
       });
-    
+
     onChange(JSON.stringify(newSettings));
   };
 
   return (
     <div className="objectlist-widget">
-      <FormFieldWrapper
-        {...props}
-        className="navigation-behavior-widget"
-      >
+      <FormFieldWrapper {...props} className="navigation-behavior-widget">
         <div className="add-item-button-wrapper">
           <Button
             compact
@@ -209,7 +219,7 @@ const NavigationBehaviorWidget = (props) => {
             disabled={!navigationLoaded || navigation.length === 0}
           >
             <Icon name={plusSVG} size="18px" />
-            &nbsp; {intl.formatMessage(messages.loadNavigationRoutes)} 
+            &nbsp; {intl.formatMessage(messages.loadNavigationRoutes)}
             {navigationLoaded && ` (${allRoutes.length} routes)`}
           </Button>
         </div>
@@ -224,19 +234,19 @@ const NavigationBehaviorWidget = (props) => {
               onClick={handleChangeActiveObject}
             >
               <div className="label">
-                <Icon 
-                  name={route.hasChildren ? 'folder' : 'file outline'} 
-                  color={route.hasChildren ? 'orange' : 'blue'} 
+                <Icon
+                  name={route.hasChildren ? 'folder' : 'file outline'}
+                  color={route.hasChildren ? 'orange' : 'blue'}
                 />
-                <strong style={{ marginLeft: '0.5rem' }}>
-                  {route.title}
-                </strong>
-                <span style={{ 
-                  color: '#666', 
-                  fontSize: '0.85em',
-                  fontStyle: 'italic',
-                  marginLeft: '0.5rem'
-                }}>
+                <strong style={{ marginLeft: '0.5rem' }}>{route.title}</strong>
+                <span
+                  style={{
+                    color: '#666',
+                    fontSize: '0.85em',
+                    fontStyle: 'italic',
+                    marginLeft: '0.5rem',
+                  }}
+                >
                   ({route.portal_type})
                 </span>
               </div>
@@ -257,7 +267,16 @@ const NavigationBehaviorWidget = (props) => {
                   schema={objectSchema}
                   value={route}
                   onChange={(fieldId, fieldValue) => {
-                    const { '@id': routeId, title, path, url, level, hasChildren, portal_type, ...settings } = fieldValue;
+                    const {
+                      '@id': routeId,
+                      title,
+                      path,
+                      url,
+                      level,
+                      hasChildren,
+                      portal_type,
+                      ...settings
+                    } = fieldValue;
                     const newSettings = {
                       ...routeSettings,
                       [routeId]: settings,
@@ -272,13 +291,16 @@ const NavigationBehaviorWidget = (props) => {
       </div>
 
       {allRoutes.length === 0 && navigationLoaded && (
-        <div style={{ 
-          padding: '2rem', 
-          textAlign: 'center', 
-          color: '#666', 
-          fontStyle: 'italic' 
-        }}>
-          No level 2 navigation routes found. Click "Load Level 2 Navigation Routes" to populate with sub-pages that can be expanded/collapsed.
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            color: '#666',
+            fontStyle: 'italic',
+          }}
+        >
+          No level 2 navigation routes found. Click "Load Level 2 Navigation
+          Routes" to populate with sub-pages that can be expanded/collapsed.
         </div>
       )}
     </div>
