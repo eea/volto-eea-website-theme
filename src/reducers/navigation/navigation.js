@@ -1,4 +1,3 @@
-
 import { GET_NAVIGATION_SETTINGS } from '../../constants/ActionTypes';
 
 const initialState = {
@@ -25,7 +24,10 @@ export default function navigation(state = initialState, action = {}) {
           ...state.items,
           [action.result['@id']]: {
             ...action.result,
-            hideChildrenFromNavigation: action.result.hideChildrenFromNavigation === undefined ? true : action.result.hideChildrenFromNavigation,
+            hideChildrenFromNavigation:
+              action.result.hideChildrenFromNavigation === undefined
+                ? true
+                : action.result.hideChildrenFromNavigation,
           },
         },
         loaded: true,
