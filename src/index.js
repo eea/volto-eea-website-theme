@@ -24,6 +24,7 @@ import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/W
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
+import NavigationBehaviorWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/NavigationBehaviorWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -380,6 +381,7 @@ const applyConfig = (config) => {
   config.widgets.views.widget.contributors = ContributorsViewWidget;
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
+  config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
 
   config.widgets.views.factory = {
