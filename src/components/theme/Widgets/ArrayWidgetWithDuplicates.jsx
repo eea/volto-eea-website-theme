@@ -67,7 +67,9 @@ function normalizeArrayValue(choices, value) {
     return value.map((v) => {
       const stringValue = String(v);
       return {
-        label: find(choices, (c) => String(c.value) === stringValue)?.label || stringValue,
+        label:
+          find(choices, (c) => String(c.value) === stringValue)?.label ||
+          stringValue,
         value: v,
       };
     });
@@ -244,7 +246,7 @@ class ArrayWidgetWithDuplicates extends Component {
     const rawChoices = this.props.items?.choices || this.props?.choices || [];
     const choices = normalizeChoices(rawChoices);
     const selectedOption = normalizeArrayValue(choices, this.props.value);
-    
+
     console.log('ArrayWidgetWithDuplicates debug:', {
       rawChoices,
       choices,
@@ -289,27 +291,27 @@ class ArrayWidgetWithDuplicates extends Component {
             this.props.vocabBaseUrl
               ? choices
               : rawChoices.length > 0
-                ? [
-                    ...choices,
-                    ...(this.props.noValueOption &&
-                    (this.props.default === undefined ||
-                      this.props.default === null)
-                      ? [
-                          {
-                            label: this.props.intl.formatMessage(
-                              messages.no_value,
-                            ),
-                            value: 'no-value',
-                          },
-                        ]
-                      : []),
-                  ]
-                : [
-                    {
-                      label: this.props.intl.formatMessage(messages.no_value),
-                      value: 'no-value',
-                    },
-                  ]
+              ? [
+                  ...choices,
+                  ...(this.props.noValueOption &&
+                  (this.props.default === undefined ||
+                    this.props.default === null)
+                    ? [
+                        {
+                          label: this.props.intl.formatMessage(
+                            messages.no_value,
+                          ),
+                          value: 'no-value',
+                        },
+                      ]
+                    : []),
+                ]
+              : [
+                  {
+                    label: this.props.intl.formatMessage(messages.no_value),
+                    value: 'no-value',
+                  },
+                ]
           }
           styles={customSelectStyles}
           theme={selectTheme}
@@ -345,7 +347,9 @@ class ArrayWidgetWithDuplicates extends Component {
   }
 }
 
-export const ArrayWidgetWithDuplicatesComponent = injectIntl(ArrayWidgetWithDuplicates);
+export const ArrayWidgetWithDuplicatesComponent = injectIntl(
+  ArrayWidgetWithDuplicates,
+);
 
 export default compose(
   injectIntl,

@@ -32,7 +32,13 @@ const SimpleArrayWidget = (props) => {
   // Ensure value is always an array
   const value = Array.isArray(rawValue) ? rawValue : [];
 
-  console.log('SimpleArrayWidget debug:', { id, rawValue, value, typeof_value: typeof rawValue, value_items: value.map(v => ({ val: v, type: typeof v })) });
+  console.log('SimpleArrayWidget debug:', {
+    id,
+    rawValue,
+    value,
+    typeof_value: typeof rawValue,
+    value_items: value.map((v) => ({ val: v, type: typeof v })),
+  });
 
   const handleAdd = () => {
     if (newValue.trim() !== '') {
@@ -79,15 +85,24 @@ const SimpleArrayWidget = (props) => {
 
   return (
     <FormFieldWrapper {...props}>
-      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.5rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+          paddingTop: '0.5rem',
+        }}
+      >
         {/* Display current values as compact labels */}
         {value.map((item, index) => {
           // Force conversion to number for display (in case it comes as string)
-          const displayValue = typeof item === 'string' ? parseInt(item) || item : item;
+          const displayValue =
+            typeof item === 'string' ? parseInt(item) || item : item;
           return (
             <Label key={index} size="small" color="blue">
               {displayValue}
-              <Label.Detail 
+              <Label.Detail
                 as="a"
                 onClick={() => handleRemove(index)}
                 style={{ cursor: 'pointer' }}
@@ -98,10 +113,12 @@ const SimpleArrayWidget = (props) => {
             </Label>
           );
         })}
-        
+
         {/* Input field (conditionally shown) */}
         {showInput && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+          >
             <Input
               id={`${id}-input`}
               type="number"
@@ -132,7 +149,7 @@ const SimpleArrayWidget = (props) => {
             />
           </div>
         )}
-        
+
         {/* Add button (shown when input is hidden) */}
         {!showInput && (
           <Button
@@ -145,9 +162,16 @@ const SimpleArrayWidget = (props) => {
           />
         )}
       </div>
-      
+
       {props.description && (
-        <div style={{ fontSize: '0.85em', color: '#767676', marginTop: '0.5rem', fontStyle: 'italic' }}>
+        <div
+          style={{
+            fontSize: '0.85em',
+            color: '#767676',
+            marginTop: '0.5rem',
+            fontStyle: 'italic',
+          }}
+        >
           {props.description}
         </div>
       )}
