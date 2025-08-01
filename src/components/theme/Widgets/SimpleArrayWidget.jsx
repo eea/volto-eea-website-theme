@@ -32,7 +32,6 @@ const SimpleArrayWidget = (props) => {
   // Ensure value is always an array
   const value = Array.isArray(rawValue) ? rawValue : [];
 
-
   const handleAdd = () => {
     if (newValue.trim() !== '') {
       const numValue = parseInt(newValue.trim());

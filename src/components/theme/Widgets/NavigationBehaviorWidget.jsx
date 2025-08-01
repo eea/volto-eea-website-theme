@@ -3,13 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { Icon, FormFieldWrapper } from '@plone/volto/components';
 import ObjectWidget from '@plone/volto/components/manage/Widgets/ObjectWidget';
-import {
-  Accordion,
-  Button,
-  Segment,
-  Form,
-  Dropdown,
-} from 'semantic-ui-react';
+import { Accordion, Button, Segment, Form, Dropdown } from 'semantic-ui-react';
 import { getNavigation } from '@plone/volto/actions';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
@@ -178,7 +172,6 @@ const getConfigSettingsForRoute = (routePath) => {
   const routeConfig =
     menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
 
-
   const settings = {
     hideChildrenFromNavigation:
       routeConfig.hideChildrenFromNavigation !== undefined
@@ -320,7 +313,14 @@ const NavigationBehaviorWidget = (props) => {
         onChange(id, JSON.stringify(newSettings));
       }
     }
-  }, [navigationLoaded, navigation, routeSettings, onChange, id, flattenNavigationToRoutes]);
+  }, [
+    navigationLoaded,
+    navigation,
+    routeSettings,
+    onChange,
+    id,
+    flattenNavigationToRoutes,
+  ]);
 
   const flattenNavigationToRoutes = (items, path = '', level = 0) => {
     let routes = [];
@@ -332,7 +332,6 @@ const NavigationBehaviorWidget = (props) => {
       const configSettings =
         getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
       const savedSettings = routeSettings[routeId] || {};
-
 
       // Merge settings intelligently - use config values for empty/missing fields
       let finalSettings = { ...defaultRouteSettings };
@@ -468,7 +467,6 @@ const NavigationBehaviorWidget = (props) => {
                       ...settings
                     } = fieldValue;
 
-
                     // Preserve existing settings and merge with new ones
                     const existingSettings = routeSettings[routeId] || {};
 
@@ -555,7 +553,6 @@ const NavigationBehaviorWidget = (props) => {
                         delete mergedSettings[key];
                       }
                     });
-
 
                     const newSettings = {
                       ...routeSettings,
