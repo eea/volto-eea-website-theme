@@ -247,14 +247,6 @@ class ArrayWidgetWithDuplicates extends Component {
     const choices = normalizeChoices(rawChoices);
     const selectedOption = normalizeArrayValue(choices, this.props.value);
 
-    console.log('ArrayWidgetWithDuplicates debug:', {
-      rawChoices,
-      choices,
-      value: this.props.value,
-      selectedOption,
-      items: this.props.items,
-    });
-
     const CreatableSelect = this.props.reactSelectCreateable.default;
     const { SortableContainer } = this.props.reactSortableHOC;
     const Select = this.props.reactSelect.default;
