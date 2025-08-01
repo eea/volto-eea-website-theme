@@ -511,12 +511,18 @@ const NavigationBehaviorWidget = (props) => {
                     });
 
                     // Convert menuItemColumns from numbers back to semantic UI format for backend storage
-                    if (mergedSettings.menuItemColumns !== null && mergedSettings.menuItemColumns) {
+                    if (
+                      mergedSettings.menuItemColumns !== null &&
+                      mergedSettings.menuItemColumns
+                    ) {
                       if (mergedSettings.menuItemColumns.length > 0) {
-                        mergedSettings.menuItemColumns = numbersToMenuItemColumns(
-                          mergedSettings.menuItemColumns,
-                        );
-                      } else if (!explicitlySetFields.includes('menuItemColumns')) {
+                        mergedSettings.menuItemColumns =
+                          numbersToMenuItemColumns(
+                            mergedSettings.menuItemColumns,
+                          );
+                      } else if (
+                        !explicitlySetFields.includes('menuItemColumns')
+                      ) {
                         // Only remove empty menuItemColumns if not explicitly set by user
                         delete mergedSettings.menuItemColumns;
                       } else {
@@ -524,13 +530,16 @@ const NavigationBehaviorWidget = (props) => {
                         mergedSettings.menuItemColumns = [];
                       }
                     }
-                    
+
                     // Handle menuItemChildrenListColumns similarly
                     if (mergedSettings.menuItemChildrenListColumns !== null) {
                       if (
                         !mergedSettings.menuItemChildrenListColumns ||
-                        (mergedSettings.menuItemChildrenListColumns.length === 0 &&
-                          !explicitlySetFields.includes('menuItemChildrenListColumns'))
+                        (mergedSettings.menuItemChildrenListColumns.length ===
+                          0 &&
+                          !explicitlySetFields.includes(
+                            'menuItemChildrenListColumns',
+                          ))
                       ) {
                         delete mergedSettings.menuItemChildrenListColumns;
                       }
