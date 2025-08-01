@@ -336,7 +336,7 @@ describe('navigation reducer', () => {
         '/test-page': {
           '@id': '/test-page',
           title: 'Test Page',
-          hideChildrenFromNavigation: true, // Should default to true when null
+          hideChildrenFromNavigation: null, // null values are preserved
         },
       },
       loaded: true,
