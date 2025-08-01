@@ -49,7 +49,7 @@ const messages = defineMessages({
 
 const defaultRouteSettings = {
   hideChildrenFromNavigation: true,
-  includeInNavigation: true, 
+  includeInNavigation: true,
   expandChildren: false,
   navigationDepth: 0,
   showIcons: true,
@@ -63,7 +63,11 @@ const getConfigSettingsForRoute = (routePath) => {
   const routeConfig =
     menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
 
-  console.log('getConfigSettingsForRoute', { routePath, routeConfig, menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns });
+  console.log('getConfigSettingsForRoute', {
+    routePath,
+    routeConfig,
+    menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns,
+  });
 
   return {
     hideChildrenFromNavigation:
@@ -75,8 +79,8 @@ const getConfigSettingsForRoute = (routePath) => {
     navigationDepth: 0,
     showIcons: true,
     showThumbnails: false,
-    menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns 
-      ? routeConfig.menuItemChildrenListColumns.map(val => String(val))
+    menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns
+      ? routeConfig.menuItemChildrenListColumns.map((val) => String(val))
       : [],
   };
 };
@@ -140,7 +144,8 @@ const getRouteSettingsSchema = (intl) => ({
     },
     menuItemChildrenListColumns: {
       title: intl.formatMessage(messages.menuItemChildrenListColumns),
-      description: 'Array of integers defining the number of columns for each section (e.g., [1, 4])',
+      description:
+        'Array of integers defining the number of columns for each section (e.g., [1, 4])',
       type: 'array',
       items: {
         type: 'integer',
@@ -227,15 +232,16 @@ const NavigationBehaviorWidget = (props) => {
       const itemPath = item.url || item.id;
       const currentPath = itemPath;
       const routeId = item['@id'] || item.url || item.id || uuid();
-      const configSettings = getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
+      const configSettings =
+        getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
       const savedSettings = routeSettings[routeId] || {};
-      
+
       // Merge saved settings with config settings, giving priority to saved settings
       const finalSettings = {
         ...configSettings,
         ...savedSettings,
       };
-      
+
       const route = {
         '@id': routeId,
         title: item.title || item.name,
@@ -247,7 +253,12 @@ const NavigationBehaviorWidget = (props) => {
         ...finalSettings,
       };
 
-      console.log('Final route for widget', { currentPath, routeId, route, menuItemChildrenListColumns: route.menuItemChildrenListColumns });
+      console.log('Final route for widget', {
+        currentPath,
+        routeId,
+        route,
+        menuItemChildrenListColumns: route.menuItemChildrenListColumns,
+      });
       routes.push(route);
 
       if (item.items && item.items.length > 0) {
@@ -324,26 +335,31 @@ const NavigationBehaviorWidget = (props) => {
                       portal_type: _______,
                       ...settings
                     } = fieldValue;
-                    
-                    console.log('onChange in widget', { 
-                      routeId, 
-                      fieldValue, 
-                      settings, 
+
+                    console.log('onChange in widget', {
+                      routeId,
+                      fieldValue,
+                      settings,
                       existingRouteSetting: routeSettings[routeId],
-                      menuItemChildrenListColumns: settings.menuItemChildrenListColumns 
+                      menuItemChildrenListColumns:
+                        settings.menuItemChildrenListColumns,
                     });
-                    
+
                     // Keep menuItemChildrenListColumns as strings for widget compatibility
-                    
+
                     // Preserve existing settings and merge with new ones
                     const existingSettings = routeSettings[routeId] || {};
                     const mergedSettings = {
                       ...existingSettings,
                       ...settings,
                     };
-                    
-                    console.log('Final merged settings', { existingSettings, settings, mergedSettings });
-                    
+
+                    console.log('Final merged settings', {
+                      existingSettings,
+                      settings,
+                      mergedSettings,
+                    });
+
                     const newSettings = {
                       ...routeSettings,
                       [routeId]: mergedSettings,
