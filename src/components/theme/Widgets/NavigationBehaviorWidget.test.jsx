@@ -87,9 +87,7 @@ jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
         </button>
         <button
           data-testid="change-menuItemColumns"
-          onClick={() =>
-            onChange(id, { ...value, menuItemColumns: [1, 2] })
-          }
+          onClick={() => onChange(id, { ...value, menuItemColumns: [1, 2] })}
         >
           Set menuItemColumns
         </button>
@@ -134,7 +132,7 @@ describe('NavigationBehaviorWidget', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     store = mockStore({
       intl: {
         locale: 'en',
@@ -183,7 +181,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
   });
@@ -192,9 +190,9 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getByText('Test Route 1')).toBeInTheDocument();
     expect(screen.getByText('Test Route 2')).toBeInTheDocument();
   });
@@ -203,13 +201,16 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     const accordionTitle = screen.getByTestId('accordion-title-0');
     fireEvent.click(accordionTitle);
-    
-    expect(screen.getByTestId('accordion-content')).toHaveAttribute('data-active', 'true');
+
+    expect(screen.getByTestId('accordion-content')).toHaveAttribute(
+      'data-active',
+      'true',
+    );
   });
 
   it('dispatches getNavigation when navigation is not loaded', () => {
@@ -224,7 +225,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={storeWithoutNavigation}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(mockGetNavigation).toHaveBeenCalledWith('', 1);
@@ -232,13 +233,13 @@ describe('NavigationBehaviorWidget', () => {
 
   it('handles JSON string value parsing', () => {
     const jsonValue = JSON.stringify({
-      '/test-route-1': { hideChildrenFromNavigation: false }
+      '/test-route-1': { hideChildrenFromNavigation: false },
     });
 
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={jsonValue} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -248,7 +249,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value="invalid json" />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -260,7 +261,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={objectValue} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -270,7 +271,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={null} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -278,11 +279,11 @@ describe('NavigationBehaviorWidget', () => {
 
   it('auto-populates settings from config when no settings exist', async () => {
     const onChange = jest.fn();
-    
+
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} onChange={onChange} />
-      </Provider>
+      </Provider>,
     );
 
     await waitFor(() => {
@@ -294,17 +295,19 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     // Expand first accordion
     const accordionTitle = screen.getByTestId('accordion-title-0');
     fireEvent.click(accordionTitle);
-    
+
     // Click the toggle button in ObjectWidget
-    const toggleButton = screen.getByTestId('change-hideChildrenFromNavigation');
+    const toggleButton = screen.getByTestId(
+      'change-hideChildrenFromNavigation',
+    );
     fireEvent.click(toggleButton);
-    
+
     expect(defaultProps.onChange).toHaveBeenCalled();
   });
 
@@ -312,17 +315,17 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     // Expand first accordion
     const accordionTitle = screen.getByTestId('accordion-title-0');
     fireEvent.click(accordionTitle);
-    
+
     // Click the menuItemColumns button
     const menuItemColumnsButton = screen.getByTestId('change-menuItemColumns');
     fireEvent.click(menuItemColumnsButton);
-    
+
     expect(defaultProps.onChange).toHaveBeenCalled();
   });
 
@@ -330,17 +333,19 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     // Expand first accordion
     const accordionTitle = screen.getByTestId('accordion-title-0');
     fireEvent.click(accordionTitle);
-    
+
     // Click the menuItemChildrenListColumns button
-    const menuItemChildrenListColumnsButton = screen.getByTestId('change-menuItemChildrenListColumns');
+    const menuItemChildrenListColumnsButton = screen.getByTestId(
+      'change-menuItemChildrenListColumns',
+    );
     fireEvent.click(menuItemChildrenListColumnsButton);
-    
+
     expect(defaultProps.onChange).toHaveBeenCalled();
   });
 
@@ -348,9 +353,9 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getByText('(/test-route-1)')).toBeInTheDocument();
     expect(screen.getByText('(/test-route-2)')).toBeInTheDocument();
   });
@@ -359,9 +364,9 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     // Should show main routes but not child routes
     expect(screen.getByText('Test Route 1')).toBeInTheDocument();
     expect(screen.getByText('Test Route 2')).toBeInTheDocument();
@@ -380,7 +385,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={emptyNavigationStore}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -395,9 +400,9 @@ describe('NavigationBehaviorWidget', () => {
     });
 
     render(
-      <Provider store={store}>  
+      <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={existingSettings} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -414,7 +419,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={existingSettings} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -459,7 +464,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={complexNavigationStore}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     // Should only show root level
@@ -488,7 +493,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={storeWithoutIds}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('No ID Route')).toBeInTheDocument();
@@ -498,25 +503,25 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     const firstAccordion = screen.getByTestId('accordion-title-0');
     const secondAccordion = screen.getByTestId('accordion-title-1');
-    
+
     // Initially both should be inactive
     expect(firstAccordion).toHaveAttribute('data-active', 'false');
     expect(secondAccordion).toHaveAttribute('data-active', 'false');
-    
+
     // Click first accordion
     fireEvent.click(firstAccordion);
     expect(firstAccordion).toHaveAttribute('data-active', 'true');
-    
+
     // Click second accordion
     fireEvent.click(secondAccordion);
     expect(firstAccordion).toHaveAttribute('data-active', 'false');
     expect(secondAccordion).toHaveAttribute('data-active', 'true');
-    
+
     // Click second accordion again to close
     fireEvent.click(secondAccordion);
     expect(secondAccordion).toHaveAttribute('data-active', 'false');
@@ -526,9 +531,9 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getAllByTestId('icon')).toHaveLength(2); // One icon per route
   });
 
@@ -553,7 +558,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={configStore}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Unknown Route')).toBeInTheDocument();
@@ -580,8 +585,11 @@ describe('NavigationBehaviorWidget', () => {
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={existingSettings} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={existingSettings}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -596,8 +604,11 @@ describe('NavigationBehaviorWidget', () => {
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={existingSettings} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={existingSettings}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -612,8 +623,11 @@ describe('NavigationBehaviorWidget', () => {
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={existingSettings} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={existingSettings}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -626,9 +640,9 @@ describe('NavigationBehaviorWidget', () => {
       render(
         <Provider store={store}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
-      
+
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
     });
   });
@@ -643,8 +657,11 @@ describe('NavigationBehaviorWidget', () => {
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={settingsWithConfig} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={settingsWithConfig}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -659,12 +676,13 @@ describe('NavigationBehaviorWidget', () => {
         },
       }));
 
-      const NavigationBehaviorWidgetNoConfig = require('./NavigationBehaviorWidget').default;
+      const NavigationBehaviorWidgetNoConfig =
+        require('./NavigationBehaviorWidget').default;
 
       render(
         <Provider store={store}>
           <NavigationBehaviorWidgetNoConfig {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -680,12 +698,13 @@ describe('NavigationBehaviorWidget', () => {
         },
       }));
 
-      const NavigationBehaviorWidgetEmptyConfig = require('./NavigationBehaviorWidget').default;
+      const NavigationBehaviorWidgetEmptyConfig =
+        require('./NavigationBehaviorWidget').default;
 
       render(
         <Provider store={store}>
           <NavigationBehaviorWidgetEmptyConfig {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -713,7 +732,7 @@ describe('NavigationBehaviorWidget', () => {
       render(
         <Provider store={storeWithMissingTitles}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -721,7 +740,7 @@ describe('NavigationBehaviorWidget', () => {
 
     it('handles navigation items with missing URLs', () => {
       const storeWithMissingUrls = mockStore({
-        ...store.getState(),  
+        ...store.getState(),
         navigation: {
           items: [
             {
@@ -739,7 +758,7 @@ describe('NavigationBehaviorWidget', () => {
       render(
         <Provider store={storeWithMissingUrls}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByText('No URL')).toBeInTheDocument();
@@ -756,8 +775,11 @@ describe('NavigationBehaviorWidget', () => {
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={settingsWithNulls} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={settingsWithNulls}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -766,14 +788,21 @@ describe('NavigationBehaviorWidget', () => {
     it('handles malformed semantic UI column strings', () => {
       const settingsWithBadColumns = JSON.stringify({
         '/test-route-1': {
-          menuItemColumns: ['invalid column', 'bad format', 'twenty wide column'],
+          menuItemColumns: [
+            'invalid column',
+            'bad format',
+            'twenty wide column',
+          ],
         },
       });
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={settingsWithBadColumns} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={settingsWithBadColumns}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -788,8 +817,11 @@ describe('NavigationBehaviorWidget', () => {
 
       render(
         <Provider store={store}>
-          <NavigationBehaviorWidget {...defaultProps} value={settingsWithMixedColumns} />
-        </Provider>
+          <NavigationBehaviorWidget
+            {...defaultProps}
+            value={settingsWithMixedColumns}
+          />
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -818,7 +850,7 @@ describe('NavigationBehaviorWidget', () => {
       render(
         <Provider store={largeNavigationStore}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByText('Large Route 0')).toBeInTheDocument();
@@ -829,7 +861,7 @@ describe('NavigationBehaviorWidget', () => {
       const { rerender } = render(
         <Provider store={store}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       const newProps = {
@@ -842,7 +874,7 @@ describe('NavigationBehaviorWidget', () => {
       rerender(
         <Provider store={store}>
           <NavigationBehaviorWidget {...newProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -862,7 +894,7 @@ describe('NavigationBehaviorWidget', () => {
       render(
         <Provider store={storeWithoutMessages}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
@@ -874,9 +906,12 @@ describe('NavigationBehaviorWidget', () => {
         intl: {
           locale: 'fr',
           messages: {
-            'Load Main Navigation Routes': 'Charger les routes de navigation principales',
-            'Hide Children From Navigation': 'Masquer les enfants de la navigation',
-            'Menu Item Children List Columns': 'Colonnes de liste des enfants des éléments de menu',
+            'Load Main Navigation Routes':
+              'Charger les routes de navigation principales',
+            'Hide Children From Navigation':
+              'Masquer les enfants de la navigation',
+            'Menu Item Children List Columns':
+              'Colonnes de liste des enfants des éléments de menu',
             'Menu Item Columns': 'Colonnes des éléments de menu',
           },
         },
@@ -885,7 +920,7 @@ describe('NavigationBehaviorWidget', () => {
       render(
         <Provider store={storeWithDifferentLocale}>
           <NavigationBehaviorWidget {...defaultProps} />
-        </Provider>
+        </Provider>,
       );
 
       expect(screen.getByTestId('form-field-wrapper')).toBeInTheDocument();
