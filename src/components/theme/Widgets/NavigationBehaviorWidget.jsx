@@ -358,16 +358,17 @@ const NavigationBehaviorWidget = (props) => {
         });
       }
 
-      // Override with saved settings, but only for non-empty values
+      // Override with saved settings, including null values (explicit deletion)
       if (savedSettings) {
         Object.keys(savedSettings).forEach((key) => {
-          if (savedSettings[key] !== undefined && savedSettings[key] !== null) {
-            // For arrays, only override if the saved array has values
-            if (Array.isArray(savedSettings[key])) {
-              if (savedSettings[key].length > 0) {
-                finalSettings[key] = savedSettings[key];
-              }
-              // If saved array is empty, keep config value (don't override)
+          if (savedSettings[key] !== undefined) {
+            // Handle null values as explicit deletion - don't override with config
+            if (savedSettings[key] === null) {
+              // Field was explicitly cleared - remove it from finalSettings
+              delete finalSettings[key];
+            } else if (Array.isArray(savedSettings[key])) {
+              // For arrays, always override with saved value (including empty arrays)
+              finalSettings[key] = savedSettings[key];
             } else {
               // For non-arrays, override with saved value
               finalSettings[key] = savedSettings[key];
@@ -534,37 +535,54 @@ const NavigationBehaviorWidget = (props) => {
                       }
                     }
 
+                    // Check if the field was explicitly set in the widget's settings
+                    const explicitlySetFields = Object.keys(settings);
+
                     let mergedSettings = {
                       ...cleanedExistingSettings,
                       ...settings,
                     };
 
+                    // Handle null values for explicitly cleared fields
+                    Object.keys(settings).forEach((key) => {
+                      if (settings[key] === null) {
+                        // Field was explicitly cleared - store as null to preserve intent
+                        mergedSettings[key] = null;
+                      }
+                    });
+
                     // Convert menuItemColumns from numbers back to semantic UI format for backend storage
-                    if (
-                      mergedSettings.menuItemColumns &&
-                      mergedSettings.menuItemColumns.length > 0
-                    ) {
-                      mergedSettings.menuItemColumns = numbersToMenuItemColumns(
-                        mergedSettings.menuItemColumns,
-                      );
-                    } else {
-                      // Remove empty menuItemColumns array completely
-                      delete mergedSettings.menuItemColumns;
+                    if (mergedSettings.menuItemColumns !== null && mergedSettings.menuItemColumns) {
+                      if (mergedSettings.menuItemColumns.length > 0) {
+                        mergedSettings.menuItemColumns = numbersToMenuItemColumns(
+                          mergedSettings.menuItemColumns,
+                        );
+                      } else if (!explicitlySetFields.includes('menuItemColumns')) {
+                        // Only remove empty menuItemColumns if not explicitly set by user
+                        delete mergedSettings.menuItemColumns;
+                      } else {
+                        // Keep empty array if explicitly set by user (cleared all elements)
+                        mergedSettings.menuItemColumns = [];
+                      }
+                    }
+                    
+                    // Handle menuItemChildrenListColumns similarly
+                    if (mergedSettings.menuItemChildrenListColumns !== null) {
+                      if (
+                        !mergedSettings.menuItemChildrenListColumns ||
+                        (mergedSettings.menuItemChildrenListColumns.length === 0 &&
+                          !explicitlySetFields.includes('menuItemChildrenListColumns'))
+                      ) {
+                        delete mergedSettings.menuItemChildrenListColumns;
+                      }
                     }
 
-                    // Remove empty menuItemChildrenListColumns array completely
-                    if (
-                      !mergedSettings.menuItemChildrenListColumns ||
-                      mergedSettings.menuItemChildrenListColumns.length === 0
-                    ) {
-                      delete mergedSettings.menuItemChildrenListColumns;
-                    }
-
-                    // Clean up any other empty arrays from merged settings
+                    // Clean up other empty arrays only if not explicitly set by user
                     Object.keys(mergedSettings).forEach((key) => {
                       if (
                         Array.isArray(mergedSettings[key]) &&
-                        mergedSettings[key].length === 0
+                        mergedSettings[key].length === 0 &&
+                        !explicitlySetFields.includes(key)
                       ) {
                         delete mergedSettings[key];
                       }

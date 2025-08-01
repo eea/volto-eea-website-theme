@@ -1,3 +1,4 @@
+import { flattenToAppURL } from '@plone/volto/helpers';
 import { GET_NAVIGATION_SETTINGS } from '../constants/ActionTypes';
 
 export const getNavigationSettings = (url = '') => {
@@ -11,7 +12,7 @@ export const getNavigationSettings = (url = '') => {
     cleanedUrl = cleanedUrl.slice(0, -'/edit'.length);
   }
 
-  const apiPath = window.location.origin + '/++api++' + cleanedUrl;
+  const apiPath = flattenToAppURL(cleanedUrl);
 
   return {
     type: GET_NAVIGATION_SETTINGS,

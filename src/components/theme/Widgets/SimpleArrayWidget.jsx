@@ -69,8 +69,8 @@ const SimpleArrayWidget = (props) => {
 
   const handleRemove = (index) => {
     const newArray = value.filter((_, i) => i !== index);
-    // Always pass array, even if empty - let the parent handle null conversion
-    onChange(id, newArray);
+    // If array becomes empty, pass null to remove the field from data completely
+    onChange(id, newArray.length === 0 ? null : newArray);
   };
 
   const handleKeyPress = (e) => {
