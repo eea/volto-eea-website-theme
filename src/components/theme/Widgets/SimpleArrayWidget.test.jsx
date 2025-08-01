@@ -18,8 +18,8 @@ describe('SimpleArrayWidget', () => {
       intl: {
         locale: 'en',
         messages: {
-          'Add': 'Add',
-          'Remove': 'Remove',
+          Add: 'Add',
+          Remove: 'Remove',
         },
       },
     });
@@ -42,7 +42,7 @@ describe('SimpleArrayWidget', () => {
     const { container } = render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
     expect(container).toBeTruthy();
   });
@@ -51,9 +51,9 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getByText('Test Field')).toBeInTheDocument();
     expect(screen.getByText('Test description')).toBeInTheDocument();
   });
@@ -62,9 +62,9 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
   });
 
@@ -72,11 +72,11 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     expect(screen.getByRole('spinbutton')).toBeInTheDocument();
     expect(screen.getByTitle('Add')).toBeInTheDocument();
     expect(screen.getByTitle('Cancel')).toBeInTheDocument();
@@ -86,15 +86,15 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '3' } });
     fireEvent.click(screen.getByTitle('Add'));
-    
+
     expect(mockOnChange).toHaveBeenCalledWith('test-field', [3]);
   });
 
@@ -102,15 +102,15 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '10' } }); // Above maximum
     fireEvent.click(screen.getByTitle('Add'));
-    
+
     expect(mockOnChange).not.toHaveBeenCalled();
   });
 
@@ -118,15 +118,15 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '2' } });
     fireEvent.keyPress(input, { key: 'Enter', code: 'Enter' });
-    
+
     expect(mockOnChange).toHaveBeenCalledWith('test-field', [2]);
   });
 
@@ -134,15 +134,15 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '2' } });
     fireEvent.keyPress(input, { key: 'Escape', code: 'Escape' });
-    
+
     await waitFor(() => {
       expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     });
@@ -153,15 +153,15 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '2' } });
     fireEvent.click(screen.getByTitle('Cancel'));
-    
+
     await waitFor(() => {
       expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     });
@@ -173,13 +173,13 @@ describe('SimpleArrayWidget', () => {
       ...defaultProps,
       value: [1, 3, 5],
     };
-    
+
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...props} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
@@ -190,16 +190,16 @@ describe('SimpleArrayWidget', () => {
       ...defaultProps,
       value: [1, 3, 5],
     };
-    
+
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...props} />
-      </Provider>
+      </Provider>,
     );
-    
+
     const removeButtons = screen.getAllByText('×');
     fireEvent.click(removeButtons[1]); // Remove second item (value 3)
-    
+
     expect(mockOnChange).toHaveBeenCalledWith('test-field', [1, 5]);
   });
 
@@ -208,16 +208,16 @@ describe('SimpleArrayWidget', () => {
       ...defaultProps,
       value: [1],
     };
-    
+
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...props} />
-      </Provider>
+      </Provider>,
     );
-    
+
     const removeButton = screen.getByText('×');
     fireEvent.click(removeButton);
-    
+
     expect(mockOnChange).toHaveBeenCalledWith('test-field', null);
   });
 
@@ -226,13 +226,13 @@ describe('SimpleArrayWidget', () => {
       ...defaultProps,
       value: null,
     };
-    
+
     const { container } = render(
       <Provider store={store}>
         <SimpleArrayWidget {...props} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(container).toBeTruthy();
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
   });
@@ -242,13 +242,13 @@ describe('SimpleArrayWidget', () => {
       ...defaultProps,
       value: ['1', '2', '3'],
     };
-    
+
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...props} />
-      </Provider>
+      </Provider>,
     );
-    
+
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
@@ -259,15 +259,15 @@ describe('SimpleArrayWidget', () => {
       ...defaultProps,
       items: undefined,
     };
-    
+
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...props} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     expect(input).toHaveAttribute('min', '1');
     expect(input).toHaveAttribute('max', '10');
@@ -278,11 +278,11 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     expect(input).toHaveAttribute('min', '1');
     expect(input).toHaveAttribute('max', '5');
@@ -293,11 +293,11 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const addButton = screen.getByTitle('Add');
     expect(addButton).toBeDisabled();
   });
@@ -306,15 +306,15 @@ describe('SimpleArrayWidget', () => {
     render(
       <Provider store={store}>
         <SimpleArrayWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
-    
+
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '   ' } });
     fireEvent.click(screen.getByTitle('Add'));
-    
+
     expect(mockOnChange).not.toHaveBeenCalled();
   });
 });

@@ -74,7 +74,7 @@ describe('NavigationBehaviorWidget', () => {
       },
       vocabularies: {},
     });
-    
+
     store.dispatch = mockDispatch;
     mockOnChange.mockClear();
     mockDispatch.mockClear();
@@ -90,9 +90,9 @@ describe('NavigationBehaviorWidget', () => {
       properties: {
         'navigation-behavior': {
           title: 'Navigation Behavior',
-          type: 'object'
-        }
-      }
+          type: 'object',
+        },
+      },
     },
   };
 
@@ -100,7 +100,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
     expect(container).toBeTruthy();
   });
@@ -122,7 +122,7 @@ describe('NavigationBehaviorWidget', () => {
     render(
       <Provider store={storeNotLoaded}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(mockDispatch).toHaveBeenCalled();
@@ -139,7 +139,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={jsonValue} />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
@@ -149,7 +149,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value="invalid json" />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
@@ -165,7 +165,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={objectValue} />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
@@ -187,7 +187,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={emptyNavStore}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
@@ -204,7 +204,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={store}>
         <NavigationBehaviorWidget {...defaultProps} value={valueWithNulls} />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
@@ -236,7 +236,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={storeWithoutIds}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
@@ -268,7 +268,7 @@ describe('NavigationBehaviorWidget', () => {
     const { container } = render(
       <Provider store={storeWithoutPortalType}>
         <NavigationBehaviorWidget {...defaultProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(container).toBeTruthy();
