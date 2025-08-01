@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { defineMessages, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Button, Input, Form, Label, Grid } from 'semantic-ui-react';
+import { Button, Input, Label } from 'semantic-ui-react';
 import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 
 const messages = defineMessages({
@@ -32,20 +32,12 @@ const SimpleArrayWidget = (props) => {
   // Ensure value is always an array
   const value = Array.isArray(rawValue) ? rawValue : [];
 
-  console.log('SimpleArrayWidget debug:', {
-    id,
-    rawValue,
-    value,
-    typeof_value: typeof rawValue,
-    value_items: value.map((v) => ({ val: v, type: typeof v })),
-  });
 
   const handleAdd = () => {
     if (newValue.trim() !== '') {
       const numValue = parseInt(newValue.trim());
       if (!isNaN(numValue) && numValue >= minValue && numValue <= maxValue) {
         const newArray = [...value, numValue];
-        console.log('Adding value:', { value, numValue, newArray });
         onChange(id, newArray);
         setNewValue('');
         setShowInput(false); // Hide input after adding

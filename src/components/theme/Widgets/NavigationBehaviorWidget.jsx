@@ -8,15 +8,12 @@ import {
   Button,
   Segment,
   Form,
-  Grid,
-  Label,
   Dropdown,
 } from 'semantic-ui-react';
 import { getNavigation } from '@plone/volto/actions';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
-import plusSVG from '@plone/volto/icons/add.svg';
 import upSVG from '@plone/volto/icons/up-key.svg';
 import downSVG from '@plone/volto/icons/down-key.svg';
 
@@ -95,6 +92,7 @@ const menuItemColumnsToNumbers = (columns) => {
 };
 
 // Custom component for integer array fields
+// eslint-disable-next-line no-unused-vars
 const IntegerArrayField = ({
   title,
   description,
@@ -180,11 +178,6 @@ const getConfigSettingsForRoute = (routePath) => {
   const routeConfig =
     menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
 
-  console.log('getConfigSettingsForRoute', {
-    routePath,
-    routeConfig,
-    menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns,
-  });
 
   const settings = {
     hideChildrenFromNavigation:
@@ -264,7 +257,7 @@ const getRouteSettingsSchema = (intl) => ({
 });
 
 const NavigationBehaviorWidget = (props) => {
-  const { value = '{}', id, onChange, schema } = props;
+  const { value = '{}', id, onChange } = props;
   const intl = useIntl();
   const dispatch = useDispatch();
   const navigation = useSelector((state) => state.navigation?.items || []);
@@ -327,7 +320,7 @@ const NavigationBehaviorWidget = (props) => {
         onChange(id, JSON.stringify(newSettings));
       }
     }
-  }, [navigationLoaded, navigation, routeSettings, onChange, id]);
+  }, [navigationLoaded, navigation, routeSettings, onChange, id, flattenNavigationToRoutes]);
 
   const flattenNavigationToRoutes = (items, path = '', level = 0) => {
     let routes = [];
@@ -340,8 +333,6 @@ const NavigationBehaviorWidget = (props) => {
         getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
       const savedSettings = routeSettings[routeId] || {};
 
-      // Check if this route has any saved settings at all
-      const hasSavedSettings = Object.keys(routeSettings).includes(routeId);
 
       // Merge settings intelligently - use config values for empty/missing fields
       let finalSettings = { ...defaultRouteSettings };
@@ -391,10 +382,6 @@ const NavigationBehaviorWidget = (props) => {
           finalSettings.menuItemColumns = menuItemColumnsToNumbers(
             finalSettings.menuItemColumns,
           );
-          console.log('Converted menuItemColumns for widget display:', {
-            original: savedSettings.menuItemColumns,
-            converted: finalSettings.menuItemColumns,
-          });
         }
       }
 
@@ -409,16 +396,6 @@ const NavigationBehaviorWidget = (props) => {
         ...finalSettings,
       };
 
-      console.log('Final route for widget', {
-        currentPath,
-        routeId,
-        route,
-        menuItemChildrenListColumns: route.menuItemChildrenListColumns,
-        menuItemColumns: route.menuItemColumns,
-        configSettings,
-        savedSettings,
-        finalSettings,
-      });
       routes.push(route);
 
       if (item.items && item.items.length > 0) {
@@ -433,10 +410,9 @@ const NavigationBehaviorWidget = (props) => {
 
   const allRoutes = React.useMemo(() => {
     const routes = flattenNavigationToRoutes(navigation);
-    console.log(routes.filter((route) => route.level === 0));
     // Filter to show only level 0 routes (main routes that decide navigation behavior)
     return routes.filter((route) => route.level === 0); // level 0 = main routes
-  }, [navigation, routeSettings]);
+  }, [navigation, routeSettings, flattenNavigationToRoutes]);
 
   return (
     <div className="navigation-objectlist-widget">
@@ -492,19 +468,6 @@ const NavigationBehaviorWidget = (props) => {
                       ...settings
                     } = fieldValue;
 
-                    console.log('onChange in widget', {
-                      routeId,
-                      fieldValue,
-                      settings,
-                      existingRouteSetting: routeSettings[routeId],
-                      menuItemChildrenListColumns:
-                        settings.menuItemChildrenListColumns,
-                      menuItemColumns: settings.menuItemColumns,
-                      menuItemColumns_type: typeof settings.menuItemColumns,
-                      menuItemColumns_isArray: Array.isArray(
-                        settings.menuItemColumns,
-                      ),
-                    });
 
                     // Preserve existing settings and merge with new ones
                     const existingSettings = routeSettings[routeId] || {};
@@ -528,10 +491,6 @@ const NavigationBehaviorWidget = (props) => {
                           menuItemColumnsToNumbers(
                             cleanedExistingSettings.menuItemColumns,
                           );
-                        console.log(
-                          'Converted existing menuItemColumns from semantic UI to numbers:',
-                          cleanedExistingSettings.menuItemColumns,
-                        );
                       }
                     }
 
@@ -588,11 +547,6 @@ const NavigationBehaviorWidget = (props) => {
                       }
                     });
 
-                    console.log('Final merged settings', {
-                      existingSettings,
-                      settings,
-                      mergedSettings,
-                    });
 
                     const newSettings = {
                       ...routeSettings,
