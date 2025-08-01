@@ -32,16 +32,18 @@ jest.mock('@plone/volto/components', () => ({
   )),
 }));
 
-jest.mock('./LayoutSettingsView', () =>
-  jest.fn((props) => (
-    <div data-testid="layout-settings-view" data-props={JSON.stringify(props)}>
-      Layout Settings View
-    </div>
-  )),
-);
+const mockLayoutSettingsView = jest.fn((props) => (
+  <div data-testid="layout-settings-view" data-props={JSON.stringify(props)}>
+    Layout Settings View
+  </div>
+));
+
+jest.mock('./LayoutSettingsView', () => ({
+  __esModule: true,
+  default: mockLayoutSettingsView,
+}));
 
 const { BlockDataForm, SidebarPortal } = require('@plone/volto/components');
-const LayoutSettingsView = require('./LayoutSettingsView').default;
 
 describe('LayoutSettingsEdit', () => {
   const mockSchema = {
@@ -78,6 +80,7 @@ describe('LayoutSettingsEdit', () => {
   beforeEach(() => {
     EditSchema.mockReturnValue(mockSchema);
     jest.clearAllMocks();
+    mockLayoutSettingsView.mockClear();
   });
 
   it('renders without crashing', () => {
@@ -87,13 +90,15 @@ describe('LayoutSettingsEdit', () => {
 
   it('renders the page title', () => {
     render(<LayoutSettingsEdit {...defaultProps} />);
-    expect(screen.getByText('Page layout settings')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent(
+      'Page layout settings',
+    );
   });
 
   it('renders LayoutSettingsView with correct props', () => {
     render(<LayoutSettingsEdit {...defaultProps} />);
 
-    expect(LayoutSettingsView).toHaveBeenCalledWith(defaultProps, {});
+    expect(mockLayoutSettingsView).toHaveBeenCalledWith(defaultProps, {});
     expect(screen.getByTestId('layout-settings-view')).toBeInTheDocument();
   });
 
@@ -323,7 +328,7 @@ describe('LayoutSettingsEdit', () => {
 
     render(<LayoutSettingsEdit {...customProps} />);
 
-    expect(LayoutSettingsView).toHaveBeenCalledWith(customProps, {});
+    expect(mockLayoutSettingsView).toHaveBeenCalledWith(customProps, {});
   });
 
   it('renders all components in correct structure', () => {
