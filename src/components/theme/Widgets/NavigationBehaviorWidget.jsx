@@ -42,6 +42,7 @@ const messages = defineMessages({
 
 const defaultRouteSettings = {
   hideChildrenFromNavigation: true,
+<<<<<<< HEAD
   // Don't include empty arrays in default settings
 };
 
@@ -172,6 +173,14 @@ const IntegerArrayField = ({
       />
     </Form.Field>
   );
+=======
+  includeInNavigation: true,
+  expandChildren: false,
+  navigationDepth: 0,
+  showIcons: true,
+  showThumbnails: false,
+  menuItemChildrenListColumns: [],
+>>>>>>> 8b64264bc409da5fca43cb477a312c377e225413
 };
 
 // Get settings from config.settings.menuItemsLayouts
@@ -195,6 +204,13 @@ const getConfigSettingsForRoute = (routePath) => {
     expandChildren: false,
     navigationDepth: 0,
     showIcons: true,
+<<<<<<< HEAD
+=======
+    showThumbnails: false,
+    menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns
+      ? routeConfig.menuItemChildrenListColumns.map((val) => String(val))
+      : [],
+>>>>>>> 8b64264bc409da5fca43cb477a312c377e225413
   };
 
   // Only add array properties if they have values
@@ -340,6 +356,7 @@ const NavigationBehaviorWidget = (props) => {
         getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
       const savedSettings = routeSettings[routeId] || {};
 
+<<<<<<< HEAD
       // Check if this route has any saved settings at all
       const hasSavedSettings = Object.keys(routeSettings).includes(routeId);
 
@@ -396,6 +413,13 @@ const NavigationBehaviorWidget = (props) => {
           });
         }
       }
+=======
+      // Merge saved settings with config settings, giving priority to saved settings
+      const finalSettings = {
+        ...configSettings,
+        ...savedSettings,
+      };
+>>>>>>> 8b64264bc409da5fca43cb477a312c377e225413
 
       const route = {
         '@id': routeId,
@@ -413,10 +437,13 @@ const NavigationBehaviorWidget = (props) => {
         routeId,
         route,
         menuItemChildrenListColumns: route.menuItemChildrenListColumns,
+<<<<<<< HEAD
         menuItemColumns: route.menuItemColumns,
         configSettings,
         savedSettings,
         finalSettings,
+=======
+>>>>>>> 8b64264bc409da5fca43cb477a312c377e225413
       });
       routes.push(route);
 
@@ -498,6 +525,7 @@ const NavigationBehaviorWidget = (props) => {
                       existingRouteSetting: routeSettings[routeId],
                       menuItemChildrenListColumns:
                         settings.menuItemChildrenListColumns,
+<<<<<<< HEAD
                       menuItemColumns: settings.menuItemColumns,
                       menuItemColumns_type: typeof settings.menuItemColumns,
                       menuItemColumns_isArray: Array.isArray(
@@ -505,6 +533,12 @@ const NavigationBehaviorWidget = (props) => {
                       ),
                     });
 
+=======
+                    });
+
+                    // Keep menuItemChildrenListColumns as strings for widget compatibility
+
+>>>>>>> 8b64264bc409da5fca43cb477a312c377e225413
                     // Preserve existing settings and merge with new ones
                     const existingSettings = routeSettings[routeId] || {};
 
@@ -539,6 +573,7 @@ const NavigationBehaviorWidget = (props) => {
                       ...settings,
                     };
 
+<<<<<<< HEAD
                     // Convert menuItemColumns from numbers back to semantic UI format for backend storage
                     if (
                       mergedSettings.menuItemColumns &&
@@ -570,6 +605,8 @@ const NavigationBehaviorWidget = (props) => {
                       }
                     });
 
+=======
+>>>>>>> 8b64264bc409da5fca43cb477a312c377e225413
                     console.log('Final merged settings', {
                       existingSettings,
                       settings,

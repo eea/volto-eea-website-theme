@@ -34,8 +34,11 @@ export default function navigationSettings(state = initialState, action = {}) {
         error: null,
         loaded: true,
         loading: false,
-        settings: action.result?.['eea.enhanced_navigation']?.data?.navigation_settings 
-          ? JSON.parse(action.result['eea.enhanced_navigation'].data.navigation_settings) 
+        settings: action.result?.['eea.enhanced_navigation']?.data
+          ?.navigation_settings
+          ? JSON.parse(
+              action.result['eea.enhanced_navigation'].data.navigation_settings,
+            )
           : {},
       };
     case `${GET_NAVIGATION_SETTINGS}_FAIL`:
