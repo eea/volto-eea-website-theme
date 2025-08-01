@@ -236,7 +236,7 @@ const getRouteSettingsSchema = (intl) => ({
     },
     menuItemColumns: {
       title: intl.formatMessage(messages.menuItemColumns),
-      description: 'Size of the columns',
+      description: 'Size of each route section',
       type: 'array',
       widget: 'simple_array',
       items: {
