@@ -25,6 +25,8 @@ import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Wi
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
 import NavigationBehaviorWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/NavigationBehaviorWidget';
+import ArrayWidgetWithDuplicates from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ArrayWidgetWithDuplicates';
+import SimpleArrayWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/SimpleArrayWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -381,6 +383,8 @@ const applyConfig = (config) => {
   config.widgets.views.widget.contributors = ContributorsViewWidget;
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
+  config.widgets.widget.array_with_duplicates = ArrayWidgetWithDuplicates;
+  config.widgets.widget.simple_array = SimpleArrayWidget;
   config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
 
@@ -440,6 +444,7 @@ const applyConfig = (config) => {
   config.settings.menuItemsLayouts = {
     '/g': {
       hideChildrenFromNavigation: false,
+      menuItemChildrenListColumns: [1, 1],
     },
     '/califronica': {
       hideChildrenFromNavigation: false,
