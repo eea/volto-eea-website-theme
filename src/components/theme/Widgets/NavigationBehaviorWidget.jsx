@@ -1,15 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { Icon, FormFieldWrapper } from '@plone/volto/components';
 import ObjectWidget from '@plone/volto/components/manage/Widgets/ObjectWidget';
-import {
-  Accordion,
-  Button,
-  Segment,
-  Form,
-  Dropdown,
-} from 'semantic-ui-react';
+import { Accordion, Button, Segment, Form, Dropdown } from 'semantic-ui-react';
 import { getNavigation } from '@plone/volto/actions';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
@@ -178,7 +172,6 @@ const getConfigSettingsForRoute = (routePath) => {
   const routeConfig =
     menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
 
-
   const settings = {
     hideChildrenFromNavigation:
       routeConfig.hideChildrenFromNavigation !== undefined
@@ -284,45 +277,7 @@ const NavigationBehaviorWidget = (props) => {
     setActiveObject(newIndex);
   }
 
-  useEffect(() => {
-    if (!navigationLoaded) {
-      dispatch(getNavigation('', 1));
-    }
-  }, [dispatch, navigationLoaded]);
-
-  // Auto-populate from config if no settings exist
-  useEffect(() => {
-    if (
-      navigationLoaded &&
-      navigation.length > 0 &&
-      Object.keys(routeSettings).length === 0
-    ) {
-      const routes = flattenNavigationToRoutes(navigation);
-      const level0Routes = routes.filter((route) => route.level === 0);
-
-      if (level0Routes.length > 0) {
-        const newSettings = {};
-        level0Routes.forEach((route) => {
-          // Save the current settings (which include config values) for each route
-          const {
-            '@id': routeId,
-            title: _,
-            path: __,
-            url: ___,
-            level: ____,
-            hasChildren: _____,
-            portal_type: ______,
-            ...settings
-          } = route;
-          newSettings[routeId] = settings;
-        });
-
-        onChange(id, JSON.stringify(newSettings));
-      }
-    }
-  }, [navigationLoaded, navigation, routeSettings, onChange, id, flattenNavigationToRoutes]);
-
-  const flattenNavigationToRoutes = (items, path = '', level = 0) => {
+  const flattenNavigationToRoutes = useCallback((items, level = 0) => {
     let routes = [];
 
     items.forEach((item) => {
@@ -332,7 +287,6 @@ const NavigationBehaviorWidget = (props) => {
       const configSettings =
         getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
       const savedSettings = routeSettings[routeId] || {};
-
 
       // Merge settings intelligently - use config values for empty/missing fields
       let finalSettings = { ...defaultRouteSettings };
@@ -400,19 +354,63 @@ const NavigationBehaviorWidget = (props) => {
 
       if (item.items && item.items.length > 0) {
         routes = routes.concat(
-          flattenNavigationToRoutes(item.items, currentPath, level + 1),
+          flattenNavigationToRoutes(item.items, level + 1),
         );
       }
     });
 
     return routes;
-  };
+  }, [routeSettings]);
+
+  useEffect(() => {
+    if (!navigationLoaded) {
+      dispatch(getNavigation('', 1));
+    }
+  }, [dispatch, navigationLoaded]);
+
+  // Auto-populate from config if no settings exist
+  useEffect(() => {
+    if (
+      navigationLoaded &&
+      navigation.length > 0 &&
+      Object.keys(routeSettings).length === 0
+    ) {
+      const routes = flattenNavigationToRoutes(navigation);
+      const level0Routes = routes.filter((route) => route.level === 0);
+
+      if (level0Routes.length > 0) {
+        const newSettings = {};
+        level0Routes.forEach((route) => {
+          // Save the current settings (which include config values) for each route
+          const {
+            '@id': routeId,
+            title: _,
+            url: ___,
+            level: ____,
+            hasChildren: _____,
+            portal_type: ______,
+            ...settings
+          } = route;
+          newSettings[routeId] = settings;
+        });
+
+        onChange(id, JSON.stringify(newSettings));
+      }
+    }
+  }, [
+    navigationLoaded,
+    navigation,
+    routeSettings,
+    onChange,
+    id,
+    flattenNavigationToRoutes,
+  ]);
 
   const allRoutes = React.useMemo(() => {
     const routes = flattenNavigationToRoutes(navigation);
     // Filter to show only level 0 routes (main routes that decide navigation behavior)
     return routes.filter((route) => route.level === 0); // level 0 = main routes
-  }, [navigation, routeSettings, flattenNavigationToRoutes]);
+  }, [navigation, flattenNavigationToRoutes]);
 
   return (
     <div className="navigation-objectlist-widget">
@@ -467,7 +465,6 @@ const NavigationBehaviorWidget = (props) => {
                       portal_type: _______,
                       ...settings
                     } = fieldValue;
-
 
                     // Preserve existing settings and merge with new ones
                     const existingSettings = routeSettings[routeId] || {};
@@ -555,7 +552,6 @@ const NavigationBehaviorWidget = (props) => {
                         delete mergedSettings[key];
                       }
                     });
-
 
                     const newSettings = {
                       ...routeSettings,
