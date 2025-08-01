@@ -14,10 +14,8 @@ jest.mock('@plone/volto/helpers', () => ({
 }));
 
 jest.mock('@plone/volto/components/', () => ({
-  DefaultView: jest.fn(({ children, ...props }) => (
-    <div data-testid="default-view" {...props}>
-      {children}
-    </div>
+  DefaultView: jest.fn(({ children, content, token, ...otherProps }) => (
+    <div data-testid="default-view">{children}</div>
   )),
 }));
 
@@ -33,6 +31,11 @@ const { Redirect } = require('react-router-dom');
 describe('WebReportSectionView', () => {
   let history;
   const originalServer = global.__SERVER__;
+
+  beforeAll(() => {
+    // Set default values for global variables
+    global.__SERVER__ = false;
+  });
 
   beforeEach(() => {
     history = createMemoryHistory();
@@ -51,6 +54,9 @@ describe('WebReportSectionView', () => {
     // Default mock implementations
     isInternalURL.mockReturnValue(true);
     flattenToAppURL.mockImplementation((url) => url);
+
+    // Reset __SERVER__ to false for each test
+    global.__SERVER__ = false;
   });
 
   afterEach(() => {
