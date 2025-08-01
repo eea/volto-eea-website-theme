@@ -4,6 +4,9 @@ import { Provider } from 'react-intl-redux';
 import configureStore from 'redux-mock-store';
 import SimpleArrayWidget from './SimpleArrayWidget';
 
+// Add jest-dom matchers
+import '@testing-library/jest-dom';
+
 const mockStore = configureStore();
 
 describe('SimpleArrayWidget', () => {
@@ -75,8 +78,8 @@ describe('SimpleArrayWidget', () => {
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
     
     expect(screen.getByRole('spinbutton')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /check/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
+    expect(screen.getByTitle('Add')).toBeInTheDocument();
+    expect(screen.getByTitle('Cancel')).toBeInTheDocument();
   });
 
   it('adds a valid number to the array', () => {
@@ -90,7 +93,7 @@ describe('SimpleArrayWidget', () => {
     
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '3' } });
-    fireEvent.click(screen.getByRole('button', { name: /check/i }));
+    fireEvent.click(screen.getByTitle('Add'));
     
     expect(mockOnChange).toHaveBeenCalledWith('test-field', [3]);
   });
@@ -106,7 +109,7 @@ describe('SimpleArrayWidget', () => {
     
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '10' } }); // Above maximum
-    fireEvent.click(screen.getByRole('button', { name: /check/i }));
+    fireEvent.click(screen.getByTitle('Add'));
     
     expect(mockOnChange).not.toHaveBeenCalled();
   });
@@ -157,7 +160,7 @@ describe('SimpleArrayWidget', () => {
     
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '2' } });
-    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    fireEvent.click(screen.getByTitle('Cancel'));
     
     await waitFor(() => {
       expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
@@ -295,7 +298,7 @@ describe('SimpleArrayWidget', () => {
     
     fireEvent.click(screen.getByRole('button', { name: /add/i }));
     
-    const addButton = screen.getByRole('button', { name: /check/i });
+    const addButton = screen.getByTitle('Add');
     expect(addButton).toBeDisabled();
   });
 
@@ -310,7 +313,7 @@ describe('SimpleArrayWidget', () => {
     
     const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '   ' } });
-    fireEvent.click(screen.getByRole('button', { name: /check/i }));
+    fireEvent.click(screen.getByTitle('Add'));
     
     expect(mockOnChange).not.toHaveBeenCalled();
   });
