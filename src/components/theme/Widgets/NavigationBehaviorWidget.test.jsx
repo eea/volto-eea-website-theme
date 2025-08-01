@@ -10,9 +10,8 @@ import '@testing-library/jest-dom';
 const mockStore = configureStore();
 
 // Mock the getNavigation action
-const mockGetNavigation = jest.fn(() => ({ type: 'GET_NAVIGATION' }));
 jest.mock('@plone/volto/actions', () => ({
-  getNavigation: mockGetNavigation,
+  getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })),
 }));
 
 // Mock the config
@@ -78,7 +77,6 @@ describe('NavigationBehaviorWidget', () => {
     store.dispatch = mockDispatch;
     mockOnChange.mockClear();
     mockDispatch.mockClear();
-    mockGetNavigation.mockClear();
   });
 
   const defaultProps = {
