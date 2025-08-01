@@ -32,16 +32,16 @@ jest.mock('@plone/volto/components', () => ({
   )),
 }));
 
-const mockLayoutSettingsView = jest.fn((props) => (
-  <div data-testid="layout-settings-view" data-props={JSON.stringify(props)}>
-    Layout Settings View
-  </div>
-));
-
 jest.mock('./LayoutSettingsView', () => ({
   __esModule: true,
-  default: mockLayoutSettingsView,
+  default: jest.fn((props) => (
+    <div data-testid="layout-settings-view" data-props={JSON.stringify(props)}>
+      Layout Settings View
+    </div>
+  )),
 }));
+
+const mockLayoutSettingsView = require('./LayoutSettingsView').default;
 
 const { BlockDataForm, SidebarPortal } = require('@plone/volto/components');
 
