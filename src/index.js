@@ -45,8 +45,7 @@ import contentBoxSVG from './icons/content-box.svg';
 import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
-import { print } from './reducers';
-import navigationSettings from './reducers/navigation/navigation';
+import { print, navigationSettings } from './reducers';
 
 import * as eea from './config';
 
@@ -439,13 +438,12 @@ const applyConfig = (config) => {
   // hide language dropdown by default
   config.settings.hasLanguageDropdown = false;
   config.settings.menuItemsLayouts = {
-    '/g/teta': {
-      menuItemChildrenListColumns: [1, 4],
-      menuItemColumns: [
-        'at-a-glance three wide column',
-        'topics-right-column nine wide column',
-      ],
+    '/g': {
       hideChildrenFromNavigation: false,
+    },
+    '/califronica': {
+      hideChildrenFromNavigation: false,
+      menuItemChildrenListColumns: [5, 2],
     },
     '/en/countries': {
       menuItemColumns: ['eight wide column', 'four wide column'],

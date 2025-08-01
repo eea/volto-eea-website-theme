@@ -11,6 +11,7 @@ import { withRouter } from 'react-router-dom';
 import { UniversalLink } from '@plone/volto/components';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
+import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
@@ -72,6 +73,9 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     if (token !== previousToken) {
       dispatch(getNavigation(base_url, settings.navDepth));
     }
+
+    // Fetch navigation settings
+    dispatch(getNavigationSettings(pathname));
   }, [pathname, token, dispatch, previousToken]);
 
   return (

@@ -14,8 +14,8 @@ import downSVG from '@plone/volto/icons/down-key.svg';
 
 const messages = defineMessages({
   loadNavigationRoutes: {
-    id: 'Load Level 2 Navigation Routes',
-    defaultMessage: 'Load Level 2 Navigation Routes',
+    id: 'Load Main Navigation Routes',
+    defaultMessage: 'Load Main Navigation Routes',
   },
   hideChildrenFromNavigation: {
     id: 'Hide Children From Navigation',
@@ -41,15 +41,20 @@ const messages = defineMessages({
     id: 'Show Thumbnails',
     defaultMessage: 'Show Thumbnails',
   },
+  menuItemChildrenListColumns: {
+    id: 'Menu Item Children List Columns',
+    defaultMessage: 'Menu Item Children List Columns',
+  },
 });
 
 const defaultRouteSettings = {
   hideChildrenFromNavigation: true,
-  includeInNavigation: true,
+  includeInNavigation: true, 
   expandChildren: false,
   navigationDepth: 0,
   showIcons: true,
   showThumbnails: false,
+  menuItemChildrenListColumns: [],
 };
 
 // Get settings from config.settings.menuItemsLayouts
@@ -57,6 +62,8 @@ const getConfigSettingsForRoute = (routePath) => {
   const menuItemsLayouts = config.settings?.menuItemsLayouts || {};
   const routeConfig =
     menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
+
+  console.log('getConfigSettingsForRoute', { routePath, routeConfig, menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns });
 
   return {
     hideChildrenFromNavigation:
@@ -68,6 +75,9 @@ const getConfigSettingsForRoute = (routePath) => {
     navigationDepth: 0,
     showIcons: true,
     showThumbnails: false,
+    menuItemChildrenListColumns: routeConfig.menuItemChildrenListColumns 
+      ? routeConfig.menuItemChildrenListColumns.map(val => String(val))
+      : [],
   };
 };
 
@@ -85,6 +95,7 @@ const getRouteSettingsSchema = (intl) => ({
         'navigationDepth',
         'showIcons',
         'showThumbnails',
+        'menuItemChildrenListColumns',
       ],
     },
   ],
@@ -126,6 +137,17 @@ const getRouteSettingsSchema = (intl) => ({
       title: intl.formatMessage(messages.showThumbnails),
       type: 'boolean',
       default: false,
+    },
+    menuItemChildrenListColumns: {
+      title: intl.formatMessage(messages.menuItemChildrenListColumns),
+      description: 'Array of integers defining the number of columns for each section (e.g., [1, 4])',
+      type: 'array',
+      items: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 10,
+      },
+      default: [],
     },
   },
   required: [],
@@ -174,13 +196,23 @@ const NavigationBehaviorWidget = (props) => {
       Object.keys(routeSettings).length === 0
     ) {
       const routes = flattenNavigationToRoutes(navigation);
-      const level2Routes = routes.filter((route) => route.level === 1);
+      const level0Routes = routes.filter((route) => route.level === 0);
 
-      if (level2Routes.length > 0) {
+      if (level0Routes.length > 0) {
         const newSettings = {};
-        level2Routes.forEach((route) => {
-          const configSettings = getConfigSettingsForRoute(route.path);
-          newSettings[route['@id']] = configSettings;
+        level0Routes.forEach((route) => {
+          // Save the current settings (which include config values) for each route
+          const {
+            '@id': routeId,
+            title: _,
+            path: __,
+            url: ___,
+            level: ____,
+            hasChildren: _____,
+            portal_type: ______,
+            ...settings
+          } = route;
+          newSettings[routeId] = settings;
         });
 
         onChange(id, JSON.stringify(newSettings));
@@ -195,6 +227,15 @@ const NavigationBehaviorWidget = (props) => {
       const itemPath = item.url || item.id;
       const currentPath = itemPath;
       const routeId = item['@id'] || item.url || item.id || uuid();
+      const configSettings = getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
+      const savedSettings = routeSettings[routeId] || {};
+      
+      // Merge saved settings with config settings, giving priority to saved settings
+      const finalSettings = {
+        ...configSettings,
+        ...savedSettings,
+      };
+      
       const route = {
         '@id': routeId,
         title: item.title || item.name,
@@ -203,10 +244,10 @@ const NavigationBehaviorWidget = (props) => {
         level: level,
         hasChildren: item.items && item.items.length > 0,
         portal_type: item.portal_type || item['@type'],
-        // Include existing settings or defaults
-        ...(routeSettings[routeId] || defaultRouteSettings),
+        ...finalSettings,
       };
 
+      console.log('Final route for widget', { currentPath, routeId, route, menuItemChildrenListColumns: route.menuItemChildrenListColumns });
       routes.push(route);
 
       if (item.items && item.items.length > 0) {
@@ -221,9 +262,9 @@ const NavigationBehaviorWidget = (props) => {
 
   const allRoutes = React.useMemo(() => {
     const routes = flattenNavigationToRoutes(navigation);
-    console.log(routes.filter((route) => route.level === 1));
-    // Filter to show only level 2 routes (sub-pages that can be expanded/collapsed)
-    return routes.filter((route) => route.level === 1); // level 1 = second level (0-indexed)
+    console.log(routes.filter((route) => route.level === 0));
+    // Filter to show only level 0 routes (main routes that decide navigation behavior)
+    return routes.filter((route) => route.level === 0); // level 0 = main routes
   }, [navigation, routeSettings]);
 
   return (
@@ -283,9 +324,29 @@ const NavigationBehaviorWidget = (props) => {
                       portal_type: _______,
                       ...settings
                     } = fieldValue;
+                    
+                    console.log('onChange in widget', { 
+                      routeId, 
+                      fieldValue, 
+                      settings, 
+                      existingRouteSetting: routeSettings[routeId],
+                      menuItemChildrenListColumns: settings.menuItemChildrenListColumns 
+                    });
+                    
+                    // Keep menuItemChildrenListColumns as strings for widget compatibility
+                    
+                    // Preserve existing settings and merge with new ones
+                    const existingSettings = routeSettings[routeId] || {};
+                    const mergedSettings = {
+                      ...existingSettings,
+                      ...settings,
+                    };
+                    
+                    console.log('Final merged settings', { existingSettings, settings, mergedSettings });
+                    
                     const newSettings = {
                       ...routeSettings,
-                      [routeId]: settings,
+                      [routeId]: mergedSettings,
                     };
                     onChange(id, JSON.stringify(newSettings));
                   }}
