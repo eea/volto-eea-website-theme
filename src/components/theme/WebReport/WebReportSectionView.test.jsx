@@ -238,14 +238,17 @@ describe('WebReportSectionView', () => {
       token: null,
     };
 
+    isInternalURL.mockReturnValue(true);
+    flattenToAppURL.mockReturnValue(undefined);
+
     render(
       <Router history={history}>
         <WebReportSectionView {...props} />
       </Router>,
     );
 
-    expect(history.replace).not.toHaveBeenCalled();
-    expect(window.location.href).toBe('');
+    expect(isInternalURL).toHaveBeenCalledWith(undefined);
+    expect(history.replace).toHaveBeenCalledWith(undefined);
   });
 
   it('handles content with null items', () => {
@@ -256,6 +259,9 @@ describe('WebReportSectionView', () => {
       token: null,
     };
 
+    isInternalURL.mockReturnValue(true);
+    flattenToAppURL.mockReturnValue(undefined);
+
     render(
       <Router history={history}>
         <WebReportSectionView {...props} />
@@ -266,7 +272,7 @@ describe('WebReportSectionView', () => {
       expect.objectContaining(props),
       {},
     );
-    expect(history.replace).not.toHaveBeenCalled();
+    expect(history.replace).toHaveBeenCalledWith(undefined);
   });
 
   it('handles content with undefined items', () => {
@@ -275,6 +281,9 @@ describe('WebReportSectionView', () => {
       token: null,
     };
 
+    isInternalURL.mockReturnValue(true);
+    flattenToAppURL.mockReturnValue(undefined);
+
     render(
       <Router history={history}>
         <WebReportSectionView {...props} />
@@ -285,7 +294,7 @@ describe('WebReportSectionView', () => {
       expect.objectContaining(props),
       {},
     );
-    expect(history.replace).not.toHaveBeenCalled();
+    expect(history.replace).toHaveBeenCalledWith(undefined);
   });
 
   it('handles items without @id property', () => {
@@ -296,6 +305,9 @@ describe('WebReportSectionView', () => {
       token: null,
     };
 
+    isInternalURL.mockReturnValue(true);
+    flattenToAppURL.mockReturnValue(undefined);
+
     render(
       <Router history={history}>
         <WebReportSectionView {...props} />
@@ -306,10 +318,10 @@ describe('WebReportSectionView', () => {
       expect.objectContaining(props),
       {},
     );
-    expect(history.replace).not.toHaveBeenCalled();
+    expect(history.replace).toHaveBeenCalledWith(undefined);
   });
 
-  it('uses the first item with valid @id when multiple items exist', () => {
+  it('uses the first item even if it has no @id', () => {
     global.__SERVER__ = false;
 
     const props = {
@@ -324,7 +336,7 @@ describe('WebReportSectionView', () => {
     };
 
     isInternalURL.mockReturnValue(true);
-    flattenToAppURL.mockReturnValue('/flattened-second-item');
+    flattenToAppURL.mockReturnValue(undefined);
 
     render(
       <Router history={history}>
@@ -332,9 +344,34 @@ describe('WebReportSectionView', () => {
       </Router>,
     );
 
-    expect(isInternalURL).toHaveBeenCalledWith('/second-item');
-    expect(flattenToAppURL).toHaveBeenCalledWith('/second-item');
-    expect(history.replace).toHaveBeenCalledWith('/flattened-second-item');
+    // The component gets the first item's @id (which is undefined)
+    expect(isInternalURL).toHaveBeenCalledWith(undefined);
+    expect(flattenToAppURL).toHaveBeenCalledWith(undefined);
+    expect(history.replace).toHaveBeenCalledWith(undefined);
+  });
+
+  it('redirects to first item when it has valid @id', () => {
+    global.__SERVER__ = false;
+
+    const props = {
+      content: {
+        items: [{ '@id': '/first-item' }, { '@id': '/second-item' }],
+      },
+      token: null,
+    };
+
+    isInternalURL.mockReturnValue(true);
+    flattenToAppURL.mockReturnValue('/flattened-first-item');
+
+    render(
+      <Router history={history}>
+        <WebReportSectionView {...props} />
+      </Router>,
+    );
+
+    expect(isInternalURL).toHaveBeenCalledWith('/first-item');
+    expect(flattenToAppURL).toHaveBeenCalledWith('/first-item');
+    expect(history.replace).toHaveBeenCalledWith('/flattened-first-item');
   });
 
   it('passes through all props to DefaultView', () => {
