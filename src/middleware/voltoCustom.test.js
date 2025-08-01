@@ -6,7 +6,7 @@ jest.mock('@eeacms/volto-eea-website-theme/helpers', () => ({
 }));
 
 describe('voltoCustomMiddleware', () => {
-  let req, res, next, express, middleware;
+  let req, res, next, express;
 
   beforeEach(() => {
     req = {
@@ -19,7 +19,7 @@ describe('voltoCustomMiddleware', () => {
       send: jest.fn(),
     };
     next = jest.fn();
-    
+
     express = {
       Router: jest.fn(() => ({
         all: jest.fn(),
@@ -41,7 +41,10 @@ describe('voltoCustomMiddleware', () => {
       const result = registervoltoCustomMiddleware(express);
 
       expect(express.Router).toHaveBeenCalled();
-      expect(mockRouter.all).toHaveBeenCalledWith(['**/voltoCustom.css$'], expect.any(Function));
+      expect(mockRouter.all).toHaveBeenCalledWith(
+        ['**/voltoCustom.css$'],
+        expect.any(Function),
+      );
       expect(result.id).toBe('voltoCustom.css');
     });
   });
@@ -81,7 +84,10 @@ describe('voltoCustomMiddleware', () => {
 
         expect(getBackendResourceWithAuth).toHaveBeenCalledWith(req);
         expect(res.set).toHaveBeenCalledWith('Accept-Ranges', 'bytes');
-        expect(res.set).toHaveBeenCalledWith('Cache-Control', 'public, max-age=3600');
+        expect(res.set).toHaveBeenCalledWith(
+          'Cache-Control',
+          'public, max-age=3600',
+        );
         expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/css');
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith('.custom-css { color: red; }');
@@ -142,27 +148,46 @@ describe('voltoCustomMiddleware', () => {
         await middlewareFunction(req, res, next);
 
         expect(res.set).toHaveBeenCalledWith('Accept-Ranges', 'bytes');
-        expect(res.set).toHaveBeenCalledWith('Cache-Control', 'public, max-age=3600');
-        expect(res.set).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="custom.css"');
-        expect(res.set).toHaveBeenCalledWith('Content-Range', 'bytes 0-1023/2048');
-        expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/css; charset=utf-8');
+        expect(res.set).toHaveBeenCalledWith(
+          'Cache-Control',
+          'public, max-age=3600',
+        );
+        expect(res.set).toHaveBeenCalledWith(
+          'Content-Disposition',
+          'attachment; filename="custom.css"',
+        );
+        expect(res.set).toHaveBeenCalledWith(
+          'Content-Range',
+          'bytes 0-1023/2048',
+        );
+        expect(res.set).toHaveBeenCalledWith(
+          'Content-Type',
+          'text/css; charset=utf-8',
+        );
         expect(res.status).toHaveBeenCalledWith(206);
-        expect(res.send).toHaveBeenCalledWith('.partial-css { display: block; }');
+        expect(res.send).toHaveBeenCalledWith(
+          '.partial-css { display: block; }',
+        );
       });
     });
 
     describe('error handling and fallback', () => {
       it('should return default CSS when getBackendResourceWithAuth fails', (done) => {
-        getBackendResourceWithAuth.mockRejectedValue(new Error('Backend error'));
+        getBackendResourceWithAuth.mockRejectedValue(
+          new Error('Backend error'),
+        );
 
         middlewareFunction(req, res, next);
 
         // Use setTimeout to wait for the promise to resolve and catch block to execute
         setTimeout(() => {
-          expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/css; charset=utf-8');
+          expect(res.set).toHaveBeenCalledWith(
+            'Content-Type',
+            'text/css; charset=utf-8',
+          );
           expect(res.status).toHaveBeenCalledWith(200);
           expect(res.send).toHaveBeenCalledWith(
-            '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */'
+            '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
           );
           done();
         }, 0);
@@ -174,10 +199,13 @@ describe('voltoCustomMiddleware', () => {
         middlewareFunction(req, res, next);
 
         setTimeout(() => {
-          expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/css; charset=utf-8');
+          expect(res.set).toHaveBeenCalledWith(
+            'Content-Type',
+            'text/css; charset=utf-8',
+          );
           expect(res.status).toHaveBeenCalledWith(200);
           expect(res.send).toHaveBeenCalledWith(
-            '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */'
+            '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
           );
           done();
         }, 0);
@@ -189,10 +217,13 @@ describe('voltoCustomMiddleware', () => {
         middlewareFunction(req, res, next);
 
         setTimeout(() => {
-          expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/css; charset=utf-8');
+          expect(res.set).toHaveBeenCalledWith(
+            'Content-Type',
+            'text/css; charset=utf-8',
+          );
           expect(res.status).toHaveBeenCalledWith(200);
           expect(res.send).toHaveBeenCalledWith(
-            '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */'
+            '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
           );
           done();
         }, 0);
