@@ -14,11 +14,13 @@ jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid-123'),
 }));
 
-// Mock the getNavigation action
-const mockGetNavigation = jest.fn(() => ({ type: 'GET_NAVIGATION' }));
+// Mock the getNavigation action - define function first
 jest.mock('@plone/volto/actions', () => ({
-  getNavigation: mockGetNavigation,
+  getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })),
 }));
+
+// Get the mock reference after mocking
+const { getNavigation: mockGetNavigation } = require('@plone/volto/actions');
 
 // Mock semantic-ui-react components
 jest.mock('semantic-ui-react', () => ({
