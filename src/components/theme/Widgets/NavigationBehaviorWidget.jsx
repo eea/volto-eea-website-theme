@@ -277,90 +277,93 @@ const NavigationBehaviorWidget = (props) => {
     setActiveObject(newIndex);
   }
 
-  const flattenNavigationToRoutes = useCallback((items, level = 0) => {
-    let routes = [];
+  const flattenNavigationToRoutes = useCallback(
+    (items, level = 0) => {
+      let routes = [];
 
-    items.forEach((item) => {
-      const itemPath = item.url || item.id;
-      const currentPath = itemPath;
-      const routeId = item['@id'] || item.url || item.id || uuid();
-      const configSettings =
-        getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
-      const savedSettings = routeSettings[routeId] || {};
+      items.forEach((item) => {
+        const itemPath = item.url || item.id;
+        const currentPath = itemPath;
+        const routeId = item['@id'] || item.url || item.id || uuid();
+        const configSettings =
+          getConfigSettingsForRoute(currentPath) || defaultRouteSettings;
+        const savedSettings = routeSettings[routeId] || {};
 
-      // Merge settings intelligently - use config values for empty/missing fields
-      let finalSettings = { ...defaultRouteSettings };
+        // Merge settings intelligently - use config values for empty/missing fields
+        let finalSettings = { ...defaultRouteSettings };
 
-      // Add config settings first (as defaults)
-      if (configSettings) {
-        Object.keys(configSettings).forEach((key) => {
-          if (
-            configSettings[key] !== undefined &&
-            configSettings[key] !== null
-          ) {
-            finalSettings[key] = configSettings[key];
-          }
-        });
-      }
-
-      // Override with saved settings, including null values (explicit deletion)
-      if (savedSettings) {
-        Object.keys(savedSettings).forEach((key) => {
-          if (savedSettings[key] !== undefined) {
-            // Handle null values as explicit deletion - don't override with config
-            if (savedSettings[key] === null) {
-              // Field was explicitly cleared - remove it from finalSettings
-              delete finalSettings[key];
-            } else if (Array.isArray(savedSettings[key])) {
-              // For arrays, always override with saved value (including empty arrays)
-              finalSettings[key] = savedSettings[key];
-            } else {
-              // For non-arrays, override with saved value
-              finalSettings[key] = savedSettings[key];
+        // Add config settings first (as defaults)
+        if (configSettings) {
+          Object.keys(configSettings).forEach((key) => {
+            if (
+              configSettings[key] !== undefined &&
+              configSettings[key] !== null
+            ) {
+              finalSettings[key] = configSettings[key];
             }
-          }
-        });
-      }
+          });
+        }
 
-      // Convert menuItemColumns from semantic UI format to numbers for widget display
-      if (
-        finalSettings.menuItemColumns &&
-        Array.isArray(finalSettings.menuItemColumns)
-      ) {
-        // Check if values are in semantic UI format
+        // Override with saved settings, including null values (explicit deletion)
+        if (savedSettings) {
+          Object.keys(savedSettings).forEach((key) => {
+            if (savedSettings[key] !== undefined) {
+              // Handle null values as explicit deletion - don't override with config
+              if (savedSettings[key] === null) {
+                // Field was explicitly cleared - remove it from finalSettings
+                delete finalSettings[key];
+              } else if (Array.isArray(savedSettings[key])) {
+                // For arrays, always override with saved value (including empty arrays)
+                finalSettings[key] = savedSettings[key];
+              } else {
+                // For non-arrays, override with saved value
+                finalSettings[key] = savedSettings[key];
+              }
+            }
+          });
+        }
+
+        // Convert menuItemColumns from semantic UI format to numbers for widget display
         if (
-          finalSettings.menuItemColumns.length > 0 &&
-          typeof finalSettings.menuItemColumns[0] === 'string' &&
-          finalSettings.menuItemColumns[0].includes('wide column')
+          finalSettings.menuItemColumns &&
+          Array.isArray(finalSettings.menuItemColumns)
         ) {
-          finalSettings.menuItemColumns = menuItemColumnsToNumbers(
-            finalSettings.menuItemColumns,
+          // Check if values are in semantic UI format
+          if (
+            finalSettings.menuItemColumns.length > 0 &&
+            typeof finalSettings.menuItemColumns[0] === 'string' &&
+            finalSettings.menuItemColumns[0].includes('wide column')
+          ) {
+            finalSettings.menuItemColumns = menuItemColumnsToNumbers(
+              finalSettings.menuItemColumns,
+            );
+          }
+        }
+
+        const route = {
+          '@id': routeId,
+          title: item.title || item.name,
+          path: currentPath,
+          url: item.url,
+          level: level,
+          hasChildren: item.items && item.items.length > 0,
+          portal_type: item.portal_type || item['@type'],
+          ...finalSettings,
+        };
+
+        routes.push(route);
+
+        if (item.items && item.items.length > 0) {
+          routes = routes.concat(
+            flattenNavigationToRoutes(item.items, level + 1),
           );
         }
-      }
+      });
 
-      const route = {
-        '@id': routeId,
-        title: item.title || item.name,
-        path: currentPath,
-        url: item.url,
-        level: level,
-        hasChildren: item.items && item.items.length > 0,
-        portal_type: item.portal_type || item['@type'],
-        ...finalSettings,
-      };
-
-      routes.push(route);
-
-      if (item.items && item.items.length > 0) {
-        routes = routes.concat(
-          flattenNavigationToRoutes(item.items, level + 1),
-        );
-      }
-    });
-
-    return routes;
-  }, [routeSettings]);
+      return routes;
+    },
+    [routeSettings],
+  );
 
   useEffect(() => {
     if (!navigationLoaded) {
