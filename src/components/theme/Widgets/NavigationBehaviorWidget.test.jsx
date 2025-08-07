@@ -178,7 +178,6 @@ describe('NavigationBehaviorWidget', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-
     store = mockStore({
       intl: {
         locale: 'en',
