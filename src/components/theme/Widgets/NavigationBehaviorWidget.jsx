@@ -169,8 +169,34 @@ const IntegerArrayField = ({
 // Get settings from config.settings.menuItemsLayouts
 const getConfigSettingsForRoute = (routePath) => {
   const menuItemsLayouts = config.settings?.menuItemsLayouts || {};
-  const routeConfig =
-    menuItemsLayouts[routePath] || menuItemsLayouts['*'] || {};
+
+  // Find the most specific parent route match
+  const findMostSpecificConfig = (targetPath) => {
+    // First check for exact match
+    if (menuItemsLayouts[targetPath]) {
+      return menuItemsLayouts[targetPath];
+    }
+
+    // Find all matching parent routes
+    const matchingRoutes = Object.keys(menuItemsLayouts)
+      .filter((configPath) => {
+        // Skip wildcard for now
+        if (configPath === '*') return false;
+        // Check if targetPath starts with configPath
+        return targetPath.startsWith(configPath);
+      })
+      .sort((a, b) => b.length - a.length); // Sort by length (most specific first)
+
+    // Return the most specific parent route config
+    if (matchingRoutes.length > 0) {
+      return menuItemsLayouts[matchingRoutes[0]];
+    }
+
+    // Fall back to wildcard
+    return menuItemsLayouts['*'] || {};
+  };
+
+  const routeConfig = findMostSpecificConfig(routePath);
 
   const settings = {
     hideChildrenFromNavigation:
