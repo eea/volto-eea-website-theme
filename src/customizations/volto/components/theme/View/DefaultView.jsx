@@ -120,7 +120,7 @@ const DefaultView = (props) => {
               root_path: matchingNavigationPath.url,
               includeTop: matchingNavigationPath.includeTop || true,
               bottomLevel: matchingNavigationPath.bottomLevel || 4,
-              topLevel: matchingNavigationPath.topLevel || 1,
+              topLevel: matchingNavigationPath.topLevel || 0,
               currentFolderOnly:
                 matchingNavigationPath.currentFolderOnly || false,
             }}
