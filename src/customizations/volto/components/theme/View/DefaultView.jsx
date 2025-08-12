@@ -34,24 +34,25 @@ const DefaultView = (props) => {
   const [hasLightLayout, setHasLightLayout] = React.useState(false);
 
   React.useEffect(() => {
-    const updateLightLayout = () => {
-      if (__CLIENT__) {
-        setHasLightLayout(document.body.classList.contains('light-header'));
-      }
-    };
-
-    updateLightLayout();
-
     if (__CLIENT__) {
-      const observer = new MutationObserver(updateLightLayout);
-      observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class'],
-      });
-
-      return () => observer.disconnect();
+      setHasLightLayout(document.body.classList.contains('light-header'));
     }
   }, []);
+
+  const hasExistingSideMenu = React.useMemo(() => {
+    if (!content?.blocks) return false;
+
+    // Check if there's a contextNavigation block in the content
+    const blocks = content.blocks || {};
+    for (const blockId in blocks) {
+      const block = blocks[blockId];
+      if (block?.['@type'] === 'contextNavigation') {
+        return true;
+      }
+    }
+
+    return false;
+  }, [content]);
 
   const { contextNavigationActions } = useSelector(
     (state) => ({
@@ -110,7 +111,7 @@ const DefaultView = (props) => {
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        {hasLightLayout && matchingNavigationPath && (
+        {hasLightLayout && matchingNavigationPath && !hasExistingSideMenu && (
           <AccordionContextNavigation
             insertBefore={matchingNavigationPath.insertBefore}
             params={{
