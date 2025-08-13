@@ -21,6 +21,7 @@ import { hasBlocksData, getBaseUrl } from '@plone/volto/helpers';
 import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 
 import isEqual from 'lodash/isEqual';
+import useHasContent from '@eeacms/volto-eea-website-theme/hooks/useHasContent';
 import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
 
 /**
@@ -31,18 +32,10 @@ import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/componen
  */
 const DefaultView = (props) => {
   const { content, location } = props;
-  const [hasLightLayout, setHasLightLayout] = React.useState(false);
-
-  React.useEffect(() => {
-    if (__CLIENT__) {
-      setHasLightLayout(document.body.classList.contains('light-header'));
-    }
-  }, []);
 
   const hasExistingSideMenu = React.useMemo(() => {
     if (!content?.blocks) return false;
 
-    // Check if there's a contextNavigation block in the content
     const blocks = content.blocks || {};
     for (const blockId in blocks) {
       const block = blocks[blockId];
@@ -54,6 +47,8 @@ const DefaultView = (props) => {
     return false;
   }, [content]);
 
+  // Detect if #page-document contains any wide-width elements
+  const hasWideContent = useHasContent();
   const { contextNavigationActions } = useSelector(
     (state) => ({
       contextNavigationActions: state.actions?.actions?.context_navigation,
@@ -104,15 +99,15 @@ const DefaultView = (props) => {
     null,
   );
 
-  // If the content is not yet loaded, then do not show anything
   return contentLoaded ? (
     hasBlocksData(content) ? (
       <>
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        {hasLightLayout && matchingNavigationPath && !hasExistingSideMenu && (
+        {matchingNavigationPath && !hasExistingSideMenu && (
           <AccordionContextNavigation
+            hasWideContent={hasWideContent}
             insertBefore={matchingNavigationPath.insertBefore}
             params={{
               name: matchingNavigationPath.title,
