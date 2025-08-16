@@ -129,7 +129,7 @@ const AccordionNavigation = ({
               aria-labelledby={`accordion-title-${normalizedTitle}`}
               role="region"
             >
-              <ul className="accordion-list">
+              <ul className={`accordion-list ${'level-' + level}`}>
                 {childItems.map((child) =>
                   renderItems({ item: child, level: level + 1 }),
                 )}
