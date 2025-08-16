@@ -145,7 +145,7 @@ const AccordionNavigation = ({
               navigation_home: firstItem,
             })}
           >
-            {firstItem && <Icon className={'ri-home-5-line'} />}
+            {firstItem && <Icon className={'ri-home-2-line'} />}
             {title}
           </UniversalLink>
         )}
