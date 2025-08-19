@@ -24,7 +24,7 @@ const AccordionNavigation = ({
   navigation = {},
   device,
   isMenuOpenOnOutsideClick,
-  hasWideContent = false,
+  hasWideContent,
 }) => {
   const { items = [], title, has_custom_name } = navigation;
   const intl = useIntl();
@@ -43,6 +43,10 @@ const AccordionNavigation = ({
   React.useEffect(() => {
     if (isMenuOpenOnOutsideClick === false) setIsNavOpen(false);
   }, [isMenuOpenOnOutsideClick]);
+
+  React.useEffect(() => {
+    setIsNavOpen(navOpen);
+  }, [navOpen]);
 
   React.useEffect(() => {
     if (!navOpen) {
@@ -204,18 +208,25 @@ AccordionNavigation.propTypes = {
     has_custom_name: PropTypes.bool,
     title: PropTypes.string,
   }),
+  /**
+   * Provided by withEEASideMenu HOC to indicate if page has wide content
+   */
+  hasWideContent: PropTypes.bool,
 };
 
 export default compose(
   withRouter,
   withContentNavigation,
-  (WrappedComponent) => (props) =>
-    withEEASideMenu(WrappedComponent)({
-      ...props,
-      targetParent: '.eea.header ',
-      fixedVisibilitySwitchTarget: '.main.bar',
-      insertBeforeOnMobile: '.banner',
-      hasWideContent: props.hasWideContent,
-      shouldRender: props.navigation?.items?.length > 0,
-    }),
+  (WrappedComponent) => (props) => {
+    const Enhanced = withEEASideMenu(WrappedComponent);
+    return (
+      <Enhanced
+        {...props}
+        targetParent=".eea.header"
+        fixedVisibilitySwitchTarget=".main.bar"
+        insertBeforeOnMobile=".banner"
+        shouldRender={Boolean(props.navigation?.items?.length)}
+      />
+    );
+  },
 )(AccordionNavigation);

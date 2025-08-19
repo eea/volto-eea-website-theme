@@ -21,7 +21,6 @@ import { hasBlocksData, getBaseUrl } from '@plone/volto/helpers';
 import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 
 import isEqual from 'lodash/isEqual';
-import useHasContent from '@eeacms/volto-eea-website-theme/hooks/useHasContent';
 import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
 
 /**
@@ -34,21 +33,25 @@ const DefaultView = (props) => {
   const { content, location } = props;
 
   const hasExistingSideMenu = React.useMemo(() => {
-    if (!content?.blocks) return false;
+    const hasSM = (node) => {
+      if (!node) return false;
+      if (node['@type'] === 'contextNavigation') return true;
 
-    const blocks = content.blocks || {};
-    for (const blockId in blocks) {
-      const block = blocks[blockId];
-      if (block?.['@type'] === 'contextNavigation') {
-        return true;
+      if (node.blocks && node.blocks_layout?.items) {
+        return node.blocks_layout.items.some((id) => hasSM(node.blocks[id]));
       }
-    }
 
-    return false;
+      if (node.data?.blocks && node.data?.blocks_layout?.items) {
+        return node.data.blocks_layout.items.some((id) =>
+          hasSM(node.data.blocks[id]),
+        );
+      }
+
+      return false;
+    };
+    return hasSM(content);
   }, [content]);
 
-  // Detect if #page-document contains any wide-width elements
-  const hasWideContent = useHasContent();
   const { contextNavigationActions } = useSelector(
     (state) => ({
       contextNavigationActions: state.actions?.actions?.context_navigation,
@@ -56,7 +59,6 @@ const DefaultView = (props) => {
     shallowEqual,
   );
 
-  const navigation_paths = contextNavigationActions || [];
   const path = getBaseUrl(location?.pathname || '');
   const dispatch = useDispatch();
   const { views } = config.widgets;
@@ -91,13 +93,24 @@ const DefaultView = (props) => {
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
 
-  // choose last matching navigation path in case we get more specific paths
-  const matchingNavigationPath = navigation_paths.reduceRight(
-    (acc, navPath) => {
-      return acc || (path.includes(navPath.url) ? navPath : null);
-    },
-    null,
-  );
+  // choose the longest matching navigation path (most specific prefix)
+  const matchingNavigationPath = React.useMemo(() => {
+    const navigation_paths = contextNavigationActions || [];
+    if (!navigation_paths?.length) return null;
+
+    const normalize = (p) => (p?.endsWith('/') ? p : `${p}/`);
+    const basePath = normalize(path);
+
+    const candidates = navigation_paths.filter((np) =>
+      basePath.startsWith(normalize(np.url)),
+    );
+    if (!candidates.length) return null;
+
+    return candidates.reduce(
+      (best, np) => (!best || np.url.length > best.url.length ? np : best),
+      null,
+    );
+  }, [contextNavigationActions, path]);
 
   return contentLoaded ? (
     hasBlocksData(content) ? (
@@ -107,18 +120,17 @@ const DefaultView = (props) => {
         </Container>
         {matchingNavigationPath && !hasExistingSideMenu && (
           <AccordionContextNavigation
-            hasWideContent={hasWideContent}
             insertBefore={matchingNavigationPath.insertBefore}
             params={{
               name: matchingNavigationPath.title,
-              no_thumbs: matchingNavigationPath.no_thumbs || true,
-              no_icons: matchingNavigationPath.no_icons || true,
+              no_thumbs: matchingNavigationPath.no_thumbs ?? true,
+              no_icons: matchingNavigationPath.no_icons ?? true,
               root_path: matchingNavigationPath.url,
-              includeTop: matchingNavigationPath.includeTop || true,
-              bottomLevel: matchingNavigationPath.bottomLevel || 4,
-              topLevel: matchingNavigationPath.topLevel || 0,
+              includeTop: matchingNavigationPath.includeTop ?? true,
+              bottomLevel: matchingNavigationPath.bottomLevel ?? 4,
+              topLevel: matchingNavigationPath.topLevel ?? 0,
               currentFolderOnly:
-                matchingNavigationPath.currentFolderOnly || false,
+                matchingNavigationPath.currentFolderOnly ?? false,
             }}
           />
         )}
