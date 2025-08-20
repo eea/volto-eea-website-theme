@@ -24,6 +24,8 @@ import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/W
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
+import NavigationBehaviorWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/NavigationBehaviorWidget';
+import SimpleArrayWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/SimpleArrayWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -44,7 +46,7 @@ import contentBoxSVG from './icons/content-box.svg';
 import okMiddleware from './middleware/ok';
 import voltoCustomMiddleware from './middleware/voltoCustom';
 import installSlate from './slate';
-import { print } from './reducers';
+import { print, navigationSettings } from './reducers';
 
 import * as eea from './config';
 
@@ -380,6 +382,8 @@ const applyConfig = (config) => {
   config.widgets.views.widget.contributors = ContributorsViewWidget;
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
+  config.widgets.widget.simple_array = SimpleArrayWidget;
+  config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
 
   config.widgets.views.factory = {
@@ -569,6 +573,7 @@ const applyConfig = (config) => {
   config.addonReducers = {
     ...(config.addonReducers || {}),
     print,
+    navigationSettings,
   };
 
   // Mega menu object
