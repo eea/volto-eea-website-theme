@@ -31,27 +31,26 @@ import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/componen
  */
 const DefaultView = (props) => {
   const { content, location } = props;
-  const [hasLightLayout, setHasLightLayout] = React.useState(false);
 
-  React.useEffect(() => {
-    const updateLightLayout = () => {
-      if (__CLIENT__) {
-        setHasLightLayout(document.body.classList.contains('light-header'));
+  const hasExistingSideMenu = React.useMemo(() => {
+    const hasSM = (node) => {
+      if (!node) return false;
+      if (node['@type'] === 'contextNavigation') return true;
+
+      if (node.blocks && node.blocks_layout?.items) {
+        return node.blocks_layout.items.some((id) => hasSM(node.blocks[id]));
       }
+
+      if (node.data?.blocks && node.data?.blocks_layout?.items) {
+        return node.data.blocks_layout.items.some((id) =>
+          hasSM(node.data.blocks[id]),
+        );
+      }
+
+      return false;
     };
-
-    updateLightLayout();
-
-    if (__CLIENT__) {
-      const observer = new MutationObserver(updateLightLayout);
-      observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class'],
-      });
-
-      return () => observer.disconnect();
-    }
-  }, []);
+    return hasSM(content);
+  }, [content]);
 
   const { contextNavigationActions } = useSelector(
     (state) => ({
@@ -60,7 +59,6 @@ const DefaultView = (props) => {
     shallowEqual,
   );
 
-  const navigation_paths = contextNavigationActions || [];
   const path = getBaseUrl(location?.pathname || '');
   const dispatch = useDispatch();
   const { views } = config.widgets;
@@ -95,34 +93,44 @@ const DefaultView = (props) => {
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
 
-  // choose last matching navigation path in case we get more specific paths
-  const matchingNavigationPath = navigation_paths.reduceRight(
-    (acc, navPath) => {
-      return acc || (path.includes(navPath.url) ? navPath : null);
-    },
-    null,
-  );
+  // choose the longest matching navigation path (most specific prefix)
+  const matchingNavigationPath = React.useMemo(() => {
+    const navigation_paths = contextNavigationActions || [];
+    if (!navigation_paths?.length) return null;
 
-  // If the content is not yet loaded, then do not show anything
+    const normalize = (p) => (p?.endsWith('/') ? p : `${p}/`);
+    const basePath = normalize(path);
+
+    const candidates = navigation_paths.filter((np) =>
+      basePath.startsWith(normalize(np.url)),
+    );
+    if (!candidates.length) return null;
+
+    return candidates.reduce(
+      (best, np) => (!best || np.url.length > best.url.length ? np : best),
+      null,
+    );
+  }, [contextNavigationActions, path]);
+
   return contentLoaded ? (
     hasBlocksData(content) ? (
       <>
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        {hasLightLayout && matchingNavigationPath && (
+        {matchingNavigationPath && !hasExistingSideMenu && (
           <AccordionContextNavigation
             insertBefore={matchingNavigationPath.insertBefore}
             params={{
               name: matchingNavigationPath.title,
-              no_thumbs: matchingNavigationPath.no_thumbs || true,
-              no_icons: matchingNavigationPath.no_icons || true,
+              no_thumbs: matchingNavigationPath.no_thumbs ?? true,
+              no_icons: matchingNavigationPath.no_icons ?? true,
               root_path: matchingNavigationPath.url,
-              includeTop: matchingNavigationPath.includeTop || true,
-              bottomLevel: matchingNavigationPath.bottomLevel || 4,
-              topLevel: matchingNavigationPath.topLevel || 1,
+              includeTop: matchingNavigationPath.includeTop ?? true,
+              bottomLevel: matchingNavigationPath.bottomLevel ?? 4,
+              topLevel: matchingNavigationPath.topLevel ?? 0,
               currentFolderOnly:
-                matchingNavigationPath.currentFolderOnly || false,
+                matchingNavigationPath.currentFolderOnly ?? false,
             }}
           />
         )}
