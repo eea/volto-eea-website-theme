@@ -71,14 +71,27 @@ export default function Image({
     attrs.className = cx(className, { responsive });
 
     if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
+      const scales = {
+        ...image.scales,
+        original: {
+          download: `${image.download}`,
+          width: image.width,
+          height: image.height,
+        },
+      };
+
       const filteredScales = [
-        'mini',
-        'preview',
-        'large',
-        item.data?.align === 'full' ? 'huge' : undefined,
-      ]
-        .map((key) => image.scales[key])
-        .filter(Boolean);
+        ...[
+          'mini',
+          'preview',
+          'large',
+          item.data?.align === 'full' ? 'huge' : undefined,
+          'original',
+        ]
+          .map((key) => scales[key])
+          .filter(Boolean),
+      ];
+
       const imageScale = image.scales[selectedScale];
       if (imageScale) {
         // set default image size, width and height to the selected scale
