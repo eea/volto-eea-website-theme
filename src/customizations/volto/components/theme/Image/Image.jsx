@@ -70,26 +70,20 @@ export default function Image({
     attrs.height = image.height;
     attrs.className = cx(className, { responsive });
 
-    // console.log({ scales: image.scales });
-
     const original = {
       download: `${image.download}`,
       width: image.width,
       height: image.height,
     };
-    if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
-      const scales = {
-        ...image.scales,
-        original,
-      };
 
+    if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
       const defaults = ['large', 'preview', 'mini'];
 
       const filteredScales = [
         ...defaults,
         item.data?.align === 'full' ? 'huge' : undefined,
       ]
-        .map((key) => scales[key])
+        .map((key) => image.scales[key])
         .filter(Boolean);
 
       if (filteredScales.length < defaults.length) {
