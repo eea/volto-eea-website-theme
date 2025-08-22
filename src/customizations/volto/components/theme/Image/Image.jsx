@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { flattenToAppURL, flattenScales } from '@plone/volto/helpers';
+import PropTypes from 'prop-types';
+import { flattenScales, flattenToAppURL } from '@plone/volto/helpers';
 
 /**
  * Determines the image scale name based on the provided data.
@@ -70,25 +70,33 @@ export default function Image({
     attrs.height = image.height;
     attrs.className = cx(className, { responsive });
 
+    // console.log({ scales: image.scales });
+
+    const original = {
+      download: `${image.download}`,
+      width: image.width,
+      height: image.height,
+    };
     if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
       const scales = {
         ...image.scales,
-        original: {
-          download: `${image.download}`,
-          width: image.width,
-          height: image.height,
-        },
+        original,
       };
 
+      const defaults = ['large', 'preview', 'mini'];
+
       const filteredScales = [
-        'mini',
-        'preview',
-        'large',
+        ...defaults,
         item.data?.align === 'full' ? 'huge' : undefined,
-        'original',
       ]
         .map((key) => scales[key])
         .filter(Boolean);
+
+      if (filteredScales.length < defaults.length) {
+        // ensure original is added if there's no large or huge
+        filteredScales.push(original);
+      }
+
       const imageScale = image.scales[selectedScale];
       if (imageScale) {
         // set default image size, width and height to the selected scale
