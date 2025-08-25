@@ -222,9 +222,9 @@ export default compose(
     return (
       <Enhanced
         {...props}
-        targetParent=".eea.header"
+        targetParent="#eea-side-menu-host"
         fixedVisibilitySwitchTarget=".main.bar"
-        insertBeforeOnMobile=".banner"
+        // insertBeforeOnMobile=".banner"
         shouldRender={Boolean(props.navigation?.items?.length)}
       />
     );

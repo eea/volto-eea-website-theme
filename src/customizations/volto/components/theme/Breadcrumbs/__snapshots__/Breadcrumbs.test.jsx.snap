@@ -18,17 +18,19 @@ Array [
         <ol
           aria-label="Breadcrumbs navigation"
         >
-          <li>
+          <li
+            className="breadcrumbs-home-item"
+          >
             <a
               className="section"
               href="/"
               onClick={[Function]}
               title="Home"
             >
-              <img
-                alt=""
-                className="ui image"
-                src="home-icon.svg"
+              <i
+                aria-hidden="true"
+                className="icon ri-home-2-line breadcrumbs-home-icon"
+                onClick={[Function]}
               />
             </a>
           </li>
@@ -92,17 +94,19 @@ Array [
         <ol
           aria-label="Breadcrumbs navigation"
         >
-          <li>
+          <li
+            className="breadcrumbs-home-item"
+          >
             <a
               className="section"
               href="/"
               onClick={[Function]}
               title="Home"
             >
-              <img
-                alt=""
-                className="ui image"
-                src="home-icon.svg"
+              <i
+                aria-hidden="true"
+                className="icon ri-home-2-line breadcrumbs-home-icon"
+                onClick={[Function]}
               />
             </a>
           </li>
