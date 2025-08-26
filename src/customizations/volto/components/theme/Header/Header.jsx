@@ -260,6 +260,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           </UniversalLink>
         )}
       ></Header.Main>
+      {/* Stable portal host for EEA side menu on mobile/tablet */}
+      <div id="eea-side-menu-host" className="eea-side-menu-host" />
     </Header>
   );
 };

@@ -140,6 +140,10 @@ exports[`Header renders a header component with homepage_inverse_view layout 1`]
         </div>
       </div>
     </div>
+    <div
+      class="eea-side-menu-host"
+      id="eea-side-menu-host"
+    />
   </header>
 </div>
 `;
