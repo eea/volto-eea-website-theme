@@ -39,6 +39,9 @@ import ErrorPage from '@plone/volto/error';
 
 import languages from '@plone/volto/constants/Languages';
 
+// Import Sentry SSR error handler
+import { captureSSRException } from '@eeacms/volto-sentry/server';
+
 import configureStore from '@plone/volto/store';
 import {
   ReduxAsyncConnect,
@@ -97,7 +100,18 @@ server.use(function (err, req, res, next) {
      * - get ignored codes from Plone error_log
      */
     const ignoredErrors = [301, 302, 401, 404];
-    if (!ignoredErrors.includes(err.status)) console.error(err);
+    if (!ignoredErrors.includes(err.status)) {
+      console.error(err);
+      // Capture SSR error in Sentry
+      captureSSRException(err, {
+        url: req.url,
+        statusCode: err.status || 500,
+        userAgent: req.headers['user-agent'],
+        method: req.method,
+        headers: req.headers,
+        stage: 'express-middleware'
+      });
+    }
 
     res
       .status(err.status || 500) // If error happens in Volto code itself error status is undefined
@@ -174,7 +188,18 @@ function setupServer(req, res, next) {
      * - get ignored codes from Plone error_log
      */
     const ignoredErrors = [301, 302, 401, 404];
-    if (!ignoredErrors.includes(error.status)) console.error(error);
+    if (!ignoredErrors.includes(error.status)) {
+      console.error(error);
+      // Capture SSR error in Sentry
+      captureSSRException(error, {
+        url: req.url,
+        statusCode: error.status || 500,
+        userAgent: req.headers['user-agent'],
+        method: req.method,
+        headers: req.headers,
+        stage: 'ssr-render'
+      });
+    }
 
     res
       .status(error.status || 500) // If error happens in Volto code itself error status is undefined
@@ -279,17 +304,36 @@ server.get('/*', (req, res) => {
 
       const context = {};
       resetServerContext();
-      const markup = renderToString(
-        <ChunkExtractorManager extractor={extractor}>
-          <CookiesProvider cookies={req.universalCookies}>
-            <Provider store={store} onError={reactIntlErrorHandler}>
-              <StaticRouter context={context} location={req.url}>
-                <ReduxAsyncConnect routes={routes} helpers={api} />
-              </StaticRouter>
-            </Provider>
-          </CookiesProvider>
-        </ChunkExtractorManager>,
-      );
+      
+      let markup;
+      try {
+        markup = renderToString(
+          <ChunkExtractorManager extractor={extractor}>
+            <CookiesProvider cookies={req.universalCookies}>
+              <Provider store={store} onError={reactIntlErrorHandler}>
+                <StaticRouter context={context} location={req.url}>
+                  <ReduxAsyncConnect routes={routes} helpers={api} />
+                </StaticRouter>
+              </Provider>
+            </CookiesProvider>
+          </ChunkExtractorManager>,
+        );
+      } catch (renderError) {
+        // Capture React renderToString errors
+        console.error('SSR Render Error:', renderError);
+        captureSSRException(renderError, {
+          url: req.url,
+          statusCode: 500,
+          userAgent: req.headers['user-agent'],
+          method: req.method,
+          headers: req.headers,
+          stage: 'react-render',
+          storeState: store.getState()
+        });
+        
+        // Re-throw to be handled by errorHandler
+        throw renderError;
+      }
 
       const readCriticalCss =
         config.settings.serverConfig.readCriticalCss || defaultReadCriticalCss;
@@ -351,7 +395,20 @@ server.get('/*', (req, res) => {
         );
       }
     }, errorHandler)
-    .catch(errorHandler);
+    .catch((loadError) => {
+      // Capture loadOnServer errors
+      console.error('SSR Load Error:', loadError);
+      captureSSRException(loadError, {
+        url: req.url,
+        statusCode: 500,
+        userAgent: req.headers['user-agent'],
+        method: req.method,
+        headers: req.headers,
+        stage: 'load-on-server'
+      });
+      
+      errorHandler(loadError);
+    });
 });
 
 export const defaultReadCriticalCss = () => {
