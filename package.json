@@ -18,7 +18,6 @@
     "@eeacms/volto-block-toc",
     "@eeacms/volto-group-block",
     "@eeacms/volto-eea-design-system",
-    "@eeacms/volto-sentry",
     "volto-subsites"
   ],
   "repository": {
@@ -31,7 +30,6 @@
     "@eeacms/volto-block-toc": "*",
     "@eeacms/volto-eea-design-system": "*",
     "@eeacms/volto-group-block": "*",
-    "@eeacms/volto-sentry": "*",
     "volto-subsites": "*"
   },
   "devDependencies": {

@@ -39,8 +39,8 @@ import ErrorPage from '@plone/volto/error';
 
 import languages from '@plone/volto/constants/Languages';
 
-// Import Sentry SSR error handler
-import { captureSSRException } from '@eeacms/volto-sentry/server';
+// Import Sentry SSR error handler from customized volto-sentry
+import { captureSSRException } from '@plone-collective/volto-sentry/server';
 
 import configureStore from '@plone/volto/store';
 import {
