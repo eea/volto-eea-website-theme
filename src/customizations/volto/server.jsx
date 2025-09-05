@@ -109,7 +109,7 @@ server.use(function (err, req, res, next) {
         userAgent: req.headers['user-agent'],
         method: req.method,
         headers: req.headers,
-        stage: 'express-middleware'
+        stage: 'express-middleware',
       });
     }
 
@@ -197,7 +197,7 @@ function setupServer(req, res, next) {
         userAgent: req.headers['user-agent'],
         method: req.method,
         headers: req.headers,
-        stage: 'ssr-render'
+        stage: 'ssr-render',
       });
     }
 
@@ -304,7 +304,7 @@ server.get('/*', (req, res) => {
 
       const context = {};
       resetServerContext();
-      
+
       let markup;
       try {
         markup = renderToString(
@@ -328,9 +328,9 @@ server.get('/*', (req, res) => {
           method: req.method,
           headers: req.headers,
           stage: 'react-render',
-          storeState: store.getState()
+          storeState: store.getState(),
         });
-        
+
         // Re-throw to be handled by errorHandler
         throw renderError;
       }
@@ -404,9 +404,9 @@ server.get('/*', (req, res) => {
         userAgent: req.headers['user-agent'],
         method: req.method,
         headers: req.headers,
-        stage: 'load-on-server'
+        stage: 'load-on-server',
       });
-      
+
       errorHandler(loadError);
     });
 });

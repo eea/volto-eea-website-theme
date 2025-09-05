@@ -8,7 +8,10 @@ export default function apply() {
 }
 
 export const captureSSRException = (error, context = {}) => {
-  if (process.env.RAZZLE_SENTRY_DSN || (typeof __SENTRY__ !== 'undefined' && __SENTRY__.SENTRY_DSN)) {
+  if (
+    process.env.RAZZLE_SENTRY_DSN ||
+    (typeof __SENTRY__ !== 'undefined' && __SENTRY__.SENTRY_DSN)
+  ) {
     try {
       Sentry.withScope((scope) => {
         scope.setTag('errorType', 'SSR');
