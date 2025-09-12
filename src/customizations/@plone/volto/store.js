@@ -2,9 +2,10 @@ import { combineReducers, createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
+// Using our custom save/load instead of redux-localstorage-simple
 import {
+  save,
   load,
-  createConditionalSaveMiddleware,
 } from '@eeacms/volto-eea-website-theme/middleware/conditionalLocalStorage';
 
 import config from '@plone/volto/registry';
@@ -26,7 +27,9 @@ const configureStore = (initialState, history, apiHelper) => {
     thunk,
     ...(apiHelper ? [api(apiHelper)] : []),
     protectLoadEnd,
-    ...(__CLIENT__ ? [createConditionalSaveMiddleware(config)] : []),
+    ...(__CLIENT__
+      ? [save({ states: config.settings.persistentReducers, debounce: 500 })]
+      : []),
   ];
   stack = config.settings.storeExtenders.reduce(
     (acc, extender) => extender(acc),
