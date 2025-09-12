@@ -5,16 +5,13 @@ import { load } from 'redux-localstorage-simple';
  * 1. User is authenticated
  * 2. An authentication action is happening
  *
- * Crucially, it does NOT create any localStorage keys at initialization,
+ * It does NOT create any localStorage keys at initialization,
  * only when actually saving data.
  */
 
 const NAMESPACE = 'reduxState';
 const DEBOUNCE_TIME = 500;
 
-/**
- * Helper to check if user is authenticated
- */
 const isUserAuthenticated = (state) => {
   return !!(
     state?.userSession?.token ||
@@ -67,30 +64,17 @@ export const save = (options = {}) => {
   let debounceTimer = null;
 
   return (store) => (next) => (action) => {
-    // Execute the action first
     const result = next(action);
-
-    // Get the current state after the action
     const state = store.getState();
-
-    // Check if we should save
     const shouldSave = isUserAuthenticated(state) || isAuthAction(action);
-
     if (shouldSave) {
-      // Clear existing timer
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
-
-      // Debounce the save operation
       debounceTimer = setTimeout(() => {
         try {
-          // Only NOW do we touch localStorage
           const subset = getSubsetOfState(state, states);
           const serialized = JSON.stringify(subset);
-
-          // This is the ONLY place where we write to localStorage
-          // and it only happens when authenticated
           localStorage.setItem(namespace, serialized);
         } catch (error) {
           console.error('Failed to save state to localStorage:', error);
@@ -102,5 +86,4 @@ export const save = (options = {}) => {
   };
 };
 
-// Re-export load from redux-localstorage-simple as-is
 export { load };
