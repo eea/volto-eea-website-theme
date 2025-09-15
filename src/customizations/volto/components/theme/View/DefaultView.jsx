@@ -93,6 +93,8 @@ const DefaultView = (props) => {
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
 
+  const content_type = content?.['@type'];
+
   // choose the longest matching navigation path (most specific prefix)
   const matchingNavigationPath = React.useMemo(() => {
     const navigation_paths = contextNavigationActions || [];
@@ -106,11 +108,15 @@ const DefaultView = (props) => {
     );
     if (!candidates.length) return null;
 
-    return candidates.reduce(
+    const candidate = candidates.reduce(
       (best, np) => (!best || np.url.length > best.url.length ? np : best),
       null,
     );
-  }, [contextNavigationActions, path]);
+    const disabledTypes =
+      (candidate && candidate.disableContextNavigationFor) || [];
+    if (disabledTypes.includes(content_type)) return null;
+    return candidate;
+  }, [contextNavigationActions, content_type, path]);
 
   return contentLoaded ? (
     hasBlocksData(content) ? (
