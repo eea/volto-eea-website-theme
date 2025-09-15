@@ -18,7 +18,6 @@ import {
 } from '@plone/volto/middleware';
 
 const configureStore = (initialState, history, apiHelper) => {
-  console.log('configureStore called');
   let stack = [
     blacklistRoutes,
     protectLoadStart,
