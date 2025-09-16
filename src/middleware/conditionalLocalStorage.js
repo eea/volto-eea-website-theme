@@ -10,19 +10,11 @@
  * Once the issue is fixed in Volto core:
  * 1. Remove this conditionalLocalStorage.js file
  * 2. Remove the webpack alias configuration for 'redux-localstorage-simple-original'
- * 3. Use the standard redux-localstorage-simple directly from Volto
  */
 import {
   save as reduxLocalStorageSave,
   load as reduxLocalStorageLoad,
 } from 'redux-localstorage-simple-original';
-
-/**
- * Wrapper for redux-localstorage-simple's save middleware
- * Only allows saving to localStorage when:
- * 1. User is authenticated
- * 2. An authentication action is happening
- */
 
 const isUserAuthenticated = (state) => {
   return !!(
@@ -38,9 +30,10 @@ const isAuthAction = (action) => {
 };
 
 /**
- * Creates a conditional save middleware that wraps redux-localstorage-simple's save
- * Only persists state when user is authenticated or during authentication flows
+ * Wrapper for redux-localstorage-simple's save middleware
+ * Only allows saving to localStorage when user is authenticated or an authentication action is happening
  */
+
 export const save = (options = {}) => {
   const saveMiddleware = reduxLocalStorageSave(options);
 
