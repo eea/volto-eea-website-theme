@@ -35,8 +35,12 @@ const DefaultView = (props) => {
   const hasExistingSideMenu = React.useMemo(() => {
     const hasSM = (node) => {
       if (!node) return false;
-      if (node['@type'] === 'contextNavigation') return true;
-
+      if (
+        node['@type'] === 'contextNavigation' &&
+        node['variation'] === 'accordion'
+      ) {
+        return true;
+      }
       if (node.blocks && node.blocks_layout?.items) {
         return node.blocks_layout.items.some((id) => hasSM(node.blocks[id]));
       }
