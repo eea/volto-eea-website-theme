@@ -1,4 +1,17 @@
 /* eslint-disable import/no-unresolved */
+
+/**
+ * TODO: Remove this workaround after https://github.com/plone/volto/issues/6997 is resolved
+ *
+ * This file provides a conditional wrapper for redux-localstorage-simple to prevent
+ * localStorage pollution for anonymous users. The import uses 'redux-localstorage-simple-original'
+ * as an alias to the actual package to avoid circular dependencies.
+ *
+ * Once the issue is fixed in Volto core:
+ * 1. Remove this conditionalLocalStorage.js file
+ * 2. Remove the webpack alias configuration for 'redux-localstorage-simple-original'
+ * 3. Use the standard redux-localstorage-simple directly from Volto
+ */
 import {
   save as reduxLocalStorageSave,
   load as reduxLocalStorageLoad,

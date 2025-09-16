@@ -25,6 +25,17 @@ const modify = (config, { target, dev }, webpack) => {
     ? themeLessPath
     : semanticLessPath;
 
+  /**
+   * TODO: Remove these aliases after https://github.com/plone/volto/issues/6997 is resolved
+   *
+   * This workaround prevents localStorage pollution for anonymous users by intercepting
+   * redux-localstorage-simple with our conditional middleware wrapper.
+   *
+   * Once the issue is fixed in Volto core:
+   * 1. Remove the alias configurations below
+   * 2. Remove the conditionalLocalStorage.js middleware file
+   * 3. The standard redux-localstorage-simple from Volto will work correctly
+   */
   // Alias redux-localstorage-simple to conditional middleware
   const conditionalLocalStoragePath = path.resolve(
     __dirname,
