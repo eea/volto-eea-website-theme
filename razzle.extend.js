@@ -34,7 +34,6 @@ const modify = (config, { target, dev }, webpack) => {
    * Once the issue is fixed in Volto core:
    * 1. Remove the alias configurations below
    * 2. Remove the conditionalLocalStorage.js middleware file
-   * 3. The standard redux-localstorage-simple from Volto will work correctly
    */
   // Alias redux-localstorage-simple to conditional middleware
   const conditionalLocalStoragePath = path.resolve(
