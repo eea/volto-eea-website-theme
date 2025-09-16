@@ -25,6 +25,20 @@ const modify = (config, { target, dev }, webpack) => {
     ? themeLessPath
     : semanticLessPath;
 
+  // Alias redux-localstorage-simple to conditional middleware
+  const conditionalLocalStoragePath = path.resolve(
+    __dirname,
+    './src/middleware/conditionalLocalStorage',
+  );
+  alias['redux-localstorage-simple'] = conditionalLocalStoragePath;
+
+  // Create an alias to access the original redux-localstorage-simple package
+  const originalReduxLocalStoragePath = path.resolve(
+    __dirname,
+    '../../../node_modules/redux-localstorage-simple',
+  );
+  alias['redux-localstorage-simple-original'] = originalReduxLocalStoragePath;
+
   return config;
 };
 

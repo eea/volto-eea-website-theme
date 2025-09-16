@@ -1,7 +1,7 @@
 import {
   save as reduxLocalStorageSave,
   load as reduxLocalStorageLoad,
-} from 'redux-localstorage-simple';
+} from 'redux-localstorage-simple-original';
 
 /**
  * Wrapper for redux-localstorage-simple's save middleware
