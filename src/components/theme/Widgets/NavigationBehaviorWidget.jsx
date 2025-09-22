@@ -281,6 +281,15 @@ const NavigationBehaviorWidget = (props) => {
   const dispatch = useDispatch();
   const navigation = useSelector((state) => state.navigation?.items || []);
   const navigationLoaded = useSelector((state) => state.navigation?.loaded);
+  const user = useSelector((state) => state.users?.user);
+
+  // Check if user has Manager or Site Administrator role
+  const hasPermission = React.useMemo(() => {
+    if (!user || !user.roles) return false;
+    return user.roles.some(role => 
+      role === 'Manager' || role === 'Site Administrator'
+    );
+  }, [user]);
 
   // Parse JSON string to object
   const parseValue = (val) => {
@@ -392,13 +401,19 @@ const NavigationBehaviorWidget = (props) => {
   );
 
   useEffect(() => {
+    // Only load navigation if user has permission
+    if (!hasPermission) return;
+    
     if (!navigationLoaded) {
       dispatch(getNavigation('', 1));
     }
-  }, [dispatch, navigationLoaded]);
+  }, [dispatch, navigationLoaded, hasPermission]);
 
   // Auto-populate from config if no settings exist
   useEffect(() => {
+    // Only auto-populate if user has permission
+    if (!hasPermission) return;
+    
     if (
       navigationLoaded &&
       navigation.length > 0 &&
@@ -433,6 +448,7 @@ const NavigationBehaviorWidget = (props) => {
     onChange,
     id,
     flattenNavigationToRoutes,
+    hasPermission,
   ]);
 
   const allRoutes = React.useMemo(() => {
@@ -440,6 +456,11 @@ const NavigationBehaviorWidget = (props) => {
     // Filter to show only level 0 routes (main routes that decide navigation behavior)
     return routes.filter((route) => route.level === 0); // level 0 = main routes
   }, [navigation, flattenNavigationToRoutes]);
+
+  // Don't render anything if user doesn't have permission
+  if (!hasPermission) {
+    return null;
+  }
 
   return (
     <div className="navigation-objectlist-widget">
@@ -483,6 +504,9 @@ const NavigationBehaviorWidget = (props) => {
                   schema={getRouteSettingsSchema(intl)}
                   value={route}
                   onChange={(fieldId, fieldValue) => {
+                    // Don't process onChange if user doesn't have permission
+                    if (!hasPermission) return;
+                    
                     const routeId = route['@id'];
                     const {
                       '@id': _,
