@@ -286,8 +286,8 @@ const NavigationBehaviorWidget = (props) => {
   // Check if user has Manager or Site Administrator role
   const hasPermission = React.useMemo(() => {
     if (!user || !user.roles) return false;
-    return user.roles.some(role => 
-      role === 'Manager' || role === 'Site Administrator'
+    return user.roles.some(
+      (role) => role === 'Manager' || role === 'Site Administrator',
     );
   }, [user]);
 
@@ -403,7 +403,7 @@ const NavigationBehaviorWidget = (props) => {
   useEffect(() => {
     // Only load navigation if user has permission
     if (!hasPermission) return;
-    
+
     if (!navigationLoaded) {
       dispatch(getNavigation('', 1));
     }
@@ -413,7 +413,7 @@ const NavigationBehaviorWidget = (props) => {
   useEffect(() => {
     // Only auto-populate if user has permission
     if (!hasPermission) return;
-    
+
     if (
       navigationLoaded &&
       navigation.length > 0 &&
@@ -506,7 +506,7 @@ const NavigationBehaviorWidget = (props) => {
                   onChange={(fieldId, fieldValue) => {
                     // Don't process onChange if user doesn't have permission
                     if (!hasPermission) return;
-                    
+
                     const routeId = route['@id'];
                     const {
                       '@id': _,
