@@ -14,6 +14,7 @@ import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/them
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import WebReportSectionView from '@eeacms/volto-eea-website-theme/components/theme/WebReport/WebReportSectionView';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
+import ErrorWrapper from '@eeacms/volto-eea-website-theme/components/theme/AnonymousErrorScreen/ErrorWrapper';
 import PrintLoader from '@eeacms/volto-eea-website-theme/components/theme/PrintLoader/PrintLoader';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
@@ -278,7 +279,17 @@ const applyConfig = (config) => {
 
   config.views.errorViews = {
     ...config.views.errorViews,
-    404: NotFound,
+    401: ErrorWrapper,    // Unauthorized
+    403: ErrorWrapper,    // Forbidden
+    404: ErrorWrapper,    // Not Found
+    408: ErrorWrapper,    // Request Timeout
+    500: ErrorWrapper,    // Server Error
+    502: ErrorWrapper,    // Bad Gateway
+    503: ErrorWrapper,    // Service Unavailable
+    504: ErrorWrapper,    // Gateway Timeout
+    corsError: ErrorWrapper,     // CORS Error
+    ECONNREFUSED: ErrorWrapper,  // Connection Refused
+    default: ErrorWrapper,       // Default catch-all for unmapped errors
   };
   // Apply slate text block customization
   if (config.blocks.blocksConfig.slate) {
