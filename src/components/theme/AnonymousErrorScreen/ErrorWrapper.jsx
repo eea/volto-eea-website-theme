@@ -25,7 +25,14 @@ const ErrorWrapper = ({ token, ...props }) => {
       <p>{props.error?.message || 'Unknown error'}</p>
       <details>
         <summary>Error details</summary>
-        <pre style={{ textAlign: 'left', background: '#f5f5f5', padding: '1rem', marginTop: '1rem' }}>
+        <pre
+          style={{
+            textAlign: 'left',
+            background: '#f5f5f5',
+            padding: '1rem',
+            marginTop: '1rem',
+          }}
+        >
           {JSON.stringify(props, null, 2)}
         </pre>
       </details>

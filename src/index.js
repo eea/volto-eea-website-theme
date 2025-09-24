@@ -279,17 +279,17 @@ const applyConfig = (config) => {
 
   config.views.errorViews = {
     ...config.views.errorViews,
-    401: ErrorWrapper,    // Unauthorized
-    403: ErrorWrapper,    // Forbidden
-    404: ErrorWrapper,    // Not Found
-    408: ErrorWrapper,    // Request Timeout
-    500: ErrorWrapper,    // Server Error
-    502: ErrorWrapper,    // Bad Gateway
-    503: ErrorWrapper,    // Service Unavailable
-    504: ErrorWrapper,    // Gateway Timeout
-    corsError: ErrorWrapper,     // CORS Error
-    ECONNREFUSED: ErrorWrapper,  // Connection Refused
-    default: ErrorWrapper,       // Default catch-all for unmapped errors
+    401: ErrorWrapper, // Unauthorized
+    403: ErrorWrapper, // Forbidden
+    404: ErrorWrapper, // Not Found
+    408: ErrorWrapper, // Request Timeout
+    500: ErrorWrapper, // Server Error
+    502: ErrorWrapper, // Bad Gateway
+    503: ErrorWrapper, // Service Unavailable
+    504: ErrorWrapper, // Gateway Timeout
+    corsError: ErrorWrapper, // CORS Error
+    ECONNREFUSED: ErrorWrapper, // Connection Refused
+    default: ErrorWrapper, // Default catch-all for unmapped errors
   };
   // Apply slate text block customization
   if (config.blocks.blocksConfig.slate) {
