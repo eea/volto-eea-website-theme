@@ -31,7 +31,14 @@ function removeTrailingSlash(path) {
 /**
  * EEA Specific Header component.
  */
-const EEAHeader = ({ pathname, token, items, history, subsite }) => {
+const EEAHeader = ({
+  pathname,
+  token,
+  items,
+  history,
+  subsite,
+  hideHeaderStructure,
+}) => {
   const router_pathname = useSelector((state) => {
     return removeTrailingSlash(state.router?.location?.pathname) || '';
   });
@@ -134,134 +141,138 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   return (
     <Header menuItems={items}>
-      <Header.TopHeader>
-        <Header.TopItem className="official-union">
-          <Image src={eeaFlag} alt="European Union flag"></Image>
-          <Header.TopDropdownMenu
-            text="An official website of the European Union | How do you know?"
-            tabletText="EEA information systems"
-            mobileText="EEA information systems"
-            icon="chevron down"
-            aria-label="dropdown"
-            classNameHeader="mobile-sr-only"
-            viewportWidth={width}
-          >
-            <div
-              className="content"
-              onClick={(evt) => evt.stopPropagation()}
-              onKeyDown={(evt) => evt.stopPropagation()}
-              tabIndex={0}
-              role={'presentation'}
-            >
-              <p>
-                All official European Union website addresses are in the{' '}
-                <b>europa.eu</b> domain.
-              </p>
-              <a
-                href="https://europa.eu/european-union/contact/institutions-bodies_en"
-                target="_blank"
-                rel="noopener"
-                onKeyDown={(evt) => evt.stopPropagation()}
+      {!hideHeaderStructure && (
+        <>
+          <Header.TopHeader>
+            <Header.TopItem className="official-union">
+              <Image src={eeaFlag} alt="European Union flag"></Image>
+              <Header.TopDropdownMenu
+                text="An official website of the European Union | How do you know?"
+                tabletText="EEA information systems"
+                mobileText="EEA information systems"
+                icon="chevron down"
+                aria-label="dropdown"
+                classNameHeader="mobile-sr-only"
+                viewportWidth={width}
               >
-                See all EU institutions and bodies
-              </a>
-            </div>
-          </Header.TopDropdownMenu>
-        </Header.TopItem>
+                <div
+                  className="content"
+                  onClick={(evt) => evt.stopPropagation()}
+                  onKeyDown={(evt) => evt.stopPropagation()}
+                  tabIndex={0}
+                  role={'presentation'}
+                >
+                  <p>
+                    All official European Union website addresses are in the{' '}
+                    <b>europa.eu</b> domain.
+                  </p>
+                  <a
+                    href="https://europa.eu/european-union/contact/institutions-bodies_en"
+                    target="_blank"
+                    rel="noopener"
+                    onKeyDown={(evt) => evt.stopPropagation()}
+                  >
+                    See all EU institutions and bodies
+                  </a>
+                </div>
+              </Header.TopDropdownMenu>
+            </Header.TopItem>
 
-        {!!headerOpts.partnerLinks && (
-          <Header.TopItem>
-            <Header.TopDropdownMenu
-              id="theme-sites"
-              text={headerOpts.partnerLinks.title}
-              aria-label={headerOpts.partnerLinks.title}
-              viewportWidth={width}
-            >
-              <div className="wrapper" tabIndex={0} role={'presentation'}>
-                {headerOpts.partnerLinks.links.map((item, index) => (
-                  <Dropdown.Item key={index}>
-                    <a
-                      href={item.href}
-                      className="site"
-                      target="_blank"
-                      rel="noopener"
-                      onKeyDown={(evt) => evt.stopPropagation()}
-                    >
-                      {item.title}
-                    </a>
-                  </Dropdown.Item>
-                ))}
-              </div>
-            </Header.TopDropdownMenu>
-          </Header.TopItem>
-        )}
+            {!!headerOpts.partnerLinks && (
+              <Header.TopItem>
+                <Header.TopDropdownMenu
+                  id="theme-sites"
+                  text={headerOpts.partnerLinks.title}
+                  aria-label={headerOpts.partnerLinks.title}
+                  viewportWidth={width}
+                >
+                  <div className="wrapper" tabIndex={0} role={'presentation'}>
+                    {headerOpts.partnerLinks.links.map((item, index) => (
+                      <Dropdown.Item key={index}>
+                        <a
+                          href={item.href}
+                          className="site"
+                          target="_blank"
+                          rel="noopener"
+                          onKeyDown={(evt) => evt.stopPropagation()}
+                        >
+                          {item.title}
+                        </a>
+                      </Dropdown.Item>
+                    ))}
+                  </div>
+                </Header.TopDropdownMenu>
+              </Header.TopItem>
+            )}
 
-        {config.settings.isMultilingual &&
-          config.settings.supportedLanguages.length > 1 &&
-          config.settings.hasLanguageDropdown && (
-            <LazyLanguageSwitcher width={width} history={history} />
-          )}
-      </Header.TopHeader>
-      <Header.Main
-        pathname={pathname}
-        isMultilingual={config.settings.isMultilingual}
-        headerSearchBox={headerSearchBox}
-        inverted={isHomePageInverse ? true : false}
-        transparency={isHomePageInverse ? true : false}
-        logo={
-          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
-            <Logo
-              src={isHomePageInverse ? logoWhite : logo}
-              title={eea.websiteTitle}
-              alt={eea.organisationName}
-              url={eea.logoTargetUrl}
-            />
+            {config.settings.isMultilingual &&
+              config.settings.supportedLanguages.length > 1 &&
+              config.settings.hasLanguageDropdown && (
+                <LazyLanguageSwitcher width={width} history={history} />
+              )}
+          </Header.TopHeader>
+          <Header.Main
+            pathname={pathname}
+            isMultilingual={config.settings.isMultilingual}
+            headerSearchBox={headerSearchBox}
+            inverted={isHomePageInverse ? true : false}
+            transparency={isHomePageInverse ? true : false}
+            logo={
+              <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
+                <Logo
+                  src={isHomePageInverse ? logoWhite : logo}
+                  title={eea.websiteTitle}
+                  alt={eea.organisationName}
+                  url={eea.logoTargetUrl}
+                />
 
-            {!!subsite && subsite.title && (
-              <UniversalLink item={subsite} className="subsite-logo">
-                {subsite.subsite_logo ? (
-                  <Image
-                    src={subsite.subsite_logo.scales.mini.download}
-                    alt={subsite.title}
-                  />
-                ) : (
-                  subsite.title
+                {!!subsite && subsite.title && (
+                  <UniversalLink item={subsite} className="subsite-logo">
+                    {subsite.subsite_logo ? (
+                      <Image
+                        src={subsite.subsite_logo.scales.mini.download}
+                        alt={subsite.title}
+                      />
+                    ) : (
+                      subsite.title
+                    )}
+                  </UniversalLink>
                 )}
+              </div>
+            }
+            menuItems={items}
+            menuItemsLayouts={enhancedLayouts}
+            renderGlobalMenuItem={(item, { onClick }) => (
+              <a
+                href={item.url || '/'}
+                title={item.title}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onClick(e, item);
+                }}
+              >
+                {item.title}
+              </a>
+            )}
+            renderMenuItem={(item, options, props) => (
+              <UniversalLink
+                href={item.url || '/'}
+                title={item.nav_title || item.title}
+                {...(options || {})}
+                className={cx(options?.className, {
+                  active: item.url === router_pathname,
+                })}
+              >
+                {props?.iconPosition !== 'right' && props?.children}
+                <span>{item.nav_title || item.title}</span>
+                {props?.iconPosition === 'right' && props?.children}
               </UniversalLink>
             )}
-          </div>
-        }
-        menuItems={items}
-        menuItemsLayouts={enhancedLayouts}
-        renderGlobalMenuItem={(item, { onClick }) => (
-          <a
-            href={item.url || '/'}
-            title={item.title}
-            onClick={(e) => {
-              e.preventDefault();
-              onClick(e, item);
-            }}
-          >
-            {item.title}
-          </a>
-        )}
-        renderMenuItem={(item, options, props) => (
-          <UniversalLink
-            href={item.url || '/'}
-            title={item.nav_title || item.title}
-            {...(options || {})}
-            className={cx(options?.className, {
-              active: item.url === router_pathname,
-            })}
-          >
-            {props?.iconPosition !== 'right' && props?.children}
-            <span>{item.nav_title || item.title}</span>
-            {props?.iconPosition === 'right' && props?.children}
-          </UniversalLink>
-        )}
-      ></Header.Main>
-      {/* Stable portal host for EEA side menu on mobile/tablet */}
-      <div id="eea-side-menu-host" className="eea-side-menu-host" />
+          ></Header.Main>
+          {/* Stable portal host for EEA side menu on mobile/tablet */}
+          <div id="eea-side-menu-host" className="eea-side-menu-host" />
+        </>
+      )}
     </Header>
   );
 };
