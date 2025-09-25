@@ -29,11 +29,39 @@ function voltoCustomMiddleware(req, res, next) {
     });
 }
 
-const registervoltoCustomMiddleware = function (express) {
+function getVoltoCustomJsMiddleware(req, res, next) {
+  getBackendResourceWithAuth(req)
+    .then((resource) => {
+      // Just forward the headers that we need
+      HEADERS.forEach((header) => {
+        if (resource?.get?.(header)) {
+          res.set(header, resource.get(header));
+        }
+      });
+      res.status(resource.statusCode);
+      res.send(resource.body);
+    })
+    .catch(() => {
+      res.set('Content-Type', 'text/javascript; charset=utf-8');
+      res.status(200);
+      res.send(
+        '/* Override this by adding a File called voltoCustom.js to backend at portal_skins/custom/manage_main */',
+      );
+    });
+}
+
+const registerVoltoCustomMiddleware = function (express) {
   const middleware = express.Router();
   middleware.all(['**/voltoCustom.css$'], voltoCustomMiddleware);
   middleware.id = 'voltoCustom.css';
   return middleware;
 };
 
-export default registervoltoCustomMiddleware;
+export const voltoCustomJsMiddleware = function (express) {
+  const middleware = express.Router();
+  middleware.all(['**/voltoCustom.js$'], getVoltoCustomJsMiddleware);
+  middleware.id = 'voltoCustom.js';
+  return middleware;
+};
+
+export default registerVoltoCustomMiddleware;
