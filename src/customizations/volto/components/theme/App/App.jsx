@@ -124,27 +124,6 @@ export class App extends Component {
     const isCmsUI = isCmsUi(this.props.pathname);
     const ConnectionRefusedView = views.errorViews.ECONNREFUSED;
 
-    // Fullscreen mode: Check for set_fullscreen_mode parameter and manage sessionStorage
-    let fullscreenMode = false;
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(this.props.location?.search || '');
-
-      // Check if we should enable fullscreen mode
-      if (urlParams.get('set_fullscreen_mode') === '1') {
-        sessionStorage.setItem('fullscreen_mode', 'true');
-        fullscreenMode = true;
-      }
-      // Check if we should disable fullscreen mode
-      else if (urlParams.get('set_fullscreen_mode') === '0') {
-        sessionStorage.removeItem('fullscreen_mode');
-        fullscreenMode = false;
-      }
-      // Check existing sessionStorage state
-      else {
-        fullscreenMode = sessionStorage.getItem('fullscreen_mode') === 'true';
-      }
-    }
-
     const language =
       this.props.content?.language?.token ?? this.props.intl?.locale;
 
@@ -174,14 +153,13 @@ export class App extends Component {
             siteroot: this.props.pathname === '/',
             'is-authenticated': !!this.props.token,
             'is-anonymous': !this.props.token,
-            'is-fullscreen-mode': fullscreenMode,
             'cms-ui': isCmsUI,
             'public-ui': !isCmsUI,
           })}
         />
         <SkipLinks />
-        {<Header pathname={path} hideHeaderStructure={fullscreenMode} />}
-        {<Breadcrumbs pathname={path} />}
+        <Header pathname={path} />
+        <Breadcrumbs pathname={path} />
         <MultilingualRedirector
           pathname={this.props.pathname}
           contentLanguage={this.props.content?.language?.token}
@@ -208,7 +186,7 @@ export class App extends Component {
             </main>
           </Segment>
         </MultilingualRedirector>
-        {!fullscreenMode && <Footer />}
+        <Footer />
         <LockingToastsFactory
           content={this.props.content}
           user={this.props.userId}
