@@ -226,6 +226,7 @@ export default compose(
         fixedVisibilitySwitchTarget=".main.bar"
         // insertBeforeOnMobile=".banner"
         shouldRender={Boolean(props.navigation?.items?.length)}
+        sideMenuTransitionTarget=".breadcrumbs"
       />
     );
   },
