@@ -187,6 +187,7 @@ export class App extends Component {
           </Segment>
         </MultilingualRedirector>
         <Footer />
+
         <LockingToastsFactory
           content={this.props.content}
           user={this.props.userId}
@@ -206,6 +207,7 @@ export class App extends Component {
           }
         />
         <AppExtras {...this.props} />
+        <script src={`${config.settings.apiPath}/voltoCustom.js`} />
       </PluggablesProvider>
     );
   }
