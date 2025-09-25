@@ -146,7 +146,7 @@ describe('applyConfig', () => {
     );
 
     expect(config.widgets.views.id.subjects).toBe('MockedTokenWidget');
-    expect(config.settings.expressMiddleware.length).toEqual(2);
+    expect(config.settings.expressMiddleware.length).toEqual(3);
     expect(config.settings.appExtras).toEqual([
       { match: '/**', component: 'MockedInpageNavigation' },
       { match: '', component: 'MockedCustomCSS' },
@@ -313,7 +313,7 @@ describe('applyConfig', () => {
     expect(config.blocks.blocksConfig['hero'].copyrightPrefix).toBe('Image');
 
     expect(config.widgets.views.id.subjects).toBe('MockedTokenWidget');
-    expect(config.settings.expressMiddleware.length).toEqual(2);
+    expect(config.settings.expressMiddleware.length).toEqual(3);
     expect(config.settings.appExtras).toEqual([
       { match: '/**', component: 'MockedInpageNavigation' },
       { match: '', component: 'MockedCustomCSS' },
