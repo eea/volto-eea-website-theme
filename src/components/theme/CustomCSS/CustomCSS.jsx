@@ -1,5 +1,4 @@
 import React from 'react';
-import config from '@plone/volto/registry';
 
 const CustomCSS = (props) => {
   const href = `/voltoCustom.css`;
