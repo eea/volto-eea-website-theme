@@ -76,9 +76,11 @@ const ContentMetadataTags = (props) => {
     const baseTitle = seo_title || title;
 
     if (includeSiteTitle && fallbackSiteTitle && fallbackSiteTitle !== title) {
-      return [baseTitle, parentTitle, navRootTitle, siteRootTitle]
-        .filter((part) => part && part !== baseTitle)
-        .join(` ${titleAndSiteTitleSeparator} `);
+      const parts = [baseTitle, parentTitle, navRootTitle].filter((part) =>
+        Boolean(part),
+      );
+      const titleWithSep = parts.join(` ${titleAndSiteTitleSeparator} `);
+      return siteRootTitle ? `${titleWithSep} ${siteRootTitle}` : titleWithSep;
     } else {
       return baseTitle;
     }
