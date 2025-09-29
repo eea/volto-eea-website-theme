@@ -73,15 +73,14 @@ const ContentMetadataTags = (props) => {
     const fallbackSiteTitle = navRootTitle || siteRootTitle;
     const parentTitle = props.content?.parent?.title;
 
+    const baseTitle = seo_title || title;
+
     if (includeSiteTitle && fallbackSiteTitle && fallbackSiteTitle !== title) {
-      return (
-        seo_title ||
-        [title, parentTitle, navRootTitle, siteRootTitle]
-          .filter((part) => part && part !== title)
-          .join(` ${titleAndSiteTitleSeparator} `)
-      );
+      return [baseTitle, parentTitle, navRootTitle, siteRootTitle]
+        .filter((part) => part && part !== baseTitle)
+        .join(` ${titleAndSiteTitleSeparator} `);
     } else {
-      return seo_title || title;
+      return baseTitle;
     }
   };
 
