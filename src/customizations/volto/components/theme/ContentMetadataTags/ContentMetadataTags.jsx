@@ -70,17 +70,20 @@ const ContentMetadataTags = (props) => {
       config?.settings?.titleAndSiteTitleSeparator || '-';
     const navRootTitle = navroot?.title;
     const siteRootTitle = site?.['plone.site_title'];
-    const fallbackSiteTitle = navRootTitle || siteRootTitle;
     const parentTitle = props.content?.parent?.title;
+    const processedParentTitle =
+      parentTitle === navRootTitle ? null : parentTitle;
 
     const baseTitle = seo_title || title;
 
-    if (includeSiteTitle && fallbackSiteTitle && fallbackSiteTitle !== title) {
-      const parts = [baseTitle, parentTitle, navRootTitle].filter((part) =>
-        Boolean(part),
+    if (includeSiteTitle && siteRootTitle !== title) {
+      const parts = [baseTitle, processedParentTitle, navRootTitle].filter(
+        (part) => Boolean(part),
       );
       const titleWithSep = parts.join(` ${titleAndSiteTitleSeparator} `);
-      return siteRootTitle ? `${titleWithSep} ${siteRootTitle}` : titleWithSep;
+      return siteRootTitle && siteRootTitle !== navRootTitle
+        ? `${titleWithSep} ${siteRootTitle}`
+        : titleWithSep;
     } else {
       return baseTitle;
     }
