@@ -69,21 +69,19 @@ const ContentMetadataTags = (props) => {
     const titleAndSiteTitleSeparator =
       config?.settings?.titleAndSiteTitleSeparator || '-';
     const navRootTitle = navroot?.title;
-    const processedNavRootTitle = navRootTitle === title ? null : navRootTitle;
+    const contextIsRoot = navRootTitle === title;
     const siteRootTitle = site?.['plone.site_title'];
-    const parentTitle = props.content?.parent?.title;
-    const processedParentTitle =
-      parentTitle === processedNavRootTitle ? null : parentTitle;
+    const parentTitle = !contextIsRoot && props.content?.parent?.title;
 
     const baseTitle = seo_title || title;
     if (includeSiteTitle && siteRootTitle !== title) {
       const parts = [
         baseTitle,
-        processedParentTitle,
-        processedNavRootTitle,
+        parentTitle,
+        !contextIsRoot && navRootTitle !== parentTitle && navRootTitle,
       ].filter((part) => Boolean(part));
       const titleWithSep = parts.join(` ${titleAndSiteTitleSeparator} `);
-      return siteRootTitle && siteRootTitle !== processedNavRootTitle
+      return siteRootTitle && siteRootTitle !== navRootTitle
         ? `${titleWithSep} ${siteRootTitle}`
         : titleWithSep;
     } else {
