@@ -71,9 +71,13 @@ const ContentMetadataTags = (props) => {
     const navRootTitle = navroot?.title;
     const siteRootTitle = site?.['plone.site_title'];
     const titlePart = navRootTitle || siteRootTitle;
+    const parentTitle = props.content?.parent?.title;
 
     if (includeSiteTitle && titlePart && titlePart !== title) {
-      return seo_title || `${title} ${titleAndSiteTitleSeparator} ${titlePart}`;
+      return (
+        seo_title ||
+        `${title} ${titleAndSiteTitleSeparator} ${parentTitle} ${titleAndSiteTitleSeparator} ${navRootTitle} ${siteRootTitle}`
+      );
     } else {
       return seo_title || title;
     }
