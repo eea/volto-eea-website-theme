@@ -44,7 +44,8 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import contentBoxSVG from './icons/content-box.svg';
 
 import okMiddleware from './middleware/ok';
-import voltoCustomMiddleware from './middleware/voltoCustom';
+import voltoCustomCSSMiddleware from './middleware/voltoCustom';
+import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
 import { print, navigationSettings } from './reducers';
 
@@ -397,7 +398,8 @@ const applyConfig = (config) => {
     const express = require('express');
     config.settings.expressMiddleware = [
       ...(config.settings.expressMiddleware || []),
-      voltoCustomMiddleware(express),
+      voltoCustomCSSMiddleware(express),
+      voltoCustomJsMiddleware(express),
       okMiddleware(express),
     ];
   }
