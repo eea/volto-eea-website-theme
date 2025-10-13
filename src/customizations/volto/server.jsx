@@ -57,6 +57,13 @@ if (config.settings) {
   });
 }
 
+function getDateHeader(name, date) {
+  if (date) {
+    return { [name]: new Date(date).toUTCString() };
+  }
+  return {};
+}
+
 function reactIntlErrorHandler(error) {
   debug('i18n')(error);
 }
@@ -332,6 +339,17 @@ server.get('/*', (req, res) => {
             `,
         );
       } else {
+        const content = store.getState().content.data;
+        res.set({
+          ...getDateHeader('Last-Modified', content.effective),
+          ...getDateHeader('Expires', content.expires),
+          ...getDateHeader('X-Created-At', content.created),
+          ...getDateHeader('X-Updated-At', content.modified),
+          ...getDateHeader('X-Published-At', content.effective),
+          'X-Page-Title': content.title,
+          'X-Page-Description': content.description,
+          'X-Page-Type': content['@type'],
+        });
         res.status(200).send(
           `<!doctype html>
               ${renderToString(
