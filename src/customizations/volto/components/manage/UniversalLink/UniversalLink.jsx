@@ -84,7 +84,7 @@ const UniversalLink = ({
     (!isExternal && url && url.includes('@@download')) || download;
 
   const isDisplayFile =
-    (!isExternal && url.includes('@@display-file')) || false;
+    (!isExternal && url && url.includes('@@display-file')) || false;
   const checkedURL = URLUtils.checkAndNormalizeUrl(url);
 
   // we can receive an item with a linkWithHash property set from ObjectBrowserWidget
