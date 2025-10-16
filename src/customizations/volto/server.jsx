@@ -45,6 +45,20 @@ import {
   loadOnServer,
 } from '@plone/volto/helpers/AsyncConnect';
 
+// Global handler for unhandled promise rejections during SSR
+// This prevents the server from crashing on API errors like 404
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[SSR] Unhandled Promise Rejection:', {
+    reason: reason?.message || reason,
+    status: reason?.status,
+  });
+  // Don't crash the server for HTTP errors (401, 404, etc.)
+  const ignoredStatuses = [301, 302, 401, 404];
+  if (reason?.status && !ignoredStatuses.includes(reason.status)) {
+    console.error('[SSR] Full error:', reason);
+  }
+});
+
 let locales = {};
 const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
 
@@ -251,67 +265,72 @@ server.get('/*', (req, res) => {
   const url = req.originalUrl || req.url;
   const location = parseUrl(url);
 
-  loadOnServer({ store, location, routes, api })
-    .then(() => {
-      const initialLang =
-        req.universalCookies.get('I18N_LANGUAGE') ||
-        config.settings.defaultLanguage ||
-        req.headers['accept-language'];
+  // Wrap in try-catch to handle synchronous errors from superagent
+  try {
+    loadOnServer({ store, location, routes, api })
+      .then(() => {
+        const initialLang =
+          req.universalCookies.get('I18N_LANGUAGE') ||
+          config.settings.defaultLanguage ||
+          req.headers['accept-language'];
 
-      // The content info is in the store at this point thanks to the asynconnect
-      // features, then we can force the current language info into the store when
-      // coming from an SSR request
+        // The content info is in the store at this point thanks to the asynconnect
+        // features, then we can force the current language info into the store when
+        // coming from an SSR request
 
-      // TODO: there is a bug here with content that, for any reason, doesn't
-      // present the language token field, for some reason. In this case, we
-      // should follow the cookie rather then switching the language
-      const contentLang = store.getState().content.get?.error
-        ? initialLang
-        : store.getState().content.data?.language?.token ||
-          config.settings.defaultLanguage;
+        // TODO: there is a bug here with content that, for any reason, doesn't
+        // present the language token field, for some reason. In this case, we
+        // should follow the cookie rather then switching the language
+        const contentLang = store.getState().content.get?.error
+          ? initialLang
+          : store.getState().content.data?.language?.token ||
+            config.settings.defaultLanguage;
 
-      if (toBackendLang(initialLang) !== contentLang && url !== '/') {
-        const newLang = toReactIntlLang(
-          new locale.Locales(contentLang).best(supported).toString(),
+        if (toBackendLang(initialLang) !== contentLang && url !== '/') {
+          const newLang = toReactIntlLang(
+            new locale.Locales(contentLang).best(supported).toString(),
+          );
+          store.dispatch(changeLanguage(newLang, locales[newLang], req));
+        }
+
+        const context = {};
+        resetServerContext();
+        const markup = renderToString(
+          <ChunkExtractorManager extractor={extractor}>
+            <CookiesProvider cookies={req.universalCookies}>
+              <Provider store={store} onError={reactIntlErrorHandler}>
+                <StaticRouter context={context} location={req.url}>
+                  <ReduxAsyncConnect routes={routes} helpers={api} />
+                </StaticRouter>
+              </Provider>
+            </CookiesProvider>
+          </ChunkExtractorManager>,
         );
-        store.dispatch(changeLanguage(newLang, locales[newLang], req));
-      }
 
-      const context = {};
-      resetServerContext();
-      const markup = renderToString(
-        <ChunkExtractorManager extractor={extractor}>
-          <CookiesProvider cookies={req.universalCookies}>
-            <Provider store={store} onError={reactIntlErrorHandler}>
-              <StaticRouter context={context} location={req.url}>
-                <ReduxAsyncConnect routes={routes} helpers={api} />
-              </StaticRouter>
-            </Provider>
-          </CookiesProvider>
-        </ChunkExtractorManager>,
-      );
+        const readCriticalCss =
+          config.settings.serverConfig.readCriticalCss ||
+          defaultReadCriticalCss;
 
-      const readCriticalCss =
-        config.settings.serverConfig.readCriticalCss || defaultReadCriticalCss;
+        // If we are showing an "old browser" warning,
+        // make sure it doesn't get cached in a shared cache
+        const browserdetect = store.getState().browserdetect;
+        if (
+          config.settings.notSupportedBrowsers.includes(browserdetect?.name)
+        ) {
+          res.set({
+            'Cache-Control': 'private',
+          });
+        }
 
-      // If we are showing an "old browser" warning,
-      // make sure it doesn't get cached in a shared cache
-      const browserdetect = store.getState().browserdetect;
-      if (config.settings.notSupportedBrowsers.includes(browserdetect?.name)) {
-        res.set({
-          'Cache-Control': 'private',
-        });
-      }
+        if (context.url) {
+          res.redirect(flattenToAppURL(context.url));
+        } else if (context.error_code) {
+          res.set({
+            'Cache-Control': 'no-cache',
+          });
 
-      if (context.url) {
-        res.redirect(flattenToAppURL(context.url));
-      } else if (context.error_code) {
-        res.set({
-          'Cache-Control': 'no-cache',
-        });
-
-        res.status(context.error_code).send(
-          `<!doctype html>
+          res.status(context.error_code).send(
+            `<!doctype html>
               ${renderToString(
                 <Html
                   extractor={extractor}
@@ -330,10 +349,10 @@ server.get('/*', (req, res) => {
                 />,
               )}
             `,
-        );
-      } else {
-        res.status(200).send(
-          `<!doctype html>
+          );
+        } else {
+          res.status(200).send(
+            `<!doctype html>
               ${renderToString(
                 <Html
                   extractor={extractor}
@@ -348,10 +367,14 @@ server.get('/*', (req, res) => {
                 />,
               )}
             `,
-        );
-      }
-    }, errorHandler)
-    .catch(errorHandler);
+          );
+        }
+      }, errorHandler)
+      .catch(errorHandler);
+  } catch (error) {
+    // Handle synchronous errors from superagent (e.g., 404 during SSR)
+    errorHandler(error);
+  }
 });
 
 export const defaultReadCriticalCss = () => {
