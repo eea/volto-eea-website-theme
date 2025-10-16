@@ -45,20 +45,6 @@ import {
   loadOnServer,
 } from '@plone/volto/helpers/AsyncConnect';
 
-// Global handler for unhandled promise rejections during SSR
-// This prevents the server from crashing on API errors like 404
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('[SSR] Unhandled Promise Rejection:', {
-    reason: reason?.message || reason,
-    status: reason?.status,
-  });
-  // Don't crash the server for HTTP errors (401, 404, etc.)
-  const ignoredStatuses = [301, 302, 401, 404];
-  if (reason?.status && !ignoredStatuses.includes(reason.status)) {
-    console.error('[SSR] Full error:', reason);
-  }
-});
-
 let locales = {};
 const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
 
@@ -170,7 +156,33 @@ function setupServer(req, res, next) {
   // and for being used by the rest of the middlewares, if required
   const store = configureStore(initialState, history, api);
 
+  /**
+   * Request-scoped error handler for SSR errors.
+   * This function is called when errors occur during server-side rendering,
+   * including API errors (404, 401, etc.) and rendering errors.
+   *
+   * @param {Error} error - The error object with optional status property
+   */
   function errorHandler(error) {
+    // Log error details for debugging
+    const ignoredErrors = [301, 302, 401, 404];
+    if (!ignoredErrors.includes(error.status)) {
+      console.error('[SSR Error Handler]', {
+        url: req.url,
+        status: error.status,
+        message: error.message,
+        stack: error.stack,
+      });
+    } else {
+      // Log ignored errors at debug level
+      console.log('[SSR Error Handler] HTTP error:', {
+        url: req.url,
+        status: error.status,
+        message: error.message,
+      });
+    }
+
+    // Render error page
     const errorPage = (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>
@@ -182,13 +194,6 @@ function setupServer(req, res, next) {
     res.set({
       'Cache-Control': 'public, max-age=60, no-transform',
     });
-
-    /* Displays error in console
-     * TODO:
-     * - get ignored codes from Plone error_log
-     */
-    const ignoredErrors = [301, 302, 401, 404];
-    if (!ignoredErrors.includes(error.status)) console.error(error);
 
     res
       .status(error.status || 500) // If error happens in Volto code itself error status is undefined
@@ -265,7 +270,16 @@ server.get('/*', (req, res) => {
   const url = req.originalUrl || req.url;
   const location = parseUrl(url);
 
-  // Wrap in try-catch to handle synchronous errors from superagent
+  /**
+   * Request-scoped error handling for SSR.
+   *
+   * The try-catch block catches synchronous errors (e.g., immediate throws from superagent).
+   * The .then(success, errorHandler) catches promise rejections from loadOnServer.
+   * The .catch(errorHandler) is a safety net for any unhandled rejections.
+   *
+   * This ensures all errors during SSR are caught and handled within the context
+   * of this specific request, without affecting other requests or the process.
+   */
   try {
     loadOnServer({ store, location, routes, api })
       .then(() => {
@@ -372,7 +386,11 @@ server.get('/*', (req, res) => {
       }, errorHandler)
       .catch(errorHandler);
   } catch (error) {
-    // Handle synchronous errors from superagent (e.g., 404 during SSR)
+    /**
+     * Catch synchronous errors that occur before the promise chain is established.
+     * This includes immediate throws from superagent when API calls fail synchronously.
+     * The errorHandler will render an error page and send a proper HTTP response.
+     */
     errorHandler(error);
   }
 });
