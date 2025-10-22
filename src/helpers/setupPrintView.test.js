@@ -35,15 +35,22 @@ describe('setupPrintView', () => {
 
     await act(async () => {
       setupPrintView(dispatch);
-      jest.runAllTimers();
-      await Promise.resolve();
-      await Promise.resolve();
+
+      // Run all timers and flush all promises multiple times
+      // to handle the async/await chain in forceLoadLazyBlocks and waitForPlotlyCharts
+      for (let i = 0; i < 10; i++) {
+        jest.runAllTimers();
+        await Promise.resolve();
+      }
     });
 
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_PRINT' });
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_PRINT_LOADING' });
     expect(loadLazyImages).toHaveBeenCalled();
-    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0 });
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      behavior: 'instant',
+      top: 0,
+    });
     expect(window.print).toHaveBeenCalled();
   });
 });

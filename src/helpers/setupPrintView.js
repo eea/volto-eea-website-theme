@@ -108,7 +108,7 @@ export const setupPrintView = (dispatch) => {
     }
 
     // Final scroll to absolute bottom
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+    window.scrollTo({ top: pageDocument.scrollHeight, behavior: 'instant' });
   };
 
   // Wait for plotly charts to load and re-render in mobile layout
@@ -170,91 +170,95 @@ export const setupPrintView = (dispatch) => {
 
   // Wait for all content to load before printing
   const waitForAllContentToLoad = async () => {
-    // Wait for iframes, images, and Plotly charts to re-render
-    Promise.all([waitForIframes(), waitForImages(), waitForPlotlyCharts()])
-      .then(() => {
-        // Scroll back to top
-        window.scrollTo({ top: 0 });
+    try {
+      // Wait for iframes, images, and Plotly charts to re-render
+      await Promise.all([
+        waitForIframes(),
+        waitForImages(),
+        waitForPlotlyCharts(),
+      ]);
 
-        // Reset tab display
-        Array.from(tabs).forEach((tab) => {
-          tab.style.display = '';
-        });
+      // Scroll back to top
+      window.scrollTo({ top: 0 });
 
-        // Keep isPrint=true during printing so charts stay in mobile layout
-        // Only turn off loading indicator
-        dispatch(setPrintLoading(false));
+      // Reset tab display
+      Array.from(tabs).forEach((tab) => {
+        tab.style.display = '';
+      });
 
-        // Use matchMedia to detect when print is actually happening
-        const printMediaQuery = window.matchMedia('print');
-        let printDialogClosed = false;
+      // Keep isPrint=true during printing so charts stay in mobile layout
+      // Only turn off loading indicator
+      dispatch(setPrintLoading(false));
 
-        // Function to reset isPrint state
-        const resetPrintState = () => {
-          if (printDialogClosed) return; // Prevent multiple resets
-          printDialogClosed = true;
+      // Use matchMedia to detect when print is actually happening
+      const printMediaQuery = window.matchMedia('print');
+      let printDialogClosed = false;
 
-          dispatch(setIsPrint(false));
+      // Function to reset isPrint state
+      const resetPrintState = () => {
+        if (printDialogClosed) return; // Prevent multiple resets
+        printDialogClosed = true;
 
-          // Clean up listeners
-          printMediaQuery.removeEventListener('change', handlePrintMediaChange);
-          window.removeEventListener('afterprint', handleAfterPrint);
-          window.removeEventListener('focus', handleWindowFocus);
-        };
+        dispatch(setIsPrint(false));
 
-        // Listen for print media query changes
-        const handlePrintMediaChange = (e) => {
-          // When print media query becomes false, the print dialog was closed
-          if (!e.matches) {
-            // Add a small delay to ensure the dialog is fully closed
-            setTimeout(resetPrintState, 100);
-          }
-        };
+        // Clean up listeners
+        printMediaQuery.removeEventListener('change', handlePrintMediaChange);
+        window.removeEventListener('afterprint', handleAfterPrint);
+        window.removeEventListener('focus', handleWindowFocus);
+      };
 
-        // Fallback: afterprint event (unreliable but keep as backup)
-        const handleAfterPrint = () => {
-          // Don't reset immediately - wait a bit to see if we're actually done
-          setTimeout(() => {
-            // Only reset if print media query is not active
-            if (!printMediaQuery.matches) {
-              resetPrintState();
-            }
-          }, 500);
-        };
+      // Listen for print media query changes
+      const handlePrintMediaChange = (e) => {
+        // When print media query becomes false, the print dialog was closed
+        if (!e.matches) {
+          // Add a small delay to ensure the dialog is fully closed
+          setTimeout(resetPrintState, 100);
+        }
+      };
 
-        // Fallback: window focus event (when user cancels or completes print)
-        const handleWindowFocus = () => {
-          // Wait a bit to ensure print dialog is closed
-          setTimeout(() => {
-            // Only reset if print media query is not active
-            if (!printMediaQuery.matches) {
-              resetPrintState();
-            }
-          }, 300);
-        };
-
-        // Set up all listeners
-        printMediaQuery.addEventListener('change', handlePrintMediaChange);
-        window.addEventListener('afterprint', handleAfterPrint);
-        // Focus event fires when user returns from print dialog
-        window.addEventListener('focus', handleWindowFocus, { once: true });
-
-        // Safety timeout: reset after 30 seconds no matter what
+      // Fallback: afterprint event (unreliable but keep as backup)
+      const handleAfterPrint = () => {
+        // Don't reset immediately - wait a bit to see if we're actually done
         setTimeout(() => {
-          if (!printDialogClosed) {
+          // Only reset if print media query is not active
+          if (!printMediaQuery.matches) {
             resetPrintState();
           }
-        }, 30000);
+        }, 500);
+      };
 
-        // Trigger print - isPrint remains true during the dialog
-        window.print();
-      })
-      .catch((error) => {
-        // Still try to print even if there was an error
-        dispatch(setPrintLoading(false));
-        dispatch(setIsPrint(false));
-        window.print();
-      });
+      // Fallback: window focus event (when user cancels or completes print)
+      const handleWindowFocus = () => {
+        // Wait a bit to ensure print dialog is closed
+        setTimeout(() => {
+          // Only reset if print media query is not active
+          if (!printMediaQuery.matches) {
+            resetPrintState();
+          }
+        }, 300);
+      };
+
+      // Set up all listeners
+      printMediaQuery.addEventListener('change', handlePrintMediaChange);
+      window.addEventListener('afterprint', handleAfterPrint);
+      // Focus event fires when user returns from print dialog
+      window.addEventListener('focus', handleWindowFocus, { once: true });
+
+      // Safety timeout: reset after 30 seconds no matter what
+      setTimeout(() => {
+        if (!printDialogClosed) {
+          resetPrintState();
+        }
+      }, 30000);
+
+      // Trigger print - isPrint remains true during the dialog
+      window.print();
+    } catch (error) {
+      // Still try to print even if there was an error
+      dispatch(setPrintLoading(false));
+      dispatch(setIsPrint(false));
+      window.print();
+    }
   };
 
   // Delay the initial call to ensure everything is rendered
