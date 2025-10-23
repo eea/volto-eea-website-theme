@@ -163,9 +163,9 @@ function setupServer(req, res, next) {
    *
    * @param {Error} error - The error object with optional status property
    */
+  const ignoredErrors = [301, 302, 401, 404];
   function errorHandler(error) {
     // Log error details for debugging
-    const ignoredErrors = [301, 302, 401, 404];
     if (!ignoredErrors.includes(error.status)) {
       console.error('[SSR Error Handler]', {
         url: req.url,
