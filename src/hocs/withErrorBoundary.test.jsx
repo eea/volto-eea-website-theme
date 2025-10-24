@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { ErrorBoundary } from '@plone/volto/components';
 import withErrorBoundary from './withErrorBoundary';
 
