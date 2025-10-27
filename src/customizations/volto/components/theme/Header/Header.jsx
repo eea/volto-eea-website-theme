@@ -65,6 +65,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const navigationLoaded = useSelector(
     (state) => state.navigationSettings?.loaded,
   );
+  const updateRequest = useSelector((state) => state.content.update);
 
   // Combine navigation settings from backend with config fallback
   const configLayouts = config.settings?.menuItemsLayouts || {};
@@ -113,6 +114,11 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   }
 
   React.useEffect(() => {
+    console.log('TRIGGER PAGE LOAD ', updateRequest);
+    dispatch(getNavigationSettings(pathname));
+  }, [updateRequest]);
+
+  React.useEffect(() => {
     const base_url = getBaseUrl(pathname);
     const { settings } = config;
 
@@ -127,9 +133,9 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     }
 
     // Fetch navigation settings
-    if (!navigationLoaded) {
-      dispatch(getNavigationSettings(pathname));
-    }
+    // if (!navigationLoaded) {
+    //   dispatch(getNavigationSettings(pathname));
+    // }
   }, [pathname, token, dispatch, previousToken, navigationLoaded]);
 
   return (
