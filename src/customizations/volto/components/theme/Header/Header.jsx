@@ -112,7 +112,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   React.useEffect(() => {
     dispatch(getNavigationSettings(pathname));
-  }, [updateRequest]);
+  }, [updateRequest, dispatch, pathname]);
 
   React.useEffect(() => {
     const base_url = getBaseUrl(pathname);
