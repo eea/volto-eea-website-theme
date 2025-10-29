@@ -4,11 +4,11 @@ import config from '@plone/volto/registry';
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -24,8 +24,12 @@ class ErrorBoundary extends React.Component {
     const ErrorPage =
       this.props.fallback || config.getComponent('ErrorBoundary').component;
     if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <ErrorPage name={this.props.name} />;
+      if (ErrorPage) {
+        // You can render any custom fallback UI
+        return <ErrorPage name={this.props.name} error={this.state.error} />;
+      } else {
+        return <pre className="error">{`<error: ${this.props.name}>`}</pre>;
+      }
     }
 
     return this.props.children;
