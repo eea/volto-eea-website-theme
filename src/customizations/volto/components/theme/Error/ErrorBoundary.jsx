@@ -13,6 +13,8 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     if (this.props.onError) {
+      //pass error to error-reporting service
+      config.settings.errorHandlers.forEach((handler) => handler(error));
       this.props.onError(error, errorInfo);
     } else {
       // eslint-disable-next-line
