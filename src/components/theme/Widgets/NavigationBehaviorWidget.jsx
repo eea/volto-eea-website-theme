@@ -8,6 +8,8 @@ import { getNavigation } from '@plone/volto/actions';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
+import { numbersToMenuItemColumns } from '@eeacms/volto-eea-design-system/ui/Header/utils';
+
 import upSVG from '@plone/volto/icons/up-key.svg';
 import downSVG from '@plone/volto/icons/down-key.svg';
 
@@ -36,30 +38,6 @@ const defaultRouteSettings = {
   // Don't include empty arrays in default settings
 };
 
-// Helper functions for menuItemColumns conversion (numbers to semantic UI format)
-const numberToColumnString = (num) => {
-  const numbers = [
-    '',
-    'one',
-    'two',
-    'three',
-    'four',
-    'five',
-    'six',
-    'seven',
-    'eight',
-    'nine',
-  ];
-  return numbers[num] ? `${numbers[num]} wide column` : '';
-};
-
-const numbersToMenuItemColumns = (numbers) => {
-  if (!Array.isArray(numbers)) return [];
-  return numbers
-    .map((num) => numberToColumnString(parseInt(num)))
-    .filter((col) => col !== '');
-};
-
 const columnStringToNumber = (colString) => {
   const numbers = {
     one: 1,
@@ -78,7 +56,7 @@ const columnStringToNumber = (colString) => {
   return match ? numbers[match[1]] : null;
 };
 
-const menuItemColumnsToNumbers = (columns) => {
+export const menuItemColumnsToNumbers = (columns) => {
   if (!Array.isArray(columns)) return [];
   return columns
     .map((col) => columnStringToNumber(col))
@@ -420,6 +398,20 @@ const NavigationBehaviorWidget = (props) => {
             portal_type: ______,
             ...settings
           } = route;
+
+          // // Convert menuItemColumns from numbers back to semantic UI format for backend storage
+          if (
+            settings.menuItemColumns !== null &&
+            settings.menuItemColumns &&
+            Array.isArray(settings.menuItemColumns)
+          ) {
+            if (settings.menuItemColumns.length > 0) {
+              settings.menuItemColumns = numbersToMenuItemColumns(
+                settings.menuItemColumns,
+              );
+            }
+          }
+
           newSettings[routeId] = settings;
         });
 
