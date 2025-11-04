@@ -111,6 +111,13 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   }
 
   React.useEffect(() => {
+    if (
+      updateRequest?.loaded &&
+      removeTrailingSlash(updateRequest?.content?.['@id'] || '') ===
+        removeTrailingSlash(pathname)
+    ) {
+      dispatch(getNavigationSettings(pathname));
+    }
     dispatch(getNavigationSettings(pathname));
   }, [updateRequest, dispatch, pathname]);
 
