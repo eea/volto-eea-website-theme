@@ -14,6 +14,7 @@ import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/them
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import WebReportSectionView from '@eeacms/volto-eea-website-theme/components/theme/WebReport/WebReportSectionView';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
+import PrintLoader from '@eeacms/volto-eea-website-theme/components/theme/PrintLoader/PrintLoader';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
 import { DateWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/DateWidget';
@@ -23,6 +24,8 @@ import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/W
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
+import NavigationBehaviorWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/NavigationBehaviorWidget';
+import SimpleArrayWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/SimpleArrayWidget';
 
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 
@@ -41,9 +44,10 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import contentBoxSVG from './icons/content-box.svg';
 
 import okMiddleware from './middleware/ok';
-import voltoCustomMiddleware from './middleware/voltoCustom';
+import voltoCustomCSSMiddleware from './middleware/voltoCustom';
+import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
-import { print } from './reducers';
+import { print, navigationSettings } from './reducers';
 
 import * as eea from './config';
 
@@ -379,6 +383,8 @@ const applyConfig = (config) => {
   config.widgets.views.widget.contributors = ContributorsViewWidget;
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
+  config.widgets.widget.simple_array = SimpleArrayWidget;
+  config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
 
   config.widgets.views.factory = {
@@ -392,7 +398,8 @@ const applyConfig = (config) => {
     const express = require('express');
     config.settings.expressMiddleware = [
       ...(config.settings.expressMiddleware || []),
-      voltoCustomMiddleware(express),
+      voltoCustomCSSMiddleware(express),
+      voltoCustomJsMiddleware(express),
       okMiddleware(express),
     ];
   }
@@ -419,6 +426,10 @@ const applyConfig = (config) => {
     {
       match: '',
       component: BaseTag,
+    },
+    {
+      match: '',
+      component: PrintLoader,
     },
   ];
 
@@ -501,31 +512,6 @@ const applyConfig = (config) => {
     },
   ];
 
-  // mega menu layout settings
-  config.settings.menuItemsLayouts = {
-    '/en/topics': {
-      menuItemChildrenListColumns: [1, 4],
-      menuItemColumns: [
-        'at-a-glance three wide column',
-        'topics-right-column nine wide column',
-      ],
-      hideChildrenFromNavigation: false,
-    },
-    '/en/countries': {
-      menuItemColumns: ['eight wide column', 'four wide column'],
-      menuItemChildrenListColumns: [5, 2],
-      appendExtraMenuItemsToLastColumn: true,
-      hideChildrenFromNavigation: false,
-    },
-    '/en/about': {
-      hideChildrenFromNavigation: false,
-    },
-    // if you want to set default settings for all menu items that don't have a specific path
-    // '*': {
-    //   hideChildrenFromNavigation: false,
-    // },
-  };
-
   // If you don't want to show the content type as a link in the breadcrumbs, you can set it
   // contentTypesAsBreadcrumbSection
   config.settings.contentTypesAsBreadcrumbSection = ['web_report_section'];
@@ -589,7 +575,13 @@ const applyConfig = (config) => {
   config.addonReducers = {
     ...(config.addonReducers || {}),
     print,
+    navigationSettings,
   };
+
+  // Mega menu object
+  if (!config.settings.menuItemsLayouts) {
+    config.settings.menuItemsLayouts = {};
+  }
 
   // Breadcrumbs
   config.settings.apiExpanders.push({

@@ -8,7 +8,7 @@ import { Accordion, Icon } from 'semantic-ui-react';
 
 import Slugger from 'github-slugger';
 
-import { UniversalLink, MaybeWrap } from '@plone/volto/components';
+import { UniversalLink } from '@plone/volto/components';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 import withEEASideMenu from '@eeacms/volto-block-toc/hocs/withEEASideMenu';
 import { flattenToAppURL } from '@plone/volto/helpers';
@@ -24,10 +24,12 @@ const AccordionNavigation = ({
   navigation = {},
   device,
   isMenuOpenOnOutsideClick,
+  hasWideContent,
 }) => {
   const { items = [], title, has_custom_name } = navigation;
   const intl = useIntl();
-  const navOpen = ['mobile', 'tablet'].includes(device) ? false : true;
+  const navOpen =
+    ['mobile', 'tablet'].includes(device) || hasWideContent ? false : true;
   const [isNavOpen, setIsNavOpen] = React.useState(navOpen);
   const [activeItems, setActiveItems] = React.useState({});
   const contextNavigationListRef = React.useRef(null);
@@ -41,6 +43,10 @@ const AccordionNavigation = ({
   React.useEffect(() => {
     if (isMenuOpenOnOutsideClick === false) setIsNavOpen(false);
   }, [isMenuOpenOnOutsideClick]);
+
+  React.useEffect(() => {
+    setIsNavOpen(navOpen);
+  }, [navOpen]);
 
   React.useEffect(() => {
     if (!navOpen) {
@@ -72,7 +78,7 @@ const AccordionNavigation = ({
     [onClickSummary],
   );
 
-  const renderItems = ({ item, level = 0 }) => {
+  const renderItems = ({ item, level = 0, index }) => {
     const {
       title,
       href,
@@ -83,6 +89,7 @@ const AccordionNavigation = ({
     } = item;
     const hasChildItems = childItems && childItems.length > 0;
     const normalizedTitle = Slugger.slug(title);
+    const firstItem = index === 0;
 
     const checkIfActive = () => {
       return activeItems[href] !== undefined ? activeItems[href] : is_in_path;
@@ -126,7 +133,7 @@ const AccordionNavigation = ({
               aria-labelledby={`accordion-title-${normalizedTitle}`}
               role="region"
             >
-              <ul className="accordion-list">
+              <ul className={`accordion-list ${'level-' + level}`}>
                 {childItems.map((child) =>
                   renderItems({ item: child, level: level + 1 }),
                 )}
@@ -139,8 +146,10 @@ const AccordionNavigation = ({
             className={cx(`title-link contenttype-${type}`, {
               current: is_current,
               in_path: is_in_path,
+              navigation_home: firstItem,
             })}
           >
+            {firstItem && <Icon className={'ri-home-2-line'} />}
             {title}
           </UniversalLink>
         )}
@@ -159,31 +168,21 @@ const AccordionNavigation = ({
             onKeyDown={onKeyDownSummary}
             ref={summaryRef}
           >
-            <MaybeWrap
-              condition={!navOpen}
-              className="ui container d-flex flex-items-center"
-            >
-              {has_custom_name
-                ? title
-                : intl.formatMessage(messages.navigation)}
-              <Icon
-                className={
-                  isNavOpen ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'
-                }
-              />
-            </MaybeWrap>
+            {has_custom_name ? title : intl.formatMessage(messages.navigation)}
+            <Icon
+              className={
+                isNavOpen ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'
+              }
+            />
           </summary>
-          <MaybeWrap
-            condition={!navOpen}
-            className="ui container d-flex flex-items-center"
+          <ul
+            className="context-navigation-list accordion-list"
+            ref={contextNavigationListRef}
           >
-            <ul
-              className="context-navigation-list accordion-list"
-              ref={contextNavigationListRef}
-            >
-              {items.map((item) => renderItems({ item }))}
-            </ul>
-          </MaybeWrap>
+            {items.map((item, index) =>
+              renderItems({ item, level: 0, index: index }),
+            )}
+          </ul>
         </details>
       </nav>
     </>
@@ -209,17 +208,26 @@ AccordionNavigation.propTypes = {
     has_custom_name: PropTypes.bool,
     title: PropTypes.string,
   }),
+  /**
+   * Provided by withEEASideMenu HOC to indicate if page has wide content
+   */
+  hasWideContent: PropTypes.bool,
 };
 
 export default compose(
   withRouter,
   withContentNavigation,
-  (WrappedComponent) => (props) =>
-    withEEASideMenu(WrappedComponent)({
-      ...props,
-      targetParent: '.eea.header ',
-      fixedVisibilitySwitchTarget: '.main.bar',
-      insertBeforeOnMobile: '.banner',
-      shouldRender: props.navigation?.items?.length > 0,
-    }),
+  (WrappedComponent) => (props) => {
+    const Enhanced = withEEASideMenu(WrappedComponent);
+    return (
+      <Enhanced
+        {...props}
+        targetParent="#eea-side-menu-host"
+        fixedVisibilitySwitchTarget=".main.bar"
+        // insertBeforeOnMobile=".banner"
+        shouldRender={Boolean(props.navigation?.items?.length)}
+        sideMenuTransitionTarget=".breadcrumbs"
+      />
+    );
+  },
 )(AccordionNavigation);

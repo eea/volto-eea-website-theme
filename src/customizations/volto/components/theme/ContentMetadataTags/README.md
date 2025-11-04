@@ -1,0 +1,1 @@
+- Customize component to enhance title generation, see 292656 for detail

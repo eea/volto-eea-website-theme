@@ -362,11 +362,11 @@ describe('Comments', () => {
       </Provider>,
     );
 
-    const actions = container.querySelectorAll('.actions a');
+    const actions = container.querySelectorAll('.actions button');
 
-    fireEvent.click(container.querySelector('a[aria-label="Reply"]'));
-    fireEvent.click(container.querySelector('a[aria-label="Edit"]'));
-    fireEvent.click(container.querySelector('a[aria-label="Delete"]'));
+    fireEvent.click(container.querySelector('button[aria-label="Reply"]'));
+    fireEvent.click(container.querySelector('button[aria-label="Edit"]'));
+    fireEvent.click(container.querySelector('button[aria-label="Delete"]'));
     fireEvent.click(actions[actions.length - 1]);
     fireEvent.click(
       container.querySelector('#comment-add-id button[aria-label="Comment"]'),

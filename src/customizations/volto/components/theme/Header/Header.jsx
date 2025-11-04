@@ -11,6 +11,7 @@ import { withRouter } from 'react-router-dom';
 import { UniversalLink } from '@plone/volto/components';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
+import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
@@ -58,6 +59,58 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
+  const navigationSettings = useSelector(
+    (state) => state.navigationSettings?.settings || {},
+  );
+  const navigationLoaded = useSelector(
+    (state) => state.navigationSettings?.loaded,
+  );
+
+  // Combine navigation settings from backend with config fallback
+  const configLayouts = config.settings?.menuItemsLayouts || {};
+  const enhancedLayouts = { ...configLayouts };
+
+  // Map navigation settings to menu item URLs
+  if (items) {
+    items.forEach((menuItem) => {
+      // Check if we have navigation settings for any route that might match this menu item
+      Object.keys(navigationSettings).forEach((routeId) => {
+        const route = navigationSettings[routeId];
+        const backendSettings = {};
+
+        if (route.hideChildrenFromNavigation !== undefined) {
+          backendSettings.hideChildrenFromNavigation =
+            route.hideChildrenFromNavigation;
+        }
+
+        if (route.menuItemChildrenListColumns !== undefined) {
+          // Convert strings back to integers for header usage
+          backendSettings.menuItemChildrenListColumns = Array.isArray(
+            route.menuItemChildrenListColumns,
+          )
+            ? route.menuItemChildrenListColumns
+                .map((val) =>
+                  typeof val === 'string' ? parseInt(val, 10) : val,
+                )
+                .filter((val) => !isNaN(val))
+            : route.menuItemChildrenListColumns;
+        }
+
+        if (route.menuItemColumns !== undefined) {
+          // Use menuItemColumns directly as they're already in semantic UI format
+          backendSettings.menuItemColumns = route.menuItemColumns;
+        }
+
+        if (Object.keys(backendSettings).length > 0) {
+          // Override the config setting with backend data
+          enhancedLayouts[routeId] = {
+            ...enhancedLayouts[routeId],
+            ...backendSettings,
+          };
+        }
+      });
+    });
+  }
 
   React.useEffect(() => {
     const base_url = getBaseUrl(pathname);
@@ -72,7 +125,12 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     if (token !== previousToken) {
       dispatch(getNavigation(base_url, settings.navDepth));
     }
-  }, [pathname, token, dispatch, previousToken]);
+
+    // Fetch navigation settings
+    if (!navigationLoaded) {
+      dispatch(getNavigationSettings(pathname));
+    }
+  }, [pathname, token, dispatch, previousToken, navigationLoaded]);
 
   return (
     <Header menuItems={items}>
@@ -176,6 +234,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           </div>
         }
         menuItems={items}
+        menuItemsLayouts={enhancedLayouts}
         renderGlobalMenuItem={(item, { onClick }) => (
           <a
             href={item.url || '/'}
@@ -203,6 +262,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           </UniversalLink>
         )}
       ></Header.Main>
+      {/* Stable portal host for EEA side menu on mobile/tablet */}
+      <div id="eea-side-menu-host" className="eea-side-menu-host" />
     </Header>
   );
 };
