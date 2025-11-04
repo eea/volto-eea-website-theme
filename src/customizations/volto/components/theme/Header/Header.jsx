@@ -219,6 +219,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
               title={eea.websiteTitle}
               alt={eea.organisationName}
               url={eea.logoTargetUrl}
+              height={headerOpts.logoHeight}
+              width={headerOpts.logoWidth}
             />
 
             {!!subsite && subsite.title && (
