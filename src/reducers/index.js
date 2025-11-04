@@ -1,3 +1,4 @@
 import print from './print';
+import navigationSettings from './navigation';
 
-export { print };
+export { print, navigationSettings };
