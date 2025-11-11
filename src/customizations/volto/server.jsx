@@ -81,7 +81,7 @@ server.use(function (err, req, res, next) {
   if (err) {
     const { store } = res.locals;
     const ErrorComponent =
-      config.getComponent('ErrorBoundary').component || null;
+      config.getComponent('ErrorBoundary')?.component || null;
     const errorPage = (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>

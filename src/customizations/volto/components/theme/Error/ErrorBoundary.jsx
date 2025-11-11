@@ -1,5 +1,6 @@
 import React from 'react';
 import config from '@plone/volto/registry';
+import { type } from 'os';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,7 +15,11 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     if (this.props.onError) {
       //pass error to error-reporting service
-      config.settings.errorHandlers.forEach((handler) => handler(error));
+      config.settings.errorHandlers?.forEach((handler) => {
+        if (typeof handler === 'function') {
+          handler(error);
+        }
+      });
       this.props.onError(error, errorInfo);
     } else {
       // eslint-disable-next-line
@@ -24,7 +29,7 @@ class ErrorBoundary extends React.Component {
 
   render() {
     const ErrorPage =
-      this.props.fallback || config.getComponent('ErrorBoundary').component;
+      this.props.fallback || config.getComponent('ErrorBoundary')?.component;
     if (this.state.hasError) {
       if (ErrorPage) {
         // You can render any custom fallback UI
