@@ -1,6 +1,5 @@
 import React from 'react';
 import config from '@plone/volto/registry';
-import { type } from 'os';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,14 +12,16 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    if (this.props.onError) {
+    if (this.props.error) {
       //pass error to error-reporting service
       config.settings.errorHandlers?.forEach((handler) => {
         if (typeof handler === 'function') {
           handler(error);
         }
       });
-      this.props.onError(error, errorInfo);
+      if (this.props.onError) {
+        this.props.onError(error, errorInfo);
+      }
     } else {
       // eslint-disable-next-line
       console.error(error, errorInfo);
