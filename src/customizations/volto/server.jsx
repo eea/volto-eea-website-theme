@@ -80,10 +80,16 @@ if (middleware.length) server.use('/', middleware);
 server.use(function (err, req, res, next) {
   if (err) {
     const { store } = res.locals;
+    const ErrorComponent =
+      config.getComponent('ErrorBoundary')?.component || null;
     const errorPage = (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>
-          <ErrorPage message={err.message} />
+          {ErrorComponent ? (
+            <ErrorComponent error={err} />
+          ) : (
+            <ErrorPage message={err.message} />
+          )}
         </StaticRouter>
       </Provider>
     );
@@ -157,10 +163,16 @@ function setupServer(req, res, next) {
   const store = configureStore(initialState, history, api);
 
   function errorHandler(error) {
+    const ErrorComponent =
+      config.getComponent('ErrorBoundary').component || null;
     const errorPage = (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>
-          <ErrorPage message={error.message} />
+          {ErrorComponent ? (
+            <ErrorComponent error={error} />
+          ) : (
+            <ErrorPage message={error.message} />
+          )}
         </StaticRouter>
       </Provider>
     );
