@@ -28,19 +28,3 @@ export default function withErrorBoundary(WrappedComponent, options = {}) {
 
   return ErrorBoundaryWrapper;
 }
-
-withErrorBoundary.propTypes = {
-  WrappedComponent: PropTypes.elementType.isRequired,
-  options: PropTypes.oneOfType([
-    PropTypes.elementType,
-    PropTypes.element,
-    PropTypes.shape({
-      fallback: PropTypes.oneOfType([
-        PropTypes.elementType,
-        PropTypes.element,
-        PropTypes.node,
-      ]),
-      onError: PropTypes.func,
-    }),
-  ]),
-};
