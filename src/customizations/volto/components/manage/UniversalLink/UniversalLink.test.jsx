@@ -21,6 +21,9 @@ const store = mockStore({
 global.console.error = jest.fn();
 
 describe('UniversalLink', () => {
+  beforeEach(() => {
+    global.console.error.mockClear();
+  });
   it('renders a UniversalLink component with internal link', () => {
     const component = renderer.create(
       <Provider store={store}>
@@ -67,7 +70,7 @@ describe('UniversalLink', () => {
     expect(json).toMatchSnapshot();
   });
 
-  it('check UniversalLink set rel attribute for ext links', () => {
+  it('checks that UniversalLink sets rel attribute for external links', () => {
     const { getByTitle } = render(
       <Provider store={store}>
         <MemoryRouter>
@@ -86,7 +89,7 @@ describe('UniversalLink', () => {
     );
   });
 
-  it('check UniversalLink set target attribute for ext links', () => {
+  it('checks that UniversalLink sets target attribute for external links', () => {
     const { getByTitle } = render(
       <Provider store={store}>
         <MemoryRouter>
@@ -125,7 +128,7 @@ describe('UniversalLink', () => {
     );
   });
 
-  it('check UniversalLink renders ext link for blacklisted urls', () => {
+  it('checks that UniversalLink renders external link for blacklisted URLs', () => {
     config.settings.externalRoutes = [
       {
         match: {

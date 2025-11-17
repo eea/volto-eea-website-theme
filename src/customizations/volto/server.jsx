@@ -275,7 +275,9 @@ server.get('/*', (req, res) => {
    *
    * The try-catch block catches synchronous errors (e.g., immediate throws from superagent).
    * The .then(success, errorHandler) catches promise rejections from loadOnServer.
-   * The .catch(errorHandler) is a safety net for any unhandled rejections.
+   * Note: If an error occurs inside the success callback (lines 285-385), it will be caught by
+   * the subsequent .catch(errorHandler) below. Both handlers call the same errorHandler function,
+   * so ensure errorHandler is idempotent to avoid duplicate error handling.
    *
    * This ensures all errors during SSR are caught and handled within the context
    * of this specific request, without affecting other requests or the process.
@@ -387,8 +389,9 @@ server.get('/*', (req, res) => {
       .catch(errorHandler);
   } catch (error) {
     /**
-     * Catch synchronous errors that occur before the promise chain is established.
-     * This includes immediate throws from superagent when API calls fail synchronously.
+     * Catch errors thrown during the initial call to loadOnServer,
+     * such as syntax errors or immediate throws in its setup.
+     * This does not catch promise rejections from asynchronous operations (e.g., superagent).
      * The errorHandler will render an error page and send a proper HTTP response.
      */
     errorHandler(error);
