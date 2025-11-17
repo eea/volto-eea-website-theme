@@ -156,7 +156,33 @@ function setupServer(req, res, next) {
   // and for being used by the rest of the middlewares, if required
   const store = configureStore(initialState, history, api);
 
+  /**
+   * Request-scoped error handler for SSR errors.
+   * This function is called when errors occur during server-side rendering,
+   * including API errors (404, 401, etc.) and rendering errors.
+   *
+   * @param {Error} error - The error object with optional status property
+   */
+  const ignoredErrors = [301, 302, 401, 404];
   function errorHandler(error) {
+    // Log error details for debugging
+    if (!ignoredErrors.includes(error.status)) {
+      console.error('[SSR Error Handler]', {
+        url: req.url,
+        status: error.status,
+        message: error.message,
+        stack: error.stack,
+      });
+    } else {
+      // Log ignored errors at debug level
+      console.log('[SSR Error Handler] HTTP error:', {
+        url: req.url,
+        status: error.status,
+        message: error.message,
+      });
+    }
+
+    // Render error page
     const errorPage = (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>
@@ -168,13 +194,6 @@ function setupServer(req, res, next) {
     res.set({
       'Cache-Control': 'public, max-age=60, no-transform',
     });
-
-    /* Displays error in console
-     * TODO:
-     * - get ignored codes from Plone error_log
-     */
-    const ignoredErrors = [301, 302, 401, 404];
-    if (!ignoredErrors.includes(error.status)) console.error(error);
 
     res
       .status(error.status || 500) // If error happens in Volto code itself error status is undefined
@@ -251,67 +270,83 @@ server.get('/*', (req, res) => {
   const url = req.originalUrl || req.url;
   const location = parseUrl(url);
 
-  loadOnServer({ store, location, routes, api })
-    .then(() => {
-      const initialLang =
-        req.universalCookies.get('I18N_LANGUAGE') ||
-        config.settings.defaultLanguage ||
-        req.headers['accept-language'];
+  /**
+   * Request-scoped error handling for SSR.
+   *
+   * The try-catch block catches synchronous errors (e.g., immediate throws from superagent).
+   * The .then(success, errorHandler) catches promise rejections from loadOnServer.
+   * Note: If an error occurs inside the success callback (lines 285-385), it will be caught by
+   * the subsequent .catch(errorHandler) below. Both handlers call the same errorHandler function,
+   * so ensure errorHandler is idempotent to avoid duplicate error handling.
+   *
+   * This ensures all errors during SSR are caught and handled within the context
+   * of this specific request, without affecting other requests or the process.
+   */
+  try {
+    loadOnServer({ store, location, routes, api })
+      .then(() => {
+        const initialLang =
+          req.universalCookies.get('I18N_LANGUAGE') ||
+          config.settings.defaultLanguage ||
+          req.headers['accept-language'];
 
-      // The content info is in the store at this point thanks to the asynconnect
-      // features, then we can force the current language info into the store when
-      // coming from an SSR request
+        // The content info is in the store at this point thanks to the asynconnect
+        // features, then we can force the current language info into the store when
+        // coming from an SSR request
 
-      // TODO: there is a bug here with content that, for any reason, doesn't
-      // present the language token field, for some reason. In this case, we
-      // should follow the cookie rather then switching the language
-      const contentLang = store.getState().content.get?.error
-        ? initialLang
-        : store.getState().content.data?.language?.token ||
-          config.settings.defaultLanguage;
+        // TODO: there is a bug here with content that, for any reason, doesn't
+        // present the language token field, for some reason. In this case, we
+        // should follow the cookie rather then switching the language
+        const contentLang = store.getState().content.get?.error
+          ? initialLang
+          : store.getState().content.data?.language?.token ||
+            config.settings.defaultLanguage;
 
-      if (toBackendLang(initialLang) !== contentLang && url !== '/') {
-        const newLang = toReactIntlLang(
-          new locale.Locales(contentLang).best(supported).toString(),
+        if (toBackendLang(initialLang) !== contentLang && url !== '/') {
+          const newLang = toReactIntlLang(
+            new locale.Locales(contentLang).best(supported).toString(),
+          );
+          store.dispatch(changeLanguage(newLang, locales[newLang], req));
+        }
+
+        const context = {};
+        resetServerContext();
+        const markup = renderToString(
+          <ChunkExtractorManager extractor={extractor}>
+            <CookiesProvider cookies={req.universalCookies}>
+              <Provider store={store} onError={reactIntlErrorHandler}>
+                <StaticRouter context={context} location={req.url}>
+                  <ReduxAsyncConnect routes={routes} helpers={api} />
+                </StaticRouter>
+              </Provider>
+            </CookiesProvider>
+          </ChunkExtractorManager>,
         );
-        store.dispatch(changeLanguage(newLang, locales[newLang], req));
-      }
 
-      const context = {};
-      resetServerContext();
-      const markup = renderToString(
-        <ChunkExtractorManager extractor={extractor}>
-          <CookiesProvider cookies={req.universalCookies}>
-            <Provider store={store} onError={reactIntlErrorHandler}>
-              <StaticRouter context={context} location={req.url}>
-                <ReduxAsyncConnect routes={routes} helpers={api} />
-              </StaticRouter>
-            </Provider>
-          </CookiesProvider>
-        </ChunkExtractorManager>,
-      );
+        const readCriticalCss =
+          config.settings.serverConfig.readCriticalCss ||
+          defaultReadCriticalCss;
 
-      const readCriticalCss =
-        config.settings.serverConfig.readCriticalCss || defaultReadCriticalCss;
+        // If we are showing an "old browser" warning,
+        // make sure it doesn't get cached in a shared cache
+        const browserdetect = store.getState().browserdetect;
+        if (
+          config.settings.notSupportedBrowsers.includes(browserdetect?.name)
+        ) {
+          res.set({
+            'Cache-Control': 'private',
+          });
+        }
 
-      // If we are showing an "old browser" warning,
-      // make sure it doesn't get cached in a shared cache
-      const browserdetect = store.getState().browserdetect;
-      if (config.settings.notSupportedBrowsers.includes(browserdetect?.name)) {
-        res.set({
-          'Cache-Control': 'private',
-        });
-      }
+        if (context.url) {
+          res.redirect(flattenToAppURL(context.url));
+        } else if (context.error_code) {
+          res.set({
+            'Cache-Control': 'no-cache',
+          });
 
-      if (context.url) {
-        res.redirect(flattenToAppURL(context.url));
-      } else if (context.error_code) {
-        res.set({
-          'Cache-Control': 'no-cache',
-        });
-
-        res.status(context.error_code).send(
-          `<!doctype html>
+          res.status(context.error_code).send(
+            `<!doctype html>
               ${renderToString(
                 <Html
                   extractor={extractor}
@@ -330,10 +365,10 @@ server.get('/*', (req, res) => {
                 />,
               )}
             `,
-        );
-      } else {
-        res.status(200).send(
-          `<!doctype html>
+          );
+        } else {
+          res.status(200).send(
+            `<!doctype html>
               ${renderToString(
                 <Html
                   extractor={extractor}
@@ -348,10 +383,19 @@ server.get('/*', (req, res) => {
                 />,
               )}
             `,
-        );
-      }
-    }, errorHandler)
-    .catch(errorHandler);
+          );
+        }
+      }, errorHandler)
+      .catch(errorHandler);
+  } catch (error) {
+    /**
+     * Catch errors thrown during the initial call to loadOnServer,
+     * such as syntax errors or immediate throws in its setup.
+     * This does not catch promise rejections from asynchronous operations (e.g., superagent).
+     * The errorHandler will render an error page and send a proper HTTP response.
+     */
+    errorHandler(error);
+  }
 });
 
 export const defaultReadCriticalCss = () => {
