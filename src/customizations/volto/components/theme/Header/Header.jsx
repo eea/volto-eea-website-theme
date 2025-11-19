@@ -122,19 +122,42 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   }, [updateRequest, dispatch, pathname]);
 
   React.useEffect(() => {
-    const base_url = getBaseUrl(pathname);
     const { settings } = config;
 
+    // Use navigationLanguage if configured to fetch navigation from a specific language
+    // navigationLanguage can be a language code (e.g., 'en') or falsy
+    const navigationBaseUrl = settings.navigationLanguage
+      ? `/${settings.navigationLanguage}`
+      : getBaseUrl(pathname);
+
     // Check if navigation data needs to be fetched based on the API expander availability
-    if (!hasApiExpander('navigation', base_url)) {
-      dispatch(getNavigation(base_url, settings.navDepth));
+    if (!hasApiExpander('navigation', navigationBaseUrl)) {
+      dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
     }
 
     // Additional check for token changes
     if (token !== previousToken) {
-      dispatch(getNavigation(base_url, settings.navDepth));
+      dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
     }
   }, [pathname, token, dispatch, previousToken]);
+
+  // Normalize pathname for menu matching when using navigationLanguage
+  // This ensures menu items from the configured language match correctly even when on other language pages
+  const normalizedPathname = React.useMemo(() => {
+    const navLang = config.settings.navigationLanguage;
+    if (!navLang) {
+      return pathname;
+    }
+
+    // Replace the language prefix with the configured navigation language for menu matching
+    // e.g., if navLang='en': /fr/topics -> /en/topics
+    const pathParts = pathname.split('/').filter(Boolean);
+    if (pathParts.length > 0 && pathParts[0].length === 2) {
+      // First segment is a language code, replace it with the navigation language
+      return `/${navLang}/` + pathParts.slice(1).join('/');
+    }
+    return pathname;
+  }, [pathname]);
 
   return (
     <Header menuItems={items}>
@@ -207,7 +230,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           )}
       </Header.TopHeader>
       <Header.Main
-        pathname={pathname}
+        pathname={normalizedPathname}
         isMultilingual={config.settings.isMultilingual}
         headerSearchBox={headerSearchBox}
         inverted={isHomePageInverse ? true : false}
