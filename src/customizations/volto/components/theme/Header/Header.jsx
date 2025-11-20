@@ -12,7 +12,8 @@ import { UniversalLink } from '@plone/volto/components';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
-import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
+import { Header } from '@eeacms/volto-eea-design-system/ui';
+import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
@@ -237,11 +238,12 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
         transparency={isHomePageInverse ? true : false}
         logo={
           <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
-            <Logo
-              src={isHomePageInverse ? logoWhite : logo}
+            <EEALogo
+              src={logo}
+              invertedSrc={logoWhite}
+              inverted={isHomePageInverse}
               title={eea.websiteTitle}
               alt={eea.organisationName}
-              url={eea.logoTargetUrl}
               height={headerOpts.logoHeight}
               width={headerOpts.logoWidth}
             />
