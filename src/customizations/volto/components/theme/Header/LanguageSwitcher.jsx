@@ -1,8 +1,7 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Dropdown, Image } from 'semantic-ui-react';
 import { flattenToAppURL } from '@plone/volto/helpers';
-import { changeLanguage } from '@plone/volto/actions';
 import { find } from 'lodash';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import config from '@plone/volto/registry';
@@ -18,19 +17,22 @@ import { Header } from '@eeacms/volto-eea-design-system/ui';
  * @param {Object} props.history - The history object from React Router for navigation.
  */
 const LanguageSwitcher = ({ width, history }) => {
-  const dispatch = useDispatch();
   const currentLang = useSelector((state) => state.intl.locale);
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
   const { eea } = config.settings;
 
+  const [language, setLanguage] = React.useState(
+    currentLang || eea.defaultLanguage,
+  );
+
   return (
     <Header.TopDropdownMenu
       id="language-switcher"
       className="item"
-      text={`${currentLang.toUpperCase()}`}
-      mobileText={`${currentLang.toUpperCase()}`}
+      text={`${language.toUpperCase()}`}
+      mobileText={`${language.toUpperCase()}`}
       icon={<Image src={globeIcon} alt="language dropdown globe icon"></Image>}
       viewportWidth={width}
     >
@@ -56,7 +58,7 @@ const LanguageSwitcher = ({ width, history }) => {
               const to = translation
                 ? flattenToAppURL(translation['@id'])
                 : `/${item.code}`;
-              dispatch(changeLanguage(item.code));
+              setLanguage(item.code);
               history.push(to);
             }}
           ></Dropdown.Item>
