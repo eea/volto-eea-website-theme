@@ -43,7 +43,7 @@ const EEALogo = ({
   const intl = useIntl();
   const url = config.settings.isMultilingual
     ? `/${lang}`
-    : config.settings.eea.logoTargetUrl;
+    : config.settings.eea?.logoTargetUrl || '/';
 
   return (
     <Logo
