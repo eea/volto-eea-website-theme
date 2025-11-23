@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
@@ -39,15 +40,27 @@ const EEALogo = ({
   width,
   height,
 }) => {
-  const lang = useSelector((state) => state.intl.locale);
   const intl = useIntl();
+  const pathname =
+    useSelector((state) => state.router?.location?.pathname) || '/';
+  const lang = React.useMemo(() => {
+    const pathParts = pathname.split('/').filter(Boolean);
+    // First segment is language code in multilingual sites
+    if (pathParts.length > 0 && pathParts[0].length === 2) {
+      return pathParts[0];
+    }
+    return config.settings.defaultLanguage || 'en';
+  }, [pathname]);
+
   const url = config.settings.isMultilingual
     ? `/${lang}`
     : config.settings.eea?.logoTargetUrl || '/';
 
+  const fallbackSrc = src || LogoImage;
+
   return (
     <Logo
-      src={inverted && invertedSrc ? invertedSrc : src}
+      src={inverted && invertedSrc ? invertedSrc : fallbackSrc}
       invertedSrc={invertedSrc}
       url={url}
       title={title || intl.formatMessage(messages.site)}
