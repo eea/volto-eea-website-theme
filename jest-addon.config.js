@@ -421,6 +421,7 @@ module.exports = {
     '@plone/volto-quanta/(.*)$': '<rootDir>/src/addons/volto-quanta/src/$1',
     '@eeacms/search/(.*)$': '<rootDir>/src/addons/volto-searchlib/searchlib/$1',
     '@eeacms/search': '<rootDir>/src/addons/volto-searchlib/searchlib',
+    '@eeacms/volto-eea-website-theme/(.*)$': `<rootDir>/src/addons/${addonName}/src/$1`,
     '@eeacms/(.*?)/(.*)$': '<rootDir>/node_modules/@eeacms/$1/src/$2',
     '@plone/volto-slate$':
       '<rootDir>/node_modules/@plone/volto/packages/volto-slate/src',
