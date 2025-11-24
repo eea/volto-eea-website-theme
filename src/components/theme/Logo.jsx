@@ -40,6 +40,7 @@ const EEALogo = ({
   width,
   height,
 }) => {
+  console.log('EEALogo rendered with src:', src, 'invertedSrc:', invertedSrc);
   const intl = useIntl();
   const pathname =
     useSelector((state) => state.router?.location?.pathname) || '/';
@@ -57,17 +58,20 @@ const EEALogo = ({
     : config.settings.eea?.logoTargetUrl || '/';
 
   const fallbackSrc = src || LogoImage;
+  // Only pass inverted=true if we have an invertedSrc, otherwise the design system
+  // Logo will try to use undefined invertedSrc instead of falling back to src
+  const shouldInvert = inverted && invertedSrc;
 
   return (
     <Logo
-      src={inverted && invertedSrc ? invertedSrc : fallbackSrc}
+      src={fallbackSrc}
       invertedSrc={invertedSrc}
+      inverted={shouldInvert}
       url={url}
       title={title || intl.formatMessage(messages.site)}
       alt={alt || intl.formatMessage(messages.eeasite)}
       width={width}
       height={height}
-      inverted={inverted}
     />
   );
 };

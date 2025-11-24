@@ -28,6 +28,34 @@ const addonName =
     : path.basename(path.dirname(__filename)); // Fallback to folder name
 const addonBasePath = `src/addons/${addonName}/src`;
 
+console.log('[jest-addon.config.js] Debug info:');
+console.log('  __filename:', __filename);
+console.log('  addonName:', addonName);
+console.log('  addonBasePath:', addonBasePath);
+
+// Check if Logo.jsx exists in the expected location
+const logoPath = path.join(
+  __dirname,
+  '../../..',
+  addonBasePath,
+  'components/theme/Logo.jsx',
+);
+const logoExists = fs.existsSync(logoPath);
+console.log('  Logo.jsx path:', logoPath);
+console.log('  Logo.jsx exists:', logoExists);
+
+// Also check node_modules version
+const nodeModulesLogoPath = path.join(
+  __dirname,
+  '../../..',
+  'node_modules/@eeacms',
+  addonName,
+  'src/components/theme/Logo.jsx',
+);
+const nodeModulesLogoExists = fs.existsSync(nodeModulesLogoPath);
+console.log('  node_modules Logo.jsx path:', nodeModulesLogoPath);
+console.log('  node_modules Logo.jsx exists:', nodeModulesLogoExists);
+
 // --- Performance caches ---
 const fileSearchCache = new Map();
 const dirSearchCache = new Map();
@@ -421,7 +449,9 @@ module.exports = {
     '@plone/volto-quanta/(.*)$': '<rootDir>/src/addons/volto-quanta/src/$1',
     '@eeacms/search/(.*)$': '<rootDir>/src/addons/volto-searchlib/searchlib/$1',
     '@eeacms/search': '<rootDir>/src/addons/volto-searchlib/searchlib',
-    '@eeacms/volto-eea-website-theme/(.*)$': `<rootDir>/src/addons/${addonName}/src/$1`,
+    // IMPORTANT: Map current addon to local source BEFORE the generic @eeacms pattern
+    // This ensures tests use the local development version instead of node_modules
+    '^@eeacms/volto-eea-website-theme/(.*)$': `<rootDir>/src/addons/${addonName}/src/$1`,
     '@eeacms/(.*?)/(.*)$': '<rootDir>/node_modules/@eeacms/$1/src/$2',
     '@plone/volto-slate$':
       '<rootDir>/node_modules/@plone/volto/packages/volto-slate/src',
@@ -465,3 +495,15 @@ module.exports = {
     ],
   }),
 };
+
+console.log(
+  '[jest-addon.config.js] moduleNameMapper for @eeacms/volto-eea-website-theme:',
+);
+console.log('  Pattern: @eeacms/volto-eea-website-theme/(.*)$');
+console.log('  Maps to: <rootDir>/src/addons/' + addonName + '/src/$1');
+console.log('  Example: @eeacms/volto-eea-website-theme/components/theme/Logo');
+console.log(
+  '  Would map to: <rootDir>/src/addons/' +
+    addonName +
+    '/src/components/theme/Logo',
+);
