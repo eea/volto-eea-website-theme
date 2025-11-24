@@ -111,6 +111,20 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     });
   }
 
+  // Memoize navigationBaseUrl so it doesn't change on every pathname change
+  // when navigationLanguage is set to a fixed language
+  const navigationBaseUrl = React.useMemo(() => {
+    const { settings } = config;
+    return settings.navigationLanguage
+      ? `/${settings.navigationLanguage}`
+      : getBaseUrl(pathname);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    dispatch(getNavigationSettings(pathname));
+  }, [dispatch, pathname]);
+
+  // Separate effect for update request to avoid duplicate calls
   React.useEffect(() => {
     if (
       updateRequest?.loaded &&
@@ -119,28 +133,29 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     ) {
       dispatch(getNavigationSettings(pathname));
     }
-    dispatch(getNavigationSettings(pathname));
   }, [updateRequest, dispatch, pathname]);
 
   React.useEffect(() => {
     const { settings } = config;
 
-    // Use navigationLanguage if configured to fetch navigation from a specific language
-    // navigationLanguage can be a language code (e.g., 'en') or falsy
-    const navigationBaseUrl = settings.navigationLanguage
-      ? `/${settings.navigationLanguage}`
-      : getBaseUrl(pathname);
-
-    // Check if navigation data needs to be fetched based on the API expander availability
-    if (!hasApiExpander('navigation', navigationBaseUrl)) {
+    // When navigationLanguage is configured, always fetch navigation from that language
+    // We MUST call getNavigation directly because API expanders fetch navigation for the current page
+    if (settings.navigationLanguage) {
+      // Always fetch navigation for the configured language
       dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
-    }
+    } else {
+      // When navigationLanguage is not configured, fetch navigation for current page language
+      // Check if navigation data needs to be fetched based on the API expander availability
+      if (!hasApiExpander('navigation', navigationBaseUrl)) {
+        dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
+      }
 
-    // Additional check for token changes
-    if (token !== previousToken) {
-      dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
+      // Additional check for token changes
+      if (token !== previousToken) {
+        dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
+      }
     }
-  }, [pathname, token, dispatch, previousToken]);
+  }, [navigationBaseUrl, token, dispatch, previousToken]);
 
   // Normalize pathname for menu matching when using navigationLanguage
   // This ensures menu items from the configured language match correctly even when on other language pages
