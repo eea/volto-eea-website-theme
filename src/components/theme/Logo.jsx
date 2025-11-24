@@ -40,7 +40,6 @@ const EEALogo = ({
   width,
   height,
 }) => {
-  console.log('EEALogo rendered with src:', src, 'invertedSrc:', invertedSrc);
   const intl = useIntl();
   const pathname =
     useSelector((state) => state.router?.location?.pathname) || '/';
