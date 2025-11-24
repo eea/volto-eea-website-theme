@@ -53,7 +53,7 @@ describe('Header', () => {
       ...config.settings,
       eea: {
         ...config.settings.eea,
-        headerOpts: undefined,
+        headerOpts: { logo: 'eea-logo.svg' },
         logoTargetUrl: '/',
       },
     };
@@ -318,7 +318,11 @@ describe('Header', () => {
       userSession: { token: null },
       intl: {
         locale: 'fr',
-        messages: {},
+        messages: {
+          Site: 'Site',
+          'European Environment Agency':
+            "Agence européenne pour l'environnement",
+        },
       },
       navigation: {
         items: [
@@ -368,7 +372,11 @@ describe('Header', () => {
       userSession: { token: null },
       intl: {
         locale: 'fr',
-        messages: {},
+        messages: {
+          Site: 'Site',
+          'European Environment Agency':
+            "Agence européenne pour l'environnement",
+        },
       },
       navigation: {
         items: [
@@ -419,7 +427,11 @@ describe('Header', () => {
       userSession: { token: null },
       intl: {
         locale: 'fr',
-        messages: {},
+        messages: {
+          Site: 'Site',
+          'European Environment Agency':
+            "Agence européenne pour l'environnement",
+        },
       },
       navigation: {
         items: [
