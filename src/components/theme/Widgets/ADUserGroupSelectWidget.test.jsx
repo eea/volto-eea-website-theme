@@ -488,9 +488,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('handles getSharing prop', async () => {
-    const customGetSharing = jest.fn(() =>
-      Promise.resolve({ entries: [] }),
-    );
+    const customGetSharing = jest.fn(() => Promise.resolve({ entries: [] }));
 
     renderWidget({ getSharing: customGetSharing });
     await waitFor(() => screen.getByText('User/Group field'));
