@@ -20,7 +20,7 @@ const messages = defineMessages({
 /**
  * EEALogo component.
  * Wraps the Logo component from volto-eea-design-system with language-aware URL.
- * Uses state.intl.locale to construct the logo link URL for multilingual sites.
+ * Constructs the logo link URL for multilingual sites by extracting the language code from the router pathname; falls back to the default language from config if not present.
  *
  * @param {Object} props - The component props.
  * @param {string} props.src - The logo image source.
