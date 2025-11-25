@@ -618,7 +618,7 @@ const applyConfig = (config) => {
 
   // If you don't want to show the content type as a link in the breadcrumbs, you can set it
   // contentTypesAsBreadcrumbSection
-  config.settings.contentTypesAsBreadcrumbSection = ['web_report_section'];
+  config.settings.contentTypesAsBreadcrumbSection = [];
 
   // Columns
   if (config.blocks.blocksConfig.columnsBlock) {
