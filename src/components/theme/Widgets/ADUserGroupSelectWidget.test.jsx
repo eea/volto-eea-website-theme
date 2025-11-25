@@ -207,6 +207,207 @@ describe('ADUserGroupSelectWidget', () => {
     const selectContainer = container.querySelector('.react-select-container');
     expect(selectContainer).toBeTruthy();
   });
+
+  test('renders with value as object with label property', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+        type: 'user',
+        label: 'Custom Label (user1)',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles value with only id field', async () => {
+    const value = [{ id: 'user1' }];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles value with value field instead of id', async () => {
+    const value = [{ value: 'user1', title: 'User One' }];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('renders with null value', async () => {
+    const { container } = renderWidget({ value: null });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('renders with empty array value', async () => {
+    const { container } = renderWidget({ value: [] });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('handles group type entries', async () => {
+    const value = [
+      {
+        id: 'group1',
+        title: 'Editors',
+        login: 'editors',
+        email: 'editors@test.com',
+        type: 'group',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('renders with description prop', async () => {
+    renderWidget({ description: 'Select users or groups' });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('renders with required prop', async () => {
+    const { container } = renderWidget({ required: true });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('renders with error prop', async () => {
+    const { container } = renderWidget({ error: ['This field is required'] });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('renders with disabled prop', async () => {
+    const { container } = renderWidget({ disabled: true });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('handles componentDidUpdate with new value', async () => {
+    const { rerender } = renderWidget({ value: [] });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const newValue = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+        type: 'user',
+      },
+    ];
+
+    const store = createMockStore();
+    rerender(
+      <Provider store={store}>
+        <ADUserGroupSelectWidget {...defaultProps} value={newValue} />
+      </Provider>,
+    );
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('renders with mixed user and group values', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        type: 'user',
+      },
+      {
+        id: 'group1',
+        title: 'Group One',
+        login: 'group1',
+        type: 'group',
+      },
+      {
+        id: 'user2',
+        title: 'User Two',
+        login: 'user2',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValues = container.querySelectorAll(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValues.length).toBe(3);
+  });
+
+  test('handles value where title equals login', async () => {
+    const value = [
+      {
+        id: 'admin',
+        title: 'admin',
+        login: 'admin',
+        email: 'admin@test.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles value with missing type (defaults to user)', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
 });
 
 describe('normalizeSharingEntry', () => {
@@ -340,6 +541,118 @@ describe('normalizeSharingEntry', () => {
 
     // When both email and login are missing, it falls back to label (title)
     expect(result.email).toBe('User Five');
+  });
+
+  test('handles entry with only id (no title, no login)', () => {
+    const entry = {
+      id: 'user6',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.value).toBe('user6');
+    expect(result.label).toBe('user6');
+    expect(result.email).toBe('user6');
+  });
+
+  test('handles entry with login but no id', () => {
+    const entry = {
+      login: 'testuser',
+      title: 'Test User',
+      email: 'test@example.com',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.value).toBe('testuser');
+    expect(result.originalEntry).toBe(entry);
+  });
+
+  test('handles entry with special characters in title', () => {
+    const entry = {
+      id: 'user7',
+      title: 'User (Special) #7',
+      login: 'user7',
+      email: 'user7@test.com',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.label).toContain('User (Special) #7');
+  });
+
+  test('handles entry with empty string values', () => {
+    const entry = {
+      id: 'user8',
+      title: '',
+      login: 'user8',
+      email: '',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.value).toBe('user8');
+    expect(result.email).toBe('user8');
+  });
+
+  test('handles entry with whitespace in fields', () => {
+    const entry = {
+      id: 'user9',
+      title: '  User Nine  ',
+      login: 'user9',
+      email: 'user9@test.com',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.label).toContain('User Nine');
+  });
+
+  test('handles entry without id but with all other fields', () => {
+    const entry = {
+      login: 'user10',
+      title: 'User Ten',
+      email: 'user10@test.com',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.value).toBe('user10');
+    expect(result.label).toContain('User Ten');
+  });
+
+  test('handles entry with very long title', () => {
+    const entry = {
+      id: 'user11',
+      title: 'A'.repeat(100),
+      login: 'user11',
+      email: 'user11@test.com',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.value).toBe('user11');
+    expect(result.label.length).toBeGreaterThan(0);
+  });
+
+  test('handles entry with numeric id', () => {
+    const entry = {
+      id: 123,
+      title: 'User 123',
+      login: 'user123',
+      type: 'user',
+    };
+
+    const result = normalizeSharingEntry(entry, mockIntl);
+
+    expect(result.value).toBe(123);
   });
 });
 
@@ -640,5 +953,281 @@ describe('Relevance scoring and sorting', () => {
 
     expect(result1[0].value).toBe('user1');
     expect(result2[0].value).toBe('user1');
+  });
+
+  test('handles entries with null or undefined fields', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: null,
+        login: 'user1',
+        email: undefined,
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('sorts by relevance with partial email match', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Bob Smith',
+        login: 'bsmith',
+        email: 'bob.smith@example.com',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Alice Johnson',
+        login: 'alice',
+        email: 'alice.johnson@test.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'alice');
+
+    expect(result[0].value).toBe('user2');
+  });
+
+  test('handles word boundary matching', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'John Doe',
+        login: 'jdoe',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Johnson Smith',
+        login: 'jsmith',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'john');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles entries with same relevance score', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Zara',
+        login: 'zara',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Anna',
+        login: 'anna',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'test');
+
+    expect(result).toHaveLength(2);
+  });
+
+  test('prioritizes contains matches', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Some Random User',
+        login: 'random',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'User Admin',
+        login: 'useradmin',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'admin');
+
+    expect(result[0].value).toBe('user2');
+  });
+
+  test('handles search with multiple words', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'John Paul Smith',
+        login: 'jsmith',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Jane Doe',
+        login: 'jdoe',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'john paul');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles empty search text', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'User Two',
+        login: 'user2',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, '');
+
+    expect(result).toHaveLength(2);
+  });
+
+  test('handles search with special characters', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'User@Domain',
+        login: 'user',
+        email: 'user@domain.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'user@');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('handles large number of entries', () => {
+    const entries = Array.from({ length: 100 }, (_, i) => ({
+      id: `user${i}`,
+      title: `User ${i}`,
+      login: `user${i}`,
+      type: 'user',
+    }));
+
+    const result = normalizeSharingChoices(entries, mockIntl);
+
+    expect(result).toHaveLength(100);
+  });
+
+  test('handles mixed types with sorting', () => {
+    const entries = [
+      {
+        id: 'group1',
+        title: 'Admins',
+        login: 'admins',
+        type: 'group',
+      },
+      {
+        id: 'user1',
+        title: 'Admin User',
+        login: 'admin',
+        type: 'user',
+      },
+      {
+        id: 'group2',
+        title: 'Editors',
+        login: 'editors',
+        type: 'group',
+      },
+      {
+        id: 'user2',
+        title: 'Editor User',
+        login: 'editor',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl);
+
+    // First two should be users
+    expect(result[0].type).toBe('user');
+    expect(result[1].type).toBe('user');
+    // Last two should be groups
+    expect(result[2].type).toBe('group');
+    expect(result[3].type).toBe('group');
+  });
+
+  test('handles entries without type field', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+      },
+      {
+        id: 'user2',
+        title: 'User Two',
+        login: 'user2',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl);
+
+    expect(result).toHaveLength(2);
+    // Should default to 'user' type
+    expect(result[0].type).toBe('user');
+    expect(result[1].type).toBe('user');
+  });
+
+  test('handles single character search', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Alice',
+        login: 'alice',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Bob',
+        login: 'bob',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'a');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles entries with identical titles', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'John Smith',
+        login: 'jsmith1',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'John Smith',
+        login: 'jsmith2',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl);
+
+    expect(result).toHaveLength(2);
   });
 });
