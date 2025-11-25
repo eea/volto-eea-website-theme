@@ -516,7 +516,7 @@ describe('normalizeSharingChoices', () => {
 
     expect(result).toHaveLength(2);
     // Both entries should be present, order may vary based on sorting
-    const values = result.map(r => r.value);
+    const values = result.map((r) => r.value);
     expect(values).toContain('user1');
     expect(values).toContain('user2');
   });
@@ -589,7 +589,11 @@ describe('Relevance scoring and sorting', () => {
       },
     ];
 
-    const result = normalizeSharingChoices(entries, mockIntl, 'test@example.com');
+    const result = normalizeSharingChoices(
+      entries,
+      mockIntl,
+      'test@example.com',
+    );
 
     expect(result[0].value).toBe('user1');
   });
