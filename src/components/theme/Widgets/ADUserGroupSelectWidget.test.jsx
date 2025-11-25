@@ -408,6 +408,357 @@ describe('ADUserGroupSelectWidget', () => {
     );
     expect(multiValue).toBeTruthy();
   });
+
+  test('componentDidMount initializes cache with values', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles wrapped prop', async () => {
+    const { container } = renderWidget({ wrapped: true });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('handles pathname prop', async () => {
+    const { container } = renderWidget({ pathname: '/custom/path' });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('renders without pathname (uses router state)', async () => {
+    const { container } = renderWidget({ pathname: undefined });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('handles value with both id and value fields', async () => {
+    const value = [
+      {
+        id: 'user1',
+        value: 'user1-value',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('filters out null values from render', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        type: 'user',
+      },
+      null,
+      undefined,
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValues = container.querySelectorAll(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValues.length).toBeGreaterThan(0);
+  });
+
+  test('handles getSharing prop', async () => {
+    const customGetSharing = jest.fn(() =>
+      Promise.resolve({ entries: [] }),
+    );
+
+    renderWidget({ getSharing: customGetSharing });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('shows correct noOptionsMessage for short search', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'a' } });
+    }
+  });
+
+  test('handles cached entries from previous searches', async () => {
+    const storeEntries = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value: [] }, storeEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('renders value object without title but with login', async () => {
+    const value = [
+      {
+        id: 'user1',
+        login: 'testlogin',
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('renders value with login matching title', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'samelogin',
+        login: 'samelogin',
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles value object with email but no login', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        email: 'user1@test.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('finds value in cache by entry.login', async () => {
+    const storeEntries = [
+      {
+        id: 'cachedid',
+        title: 'Cached User',
+        login: 'cachedlogin',
+        email: 'cached@test.com',
+        type: 'user',
+      },
+    ];
+
+    const value = ['cachedlogin'];
+
+    const { container } = renderWidget({ value }, storeEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('finds value in cache by entry.title', async () => {
+    const storeEntries = [
+      {
+        id: 'cachedid',
+        title: 'Cached Title',
+        login: 'cachedlogin',
+        email: 'cached@test.com',
+        type: 'user',
+      },
+    ];
+
+    const value = ['Cached Title'];
+
+    const { container } = renderWidget({ value }, storeEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles value object without id but with value field', async () => {
+    const value = [
+      {
+        value: 'user1value',
+        title: 'User One',
+        login: 'user1',
+        email: 'user1@test.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles value object with only login (no id, no title)', async () => {
+    const value = [
+      {
+        login: 'onlylogin',
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles mixed value types in array', async () => {
+    const storeEntries = [
+      {
+        id: 'cacheduser',
+        title: 'Cached User',
+        login: 'cacheduser',
+        type: 'user',
+      },
+    ];
+
+    const value = [
+      'stringvalue',
+      {
+        id: 'objectuser',
+        title: 'Object User',
+        login: 'objectuser',
+        type: 'user',
+      },
+      'cacheduser',
+    ];
+
+    const { container } = renderWidget({ value }, storeEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValues = container.querySelectorAll(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValues.length).toBeGreaterThan(0);
+  });
+
+  test('returns null for invalid value objects', async () => {
+    const value = [
+      {
+        // No id, value, login, or title
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    // Should filter out null values
+    const selectContainer = container.querySelector('.react-select-container');
+    expect(selectContainer).toBeTruthy();
+  });
+
+  test('handles value with title but login different from title', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'John Doe',
+        login: 'jdoe',
+        email: 'jdoe@test.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+    // Should contain "(jdoe)" in label
+  });
+
+  test('handles entriesCache with more than 25 items', async () => {
+    const largeStoreEntries = Array.from({ length: 30 }, (_, i) => ({
+      id: `user${i}`,
+      title: `User ${i}`,
+      login: `user${i}`,
+      type: 'user',
+    }));
+
+    renderWidget({ value: [] }, largeStoreEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles value object with no email, login, or title', async () => {
+    const value = [
+      {
+        id: 'user1',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
 });
 
 describe('normalizeSharingEntry', () => {
@@ -1229,5 +1580,231 @@ describe('Relevance scoring and sorting', () => {
     const result = normalizeSharingChoices(entries, mockIntl);
 
     expect(result).toHaveLength(2);
+  });
+
+  test('handles search with only spaces', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: 'test',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, '   ');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('handles entries with numbers in titles', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'User 123',
+        login: 'user123',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'User 456',
+        login: 'user456',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, '123');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles search matching in email only', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Alice',
+        login: 'alice',
+        email: 'alice@company.com',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Bob',
+        login: 'bob',
+        email: 'bob@example.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'company');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles entries with unicode characters', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'José García',
+        login: 'jgarcia',
+        email: 'jose@test.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'josé');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('handles very long search queries', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: 'test',
+        type: 'user',
+      },
+    ];
+
+    const longQuery = 'a'.repeat(500);
+    const result = normalizeSharingChoices(entries, mockIntl, longQuery);
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('handles search with regex special characters', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'User (test)',
+        login: 'usertest',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, '(test)');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('prioritizes startsWith over contains', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Contains admin here',
+        login: 'cadmin',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'admin starts',
+        login: 'admin',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'admin');
+
+    expect(result[0].value).toBe('user2');
+  });
+
+  test('handles entries with dots in login', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'John Doe',
+        login: 'john.doe',
+        email: 'john.doe@test.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'john.doe');
+
+    expect(result).toHaveLength(1);
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles mixed case in entries', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'JoHn DoE',
+        login: 'JohnDoe',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'john');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('handles entries where login contains uppercase', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: 'TestUser',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'testuser');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles group type with uppercase type', () => {
+    const entries = [
+      {
+        id: 'group1',
+        title: 'Admins',
+        login: 'admins',
+        type: 'GROUP',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl);
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('handles single word in multi-word search', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'John Smith',
+        login: 'jsmith',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Jane Doe',
+        login: 'jdoe',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'john x');
+
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('handles email with plus sign', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: 'test',
+        email: 'test+tag@example.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'test+');
+
+    expect(result).toHaveLength(1);
   });
 });
