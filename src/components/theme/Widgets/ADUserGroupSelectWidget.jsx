@@ -22,7 +22,6 @@ import groupSVG from '@plone/volto/icons/group.svg';
 import {
   ClearIndicator,
   DropdownIndicator,
-  MultiValueContainer,
   selectTheme,
   customSelectStyles,
   MenuList,
@@ -457,6 +456,7 @@ class ADUserGroupSelectWidget extends Component {
 
           return matchedEntry || null;
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.warn(`Error fetching details for ${searchTerm}:`, error);
           return null;
         }
@@ -476,6 +476,7 @@ class ADUserGroupSelectWidget extends Component {
         }));
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching selected values:', error);
     }
   };
@@ -522,6 +523,7 @@ class ADUserGroupSelectWidget extends Component {
       // Pass the current search query for proper sorting
       return normalizeSharingChoices(entries, this.props.intl, query);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching users/groups:', error);
       return [];
     }
