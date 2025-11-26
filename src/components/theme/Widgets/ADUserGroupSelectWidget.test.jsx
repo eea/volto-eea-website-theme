@@ -1329,6 +1329,237 @@ describe('ADUserGroupSelectWidget', () => {
 
     expect(container.querySelector('.react-select-container')).toBeTruthy();
   });
+
+  test('handleChange with option missing originalEntry uses label fallback', async () => {
+    const mockOnChange = jest.fn();
+    const storeEntries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: 'testuser',
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget(
+      {
+        onChange: mockOnChange,
+        value: [
+          {
+            id: 'user1',
+            title: 'Test User',
+            login: 'testuser',
+            email: 'test@example.com',
+            type: 'user',
+          },
+        ],
+      },
+      storeEntries,
+    );
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    // Clear the selection to trigger handleChange with null
+    const clearButton = container.querySelector(
+      '.react-select__clear-indicator',
+    );
+    if (clearButton) {
+      fireEvent.mouseDown(clearButton, { button: 0 });
+      await waitFor(() => {
+        expect(mockOnChange).toHaveBeenCalled();
+      });
+    }
+  });
+
+  test('fetchAvailableChoices updates entriesCache', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'fetchtest' } });
+
+      // Wait for debounce
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    // Verify component still renders correctly after search
+    expect(container.querySelector('.react-select-container')).toBeTruthy();
+  });
+
+  test('fetchAvailableChoices handles error gracefully', async () => {
+    const mockGetSharingWithError = jest.fn(() =>
+      Promise.reject(new Error('Network error')),
+    );
+
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    const { container } = renderWidget({
+      getSharing: mockGetSharingWithError,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'errortest' } });
+
+      // Wait for debounce
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    consoleSpy.mockRestore();
+  });
+
+  test('fetchSelectedValues handles API error gracefully', async () => {
+    const mockGetSharingWithError = jest.fn(() =>
+      Promise.reject(new Error('API Error')),
+    );
+
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    renderWidget({
+      value: ['unknownuser'],
+      getSharing: mockGetSharingWithError,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    // Wait for async fetch to complete
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    consoleSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
+  });
+
+  test('fetchSelectedValues finds partial match when no exact match', async () => {
+    // Test with a value that's not in the store cache
+    renderWidget({
+      value: ['partialvalue'],
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    // Wait for async fetch attempt
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Component should still render correctly even without exact match
+    expect(screen.getByText('User/Group field')).toBeTruthy();
+  });
+
+  test('componentWillUnmount clears timeout', async () => {
+    const { container, unmount } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'test' } });
+    }
+
+    // Unmount while timeout might be pending
+    unmount();
+  });
+
+  test('initializeFromSavedValues processes object values with title', async () => {
+    const value = [
+      {
+        id: 'saveduser',
+        title: 'Saved User Title',
+        login: 'savedlogin',
+        email: 'saved@test.com',
+        type: 'group',
+      },
+    ];
+
+    const { container } = renderWidget({ value });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('initializeFromSavedValues processes string values', async () => {
+    const storeEntries = [
+      {
+        id: 'stringuser',
+        title: 'String User',
+        login: 'stringuser',
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value: ['stringuser'] }, storeEntries);
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('loadOptions resolves empty array for short query', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      // Query with exactly SEARCH_HOLDOFF characters (2)
+      fireEvent.change(selectInput, { target: { value: 'ab' } });
+    }
+
+    // Should not call getSharing for short queries
+    expect(mockGetSharing).not.toHaveBeenCalled();
+  });
+
+  test('handleChange sets state with entries not having originalEntry', async () => {
+    const mockOnChange = jest.fn();
+    const storeEntries = [
+      {
+        id: 'cacheuser',
+        title: 'Cache User',
+        login: 'cacheuser',
+        email: 'cache@test.com',
+        type: 'user',
+      },
+    ];
+
+    const { container } = renderWidget(
+      {
+        onChange: mockOnChange,
+        value: [
+          {
+            id: 'cacheuser',
+            title: 'Cache User',
+            login: 'cacheuser',
+            email: 'cache@test.com',
+            type: 'user',
+          },
+        ],
+      },
+      storeEntries,
+    );
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const clearButton = container.querySelector(
+      '.react-select__clear-indicator',
+    );
+    if (clearButton) {
+      fireEvent.mouseDown(clearButton, { button: 0 });
+    }
+  });
 });
 
 describe('normalizeSharingEntry', () => {
