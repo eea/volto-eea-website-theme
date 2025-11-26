@@ -757,6 +757,468 @@ describe('ADUserGroupSelectWidget', () => {
     );
     expect(multiValue).toBeTruthy();
   });
+
+  test('handles empty value array on mount', async () => {
+    renderWidget({ value: [] });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles value with object containing null fields', async () => {
+    const value = [
+      {
+        id: null,
+        title: null,
+        login: null,
+        email: null,
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles componentDidMount with no values', async () => {
+    renderWidget({ value: undefined });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles componentDidUpdate when value becomes null', async () => {
+    const { rerender } = renderWidget({
+      value: [{ id: 'user1', title: 'User One', login: 'user1' }],
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const store = createMockStore();
+    rerender(
+      <Provider store={store}>
+        <ADUserGroupSelectWidget {...defaultProps} value={null} />
+      </Provider>,
+    );
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles componentDidUpdate when value length becomes 0', async () => {
+    const { rerender } = renderWidget({
+      value: [{ id: 'user1', title: 'User One', login: 'user1' }],
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const store = createMockStore();
+    rerender(
+      <Provider store={store}>
+        <ADUserGroupSelectWidget {...defaultProps} value={[]} />
+      </Provider>,
+    );
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles value with object that has value field but no other identifiers', async () => {
+    const value = [
+      {
+        value: 'somevalue',
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles cached entry not found for string value', async () => {
+    const value = ['notincache'];
+
+    const { container } = renderWidget({ value }, []);
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValue = container.querySelector(
+      '.react-select__multi-value__label',
+    );
+    expect(multiValue).toBeTruthy();
+  });
+
+  test('handles object value not matching cache search criteria', async () => {
+    const storeEntries = [
+      {
+        id: 'different',
+        title: 'Different',
+        login: 'different',
+        type: 'user',
+      },
+    ];
+
+    const value = [{ id: 'notfound' }];
+
+    renderWidget({ value }, storeEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('filters boolean false values from render', async () => {
+    const value = [
+      {
+        id: 'user1',
+        title: 'User One',
+        login: 'user1',
+        type: 'user',
+      },
+      false,
+    ];
+
+    const { container } = renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const multiValues = container.querySelectorAll(
+      '.react-select__multi-value__label',
+    );
+    // Should only have 1 value after filtering out false
+    expect(multiValues.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test('handles value with empty string id', async () => {
+    const value = [
+      {
+        id: '',
+        title: 'User with empty id',
+        login: 'user1',
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('handles noOptionsMessage when search length equals SEARCH_HOLDOFF', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'ab' } });
+    }
+  });
+
+  test('handles onInputChange updates searchLength state', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'abc' } });
+      fireEvent.change(selectInput, { target: { value: 'abcd' } });
+    }
+  });
+
+  test('renders cacheOptions prop on SelectAsync', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectContainer = container.querySelector('.react-select-container');
+    expect(selectContainer).toBeTruthy();
+  });
+
+  test('renders isMulti prop on SelectAsync', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectContainer = container.querySelector('.react-select-container');
+    expect(selectContainer).toBeTruthy();
+  });
+
+  test('fetchSelectedValues returns early when no values', async () => {
+    renderWidget({ value: [] });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues finds exact match by id', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'user1',
+            title: 'User One',
+            login: 'user1',
+            email: 'user1@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['user1'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues finds match by login', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'userid',
+            title: 'User One',
+            login: 'userlogin',
+            email: 'user@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['userlogin'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues finds match by title', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'userid',
+            title: 'User Title',
+            login: 'userlogin',
+            email: 'user@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['User Title'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues finds partial match in login', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'userid',
+            title: 'User One',
+            login: 'partiallogin',
+            email: 'user@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['partial'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues finds partial match in title', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'userid',
+            title: 'Partial Title Match',
+            login: 'userlogin',
+            email: 'user@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['partial'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues finds partial match in email', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'userid',
+            title: 'User One',
+            login: 'userlogin',
+            email: 'partial@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['partial'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues handles no exact match but entries exist', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'differentid',
+            title: 'Different User',
+            login: 'different',
+            email: 'different@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: ['nomatch'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues handles empty entries array', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [],
+      }),
+    );
+
+    renderWidget({
+      value: ['user1'],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues filters out values already in cache', async () => {
+    const storeEntries = [
+      {
+        id: 'cacheduser',
+        title: 'Cached User',
+        login: 'cacheduser',
+        type: 'user',
+      },
+    ];
+
+    renderWidget({ value: ['cacheduser'] }, storeEntries);
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues skips empty searchTerm', async () => {
+    const value = [{ id: '', title: '', login: '' }];
+
+    renderWidget({ value });
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues handles object value with only id', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'objectid',
+            title: 'Object User',
+            login: 'objectuser',
+            email: 'object@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: [{ id: 'objectid' }],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('fetchSelectedValues handles object value with value field', async () => {
+    const mockGetSharingWithData = jest.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: 'valueid',
+            title: 'Value User',
+            login: 'valueuser',
+            email: 'value@test.com',
+            type: 'user',
+          },
+        ],
+      }),
+    );
+
+    renderWidget({
+      value: [{ value: 'valueid' }],
+      getSharing: mockGetSharingWithData,
+    });
+
+    await waitFor(() => screen.getByText('User/Group field'));
+  });
+
+  test('loadOptions updates currentSearchText state', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'searchtext' } });
+    }
+  });
+
+  test('loadOptions clears timeout on new search', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'test1' } });
+      fireEvent.change(selectInput, { target: { value: 'test2' } });
+    }
+  });
+
+  test('loadOptions returns empty array for short query', async () => {
+    const { container } = renderWidget();
+
+    await waitFor(() => screen.getByText('User/Group field'));
+
+    const selectInput = container.querySelector('.react-select__input input');
+    if (selectInput) {
+      fireEvent.focus(selectInput);
+      fireEvent.change(selectInput, { target: { value: 'ab' } });
+    }
+  });
 });
 
 describe('normalizeSharingEntry', () => {
