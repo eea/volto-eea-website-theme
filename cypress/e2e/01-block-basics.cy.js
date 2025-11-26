@@ -13,6 +13,13 @@ describe('Blocks Tests', () => {
 
     cy.getSlate().click();
 
+    //test slate toolbar
+    cy.getSlateEditorAndType('Lorem ipsum.').type('{selectAll}').dblclick();
+    cy.clickSlateButton('Bold');
+    cy.clickSlateButton('Light');
+    cy.clickSlateButton('Title');
+    cy.clickSlateButton('Clear formatting');
+
     // test rss link
     cy.get('.documentFirstHeading').click();
     cy.get('a').contains('Block').click();
