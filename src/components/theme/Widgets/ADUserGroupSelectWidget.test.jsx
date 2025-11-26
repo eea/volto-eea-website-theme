@@ -1264,7 +1264,9 @@ describe('ADUserGroupSelectWidget', () => {
 
       // The dropdown should have the menu open
       const menu = container.querySelector('.react-select__menu');
-      expect(menu || container.querySelector('.react-select-container')).toBeTruthy();
+      expect(
+        menu || container.querySelector('.react-select-container'),
+      ).toBeTruthy();
     }
   });
 
