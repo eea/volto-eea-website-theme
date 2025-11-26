@@ -170,7 +170,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     const pathParts = pathname.split('/').filter(Boolean);
     if (pathParts.length > 0 && pathParts[0].length === 2) {
       // First segment is a language code, replace it with the navigation language
-      return `/${navLang}/` + pathParts.slice(1).join('/');
+      const rest = pathParts.slice(1).join('/');
+      return rest ? `/${navLang}/${rest}` : `/${navLang}`;
     }
     return pathname;
   }, [pathname]);

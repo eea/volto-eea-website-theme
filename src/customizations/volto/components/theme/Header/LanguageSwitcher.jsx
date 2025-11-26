@@ -29,10 +29,14 @@ const LanguageSwitcher = ({ width, history }) => {
     const pathParts = pathname.split('/').filter(Boolean);
     // First segment is language code in multilingual sites
     if (pathParts.length > 0 && pathParts[0].length === 2) {
-      return pathParts[0];
+      const langCode = pathParts[0];
+      const isValidLang = eea.languages.some((lang) => lang.code === langCode);
+      if (isValidLang) {
+        return langCode;
+      }
     }
     return config.settings.defaultLanguage || 'en';
-  }, [pathname]);
+  }, [pathname, eea.languages]);
 
   const [language, setLanguage] = React.useState(langFromPath);
 

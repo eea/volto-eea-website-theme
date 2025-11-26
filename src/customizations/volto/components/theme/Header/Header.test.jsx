@@ -365,6 +365,8 @@ describe('Header', () => {
 
     // Verify that navigation items from /en are rendered
     expect(container.querySelector('.eea.header')).toBeTruthy();
+    expect(getByText(container, 'Topics')).toBeInTheDocument();
+    expect(getByText(container, 'Countries')).toBeInTheDocument();
   });
 
   it('normalizes pathname for menu matching when navigationLanguage is set', () => {
@@ -420,6 +422,9 @@ describe('Header', () => {
     // The Header.Main component should receive normalized pathname (/en/topics)
     // so that menu items from /en navigation match correctly
     expect(container.querySelector('.eea.header')).toBeTruthy();
+    // Verify that the Topics menu item is active/matched
+    const topicsLink = container.querySelector('a[href="/en/topics"]');
+    expect(topicsLink).toBeInTheDocument();
   });
 
   it('uses current language navigation when navigationLanguage is not set', () => {
@@ -464,7 +469,7 @@ describe('Header', () => {
       },
     };
 
-    const { container } = render(
+    const { container, getByText, queryByText } = render(
       <Provider store={store}>
         <Router history={history}>
           <Header pathname="/fr/sujets" />
@@ -474,5 +479,24 @@ describe('Header', () => {
 
     // Should use French navigation items
     expect(container.querySelector('.eea.header')).toBeTruthy();
+
+    // Assert French nav texts are present
+    expect(getByText('Sujets')).toBeInTheDocument();
+    expect(getByText('Pays')).toBeInTheDocument();
+
+    // The French nav items should link to paths containing "/fr/"
+    const topicsLink = getByText('Sujets').closest('a');
+    const countryLink = getByText('Pays').closest('a');
+    expect(topicsLink).not.toBeNull();
+    expect(countryLink).not.toBeNull();
+    expect(topicsLink.getAttribute('href')).toEqual(
+      expect.stringContaining('/fr/'),
+    );
+    expect(countryLink.getAttribute('href')).toEqual(
+      expect.stringContaining('/fr/'),
+    );
+
+    // Ensure obvious English navigation text is NOT present
+    expect(queryByText('Subjects')).toBeNull();
   });
 });
