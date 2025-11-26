@@ -29,7 +29,20 @@ describe('Blocks Tests', () => {
       'https://eea.github.io/volto-eea-design-system/img/eea_icon.png{enter}',
     );
 
+    // Test all 4 alignment buttons: left, center, right, full
+    cy.get('.align-buttons .ui.basic.icon.button').first().click(); // left
+    cy.get('.align-buttons .ui.basic.icon.button').eq(1).click(); // center
+    cy.get('.align-buttons .ui.basic.icon.button').eq(2).click(); // right
+    cy.get('.align-buttons .ui.basic.icon.button').last().click(); // full
+
+    // Set to left alignment to enable size buttons
     cy.get('.align-buttons .ui.basic.icon.button').first().click();
+
+    // Test all size buttons: S, M, L
+    cy.get('.field-image_size button[aria-label="Small"]').click(); // S (small)
+    cy.get('.field-image_size button[aria-label="Medium"]').click(); // M (medium)
+    cy.get('.field-image_size button[aria-label="Large"]').click(); // L (large)
+
     cy.get('#blockform-fieldset-styling').click();
     cy.get('#field-objectPosition-0-styles').click().type('top');
 
