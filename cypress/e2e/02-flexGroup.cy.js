@@ -50,6 +50,23 @@ describe('Flex Group Variation Tests', () => {
 
     cy.contains('Section').click();
 
+    // Click on the restricted block checkbox in the Security fieldset
+    cy.get('.field-wrapper-restrictedBlock .ui.toggle.checkbox')
+      .first()
+      .click();
+
+    // Click on Allow View select and type "Administrators"
+    cy.get('.field-wrapper-allow_view .react-select__control').click();
+    cy.get('.field-wrapper-allow_view input').type('Administrators{enter}', {
+      force: true,
+    });
+
+    // Click on Deny View select and type "Administrators"
+    cy.get('.field-wrapper-deny_view .react-select__control').click();
+    cy.get('.field-wrapper-deny_view input').type('Administrators{enter}', {
+      force: true,
+    });
+
     cy.get(
       '.sidebar-container .field-wrapper-variation .react-select__value-container',
     ).click();
