@@ -2267,4 +2267,175 @@ describe('Relevance scoring and sorting', () => {
 
     expect(result).toHaveLength(1);
   });
+
+  test('handles null searchText in relevance calculation', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Alice',
+        login: 'alice',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Bob',
+        login: 'bob',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, null);
+
+    expect(result).toHaveLength(2);
+  });
+
+  test('handles undefined searchText in relevance calculation', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Alice',
+        login: 'alice',
+        type: 'user',
+      },
+      {
+        id: 'user2',
+        title: 'Bob',
+        login: 'bob',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, undefined);
+
+    expect(result).toHaveLength(2);
+  });
+
+  test('calculates relevance with valid searchText and all fields', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'John Doe',
+        login: 'johndoe',
+        email: 'john.doe@example.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'john');
+
+    expect(result).toHaveLength(1);
+    expect(result[0].value).toBe('user1');
+  });
+
+  test('calculates relevance with title containing query', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Administrator',
+        login: 'admin',
+        email: 'admin@test.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'admin');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('calculates relevance with login containing query', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Regular User',
+        login: 'superadmin',
+        email: 'user@test.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'admin');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('calculates relevance with email containing query', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Regular User',
+        login: 'user',
+        email: 'administrator@company.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'admin');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('relevance score handles entries with empty title', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: '',
+        login: 'testuser',
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'test');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('relevance score handles entries with empty login', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: '',
+        email: 'test@example.com',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'test');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('relevance score handles entries with empty email', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: 'Test User',
+        login: 'testuser',
+        email: '',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'test');
+
+    expect(result).toHaveLength(1);
+  });
+
+  test('relevance score with all empty fields', () => {
+    const entries = [
+      {
+        id: 'user1',
+        title: '',
+        login: '',
+        email: '',
+        type: 'user',
+      },
+    ];
+
+    const result = normalizeSharingChoices(entries, mockIntl, 'test');
+
+    expect(result).toHaveLength(1);
+  });
 });
