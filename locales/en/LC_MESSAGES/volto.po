@@ -46,6 +46,11 @@ msgstr ""
 msgid "European Environment Agency"
 msgstr ""
 
+#. Default: "Group"
+#: components/theme/Widgets/ADUserGroupSelectWidget
+msgid "Group"
+msgstr ""
+
 #. Default: "Invalid block - Will be removed on saving"
 #: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
 msgid "Invalid Block"
@@ -62,7 +67,9 @@ msgid "Navigation"
 msgstr ""
 
 #. Default: "No options"
+#: components/theme/Widgets/ADUserGroupSelectWidget
 #: components/theme/Widgets/CreatableSelectWidget
+#: components/theme/Widgets/UserSelectWidget
 msgid "No options"
 msgstr ""
 
@@ -82,7 +89,9 @@ msgid "Required"
 msgstr ""
 
 #. Default: "Select…"
+#: components/theme/Widgets/ADUserGroupSelectWidget
 #: components/theme/Widgets/CreatableSelectWidget
+#: components/theme/Widgets/UserSelectWidget
 msgid "Select…"
 msgstr ""
 
@@ -111,6 +120,12 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+#. Default: "Type text..."
+#: components/theme/Widgets/ADUserGroupSelectWidget
+#: components/theme/Widgets/UserSelectWidget
+msgid "Type text..."
+msgstr ""
+
 #. Default: "Type the title…"
 #: components/manage/Blocks/Title/Edit
 msgid "Type the title…"
@@ -124,6 +139,11 @@ msgstr ""
 #. Default: "Used for programmatic access to the fieldset."
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Used for programmatic access to the fieldset."
+msgstr ""
+
+#. Default: "User"
+#: components/theme/Widgets/ADUserGroupSelectWidget
+msgid "User"
 msgstr ""
 
 #. Default: "RSS Feed"
