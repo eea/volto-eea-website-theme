@@ -27,11 +27,9 @@ describe('Blocks Tests', () => {
     cy.get('#field-title-0-rssLinks-0').type('RSS');
     cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss');
 
-    //add image block
-    cy.getSlate().click();
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get('.blocks-chooser .title').contains('Media').click();
-    cy.get('.content.active.media .button.image').contains('Image').click();
+    //add image block using slash command
+    cy.getSlate().click().type('{enter}');
+    cy.getSlate().click().type('/image{enter}');
     cy.get('.block.image .ui.input input[type="text"]').type(
       'https://eea.github.io/volto-eea-design-system/img/eea_icon.png{enter}',
     );
@@ -50,8 +48,13 @@ describe('Blocks Tests', () => {
     cy.get('.field-image_size button[aria-label="Medium"]').click(); // M (medium)
     cy.get('.field-image_size button[aria-label="Large"]').click(); // L (large)
 
-    cy.get('#blockform-fieldset-styling').click();
-    cy.get('#field-objectPosition-0-styles').click().type('top');
+    // Test all 4 image position buttons: top, center, bottom, none
+    cy.get('.align-buttons .ui.buttons button').first().click(); // top
+    cy.get('.align-buttons .ui.buttons button').eq(1).click(); // center
+    cy.get('.align-buttons .ui.buttons button').eq(2).click(); // bottom
+    cy.get('.align-buttons .ui.buttons button').last().click(); // none
+    // Set back to top position
+    cy.get('.align-buttons .ui.buttons button').first().click();
 
     // Save
     cy.get('#toolbar-save').click();
@@ -67,7 +70,7 @@ describe('Blocks Tests', () => {
 
     // then the page view should contain our changes
     cy.contains('My Add-on Page');
-    cy.get('.block.image.align.left img.top').should(
+    cy.get('.block.image.align.left img').should(
       'have.attr',
       'src',
       'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
