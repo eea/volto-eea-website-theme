@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2025-01-30T18:15:27.602Z\n"
+"POT-Creation-Date: 2025-11-24T16:59:04.950Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -12,6 +12,11 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
+
+#. Default: "Add"
+#: components/theme/Widgets/SimpleArrayWidget
+msgid "Add"
+msgstr ""
 
 #. Default: "Choices"
 #: components/theme/Widgets/CreatableSelectWidget
@@ -48,9 +53,39 @@ msgstr ""
 msgid "European Environment Agency"
 msgstr ""
 
+#. Default: "Hide Children From Navigation"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Hide Children From Navigation"
+msgstr ""
+
+#. Default: "If you need access to specific information that was on this page, please contact our {support_team} and we'll be happy to help."
+#: components/theme/NotFound/GoneView
+msgid "If you need access to specific information that was on this page, please contact our {support_team} and we'll be happy to help."
+msgstr ""
+
 #. Default: "Invalid block - Will be removed on saving"
 #: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
 msgid "Invalid Block"
+msgstr ""
+
+#. Default: "Load Main Navigation Routes"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Load Main Navigation Routes"
+msgstr ""
+
+#. Default: "Looking for something specific?"
+#: components/theme/NotFound/GoneView
+msgid "Looking for something specific?"
+msgstr ""
+
+#. Default: "Menu Item Children List Columns"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Menu Item Children List Columns"
+msgstr ""
+
+#. Default: "Menu Item Columns"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Menu Item Columns"
 msgstr ""
 
 #. Default: "Modified"
@@ -63,8 +98,14 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
+#. Default: "Need this content?"
+#: components/theme/NotFound/GoneView
+msgid "Need this content?"
+msgstr ""
+
 #. Default: "No options"
 #: components/theme/Widgets/CreatableSelectWidget
+#: components/theme/Widgets/UserSelectWidget
 msgid "No options"
 msgstr ""
 
@@ -73,9 +114,19 @@ msgstr ""
 msgid "No value"
 msgstr ""
 
+#. Default: "Preparing download"
+#: components/theme/PrintLoader/PrintLoader
+msgid "Preparing download"
+msgstr ""
+
 #. Default: "Published"
 #: components/theme/Banner/View
 msgid "Published"
+msgstr ""
+
+#. Default: "Remove"
+#: components/theme/Widgets/SimpleArrayWidget
+msgid "Remove"
 msgstr ""
 
 #. Default: "Required"
@@ -85,6 +136,7 @@ msgstr ""
 
 #. Default: "Select…"
 #: components/theme/Widgets/CreatableSelectWidget
+#: components/theme/Widgets/UserSelectWidget
 msgid "Select…"
 msgstr ""
 
@@ -108,9 +160,29 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+#. Default: "This Page Has Been Retired"
+#: components/theme/NotFound/GoneView
+msgid "This Page Has Been Retired"
+msgstr ""
+
+#. Default: "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
+#: components/theme/NotFound/GoneView
+msgid "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
+msgstr ""
+
 #. Default: "Title"
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Title"
+msgstr ""
+
+#. Default: "Try our {search} or visit our {homepage} to find what you need on our updated site."
+#: components/theme/NotFound/GoneView
+msgid "Try our {search} or visit our {homepage} to find what you need on our updated site."
+msgstr ""
+
+#. Default: "Type text..."
+#: components/theme/Widgets/UserSelectWidget
+msgid "Type text..."
 msgstr ""
 
 #. Default: "Type the title…"
@@ -128,7 +200,42 @@ msgstr ""
 msgid "Used for programmatic access to the fieldset."
 msgstr ""
 
+#. Default: "View archived version"
+#: components/theme/NotFound/GoneView
+msgid "View archived version"
+msgstr ""
+
+#. Default: "Wayback Machine"
+#: components/theme/NotFound/GoneView
+msgid "Wayback Machine"
+msgstr ""
+
+#. Default: "What you can do?"
+#: components/theme/NotFound/GoneView
+msgid "What you can do?"
+msgstr ""
+
+#. Default: "You may be able to find an archived copy of this page on the {archive_url}"
+#: components/theme/NotFound/GoneView
+msgid "You may be able to find an archived copy of this page on the {archive_url}"
+msgstr ""
+
+#. Default: "homepage"
+#: components/theme/NotFound/GoneView
+msgid "homepage"
+msgstr ""
+
 #. Default: "RSS Feed"
 #: components/theme/Banner/View
 msgid "rssFeed"
+msgstr ""
+
+#. Default: "search"
+#: components/theme/NotFound/GoneView
+msgid "search"
+msgstr ""
+
+#. Default: "support team"
+#: components/theme/NotFound/GoneView
+msgid "support team"
 msgstr ""

@@ -17,15 +17,33 @@ import { Header } from '@eeacms/volto-eea-design-system/ui';
  * @param {Object} props.history - The history object from React Router for navigation.
  */
 const LanguageSwitcher = ({ width, history }) => {
-  const currentLang = useSelector((state) => state.intl.locale);
+  const pathname = useSelector((state) => state.router.location.pathname);
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
   const { eea } = config.settings;
 
-  const [language, setLanguage] = React.useState(
-    currentLang || eea.defaultLanguage,
-  );
+  // Extract language from pathname instead of state.intl.locale
+  // This prevents re-renders when interface language changes
+  const langFromPath = React.useMemo(() => {
+    const pathParts = pathname.split('/').filter(Boolean);
+    // First segment is language code in multilingual sites
+    if (pathParts.length > 0 && pathParts[0].length === 2) {
+      const langCode = pathParts[0];
+      const isValidLang = eea.languages.some((lang) => lang.code === langCode);
+      if (isValidLang) {
+        return langCode;
+      }
+    }
+    return config.settings.defaultLanguage || 'en';
+  }, [pathname, eea.languages]);
+
+  const [language, setLanguage] = React.useState(langFromPath);
+
+  // Sync local state with pathname-based language
+  React.useEffect(() => {
+    setLanguage(langFromPath);
+  }, [langFromPath]);
 
   return (
     <Header.TopDropdownMenu
