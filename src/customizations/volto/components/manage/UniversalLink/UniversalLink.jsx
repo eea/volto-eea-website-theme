@@ -28,6 +28,14 @@ const UniversalLink = ({
 }) => {
   const token = useSelector((state) => state.userSession?.token);
 
+  if (Array.isArray(href)) {
+    // eslint-disable-next-line no-console
+    console.error(
+      'Invalid href passed to UniversalLink, received an array as href instead of a string',
+      href,
+    );
+    return null;
+  }
   let url = href;
 
   if (!href && item) {
@@ -71,12 +79,12 @@ const UniversalLink = ({
     url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
   }
 
-  const isExternal = !isInternalURL(url);
+  const isExternal = url ? !isInternalURL(url) : false;
   const isDownload =
     (!isExternal && url && url.includes('@@download')) || download;
 
   const isDisplayFile =
-    (!isExternal && url.includes('@@display-file')) || false;
+    (!isExternal && url && url.includes('@@display-file')) || false;
   const checkedURL = URLUtils.checkAndNormalizeUrl(url);
 
   // we can receive an item with a linkWithHash property set from ObjectBrowserWidget
