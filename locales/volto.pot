@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2025-11-24T16:59:04.950Z\n"
+"POT-Creation-Date: 2025-12-03T15:43:07.777Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -51,6 +51,11 @@ msgstr ""
 #. Default: "European Environment Agency"
 #: components/theme/Logo
 msgid "European Environment Agency"
+msgstr ""
+
+#. Default: "Group"
+#: components/theme/Widgets/ADUserGroupSelectWidget
+msgid "Group"
 msgstr ""
 
 #. Default: "Hide Children From Navigation"
@@ -104,6 +109,7 @@ msgid "Need this content?"
 msgstr ""
 
 #. Default: "No options"
+#: components/theme/Widgets/ADUserGroupSelectWidget
 #: components/theme/Widgets/CreatableSelectWidget
 #: components/theme/Widgets/UserSelectWidget
 msgid "No options"
@@ -135,6 +141,7 @@ msgid "Required"
 msgstr ""
 
 #. Default: "Select…"
+#: components/theme/Widgets/ADUserGroupSelectWidget
 #: components/theme/Widgets/CreatableSelectWidget
 #: components/theme/Widgets/UserSelectWidget
 msgid "Select…"
@@ -181,6 +188,7 @@ msgid "Try our {search} or visit our {homepage} to find what you need on our upd
 msgstr ""
 
 #. Default: "Type text..."
+#: components/theme/Widgets/ADUserGroupSelectWidget
 #: components/theme/Widgets/UserSelectWidget
 msgid "Type text..."
 msgstr ""
@@ -198,6 +206,11 @@ msgstr ""
 #. Default: "Used for programmatic access to the fieldset."
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Used for programmatic access to the fieldset."
+msgstr ""
+
+#. Default: "User"
+#: components/theme/Widgets/ADUserGroupSelectWidget
+msgid "User"
 msgstr ""
 
 #. Default: "View archived version"
@@ -223,6 +236,16 @@ msgstr ""
 #. Default: "homepage"
 #: components/theme/NotFound/GoneView
 msgid "homepage"
+msgstr ""
+
+#. Default: "Restrict access to this block based on user permissions"
+#: index
+msgid "restrictedBlockDescription"
+msgstr ""
+
+#. Default: "Restricted block"
+#: index
+msgid "restrictedBlockTitle"
 msgstr ""
 
 #. Default: "RSS Feed"

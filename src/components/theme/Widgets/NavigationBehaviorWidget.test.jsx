@@ -619,3 +619,72 @@ describe('NavigationBehaviorWidget', () => {
     expect(screen.getByText('(/test-route-2)')).toBeInTheDocument();
   });
 });
+
+describe('menuItemColumnsToNumbers', () => {
+  let menuItemColumnsToNumbers;
+
+  beforeEach(() => {
+    menuItemColumnsToNumbers =
+      require('./NavigationBehaviorWidget').menuItemColumnsToNumbers;
+  });
+
+  it('converts semantic UI column strings to numbers', () => {
+    const columns = [
+      'one wide column',
+      'two wide column',
+      'three wide column',
+      'four wide column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([1, 2, 3, 4]);
+  });
+
+  it('handles all number words from one to nine', () => {
+    const columns = [
+      'one wide column',
+      'two wide column',
+      'three wide column',
+      'four wide column',
+      'five wide column',
+      'six wide column',
+      'seven wide column',
+      'eight wide column',
+      'nine wide column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+
+  it('returns empty array for non-array input', () => {
+    expect(menuItemColumnsToNumbers(null)).toEqual([]);
+    expect(menuItemColumnsToNumbers(undefined)).toEqual([]);
+    expect(menuItemColumnsToNumbers('string')).toEqual([]);
+    expect(menuItemColumnsToNumbers(123)).toEqual([]);
+  });
+
+  it('filters out invalid column strings', () => {
+    const columns = [
+      'two wide column',
+      'invalid string',
+      'three wide column',
+      'not a column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([2, 3]);
+  });
+
+  it('returns empty array for empty input', () => {
+    expect(menuItemColumnsToNumbers([])).toEqual([]);
+  });
+
+  it('handles mixed valid and invalid string inputs', () => {
+    const columns = [
+      'five wide column',
+      'invalid',
+      'six wide column',
+      'also invalid',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([5, 6]);
+  });
+});
