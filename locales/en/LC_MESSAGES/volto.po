@@ -11,6 +11,11 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
+#. Default: "Add"
+#: components/theme/Widgets/SimpleArrayWidget
+msgid "Add"
+msgstr ""
+
 #. Default: "Choices"
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Choices"
@@ -51,9 +56,29 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
+#. Default: "Hide Children From Navigation"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Hide Children From Navigation"
+msgstr ""
+
 #. Default: "Invalid block - Will be removed on saving"
 #: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
 msgid "Invalid Block"
+msgstr ""
+
+#. Default: "Load Main Navigation Routes"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Load Main Navigation Routes"
+msgstr ""
+
+#. Default: "Menu Item Children List Columns"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Menu Item Children List Columns"
+msgstr ""
+
+#. Default: "Menu Item Columns"
+#: components/theme/Widgets/NavigationBehaviorWidget
+msgid "Menu Item Columns"
 msgstr ""
 
 #. Default: "Modified"
@@ -78,9 +103,19 @@ msgstr ""
 msgid "No value"
 msgstr ""
 
+#. Default: "Preparing download"
+#: components/theme/PrintLoader/PrintLoader
+msgid "Preparing download"
+msgstr ""
+
 #. Default: "Published"
 #: components/theme/Banner/View
 msgid "Published"
+msgstr ""
+
+#. Default: "Remove"
+#: components/theme/Widgets/SimpleArrayWidget
+msgid "Remove"
 msgstr ""
 
 #. Default: "Required"
@@ -144,6 +179,16 @@ msgstr ""
 #. Default: "User"
 #: components/theme/Widgets/ADUserGroupSelectWidget
 msgid "User"
+msgstr ""
+
+#. Default: "Restrict access to this block based on user permissions"
+#: index
+msgid "restrictedBlockDescription"
+msgstr ""
+
+#. Default: "Restricted block"
+#: index
+msgid "restrictedBlockTitle"
 msgstr ""
 
 #. Default: "RSS Feed"
