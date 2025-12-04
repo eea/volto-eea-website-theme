@@ -48,8 +48,8 @@ const GoneView = () => {
       <BodyClass className="page-not-found" />
       <h1>
         <FormattedMessage
-          id="This Page Has Been Retired"
-          defaultMessage="This Page Has Been Retired"
+          id="This page has been retired"
+          defaultMessage="This page has been retired"
         />
       </h1>
       <p className="description">
@@ -110,54 +110,6 @@ const GoneView = () => {
                         defaultMessage="Wayback Machine"
                       />
                     </a>
-                  ),
-                }}
-              />
-            </p>
-          </Accordion.Content>
-        </Accordion>
-
-        <Accordion className="secondary">
-          <Accordion.Title
-            active={activeIndex === 1}
-            index={1}
-            onClick={handleAccordionClick}
-            tabIndex={0}
-            role="button"
-            aria-expanded={activeIndex === 1}
-            onKeyDown={(e) => {
-              if (e.keyCode === 13 || e.keyCode === 32) {
-                handleAccordionClick(e, { index: 1 });
-              }
-            }}
-          >
-            <span>
-              <FormattedMessage
-                id="Need this content?"
-                defaultMessage="Need this content?"
-              />
-            </span>
-            <i
-              className={
-                activeIndex === 1
-                  ? 'ri-arrow-up-s-line'
-                  : 'ri-arrow-down-s-line'
-              }
-            />
-          </Accordion.Title>
-          <Accordion.Content active={activeIndex === 1}>
-            <p>
-              <FormattedMessage
-                id="If you need access to specific information that was on this page, please contact our {support_team} and we'll be happy to help."
-                defaultMessage="If you need access to specific information that was on this page, please contact our {support_team} and we'll be happy to help."
-                values={{
-                  support_team: (
-                    <Link to="/en/about/contact-us">
-                      <FormattedMessage
-                        id="support team"
-                        defaultMessage="support team"
-                      />
-                    </Link>
                   ),
                 }}
               />
