@@ -55,7 +55,6 @@ describe('ContextNavigationEdit', () => {
         <Router history={history}>
           <ContextNavigationEdit selected={false} />
         </Router>
-        ,
       </Provider>,
     );
 
@@ -72,7 +71,6 @@ describe('ContextNavigationEdit', () => {
         <Router history={history}>
           <ContextNavigationEdit selected={true} onChangeBlock={() => {}} />
         </Router>
-        ,
       </Provider>,
     );
 

@@ -2,6 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 import { waitFor, render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 import UserSelectWidget, {
   normalizeChoices,
@@ -109,7 +110,16 @@ test('renders a select widget component', async () => {
   );
 
   await waitFor(() => screen.getByText('My field'));
-  expect(container).toMatchSnapshot();
+
+  // Test behavior instead of snapshot due to dynamic react-select CSS classes
+  expect(screen.getByText('My field')).toBeInTheDocument();
+  expect(
+    container.querySelector('.react-select-container'),
+  ).toBeInTheDocument();
+  expect(container.querySelector('.react-select__control')).toBeInTheDocument();
+  expect(
+    container.querySelector('.react-select__placeholder'),
+  ).toHaveTextContent('Select…');
 });
 
 // Test normalization of choices

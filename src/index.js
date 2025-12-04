@@ -14,6 +14,7 @@ import HomePageInverseView from '@eeacms/volto-eea-website-theme/components/them
 import HomePageView from '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView';
 import WebReportSectionView from '@eeacms/volto-eea-website-theme/components/theme/WebReport/WebReportSectionView';
 import NotFound from '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound';
+import GoneView from '@eeacms/volto-eea-website-theme/components/theme/NotFound/GoneView';
 import PrintLoader from '@eeacms/volto-eea-website-theme/components/theme/PrintLoader/PrintLoader';
 import { TokenWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget';
 import { TopicsWidget } from '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget';
@@ -383,6 +384,7 @@ const applyConfig = (config) => {
   config.views.errorViews = {
     ...config.views.errorViews,
     404: NotFound,
+    410: GoneView,
   };
   // Apply slate text block customization
   if (config.blocks.blocksConfig.slate) {

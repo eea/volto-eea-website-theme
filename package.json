@@ -28,7 +28,7 @@
     "@eeacms/volto-anchors": "*",
     "@eeacms/volto-block-style": "*",
     "@eeacms/volto-block-toc": "*",
-    "@eeacms/volto-eea-design-system": "*",
+    "@eeacms/volto-eea-design-system": "eea/volto-eea-design-system#develop",
     "@eeacms/volto-group-block": "*",
     "volto-subsites": "*"
   },

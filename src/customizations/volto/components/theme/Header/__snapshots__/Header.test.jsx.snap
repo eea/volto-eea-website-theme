@@ -82,9 +82,12 @@ exports[`Header renders a header component with homepage_inverse_view layout 1`]
               <a
                 class="logo"
                 href="/"
+                title="Site"
               >
                 <img
+                  alt="European Environment Agency"
                   class="ui image eea-logo"
+                  src="eea-logo.svg"
                 />
               </a>
             </div>

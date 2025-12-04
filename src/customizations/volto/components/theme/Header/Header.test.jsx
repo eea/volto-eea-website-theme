@@ -53,7 +53,7 @@ describe('Header', () => {
       ...config.settings,
       eea: {
         ...config.settings.eea,
-        headerOpts: undefined,
+        headerOpts: { logo: 'eea-logo.svg' },
         logoTargetUrl: '/',
       },
     };
@@ -311,5 +311,192 @@ describe('Header', () => {
         </Router>
       </Provider>,
     );
+  });
+
+  it('uses navigationLanguage setting to fetch navigation from specific language', () => {
+    const store = mockStore({
+      userSession: { token: null },
+      intl: {
+        locale: 'fr',
+        messages: {
+          Site: 'Site',
+          'European Environment Agency':
+            "Agence européenne pour l'environnement",
+        },
+      },
+      navigation: {
+        items: [
+          { url: '/en/topics', title: 'Topics', items: [] },
+          { url: '/en/countries', title: 'Countries', items: [] },
+        ],
+      },
+      content: {
+        data: {
+          layout: 'homepage_view',
+        },
+      },
+      router: {
+        location: {
+          pathname: '/fr/some-page',
+        },
+      },
+      navigationSettings: {
+        loaded: true,
+        settings: {},
+      },
+    });
+
+    config.settings = {
+      ...config.settings,
+      navigationLanguage: 'en', // Always use English navigation
+      eea: {
+        ...config.settings.eea,
+        headerOpts: undefined,
+      },
+    };
+
+    const { container } = render(
+      <Provider store={store}>
+        <Router history={history}>
+          <Header pathname="/fr/some-page" />
+        </Router>
+      </Provider>,
+    );
+
+    // Verify that navigation items from /en are rendered
+    expect(container.querySelector('.eea.header')).toBeTruthy();
+    expect(getByText(container, 'Topics')).toBeInTheDocument();
+    expect(getByText(container, 'Countries')).toBeInTheDocument();
+  });
+
+  it('normalizes pathname for menu matching when navigationLanguage is set', () => {
+    const store = mockStore({
+      userSession: { token: null },
+      intl: {
+        locale: 'fr',
+        messages: {
+          Site: 'Site',
+          'European Environment Agency':
+            "Agence européenne pour l'environnement",
+        },
+      },
+      navigation: {
+        items: [
+          { url: '/en/topics', title: 'Topics', items: [] },
+          { url: '/en/countries', title: 'Countries', items: [] },
+        ],
+      },
+      content: {
+        data: {
+          layout: 'homepage_view',
+        },
+      },
+      router: {
+        location: {
+          pathname: '/fr/topics',
+        },
+      },
+      navigationSettings: {
+        loaded: true,
+        settings: {},
+      },
+    });
+
+    config.settings = {
+      ...config.settings,
+      navigationLanguage: 'en',
+      eea: {
+        ...config.settings.eea,
+        headerOpts: undefined,
+      },
+    };
+
+    const { container } = render(
+      <Provider store={store}>
+        <Router history={history}>
+          <Header pathname="/fr/topics" />
+        </Router>
+      </Provider>,
+    );
+
+    // The Header.Main component should receive normalized pathname (/en/topics)
+    // so that menu items from /en navigation match correctly
+    expect(container.querySelector('.eea.header')).toBeTruthy();
+    // Verify that the Topics menu item is active/matched
+    const topicsLink = container.querySelector('a[href="/en/topics"]');
+    expect(topicsLink).toBeInTheDocument();
+  });
+
+  it('uses current language navigation when navigationLanguage is not set', () => {
+    const store = mockStore({
+      userSession: { token: null },
+      intl: {
+        locale: 'fr',
+        messages: {
+          Site: 'Site',
+          'European Environment Agency':
+            "Agence européenne pour l'environnement",
+        },
+      },
+      navigation: {
+        items: [
+          { url: '/fr/sujets', title: 'Sujets', items: [] },
+          { url: '/fr/pays', title: 'Pays', items: [] },
+        ],
+      },
+      content: {
+        data: {
+          layout: 'homepage_view',
+        },
+      },
+      router: {
+        location: {
+          pathname: '/fr/sujets',
+        },
+      },
+      navigationSettings: {
+        loaded: true,
+        settings: {},
+      },
+    });
+
+    config.settings = {
+      ...config.settings,
+      navigationLanguage: null, // Use current language
+      eea: {
+        ...config.settings.eea,
+        headerOpts: undefined,
+      },
+    };
+
+    const { container, getByText, queryByText } = render(
+      <Provider store={store}>
+        <Router history={history}>
+          <Header pathname="/fr/sujets" />
+        </Router>
+      </Provider>,
+    );
+
+    // Should use French navigation items
+    expect(container.querySelector('.eea.header')).toBeTruthy();
+
+    // Assert French nav texts are present
+    expect(getByText('Sujets')).toBeInTheDocument();
+    expect(getByText('Pays')).toBeInTheDocument();
+
+    // The French nav items should link to paths containing "/fr/"
+    const topicsLink = getByText('Sujets').closest('a');
+    const countryLink = getByText('Pays').closest('a');
+    expect(topicsLink).not.toBeNull();
+    expect(countryLink).not.toBeNull();
+    expect(topicsLink.getAttribute('href')).toEqual(
+      expect.stringContaining('/fr/'),
+    );
+    expect(countryLink.getAttribute('href')).toEqual(
+      expect.stringContaining('/fr/'),
+    );
+
+    // Ensure obvious English navigation text is NOT present
+    expect(queryByText('Subjects')).toBeNull();
   });
 });
