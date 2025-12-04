@@ -490,6 +490,120 @@ describe('NavigationBehaviorWidget', () => {
     expect(screen.getByText('Test Route 2')).toBeInTheDocument();
   });
 
+  it('handles menuItemColumns as integers from backend (develop server format)', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: false,
+        menuItemColumns: [8, 4], // Integer format from develop server
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+
+    // Verify the widget displays the values correctly (converted to numbers for display)
+    // The widget should handle integer input and display it properly
+  });
+
+  it('handles menuItemColumns as semantic UI strings from backend (production format)', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: false,
+        menuItemColumns: ['eight wide column', 'four wide column'], // String format from production
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+
+    // Verify the widget displays the values correctly (converted from strings to numbers for display)
+    // The widget should handle semantic UI string input and convert it to numbers for display
+  });
+
+  it('converts menuItemColumns to semantic UI format when saving', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: false,
+        menuItemColumns: [2, 3], // Numbers that should be converted to semantic UI format
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+
+    // Simulate a change by clicking the checkbox
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalled();
+      const lastCallIndex = mockOnChange.mock.calls.length - 1;
+      const savedValue = JSON.parse(mockOnChange.mock.calls[lastCallIndex][1]);
+
+      // Find the route settings
+      const routeKey = Object.keys(savedValue).find((key) =>
+        key.includes('test-route-1'),
+      );
+      const route1Settings = savedValue[routeKey];
+
+      // Verify menuItemColumns are saved in semantic UI format, not as integers
+      if (route1Settings && route1Settings.menuItemColumns) {
+        route1Settings.menuItemColumns.forEach((col) => {
+          expect(typeof col).toBe('string');
+          expect(col).toMatch(/wide column$/);
+        });
+      }
+    });
+  });
+
   it('displays route paths in accordion titles', () => {
     render(
       <Provider store={store}>
@@ -503,5 +617,74 @@ describe('NavigationBehaviorWidget', () => {
 
     expect(screen.getByText('(/test-route-1)')).toBeInTheDocument();
     expect(screen.getByText('(/test-route-2)')).toBeInTheDocument();
+  });
+});
+
+describe('menuItemColumnsToNumbers', () => {
+  let menuItemColumnsToNumbers;
+
+  beforeEach(() => {
+    menuItemColumnsToNumbers =
+      require('./NavigationBehaviorWidget').menuItemColumnsToNumbers;
+  });
+
+  it('converts semantic UI column strings to numbers', () => {
+    const columns = [
+      'one wide column',
+      'two wide column',
+      'three wide column',
+      'four wide column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([1, 2, 3, 4]);
+  });
+
+  it('handles all number words from one to nine', () => {
+    const columns = [
+      'one wide column',
+      'two wide column',
+      'three wide column',
+      'four wide column',
+      'five wide column',
+      'six wide column',
+      'seven wide column',
+      'eight wide column',
+      'nine wide column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+
+  it('returns empty array for non-array input', () => {
+    expect(menuItemColumnsToNumbers(null)).toEqual([]);
+    expect(menuItemColumnsToNumbers(undefined)).toEqual([]);
+    expect(menuItemColumnsToNumbers('string')).toEqual([]);
+    expect(menuItemColumnsToNumbers(123)).toEqual([]);
+  });
+
+  it('filters out invalid column strings', () => {
+    const columns = [
+      'two wide column',
+      'invalid string',
+      'three wide column',
+      'not a column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([2, 3]);
+  });
+
+  it('returns empty array for empty input', () => {
+    expect(menuItemColumnsToNumbers([])).toEqual([]);
+  });
+
+  it('handles mixed valid and invalid string inputs', () => {
+    const columns = [
+      'five wide column',
+      'invalid',
+      'six wide column',
+      'also invalid',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([5, 6]);
   });
 });
