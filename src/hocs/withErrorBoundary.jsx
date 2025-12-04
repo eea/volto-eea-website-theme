@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ErrorBoundary } from '@plone/volto/components';
 
 export default function withErrorBoundary(WrappedComponent, options = {}) {
