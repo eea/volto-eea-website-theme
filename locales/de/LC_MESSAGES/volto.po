@@ -61,11 +61,6 @@ msgstr ""
 msgid "Hide Children From Navigation"
 msgstr ""
 
-#. Default: "If you need access to specific information that was on this page, please contact our {support_team} and we'll be happy to help."
-#: components/theme/NotFound/GoneView
-msgid "If you need access to specific information that was on this page, please contact our {support_team} and we'll be happy to help."
-msgstr ""
-
 #. Default: "Invalid block - Will be removed on saving"
 #: components/manage/Blocks/GroupBlockTemplate/FlexGroup/RenderBlocks
 msgid "Invalid Block"
@@ -99,11 +94,6 @@ msgstr ""
 #. Default: "Navigation"
 #: components/manage/Blocks/ContextNavigation/variations/Accordion
 msgid "Navigation"
-msgstr ""
-
-#. Default: "Need this content?"
-#: components/theme/NotFound/GoneView
-msgid "Need this content?"
 msgstr ""
 
 #. Default: "No options"
@@ -165,14 +155,14 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
-#. Default: "This Page Has Been Retired"
-#: components/theme/NotFound/GoneView
-msgid "This Page Has Been Retired"
-msgstr ""
-
 #. Default: "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
 #: components/theme/NotFound/GoneView
 msgid "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
+msgstr ""
+
+#. Default: "This page has been retired"
+#: components/theme/NotFound/GoneView
+msgid "This page has been retired"
 msgstr ""
 
 #. Default: "Title"
@@ -254,9 +244,4 @@ msgstr ""
 #. Default: "search"
 #: components/theme/NotFound/GoneView
 msgid "search"
-msgstr ""
-
-#. Default: "support team"
-#: components/theme/NotFound/GoneView
-msgid "support team"
 msgstr ""
