@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2025-12-04T18:19:53.476Z\n"
+"POT-Creation-Date: 2025-12-04T19:35:19.710Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -71,6 +71,11 @@ msgstr ""
 #. Default: "Load Main Navigation Routes"
 #: components/theme/Widgets/NavigationBehaviorWidget
 msgid "Load Main Navigation Routes"
+msgstr ""
+
+#. Default: "Looking for something specific?"
+#: components/theme/NotFound/GoneView
+msgid "Looking for something specific?"
 msgstr ""
 
 #. Default: "Menu Item Children List Columns"
@@ -152,9 +157,24 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+#. Default: "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
+#: components/theme/NotFound/GoneView
+msgid "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
+msgstr ""
+
+#. Default: "This page has been retired"
+#: components/theme/NotFound/GoneView
+msgid "This page has been retired"
+msgstr ""
+
 #. Default: "Title"
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Title"
+msgstr ""
+
+#. Default: "Try our {search} or visit our {homepage} to find what you need on our updated site."
+#: components/theme/NotFound/GoneView
+msgid "Try our {search} or visit our {homepage} to find what you need on our updated site."
 msgstr ""
 
 #. Default: "Type text..."
@@ -183,6 +203,31 @@ msgstr ""
 msgid "User"
 msgstr ""
 
+#. Default: "View archived version"
+#: components/theme/NotFound/GoneView
+msgid "View archived version"
+msgstr ""
+
+#. Default: "Wayback Machine"
+#: components/theme/NotFound/GoneView
+msgid "Wayback Machine"
+msgstr ""
+
+#. Default: "What you can do?"
+#: components/theme/NotFound/GoneView
+msgid "What you can do?"
+msgstr ""
+
+#. Default: "You may be able to find an archived copy of this page on the {archive_url}"
+#: components/theme/NotFound/GoneView
+msgid "You may be able to find an archived copy of this page on the {archive_url}"
+msgstr ""
+
+#. Default: "homepage"
+#: components/theme/NotFound/GoneView
+msgid "homepage"
+msgstr ""
+
 #. Default: "Restrict access to this block based on user permissions"
 #: index
 msgid "restrictedBlockDescription"
@@ -196,4 +241,9 @@ msgstr ""
 #. Default: "RSS Feed"
 #: components/theme/Banner/View
 msgid "rssFeed"
+msgstr ""
+
+#. Default: "search"
+#: components/theme/NotFound/GoneView
+msgid "search"
 msgstr ""

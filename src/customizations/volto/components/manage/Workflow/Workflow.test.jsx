@@ -2,6 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 import { waitFor, render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import config from '@plone/volto/registry';
 
@@ -50,7 +51,15 @@ describe('Workflow', () => {
       </Provider>,
     );
     await waitFor(() => screen.getByText(/Published/));
-    expect(container).toMatchSnapshot();
+
+    // Test behavior instead of snapshot due to dynamic react-select CSS classes
+    expect(screen.getByText('Published')).toBeInTheDocument();
+    expect(
+      container.querySelector('.react-select__control--is-disabled'),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector('.react-select__single-value'),
+    ).toHaveTextContent('Published');
   });
 
   it('renders a workflow component', async () => {
@@ -76,6 +85,14 @@ describe('Workflow', () => {
       </Provider>,
     );
     await waitFor(() => screen.getByText('Private'));
-    expect(container).toMatchSnapshot();
+
+    // Test behavior instead of snapshot due to dynamic react-select CSS classes
+    expect(screen.getByText('Private')).toBeInTheDocument();
+    expect(
+      container.querySelector('.react-select__control'),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector('.react-select__single-value'),
+    ).toHaveTextContent('Private');
   });
 });
