@@ -12,7 +12,8 @@ import { UniversalLink } from '@plone/volto/components';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
-import { Header, Logo } from '@eeacms/volto-eea-design-system/ui';
+import { Header } from '@eeacms/volto-eea-design-system/ui';
+import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
@@ -110,6 +111,20 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     });
   }
 
+  // Memoize navigationBaseUrl so it doesn't change on every pathname change
+  // when navigationLanguage is set to a fixed language
+  const navigationBaseUrl = React.useMemo(() => {
+    const { settings } = config;
+    return settings.navigationLanguage
+      ? `/${settings.navigationLanguage}`
+      : getBaseUrl(pathname);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    dispatch(getNavigationSettings(pathname));
+  }, [dispatch, pathname]);
+
+  // Separate effect for update request to avoid duplicate calls
   React.useEffect(() => {
     if (
       updateRequest?.loaded &&
@@ -118,23 +133,48 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     ) {
       dispatch(getNavigationSettings(pathname));
     }
-    dispatch(getNavigationSettings(pathname));
   }, [updateRequest, dispatch, pathname]);
 
   React.useEffect(() => {
-    const base_url = getBaseUrl(pathname);
     const { settings } = config;
 
-    // Check if navigation data needs to be fetched based on the API expander availability
-    if (!hasApiExpander('navigation', base_url)) {
-      dispatch(getNavigation(base_url, settings.navDepth));
+    // When navigationLanguage is configured, always fetch navigation from that language
+    // We MUST call getNavigation directly because API expanders fetch navigation for the current page
+    if (settings.navigationLanguage) {
+      // Always fetch navigation for the configured language
+      dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
+    } else {
+      // When navigationLanguage is not configured, fetch navigation for current page language
+      // Check if navigation data needs to be fetched based on the API expander availability
+      if (!hasApiExpander('navigation', navigationBaseUrl)) {
+        dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
+      }
+
+      // Additional check for token changes
+      if (token !== previousToken) {
+        dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
+      }
+    }
+  }, [navigationBaseUrl, token, dispatch, previousToken]);
+
+  // Normalize pathname for menu matching when using navigationLanguage
+  // This ensures menu items from the configured language match correctly even when on other language pages
+  const normalizedPathname = React.useMemo(() => {
+    const navLang = config.settings.navigationLanguage;
+    if (!navLang) {
+      return pathname;
     }
 
-    // Additional check for token changes
-    if (token !== previousToken) {
-      dispatch(getNavigation(base_url, settings.navDepth));
+    // Replace the language prefix with the configured navigation language for menu matching
+    // e.g., if navLang='en': /fr/topics -> /en/topics
+    const pathParts = pathname.split('/').filter(Boolean);
+    if (pathParts.length > 0 && pathParts[0].length === 2) {
+      // First segment is a language code, replace it with the navigation language
+      const rest = pathParts.slice(1).join('/');
+      return rest ? `/${navLang}/${rest}` : `/${navLang}`;
     }
-  }, [pathname, token, dispatch, previousToken]);
+    return pathname;
+  }, [pathname]);
 
   return (
     <Header menuItems={items}>
@@ -207,18 +247,19 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
           )}
       </Header.TopHeader>
       <Header.Main
-        pathname={pathname}
+        pathname={normalizedPathname}
         isMultilingual={config.settings.isMultilingual}
         headerSearchBox={headerSearchBox}
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
           <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
-            <Logo
-              src={isHomePageInverse ? logoWhite : logo}
+            <EEALogo
+              src={logo}
+              invertedSrc={logoWhite}
+              inverted={isHomePageInverse}
               title={eea.websiteTitle}
               alt={eea.organisationName}
-              url={eea.logoTargetUrl}
               height={headerOpts.logoHeight}
               width={headerOpts.logoWidth}
             />
