@@ -412,6 +412,9 @@ module.exports = {
     'config\\.[jt]sx?$',
   ],
   moduleNameMapper: {
+    // Mock external modules that may not be available in test environment
+    'volto-subsites/utils': `<rootDir>/src/addons/${addonName}/src/__mocks__/volto-subsites-utils.js`,
+    'redux-localstorage-simple-original': `<rootDir>/src/addons/${addonName}/src/__mocks__/redux-localstorage-simple-original.js`,
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '@plone/volto/cypress': '<rootDir>/node_modules/@plone/volto/cypress',
     '@plone/volto/babel': '<rootDir>/node_modules/@plone/volto/babel',
