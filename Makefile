@@ -90,7 +90,7 @@ cypress-run:	## Run cypress integration tests
 
 .PHONY: test
 test:			## Run jest tests
-	${DOCKER_COMPOSE} run -e CI=1 frontend test
+	COMPOSE_IGNORE_ORPHANS=1 ${DOCKER_COMPOSE} run -e CI=1 -e BROWSERSLIST_IGNORE_OLD_DATA=1 frontend test
 
 .PHONY: test-update
 test-update:	## Update jest tests snapshots
