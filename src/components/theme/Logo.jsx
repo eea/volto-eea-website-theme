@@ -52,9 +52,11 @@ const EEALogo = ({
     return config.settings.defaultLanguage || 'en';
   }, [pathname]);
 
-  const url = config.settings.isMultilingual
+  const url = config.settings.eea?.logoTargetUrl
+    ? config.settings.eea.logoTargetUrl
+    : config.settings.isMultilingual
     ? `/${lang}`
-    : config.settings.eea?.logoTargetUrl || '/';
+    : '/';
 
   // Only pass inverted=true if we have an invertedSrc, otherwise the design system
   // Logo will try to use undefined invertedSrc instead of falling back to src
