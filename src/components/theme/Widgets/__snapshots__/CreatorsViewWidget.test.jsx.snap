@@ -4,12 +4,12 @@ exports[`CreatorsViewWidget renders a full vocabulary array view widget componen
 <span
   className="metadata array widget"
 >
-  
   <span>
+    
     Foo
   </span>
-  , 
   <span>
+    , 
     Bar
   </span>
 </span>
@@ -19,14 +19,14 @@ exports[`CreatorsViewWidget renders a full vocabulary array view widget componen
 <span
   className="metadata array widget"
 >
-  
   <span>
+    
     <strong>
       Foo
     </strong>
   </span>
-  , 
   <span>
+    , 
     <strong>
       Bar
     </strong>
@@ -38,12 +38,12 @@ exports[`CreatorsViewWidget renders a simple array view widget component 1`] = `
 <span
   className="metadata array widget"
 >
-  
   <span>
+    
     foo
   </span>
-  , 
   <span>
+    , 
     bar
   </span>
 </span>
@@ -53,12 +53,12 @@ exports[`CreatorsViewWidget renders a vocabulary array view widget component 1`]
 <span
   className="metadata array widget"
 >
-  
   <span>
+    
     Foo
   </span>
-  , 
   <span>
+    , 
     Bar
   </span>
 </span>

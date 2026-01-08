@@ -101,7 +101,7 @@ jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
 
 // Mock semantic-ui-react components
 jest.mock('semantic-ui-react', () => {
-  const MockAccordion = ({ children, ...props }) => (
+  const MockAccordion = ({ children, fluid, styled, ...props }) => (
     <div className="ui accordion" data-testid="accordion" {...props}>
       {children}
     </div>

@@ -438,8 +438,8 @@ class Comments extends Component {
           open={this.state.showEdit}
           onCancel={this.onEditCancel}
           onOk={this.onEditOk}
-          id={this.state.editId}
-          text={this.state.editText}
+          id={this.state.editId ?? ''}
+          text={this.state.editText ?? ''}
         />
         {permissions.can_reply && (
           <div id="comment-add-id">
