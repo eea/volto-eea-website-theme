@@ -26,6 +26,21 @@ beforeAll(
     await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
 );
 
+jest.mock('semantic-ui-react', () => {
+  const React = require('react');
+  const actual = jest.requireActual('semantic-ui-react');
+  const Dropdown = React.forwardRef(({ text, trigger, ...props }, ref) => {
+    const resolvedTrigger =
+      trigger || (typeof text === 'function' ? text() : text);
+    return <actual.Dropdown {...props} ref={ref} trigger={resolvedTrigger} />;
+  });
+  Dropdown.Menu = actual.Dropdown.Menu;
+  Dropdown.Item = actual.Dropdown.Item;
+  Dropdown.Header = actual.Dropdown.Header;
+  Dropdown.Divider = actual.Dropdown.Divider;
+  return { ...actual, Dropdown };
+});
+
 describe('Header', () => {
   it('renders a header component with homepage_inverse_view layout', () => {
     const store = mockStore({

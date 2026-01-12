@@ -383,24 +383,11 @@ describe('setupPrintView', () => {
     });
     document.body.appendChild(iframe);
 
-    // Mock the iframe to never fire load event, causing timeout
-    const originalSetTimeout = global.setTimeout;
-    let timeoutCallback;
-    global.setTimeout = jest.fn((callback, delay) => {
-      if (delay === 5000) {
-        // This is the iframe timeout
-        timeoutCallback = callback;
-      }
-      return originalSetTimeout(callback, delay);
-    });
-
     await act(async () => {
       setupPrintView(dispatch);
 
       // Trigger the iframe timeout to simulate error condition
-      if (timeoutCallback) {
-        timeoutCallback();
-      }
+      jest.advanceTimersByTime(5000);
 
       for (let i = 0; i < 10; i++) {
         jest.runAllTimers();
@@ -410,9 +397,6 @@ describe('setupPrintView', () => {
 
     // Should still call print even with timeout
     expect(window.print).toHaveBeenCalled();
-
-    // Restore original setTimeout
-    global.setTimeout = originalSetTimeout;
   });
 
   it('prevents multiple resets of print state', async () => {

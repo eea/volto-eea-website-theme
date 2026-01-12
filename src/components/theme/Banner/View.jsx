@@ -183,7 +183,7 @@ const View = (props) => {
               />
             )}
             {rssLinks?.map((rssLink, index) => (
-              <>
+              <React.Fragment key={rssLink.href || index}>
                 <Helmet
                   link={[
                     {
@@ -205,7 +205,7 @@ const View = (props) => {
                   href={rssLink.href}
                   target="_blank"
                 />
-              </>
+              </React.Fragment>
             ))}
           </>
         }
