@@ -224,11 +224,15 @@ class History extends Component {
                   {...messages.thereIsNewerVersionAt}
                   values={{
                     link: (
-                      <Link to={new URL(this.props.content.copied_to).pathname}>
+                      <a
+                        href={`${
+                          new URL(this.props.content.copied_to).pathname
+                        }/historyview`}
+                      >
                         {new URL(this.props.content.copied_to).pathname
                           .split('/')
                           .pop() || 'newer version'}
-                      </Link>
+                      </a>
                     ),
                   }}
                 />
@@ -378,13 +382,15 @@ class History extends Component {
                   {...messages.thereIsOlderVersionAt}
                   values={{
                     link: (
-                      <Link
-                        to={new URL(this.props.content.copied_from).pathname}
+                      <a
+                        href={`${
+                          new URL(this.props.content.copied_from).pathname
+                        }/historyview`}
                       >
                         {new URL(this.props.content.copied_from).pathname
                           .split('/')
                           .pop() || 'older version'}
-                      </Link>
+                      </a>
                     ),
                   }}
                 />
