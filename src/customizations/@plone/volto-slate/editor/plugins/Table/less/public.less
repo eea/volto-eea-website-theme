@@ -1,0 +1,43 @@
+@brown: #826a6a;
+
+table.slate-table {
+  width: 100%;
+  border: 0.025rem solid @brown;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  border-spacing: 30px;
+
+  th,
+  td {
+    padding: 0.5rem;
+    border: 0.05rem solid @brown;
+    vertical-align: middle;
+  }
+
+  th {
+    border-bottom: 0.15rem solid @brown;
+  }
+}
+
+table.slate-table-block {
+  th p,
+  td p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+table.slate-table-block.sortable {
+  tr th {
+    position: relative;
+    padding-right: 1.5em;
+
+    &::after {
+      position: absolute !important;
+      right: 0.5em;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
