@@ -7,7 +7,10 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'semantic-ui-react';
 import { map } from 'lodash';
-import { serializeNodes, serializeNodesToText } from '@plone/volto-slate/editor/render';
+import {
+  serializeNodes,
+  serializeNodesToText,
+} from '@plone/volto-slate/editor/render';
 import { Node } from 'slate';
 
 // TODO: loading LESS files with `volto-slate/...` paths does not work currently
@@ -38,8 +41,14 @@ const View = ({ data }) => {
         row.cells.forEach((cell, cellIndex) => {
           items[index][cellIndex] = {
             ...cell,
-            value: cell.value && Node.string({ children: cell.value }).length > 0 ? serializeNodes(cell.value) : '\u00A0',
-            valueText: cell.value && Node.string({ children: cell.value }).length > 0 ? serializeNodesToText(cell.value) : '\u00A0',
+            value:
+              cell.value && Node.string({ children: cell.value }).length > 0
+                ? serializeNodes(cell.value)
+                : '\u00A0',
+            valueText:
+              cell.value && Node.string({ children: cell.value }).length > 0
+                ? serializeNodesToText(cell.value)
+                : '\u00A0',
             align: cell.value?.[0]?.align || 'left',
           };
         });
@@ -67,14 +76,28 @@ const View = ({ data }) => {
     if (!data.table.sortable) return;
     setState({
       column: index,
-      direction: state.column !== index ? 'ascending' : state.direction === 'ascending' ? 'descending' : 'ascending',
+      direction:
+        state.column !== index
+          ? 'ascending'
+          : state.direction === 'ascending'
+          ? 'descending'
+          : 'ascending',
     });
   };
 
   return (
     <>
       {data && data.table && (
-        <Table fixed={data.table.fixed} compact={data.table.compact} basic={data.table.basic ? 'very' : false} celled={data.table.celled} inverted={data.table.inverted} striped={data.table.striped} sortable={data.table.sortable} className="slate-table-block">
+        <Table
+          fixed={data.table.fixed}
+          compact={data.table.compact}
+          basic={data.table.basic ? 'very' : false}
+          celled={data.table.celled}
+          inverted={data.table.inverted}
+          striped={data.table.striped}
+          sortable={data.table.sortable}
+          className="slate-table-block"
+        >
           {!data.table.hideHeaders ? (
             <Table.Header>
               <Table.Row>
@@ -94,9 +117,14 @@ const View = ({ data }) => {
                         handleSort(index);
                       }
                     }}
-                    aria-sort={state.column === index ? state.direction : 'none'}
+                    aria-sort={
+                      state.column === index ? state.direction : 'none'
+                    }
                   >
-                    {cell.value && Node.string({ children: cell.value }).length > 0 ? serializeNodes(cell.value) : '\u00A0'}
+                    {cell.value &&
+                    Node.string({ children: cell.value }).length > 0
+                      ? serializeNodes(cell.value)
+                      : '\u00A0'}
                   </Table.HeaderCell>
                 ))}
               </Table.Row>
@@ -108,7 +136,11 @@ const View = ({ data }) => {
             {map(sortedRows, (row) => (
               <Table.Row key={row}>
                 {map(rows[row], (cell) => (
-                  <Table.Cell key={cell.key} textAlign={cell.align} verticalAlign="middle">
+                  <Table.Cell
+                    key={cell.key}
+                    textAlign={cell.align}
+                    verticalAlign="middle"
+                  >
                     {cell.value}
                   </Table.Cell>
                 ))}
