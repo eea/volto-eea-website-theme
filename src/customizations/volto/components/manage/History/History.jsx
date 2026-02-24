@@ -234,7 +234,9 @@ class History extends Component {
                     values={{
                       link: (
                         <a
-                          href={`${getPathname(this.props.content.copied_to)}/historyview`}
+                          href={`${getPathname(
+                            this.props.content.copied_to,
+                          )}/historyview`}
                         >
                           {getPathname(this.props.content.copied_to)
                             .split('/')
@@ -391,7 +393,9 @@ class History extends Component {
                     values={{
                       link: (
                         <a
-                          href={`${getPathname(this.props.content.copied_from)}/historyview`}
+                          href={`${getPathname(
+                            this.props.content.copied_from,
+                          )}/historyview`}
                         >
                           {getPathname(this.props.content.copied_from)
                             .split('/')
