@@ -42,12 +42,11 @@ import config from '@plone/volto/registry';
 
 import backSVG from '@plone/volto/icons/back.svg';
 
-const isValidURL = (url) => {
+const getPathname = (url) => {
   try {
-    new URL(url);
-    return true;
+    return new URL(url).pathname;
   } catch {
-    return url?.startsWith('/');
+    return typeof url === 'string' && url.startsWith('/') ? url : null;
   }
 };
 
@@ -223,7 +222,7 @@ class History extends Component {
             />
           </Segment>
           {this.props.content?.copied_to &&
-            isValidURL(this.props.content.copied_to) && (
+            getPathname(this.props.content.copied_to) && (
               <Message info icon attached="top">
                 <Icon name="arrow right" />
                 <Message.Content>
@@ -235,11 +234,9 @@ class History extends Component {
                     values={{
                       link: (
                         <a
-                          href={`${
-                            new URL(this.props.content.copied_to).pathname
-                          }/historyview`}
+                          href={`${getPathname(this.props.content.copied_to)}/historyview`}
                         >
-                          {new URL(this.props.content.copied_to).pathname
+                          {getPathname(this.props.content.copied_to)
                             .split('/')
                             .pop() || 'newer version'}
                         </a>
@@ -382,7 +379,7 @@ class History extends Component {
             </Table.Body>
           </Table>
           {this.props.content?.copied_from &&
-            isValidURL(this.props.content.copied_from) && (
+            getPathname(this.props.content.copied_from) && (
               <Message warning icon attached="bottom">
                 <Icon name="arrow left" />
                 <Message.Content>
@@ -394,11 +391,9 @@ class History extends Component {
                     values={{
                       link: (
                         <a
-                          href={`${
-                            new URL(this.props.content.copied_from).pathname
-                          }/historyview`}
+                          href={`${getPathname(this.props.content.copied_from)}/historyview`}
                         >
-                          {new URL(this.props.content.copied_from).pathname
+                          {getPathname(this.props.content.copied_from)
                             .split('/')
                             .pop() || 'older version'}
                         </a>
