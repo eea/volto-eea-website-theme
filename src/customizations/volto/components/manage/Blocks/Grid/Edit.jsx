@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { useState } from 'react';
 import ContainerEdit from '@plone/volto/components/manage/Blocks/Container/Edit';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUIState } from '@plone/volto/actions/form/form';
 
 const convertTeaserToGridIfNecessary = (data) => {
   if (data?.['@type'] === 'teaserGrid')
@@ -25,7 +26,8 @@ const GridBlockEdit = (props) => {
   const columnsLength =
     data?.blocks_layout?.items?.length || data?.columns?.length || 0;
 
-  const [selectedBlock, setSelectedBlock] = useState(null);
+  const selectedBlock = useSelector((state) => state.form?.ui?.gridSelected);
+  const dispatch = useDispatch();
 
   //convert to gridBlock if necessary
   if (data?.['@type'] === 'teaserGrid') {
@@ -44,15 +46,14 @@ const GridBlockEdit = (props) => {
       // This is required to enabling a small "in-between" clickable area
       // for bringing the Grid sidebar alive once you have selected an inner block
       onClick={(e) => {
-        if (!e.block) setSelectedBlock(null);
+        if (!e.block) dispatch(setUIState({ gridSelected: null }));
       }}
       role="presentation"
     >
       <ContainerEdit
         {...props}
-        data={data}
         selectedBlock={selectedBlock}
-        setSelectedBlock={setSelectedBlock}
+        setSelectedBlock={(id) => dispatch(setUIState({ gridSelected: id }))}
         direction="horizontal"
       />
     </div>
