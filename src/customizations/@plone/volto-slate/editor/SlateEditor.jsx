@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom';
 import cx from 'classnames';
-import { isEqual, cloneDeep } from 'lodash';
+import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
 import { Transforms, Editor, Point } from 'slate'; // , Transforms
 import { Slate, Editable, ReactEditor } from 'slate-react';
 import React, { Component } from 'react'; // , useState
@@ -10,21 +11,19 @@ import config from '@plone/volto/registry';
 
 import { Element, Leaf } from './render';
 
-import withTestingFeatures from '@plone/volto-slate/editor/extensions/withTestingFeatures';
-import {
-  makeEditor,
-  toggleInlineFormat,
-  toggleMark,
-  parseDefaultSelection,
-} from '@plone/volto-slate/utils';
-import { InlineToolbar } from '@plone/volto-slate/editor/ui';
-import EditorContext from '@plone/volto-slate/editor/EditorContext';
+import withTestingFeatures from './extensions/withTestingFeatures';
+import { makeEditor } from '@plone/volto-slate/utils/editor';
+import { toggleInlineFormat } from '@plone/volto-slate/utils/blocks';
+import { toggleMark } from '@plone/volto-slate/utils/marks';
+import { parseDefaultSelection } from '@plone/volto-slate/utils/selection';
+import { InlineToolbar } from './ui';
+import EditorContext from './EditorContext';
 
 import isHotkey from 'is-hotkey';
 
-import '@plone/volto-slate/editor/less/editor.less';
+import './less/editor.less';
 
-import Toolbar from '@plone/volto-slate/editor/ui/Toolbar';
+import Toolbar from './ui/Toolbar';
 
 const handleHotKeys = (editor, event, config) => {
   let wasHotkey = false;
@@ -239,6 +238,7 @@ class SlateEditor extends Component {
 
   render() {
     const {
+      id,
       selected,
       placeholder,
       onKeyDown,
@@ -368,6 +368,7 @@ class SlateEditor extends Component {
                 onKeyDown && onKeyDown({ editor, event });
               }}
               {...editableProps}
+              aria-labelledby={`field-${id}`}
             />
             {selected &&
               slateSettings.persistentHelpers.map((Helper, i) => {
