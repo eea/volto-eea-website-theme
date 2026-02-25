@@ -43,8 +43,8 @@ function Edit(props) {
       const url = Array.isArray(image)
         ? image?.[0]?.['@id']
         : image
-          ? image['@id'] || image
-          : '';
+        ? image['@id'] || image
+        : '';
 
       props.onChangeBlock(props.block, {
         ...props.data,
@@ -106,25 +106,25 @@ function Edit(props) {
                   data.image_scales
                     ? undefined
                     : isInternalURL(data.url)
-                      ? // Backwards compat in the case that the block is storing the full server URL
-                        (() => {
-                          if (data.size === 'l')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/large`;
-                          if (data.size === 'm')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/preview`;
-                          if (data.size === 's')
-                            return `${flattenToAppURL(
-                              data.url,
-                            )}/@@images/image/mini`;
+                    ? // Backwards compat in the case that the block is storing the full server URL
+                      (() => {
+                        if (data.size === 'l')
                           return `${flattenToAppURL(
                             data.url,
                           )}/@@images/image/large`;
-                        })()
-                      : data.url
+                        if (data.size === 'm')
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/preview`;
+                        if (data.size === 's')
+                          return `${flattenToAppURL(
+                            data.url,
+                          )}/@@images/image/mini`;
+                        return `${flattenToAppURL(
+                          data.url,
+                        )}/@@images/image/large`;
+                      })()
+                    : data.url
                 }
                 sizes={config.blocks.blocksConfig.image.getSizes(data)}
                 alt={data.alt || ''}
