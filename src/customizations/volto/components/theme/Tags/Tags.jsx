@@ -8,15 +8,22 @@ import PropTypes from 'prop-types';
 import TagList from '@eeacms/volto-eea-design-system/ui/TagList/TagList';
 import Tag from '@eeacms/volto-eea-design-system/ui/Tag/Tag';
 import { Container } from 'semantic-ui-react';
+import config from '@plone/registry';
 
 /**
  * Tags component class.
  * @function Tags
- * @param {array} tags Array of tags.
+ * @param {Object} props Component properties.
+ * @param {Object} props.content Content object that may contain subjects.
+ * @param {Array} [props.content.subjects] Optional array of tags (subjects).
  * @returns {string} Markup of the component.
  */
-const Tags = ({ tags }) =>
-  tags && tags.length > 0 ? (
+const Tags = ({ content }) => {
+  const tags = content?.subjects || [];
+
+  if (!config.settings.showTags || !tags.length) return null;
+
+  return (
     <Container className="eea">
       <TagList className="right">
         <TagList.Content>
@@ -28,9 +35,8 @@ const Tags = ({ tags }) =>
         </TagList.Content>
       </TagList>
     </Container>
-  ) : (
-    ''
   );
+};
 
 /**
  * Property types.
@@ -38,7 +44,9 @@ const Tags = ({ tags }) =>
  * @static
  */
 Tags.propTypes = {
-  tags: PropTypes.arrayOf(PropTypes.string),
+  content: PropTypes.shape({
+    subjects: PropTypes.arrayOf(PropTypes.string),
+  }),
 };
 
 /**
@@ -47,7 +55,9 @@ Tags.propTypes = {
  * @static
  */
 Tags.defaultProps = {
-  tags: null,
+  content: {
+    subjects: [],
+  },
 };
 
 export default Tags;

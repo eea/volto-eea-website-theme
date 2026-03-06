@@ -18,7 +18,7 @@ import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
 import config from '@plone/volto/registry';
-import { compose } from 'recompose';
+import { compose } from 'redux';
 
 import cx from 'classnames';
 import loadable from '@loadable/component';

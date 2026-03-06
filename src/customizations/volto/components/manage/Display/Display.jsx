@@ -1,19 +1,21 @@
-import React, { Component, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { compose } from 'redux';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 
 import jwtDecode from 'jwt-decode';
+import { getSchema } from '@plone/volto/actions/schema/schema';
 import {
-  getSchema,
-  getUser,
   updateContent,
   getContent,
-} from '@plone/volto/actions';
-import { getLayoutFieldname } from '@plone/volto/helpers';
-import { FormFieldWrapper, Icon } from '@plone/volto/components';
-import { defineMessages, injectIntl } from 'react-intl';
+} from '@plone/volto/actions/content/content';
+import { getUser } from '@plone/volto/actions';
+import { getLayoutFieldname } from '@plone/volto/helpers/Content/Content';
+import { usePrevious } from '@plone/volto/helpers/Utils/usePrevious';
+import { FormFieldWrapper } from '@plone/volto/components/manage/Widgets';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
+import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
 import downSVG from '@plone/volto/icons/down-key.svg';
@@ -101,8 +103,8 @@ const customSelectStyles = {
     color: state.isSelected
       ? '#007bc1'
       : state.isFocused
-      ? '#4a4a4a'
-      : 'inherit',
+        ? '#4a4a4a'
+        : 'inherit',
     ':active': {
       backgroundColor: null,
     },
@@ -115,192 +117,131 @@ const customSelectStyles = {
   }),
 };
 
-/**
- * Display container class.
- * @class Display
- * @extends Component
- */
-class DisplaySelect extends Component {
-  /**
-   * Property types.
-   * @property {Object} propTypes Property types.
-   * @static
-   */
-  static propTypes = {
-    getSchema: PropTypes.func.isRequired,
-    updateContent: PropTypes.func.isRequired,
-    getContent: PropTypes.func.isRequired,
-    loaded: PropTypes.bool.isRequired,
-    pathname: PropTypes.string.isRequired,
-    layouts: PropTypes.arrayOf(PropTypes.string),
-    layout: PropTypes.string,
-    type: PropTypes.string.isRequired,
-  };
-
-  /**
-   * Default properties
-   * @property {Object} defaultProps Default properties.
-   * @static
-   */
-  static defaultProps = {
-    layouts: [],
-    layout: '',
-    rolesWhoCanChangeLayout: [],
-  };
-
-  state = {
-    hasMatchingRole: false,
-    selectedOption: {
-      value: this.props.layout,
-      label: config.views.layoutViewsNamesMapping?.[this.props.layout]
-        ? this.props.intl.formatMessage({
-            id: config.views.layoutViewsNamesMapping?.[this.props.layout],
-            defaultMessage:
-              config.views.layoutViewsNamesMapping?.[this.props.layout],
-          })
-        : this.props.layout,
-    },
-  };
-
-  componentDidMount() {
-    this.props.getSchema(this.props.type);
-  }
-
-  UNSAFE_componentWillMount() {
-    if (!this.props.rolesWhoCanChangeLayout.length) {
-      this.props.rolesWhoCanChangeLayout.push(
-        ...(config?.settings?.eea?.rolesWhoCanChangeLayout || []),
-      );
-    }
-    if (!this.props.layouts.length) {
-      this.props.getSchema(this.props.type);
-    }
-    if (Object.keys(this.props.user).length === 0) {
-      this.props.getUser(this.props.userId);
-    } else {
-      const hasMatchingRole = this.props.user.roles.some((role) =>
-        this.props.rolesWhoCanChangeLayout.includes(role),
-      );
-      if (hasMatchingRole !== this.state.hasMatchingRole) {
-        this.setState({ hasMatchingRole });
-      }
-    }
-  }
-
-  /**
-   * Component will receive props
-   * @method componentWillReceiveProps
-   * @param {Object} nextProps Next properties
-   * @returns {undefined}
-   */
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.pathname !== this.props.pathname) {
-      this.props.getSchema(nextProps.type);
-    }
-    if (!this.props.loaded && nextProps.loaded) {
-      this.props.getContent(nextProps.pathname);
-    }
-
-    if (Object.keys(nextProps.user).length !== 0) {
-      const hasMatchingRole = nextProps.user.roles.some((role) =>
-        this.props.rolesWhoCanChangeLayout.includes(role),
-      );
-      if (hasMatchingRole !== this.state.hasMatchingRole) {
-        this.setState({ hasMatchingRole });
-      }
-    }
-  }
-
-  /**
-   * On set layout handler
-   * @method setLayout
-   * @param {Object} event Event object
-   * @returns {undefined}
-   */
-  setLayout = (selectedOption) => {
-    this.props.updateContent(this.props.pathname, {
-      layout: selectedOption.value,
-    });
-    this.setState({ selectedOption });
-  };
-
-  selectValue = (option) => (
-    <Fragment>
-      <span className="Select-value-label">{option.label}</span>
-    </Fragment>
+const DisplaySelect = (props) => {
+  const { pathname } = props;
+  const intl = useIntl();
+  const dispatch = useDispatch();
+  const loaded = useSelector((state) => state.content.update.loaded);
+  const layouts = useSelector((state) =>
+    state.schema.schema ? state.schema.schema.layouts : [],
+  );
+  const layout = useSelector((state) =>
+    state.content.data
+      ? state.content.data[getLayoutFieldname(state.content.data)]
+      : '',
+  );
+  const type = useSelector((state) =>
+    state.content.data ? state.content.data['@type'] : '',
   );
 
-  optionRenderer = (option) => (
-    <Fragment>
-      <span style={{ marginRight: 'auto' }}>{option.label}</span>
-      <Icon name={checkSVG} size="24px" />
-    </Fragment>
-  );
+  // EEA role-based access control
+  const token = useSelector((state) => state.userSession.token);
+  const userId = token ? jwtDecode(token).sub : '';
+  const user = useSelector((state) => state.users.user);
+  const rolesWhoCanChangeLayout =
+    config?.settings?.eea?.rolesWhoCanChangeLayout || [];
 
-  render() {
-    if (!this.state.hasMatchingRole) {
-      return null;
+  const [hasMatchingRole, setHasMatchingRole] = useState(false);
+
+  const layoutMappingId = config.views.layoutViewsNamesMapping?.[layout];
+  const [selectedOption, setselectedOption] = useState({
+    value: layout,
+    label: layoutMappingId
+      ? intl.formatMessage({
+          id: layoutMappingId,
+          defaultMessage: layoutMappingId,
+        })
+      : layout,
+  });
+
+  const prevloaded = usePrevious(loaded);
+  const prevpathname = usePrevious(pathname);
+
+  // Fetch user data if not already loaded
+  useEffect(() => {
+    if (userId && Object.keys(user).length === 0) {
+      dispatch(getUser(userId));
     }
-    const { selectedOption } = this.state;
-    const Select = this.props.reactSelect.default;
-    const layoutsNames = config.views.layoutViewsNamesMapping;
-    const layoutOptions = this.props.layouts
-      .filter(
-        (layout) =>
-          Object.keys(config.views.contentTypesViews).includes(layout) ||
-          Object.keys(config.views.layoutViews).includes(layout),
-      )
-      .map((item) => ({
-        value: item,
-        label:
-          this.props.intl.formatMessage({
-            id: layoutsNames[item],
-            defaultMessage: layoutsNames[item],
-          }) || item,
-      }));
+  }, [dispatch, userId, user]);
 
-    return layoutOptions?.length > 1 ? (
-      <FormFieldWrapper
-        id="display-select"
-        title={this.props.intl.formatMessage(messages.Viewmode)}
-        {...this.props}
-      >
-        <Select
-          name="display-select"
-          className="react-select-container"
-          classNamePrefix="react-select"
-          options={layoutOptions}
-          styles={customSelectStyles}
-          theme={selectTheme}
-          components={{ DropdownIndicator, Option }}
-          onChange={this.setLayout}
-          defaultValue={selectedOption}
-          isSearchable={false}
-        />
-      </FormFieldWrapper>
-    ) : null;
+  // Check role match when user data changes
+  useEffect(() => {
+    if (Object.keys(user).length !== 0 && rolesWhoCanChangeLayout.length > 0) {
+      const matchingRole = user.roles?.some((role) =>
+        rolesWhoCanChangeLayout.includes(role),
+      );
+      setHasMatchingRole(!!matchingRole);
+    }
+  }, [user, rolesWhoCanChangeLayout]);
+
+  useEffect(() => {
+    dispatch(getSchema(type));
+  }, [dispatch, type]);
+
+  useEffect(() => {
+    if (pathname !== prevpathname) {
+      dispatch(getSchema(type));
+    }
+    if (!prevloaded && loaded) {
+      dispatch(getContent(pathname));
+    }
+  }, [dispatch, type, pathname, prevpathname, prevloaded, loaded]);
+
+  const setLayout = (selectedOption) => {
+    dispatch(
+      updateContent(pathname, {
+        layout: selectedOption.value,
+      }),
+    );
+    setselectedOption(selectedOption);
+  };
+
+  // EEA: hide display selector if user doesn't have matching roles
+  if (!hasMatchingRole) {
+    return null;
   }
-}
 
-export default compose(
-  injectIntl,
-  injectLazyLibs('reactSelect'),
-  connect(
-    (state) => ({
-      loaded: state.content.update.loaded,
-      layouts: state.schema.schema ? state.schema.schema.layouts : [],
-      layout: state.content.data
-        ? state.content.data[getLayoutFieldname(state.content.data)]
-        : '',
-      layout_fieldname: state.content.data
-        ? getLayoutFieldname(state.content.data)
-        : '',
-      type: state.content.data ? state.content.data['@type'] : '',
-      user: state.users.user,
-      userId: state.userSession.token
-        ? jwtDecode(state.userSession.token).sub
-        : '',
-    }),
-    { getSchema, getUser, updateContent, getContent },
-  ),
-)(DisplaySelect);
+  const Select = props.reactSelect.default;
+  const layoutsNames = config.views.layoutViewsNamesMapping;
+  const layoutOptions = layouts
+    .filter(
+      (layout) =>
+        Object.keys(config.views.contentTypesViews).includes(layout) ||
+        Object.keys(config.views.layoutViews).includes(layout),
+    )
+    .map((item) => ({
+      value: item,
+      label:
+        intl.formatMessage({
+          id: layoutsNames[item],
+          defaultMessage: layoutsNames[item],
+        }) || item,
+    }));
+
+  return layoutOptions?.length > 1 ? (
+    <FormFieldWrapper
+      id="display-select"
+      title={intl.formatMessage(messages.Viewmode)}
+      {...props}
+    >
+      <Select
+        name="display-select"
+        className="react-select-container"
+        classNamePrefix="react-select"
+        options={layoutOptions}
+        styles={customSelectStyles}
+        theme={selectTheme}
+        components={{ DropdownIndicator, Option }}
+        onChange={setLayout}
+        defaultValue={selectedOption}
+        isSearchable={false}
+      />
+    </FormFieldWrapper>
+  ) : null;
+};
+
+DisplaySelect.propTypes = {
+  pathname: PropTypes.string.isRequired,
+};
+
+export default compose(injectLazyLibs('reactSelect'))(DisplaySelect);

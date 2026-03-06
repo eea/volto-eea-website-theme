@@ -6,21 +6,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
-import { compact, isArray, isEmpty, remove } from 'lodash';
+import compact from 'lodash/compact';
+import includes from 'lodash/includes';
+import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
+import remove from 'lodash/remove';
 import { connect } from 'react-redux';
 import { Label, Popup, Button } from 'semantic-ui-react';
 import {
   flattenToAppURL,
   isInternalURL,
-  isUrl,
   normalizeUrl,
   removeProtocol,
 } from '@plone/volto/helpers/Url/Url';
+import { urlValidator } from '@plone/volto/helpers/FormValidation/validators';
 import { searchContent } from '@plone/volto/actions/search/search';
 import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrowser';
 import { defineMessages, injectIntl } from 'react-intl';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
+import config from '@plone/volto/registry';
 
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -28,6 +33,7 @@ import homeSVG from '@plone/volto/icons/home.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import blankSVG from '@plone/volto/icons/blank.svg';
 import { withRouter } from 'react-router';
+import Image from '@plone/volto/components/theme/Image/Image';
 
 const messages = defineMessages({
   placeholder: {
@@ -76,6 +82,7 @@ export class ObjectBrowserWidgetComponent extends Component {
     openObjectBrowser: PropTypes.func.isRequired,
     allowExternals: PropTypes.bool,
     placeholder: PropTypes.string,
+    onlyFolderishSelectable: PropTypes.bool,
   };
 
   /**
@@ -92,11 +99,13 @@ export class ObjectBrowserWidgetComponent extends Component {
     return: 'multiple',
     initialPath: '',
     allowExternals: false,
+    onlyFolderishSelectable: false,
   };
 
   state = {
     manualLinkInput: '',
     validURL: false,
+    errors: [],
   };
 
   constructor(props) {
@@ -105,7 +114,7 @@ export class ObjectBrowserWidgetComponent extends Component {
     this.placeholderRef = React.createRef();
   }
   renderLabel(item) {
-    // show linkWithHash if available, otherwise @id
+    // EEA customization: show linkWithHash if available, otherwise @id
     const href = item['linkWithHash'] || item['@id'];
     return (
       <Popup
@@ -123,7 +132,16 @@ export class ObjectBrowserWidgetComponent extends Component {
         }
         trigger={
           <Label>
-            <div className="item-title">{item.title}</div>
+            <div className="item-title">
+              {includes(config.settings.imageObjects, item['@type']) ? (
+                <Image
+                  className="small ui image"
+                  src={`${item['@id']}/@@images/image/thumb`}
+                />
+              ) : (
+                item.title
+              )}
+            </div>
             <div>
               {this.props.mode === 'multiple' && (
                 <Icon
@@ -164,7 +182,6 @@ export class ObjectBrowserWidgetComponent extends Component {
     }
     let exists = false;
     let index = -1;
-
     value.forEach((_item, _index) => {
       if (flattenToAppURL(_item['@id']) === flattenToAppURL(item['@id'])) {
         exists = true;
@@ -183,7 +200,7 @@ export class ObjectBrowserWidgetComponent extends Component {
           ...this.props.selectedItemAttrs,
           // Add the required attributes for the widget to work
           '@id',
-          'linkWithHash', // add linkWithHash to the allowed attributes
+          'linkWithHash', // EEA customization: add linkWithHash to the allowed attributes
           'title',
         ];
         resultantItem = Object.keys(item)
@@ -218,8 +235,17 @@ export class ObjectBrowserWidgetComponent extends Component {
   };
 
   validateManualLink = (url) => {
-    if (this.props.allowExternals) {
-      return isUrl(url);
+    if (this.props.allowExternals && !url.startsWith('/')) {
+      const error = urlValidator({
+        value: url,
+        formatMessage: this.props.intl.formatMessage,
+      });
+      if (error && url !== '') {
+        this.setState({ errors: [error] });
+      } else {
+        this.setState({ errors: [] });
+      }
+      return !Boolean(error);
     } else {
       return isInternalURL(url);
     }
@@ -237,6 +263,7 @@ export class ObjectBrowserWidgetComponent extends Component {
   onSubmitManualLink = () => {
     if (this.validateManualLink(this.state.manualLinkInput)) {
       if (isInternalURL(this.state.manualLinkInput)) {
+        // EEA customization: split hash from the link
         const [link, hash] = this.getHashAndLinkFromUrl(
           this.state.manualLinkInput,
         );
@@ -256,7 +283,7 @@ export class ObjectBrowserWidgetComponent extends Component {
           )
           .then((resp) => {
             if (resp.items?.length > 0) {
-              // if there is a hash within the url, add it to the item as linkWithHash
+              // EEA customization: if there is a hash within the url, add it to the item as linkWithHash
               if (hash) {
                 resp.items[0]['linkWithHash'] = `${relative_link}#${hash}`;
               }
@@ -309,6 +336,9 @@ export class ObjectBrowserWidgetComponent extends Component {
       maximumSelectionSize:
         this.props.widgetOptions?.pattern_options?.maximumSelectionSize ||
         this.props.maximumSelectionSize,
+      onlyFolderishSelectable:
+        this.props.widgetOptions?.pattern_options?.onlyFolderishSelectable ||
+        this.props.onlyFolderishSelectable,
     });
   };
 
@@ -349,6 +379,8 @@ export class ObjectBrowserWidgetComponent extends Component {
     return (
       <FormFieldWrapper
         {...this.props}
+        // At the moment, OBW handles its own errors and validation
+        error={this.state.errors}
         className={description ? 'help text' : 'text'}
       >
         <div
@@ -377,6 +409,7 @@ export class ObjectBrowserWidgetComponent extends Component {
               items.length === 0 &&
               this.props.mode !== 'multiple' && (
                 <input
+                  onBlur={this.onSubmitManualLink}
                   onKeyDown={this.onKeyDownManualLink}
                   onChange={this.onManualLinkInput}
                   value={this.state.manualLinkInput}

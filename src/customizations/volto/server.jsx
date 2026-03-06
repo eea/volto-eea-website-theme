@@ -8,7 +8,7 @@ import express from 'express';
 import { renderToString } from 'react-dom/server';
 import { createMemoryHistory } from 'history';
 import { parse as parseUrl } from 'url';
-import { keys } from 'lodash';
+import keys from 'lodash/keys';
 import locale from 'locale';
 import { detect } from 'detect-browser';
 import path from 'path';
@@ -19,31 +19,28 @@ import cookiesMiddleware from 'universal-cookie-express';
 import debug from 'debug';
 import crypto from 'crypto';
 
-import routes from '@plone/volto/routes';
+import routes from '@root/routes';
 import config from '@plone/volto/registry';
 
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import Html from '@plone/volto/helpers/Html/Html';
+import Api from '@plone/volto/helpers/Api/Api';
+import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
 import {
-  flattenToAppURL,
-  Html,
-  Api,
-  persistAuthToken,
   toBackendLang,
   toGettextLang,
   toReactIntlLang,
-} from '@plone/volto/helpers';
-import { changeLanguage } from '@plone/volto/actions';
+} from '@plone/volto/helpers/Utils/Utils';
+import { changeLanguage } from '@plone/volto/actions/language/language';
 
 import userSession from '@plone/volto/reducers/userSession/userSession';
 
 import ErrorPage from '@plone/volto/error';
 
-import languages from '@plone/volto/constants/Languages';
+import languages from '@plone/volto/constants/Languages.cjs';
 
 import configureStore from '@plone/volto/store';
-import {
-  ReduxAsyncConnect,
-  loadOnServer,
-} from '@plone/volto/helpers/AsyncConnect';
+import { ReduxAsyncConnect, loadOnServer } from './helpers/AsyncConnect';
 
 let locales = {};
 const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
@@ -51,7 +48,9 @@ const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
 if (config.settings) {
   config.settings.supportedLanguages.forEach((lang) => {
     const langFileName = toGettextLang(lang);
-    import('@root/../locales/' + langFileName + '.json').then((locale) => {
+    import(
+      /* @vite-ignore */ '@root/../locales/' + langFileName + '.json'
+    ).then((locale) => {
       locales = { ...locales, [toReactIntlLang(lang)]: locale.default };
     });
   });
@@ -98,22 +97,17 @@ server.use(function (err, req, res, next) {
       'Cache-Control': 'public, max-age=60, no-transform',
     });
 
-    /* Displays error in console
-     * TODO:
-     * - get ignored codes from Plone error_log
-     */
     const ignoredErrors = [301, 302, 401, 404];
     if (!ignoredErrors.includes(err.status)) console.error(err);
 
     res
-      .status(err.status || 500) // If error happens in Volto code itself error status is undefined
+      .status(err.status || 500)
       .send(`<!doctype html> ${renderToString(errorPage)}`);
   }
 });
 
 function buildCSPHeader(opts, nonce) {
   if (typeof opts === 'string') {
-    //CSP_HEADER
     return opts.replaceAll('{nonce}', `'nonce-${nonce}'`);
   }
   return Object.keys(opts)
@@ -145,7 +139,6 @@ function setupServer(req, res, next) {
       .toString(),
   );
 
-  // Minimum initial state for the fake Redux store instance
   const initialState = {
     intl: {
       defaultLocale: 'en',
@@ -158,13 +151,11 @@ function setupServer(req, res, next) {
     initialEntries: [req.url],
   });
 
-  // Create a fake Redux store instance for the `errorHandler` to render
-  // and for being used by the rest of the middlewares, if required
   const store = configureStore(initialState, history, api);
 
   function errorHandler(error) {
     const ErrorComponent =
-      config.getComponent('ErrorBoundary').component || null;
+      config.getComponent('ErrorBoundary')?.component || null;
     const errorPage = (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>
@@ -181,15 +172,11 @@ function setupServer(req, res, next) {
       'Cache-Control': 'public, max-age=60, no-transform',
     });
 
-    /* Displays error in console
-     * TODO:
-     * - get ignored codes from Plone error_log
-     */
     const ignoredErrors = [301, 302, 401, 404];
     if (!ignoredErrors.includes(error.status)) console.error(error);
 
     res
-      .status(error.status || 500) // If error happens in Volto code itself error status is undefined
+      .status(error.status || 500)
       .send(`<!doctype html> ${renderToString(errorPage)}`);
   }
 
@@ -248,12 +235,10 @@ server.get('/*', (req, res) => {
     initialEntries: [req.url],
   });
 
-  // Create a new Redux store instance
   const store = configureStore(initialState, history, api);
 
   persistAuthToken(store, req);
 
-  // @loadable/server extractor
   const buildDir = process.env.BUILD_DIR || 'build';
   const extractor = new ChunkExtractor({
     statsFile: path.resolve(path.join(buildDir, 'loadable-stats.json')),
@@ -270,13 +255,6 @@ server.get('/*', (req, res) => {
         config.settings.defaultLanguage ||
         req.headers['accept-language'];
 
-      // The content info is in the store at this point thanks to the asynconnect
-      // features, then we can force the current language info into the store when
-      // coming from an SSR request
-
-      // TODO: there is a bug here with content that, for any reason, doesn't
-      // present the language token field, for some reason. In this case, we
-      // should follow the cookie rather then switching the language
       const contentLang = store.getState().content.get?.error
         ? initialLang
         : store.getState().content.data?.language?.token ||
@@ -306,8 +284,6 @@ server.get('/*', (req, res) => {
       const readCriticalCss =
         config.settings.serverConfig.readCriticalCss || defaultReadCriticalCss;
 
-      // If we are showing an "old browser" warning,
-      // make sure it doesn't get cached in a shared cache
       const browserdetect = store.getState().browserdetect;
       if (config.settings.notSupportedBrowsers.includes(browserdetect?.name)) {
         res.set({
@@ -315,52 +291,56 @@ server.get('/*', (req, res) => {
         });
       }
 
+      const sendHtmlResponse = (
+        res,
+        statusCode,
+        extractor,
+        markup,
+        store,
+        req,
+        config,
+        extraProps = {},
+      ) => {
+        res.status(statusCode).send(
+          `<!doctype html>
+        ${renderToString(
+          <Html
+            extractor={extractor}
+            nonce={nonce}
+            markup={markup}
+            store={store}
+            criticalCss={readCriticalCss(req)}
+            apiPath={res.locals.detectedHost || config.settings.apiPath}
+            publicURL={res.locals.detectedHost || config.settings.publicURL}
+            {...extraProps}
+          />,
+        )}
+      `,
+        );
+      };
+
       if (context.url) {
         res.redirect(flattenToAppURL(context.url));
       } else if (context.error_code) {
         res.set({
           'Cache-Control': 'no-cache',
         });
-
-        res.status(context.error_code).send(
-          `<!doctype html>
-              ${renderToString(
-                <Html
-                  extractor={extractor}
-                  nonce={nonce}
-                  markup={markup}
-                  store={store}
-                  extractScripts={
-                    config.settings.serverConfig.extractScripts?.errorPages ||
-                    process.env.NODE_ENV !== 'production'
-                  }
-                  criticalCss={readCriticalCss(req)}
-                  apiPath={res.locals.detectedHost || config.settings.apiPath}
-                  publicURL={
-                    res.locals.detectedHost || config.settings.publicURL
-                  }
-                />,
-              )}
-            `,
+        sendHtmlResponse(
+          res,
+          context.error_code,
+          extractor,
+          markup,
+          store,
+          req,
+          config,
+          {
+            extractScripts:
+              config.settings.serverConfig.extractScripts?.errorPages ||
+              process.env.NODE_ENV !== 'production',
+          },
         );
       } else {
-        res.status(200).send(
-          `<!doctype html>
-              ${renderToString(
-                <Html
-                  extractor={extractor}
-                  nonce={nonce}
-                  markup={markup}
-                  store={store}
-                  criticalCss={readCriticalCss(req)}
-                  apiPath={res.locals.detectedHost || config.settings.apiPath}
-                  publicURL={
-                    res.locals.detectedHost || config.settings.publicURL
-                  }
-                />,
-              )}
-            `,
-        );
+        sendHtmlResponse(res, 200, extractor, markup, store, req, config);
       }
     }, errorHandler)
     .catch(errorHandler);
@@ -378,7 +358,6 @@ export const defaultReadCriticalCss = () => {
   return readFileSync(criticalCssPath, { encoding: 'utf-8' });
 };
 
-// Exposed for the console bootstrap info messages
 server.apiPath = config.settings.apiPath;
 server.devProxyToApiPath = config.settings.devProxyToApiPath;
 server.proxyRewriteTarget = config.settings.proxyRewriteTarget;

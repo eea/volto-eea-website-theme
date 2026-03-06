@@ -1,11 +1,13 @@
 /*
  * UniversalLink
  * @module components/UniversalLink
- * Removed noreferrer from rel attribute
+ * EEA Customizations:
+ *  - Removed noreferrer from rel attribute (external links use rel="noopener")
+ *  - linkWithHash support from ObjectBrowserWidget
+ *  - Download logic preserved for authenticated users when download prop is set
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { HashLink as Link } from 'react-router-hash-link';
 import { useSelector } from 'react-redux';
 import {
@@ -13,150 +15,162 @@ import {
   isInternalURL,
   URLUtils,
 } from '@plone/volto/helpers/Url/Url';
-
 import config from '@plone/volto/registry';
+import cx from 'classnames';
 
-const UniversalLink = ({
-  href,
-  item = null,
-  openLinkInNewTab,
-  download = false,
-  children,
-  className = null,
-  title = null,
-  ...props
-}) => {
-  const token = useSelector((state) => state.userSession?.token);
+export const __test = {
+  renderCounter: () => {},
+};
 
-  let url = href;
-
-  if (!href && item) {
-    if (!item['@id']) {
-      // eslint-disable-next-line no-console
-      console.error(
-        'Invalid item passed to UniversalLink',
-        item,
-        props,
-        children,
-      );
-      url = '#';
-    } else {
-      //case: generic item
-      url = flattenToAppURL(item['@id']);
-
-      //case: item like a Link
-      let remoteUrl = item.remoteUrl || item.getRemoteUrl;
-      if (!token && remoteUrl) {
-        url = remoteUrl;
-      }
-
-      //case: item of type 'File'
-      if (
-        download &&
-        config.settings.downloadableObjects.includes(item['@type'])
-      ) {
-        url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
-      }
-
-      if (
-        !token &&
-        config.settings.viewableInBrowserObjects.includes(item['@type'])
-      ) {
-        url = `${url}/@@display-file/file`;
-      }
-    }
+export function getUrl(props, token, item, children) {
+  if ('href' in props && typeof props.href === 'string') {
+    return props.href;
   }
 
-  if (download && isInternalURL(url)) {
+  if (!item || item['@id'] === '') return config.settings.publicURL;
+  if (!item['@id']) {
+    // eslint-disable-next-line no-console
+    console.error(
+      'Invalid item passed to UniversalLink',
+      item,
+      props,
+      children,
+    );
+    return '#';
+  }
+
+  let url = flattenToAppURL(item['@id']);
+  const remoteUrl = item.remoteUrl || item.getRemoteUrl;
+
+  if (!token && remoteUrl) {
+    url = remoteUrl;
+  }
+
+  // EEA: Keep download URL append for authenticated users when download prop
+  // is explicitly set. Upstream only applies this when !token.
+  if (
+    (props.download ||
+      (!token &&
+        item['@type'] &&
+        config.settings.downloadableObjects.includes(item['@type'])))
+  ) {
     url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
   }
 
-  const isExternal = !isInternalURL(url);
-  const isDownload =
-    (!isExternal && url && url.includes('@@download')) || download;
-
-  const isDisplayFile =
-    (!isExternal && url.includes('@@display-file')) || false;
-  const checkedURL = URLUtils.checkAndNormalizeUrl(url);
-
-  // we can receive an item with a linkWithHash property set from ObjectBrowserWidget
-  // if so, we use that instead of the url prop
-  url = (item && item['linkWithHash']) || checkedURL.url;
-  let tag = (
-    <Link
-      to={flattenToAppURL(url)}
-      target={openLinkInNewTab ?? false ? '_blank' : null}
-      title={title}
-      className={className}
-      smooth={config.settings.hashLinkSmoothScroll}
-      {...props}
-    >
-      {children}
-    </Link>
-  );
-
-  if (isExternal) {
-    tag = (
-      <a
-        href={url}
-        title={title}
-        target={
-          !checkedURL.isMail &&
-          !checkedURL.isTelephone &&
-          !(openLinkInNewTab === false)
-            ? '_blank'
-            : null
-        }
-        rel="noopener"
-        className={className}
-        {...props}
-      >
-        {children}
-      </a>
-    );
-  } else if (isDownload) {
-    tag = (
-      <a
-        href={flattenToAppURL(url)}
-        download
-        title={title}
-        className={className}
-        {...props}
-      >
-        {children}
-      </a>
-    );
-  } else if (isDisplayFile) {
-    tag = (
-      <a
-        href={flattenToAppURL(url)}
-        title={title}
-        target={!(openLinkInNewTab === false) ? '_blank' : null}
-        rel="noopener"
-        className={className}
-        {...props}
-      >
-        {children}
-      </a>
-    );
+  if (
+    !token &&
+    item['@type'] &&
+    config.settings.viewableInBrowserObjects.includes(item['@type'])
+  ) {
+    url = `${url}/@@display-file/file`;
   }
-  return tag;
-};
 
-UniversalLink.propTypes = {
-  href: PropTypes.string,
-  openLinkInNewTab: PropTypes.bool,
-  download: PropTypes.bool,
-  className: PropTypes.string,
-  title: PropTypes.string,
-  item: PropTypes.shape({
-    '@id': PropTypes.string.isRequired,
-    remoteUrl: PropTypes.string, //of plone @type 'Link'
+  return url;
+}
+
+const UniversalLink = React.memo(
+  React.forwardRef(function UniversalLink(props, ref) {
+    const {
+      openLinkInNewTab,
+      download,
+      children,
+      className,
+      title,
+      smooth,
+      onClick,
+      onKeyDown,
+      item,
+      ...rest
+    } = props;
+    __test.renderCounter();
+
+    const token = useSelector((state) => state.userSession?.token);
+
+    let url = getUrl(props, token, item, children);
+
+    // EEA: download support for href-based internal URLs
+    if (download && isInternalURL(url)) {
+      url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
+    }
+
+    const isExternal = !isInternalURL(url);
+
+    const isDownload =
+      (!isExternal && url.includes('@@download')) || download;
+    const isDisplayFile =
+      (!isExternal && url.includes('@@display-file')) || false;
+
+    const checkedURL = URLUtils.checkAndNormalizeUrl(url);
+
+    // EEA: linkWithHash support - use item's linkWithHash if available
+    url = (item && item['linkWithHash']) || checkedURL.url;
+
+    let tag = (
+      <Link
+        to={flattenToAppURL(url)}
+        target={openLinkInNewTab ?? false ? '_blank' : undefined}
+        title={title}
+        className={className}
+        onClick={onClick}
+        smooth={smooth ?? config.settings.hashLinkSmoothScroll}
+        ref={ref}
+        {...rest}
+      >
+        {children}
+      </Link>
+    );
+
+    if (isExternal) {
+      const isTelephoneOrMail = checkedURL.isMail || checkedURL.isTelephone;
+      const getClassName = cx({ external: !isTelephoneOrMail }, className);
+
+      tag = (
+        <a
+          href={url}
+          title={title}
+          target={
+            !isTelephoneOrMail && !(openLinkInNewTab === false)
+              ? '_blank'
+              : undefined
+          }
+          rel="noopener"
+          {...rest}
+          className={getClassName}
+          ref={ref}
+        >
+          {children}
+        </a>
+      );
+    } else if (isDownload) {
+      tag = (
+        <a
+          href={flattenToAppURL(url)}
+          download
+          title={title}
+          {...rest}
+          className={className}
+          ref={ref}
+        >
+          {children}
+        </a>
+      );
+    } else if (isDisplayFile) {
+      tag = (
+        <a
+          title={title}
+          target="_blank"
+          rel="noopener"
+          {...rest}
+          href={flattenToAppURL(url)}
+          className={className}
+          ref={ref}
+        >
+          {children}
+        </a>
+      );
+    }
+    return tag;
   }),
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]),
-};
+);
 
 export default UniversalLink;
