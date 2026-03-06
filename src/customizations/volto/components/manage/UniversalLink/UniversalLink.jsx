@@ -49,10 +49,10 @@ export function getUrl(props, token, item, children) {
   // EEA: Keep download URL append for authenticated users when download prop
   // is explicitly set. Upstream only applies this when !token.
   if (
-    (props.download ||
-      (!token &&
-        item['@type'] &&
-        config.settings.downloadableObjects.includes(item['@type'])))
+    props.download ||
+    (!token &&
+      item['@type'] &&
+      config.settings.downloadableObjects.includes(item['@type']))
   ) {
     url = url.includes('/@@download/file') ? url : `${url}/@@download/file`;
   }
@@ -95,8 +95,7 @@ const UniversalLink = React.memo(
 
     const isExternal = !isInternalURL(url);
 
-    const isDownload =
-      (!isExternal && url.includes('@@download')) || download;
+    const isDownload = (!isExternal && url.includes('@@download')) || download;
     const isDisplayFile =
       (!isExternal && url.includes('@@display-file')) || false;
 

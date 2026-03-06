@@ -1,5 +1,10 @@
 import React from 'react';
-import { Button, Segment, Popup, Image as SemanticImage } from 'semantic-ui-react';
+import {
+  Button,
+  Segment,
+  Popup,
+  Image as SemanticImage,
+} from 'semantic-ui-react';
 import { useIntl, defineMessages } from 'react-intl';
 import cx from 'classnames';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
@@ -158,7 +163,10 @@ const ObjectBrowserNav = ({
                         />
                       ) : (
                         <Icon
-                          name={getContentIcon(item['@type'], item.is_folderish)}
+                          name={getContentIcon(
+                            item['@type'],
+                            item.is_folderish,
+                          )}
                           size="24px"
                         />
                       )}
