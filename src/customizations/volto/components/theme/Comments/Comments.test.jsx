@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import Comments from './Comments';
 import thunk from 'redux-thunk';
 import renderer from 'react-test-renderer';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 const middleware = [thunk];
 const mockStore = configureStore(middleware);
