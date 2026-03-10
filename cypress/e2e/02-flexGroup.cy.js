@@ -94,12 +94,6 @@ describe('Flex Group Variation Tests', () => {
       .click()
       .type('test3');
 
-    cy.get('.block-toolbar svg')
-      .first()
-      .trigger('mousedown', { button: 0 })
-      .trigger('mousemove', 10, -40, { force: true })
-      .trigger('mouseup', 10, -40, { force: true });
-
     // Save
     cy.get('#toolbar-save').click();
     cy.url().should('eq', Cypress.config().baseUrl + '/cypress/my-page');
