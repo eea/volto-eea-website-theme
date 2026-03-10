@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { Icon, BlocksForm } from '@plone/volto/components';
-import EditBlockWrapper from '@eeacms/volto-group-block/components/manage/Blocks/Group/EditBlockWrapper';
+import EditBlockWrapper from '@plone/volto/components/manage/Blocks/Block/EditBlockWrapper';
+import cx from 'classnames';
 
 import helpSVG from '@plone/volto/icons/help.svg';
 import RenderBlocks from './RenderBlocks';
@@ -18,7 +19,6 @@ const FlexGroup = (props) => {
     selectedBlock,
     onSelectBlock,
     setSelectedBlock,
-    multiSelected,
     manage,
     childBlocksForm,
     formDescription,
@@ -43,12 +43,19 @@ const FlexGroup = (props) => {
   }
 
   return (
-    <div className="flex-blocks-form" data-block={block}>
+    <div
+      className={cx('flex-blocks-form', {
+        'disable-inner-buttons': data.disableInnerButtons,
+      })}
+      data-block={block}
+    >
       {isEditMode ? (
         <BlocksForm
           metadata={metadata}
           properties={childBlocksForm}
           manage={manage}
+          isMainForm={false}
+          stopPropagation={selectedBlock}
           selectedBlock={selected ? selectedBlock : null}
           allowedBlocks={data.allowedBlocks}
           title={data.placeholder}
@@ -84,34 +91,25 @@ const FlexGroup = (props) => {
           {({ draginfo }, editBlock, blockProps) => (
             <div className="flex-item">
               <div className="item-wrapper">
-                <EditBlockWrapper
-                  draginfo={draginfo}
-                  blockProps={blockProps}
-                  disabled={data.disableInnerButtons}
-                  extraControls={
-                    <>
-                      {instructions && (
-                        <>
-                          <Button
-                            icon
-                            basic
-                            title="Section help"
-                            onClick={() => {
-                              setSelectedBlock();
-                              const tab = manage ? 0 : 1;
-                              props.setSidebarTab(tab);
-                            }}
-                          >
-                            <Icon name={helpSVG} className="" size="19px" />
-                          </Button>
-                        </>
-                      )}
-                    </>
-                  }
-                  multiSelected={multiSelected.includes(blockProps.block)}
-                >
+                <EditBlockWrapper draginfo={draginfo} blockProps={blockProps}>
                   {editBlock}
                 </EditBlockWrapper>
+                {instructions && blockProps.selected && (
+                  <Button
+                    type="button"
+                    icon
+                    basic
+                    title="Section help"
+                    className="section-help-button"
+                    onClick={() => {
+                      setSelectedBlock();
+                      const tab = manage ? 0 : 1;
+                      props.setSidebarTab(tab);
+                    }}
+                  >
+                    <Icon name={helpSVG} className="" size="19px" />
+                  </Button>
+                )}
               </div>
             </div>
           )}

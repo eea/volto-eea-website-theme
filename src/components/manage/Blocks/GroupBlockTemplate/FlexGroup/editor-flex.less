@@ -11,4 +11,19 @@
     position: relative;
     width: 100%;
   }
+
+  .section-help-button {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 2.5rem;
+  }
+
+  &.disable-inner-buttons {
+    .drag.handle.wrapper,
+    .delete-button,
+    .block-add-button {
+      display: none !important;
+    }
+  }
 }
