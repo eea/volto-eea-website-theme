@@ -42,6 +42,14 @@ import config from '@plone/volto/registry';
 
 import backSVG from '@plone/volto/icons/back.svg';
 
+const getPathname = (url) => {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return typeof url === 'string' && url.startsWith('/') ? url : null;
+  }
+};
+
 const messages = defineMessages({
   back: {
     id: 'Back',
@@ -213,32 +221,31 @@ class History extends Component {
               defaultMessage="You can view the history of your item below."
             />
           </Segment>
-          {this.props.content?.copied_to && (
-            <Message info icon attached="top">
-              <Icon name="arrow right" />
-              <Message.Content>
-                <Message.Header>
-                  <FormattedMessage {...messages.newerVersionAvailable} />
-                </Message.Header>
-                <FormattedMessage
-                  {...messages.thereIsNewerVersionAt}
-                  values={{
-                    link: (
-                      <a
-                        href={`${
-                          new URL(this.props.content.copied_to).pathname
-                        }/historyview`}
-                      >
-                        {new URL(this.props.content.copied_to).pathname
-                          .split('/')
-                          .pop() || 'newer version'}
-                      </a>
-                    ),
-                  }}
-                />
-              </Message.Content>
-            </Message>
-          )}
+          {(() => {
+            const copiedToPath = getPathname(this.props.content?.copied_to);
+            return (
+              copiedToPath && (
+                <Message info icon attached="top">
+                  <Icon name="arrow right" />
+                  <Message.Content>
+                    <Message.Header>
+                      <FormattedMessage {...messages.newerVersionAvailable} />
+                    </Message.Header>
+                    <FormattedMessage
+                      {...messages.thereIsNewerVersionAt}
+                      values={{
+                        link: (
+                          <a href={`${copiedToPath}/historyview`}>
+                            {copiedToPath.split('/').pop() || 'newer version'}
+                          </a>
+                        ),
+                      }}
+                    />
+                  </Message.Content>
+                </Message>
+              )
+            );
+          })()}
           <Table
             selectable
             compact
@@ -371,32 +378,31 @@ class History extends Component {
               ))}
             </Table.Body>
           </Table>
-          {this.props.content?.copied_from && (
-            <Message warning icon attached="bottom">
-              <Icon name="arrow left" />
-              <Message.Content>
-                <Message.Header>
-                  <FormattedMessage {...messages.olderVersionAvailable} />
-                </Message.Header>
-                <FormattedMessage
-                  {...messages.thereIsOlderVersionAt}
-                  values={{
-                    link: (
-                      <a
-                        href={`${
-                          new URL(this.props.content.copied_from).pathname
-                        }/historyview`}
-                      >
-                        {new URL(this.props.content.copied_from).pathname
-                          .split('/')
-                          .pop() || 'older version'}
-                      </a>
-                    ),
-                  }}
-                />
-              </Message.Content>
-            </Message>
-          )}
+          {(() => {
+            const copiedFromPath = getPathname(this.props.content?.copied_from);
+            return (
+              copiedFromPath && (
+                <Message warning icon attached="bottom">
+                  <Icon name="arrow left" />
+                  <Message.Content>
+                    <Message.Header>
+                      <FormattedMessage {...messages.olderVersionAvailable} />
+                    </Message.Header>
+                    <FormattedMessage
+                      {...messages.thereIsOlderVersionAt}
+                      values={{
+                        link: (
+                          <a href={`${copiedFromPath}/historyview`}>
+                            {copiedFromPath.split('/').pop() || 'older version'}
+                          </a>
+                        ),
+                      }}
+                    />
+                  </Message.Content>
+                </Message>
+              )
+            );
+          })()}
         </Segment.Group>
         {this.state.isClient &&
           createPortal(
