@@ -3,20 +3,11 @@
 @type: 'extra';
 @element: 'custom';
 
-@baseWidth: 100%;
-
 // on edit ensure add button is next to the block input area
 .flex-blocks-form {
-  .item-wrapper {
+  [data-rbd-draggable-context-id] {
     position: relative;
-    width: 100%;
-  }
-
-  .section-help-button {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    right: 2.5rem;
+    min-width: var(--flex-item-width, 100%);
   }
 
   &.disable-inner-buttons {
@@ -25,5 +16,30 @@
     .block-add-button {
       display: none !important;
     }
+  }
+}
+
+// Mirror column width rules from item.overrides for edit mode
+// (.flex-item wrapper was removed; DnD wrappers are now the flex children)
+// items-1-columns: override inherited 25% from .group.flex .items-1-columns in item.overrides
+.flex-blocks-form .flex-items-wrapper.items-1-columns [data-rbd-draggable-context-id] {
+  --flex-item-width: 100%;
+}
+
+@media only screen and (min-width: @tabletBreakpoint) {
+  .flex-blocks-form .flex-items-wrapper.items-2-columns [data-rbd-draggable-context-id] {
+    --flex-item-width: calc(100% / 2 - 1%);
+  }
+
+  .flex-blocks-form .flex-items-wrapper.items-3-columns [data-rbd-draggable-context-id] {
+    --flex-item-width: calc(100% / 3 - 1%);
+  }
+
+  .flex-blocks-form .flex-items-wrapper.items-4-columns [data-rbd-draggable-context-id] {
+    --flex-item-width: calc(100% / 4 - 1%);
+  }
+
+  .flex-blocks-form .flex-items-wrapper.items-5-columns [data-rbd-draggable-context-id] {
+    --flex-item-width: calc(100% / 5 - 1%);
   }
 }
