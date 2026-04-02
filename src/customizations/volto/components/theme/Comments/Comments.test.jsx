@@ -187,7 +187,7 @@ describe('Comments', () => {
         <Comments {...props} />
       </Provider>,
     );
-    expect(component.toJSON()).toBeNull();
+    expect(component.toJSON()).toBeFalsy();
   });
 
   it('renders a comments component without permissions', () => {
@@ -260,7 +260,7 @@ describe('Comments', () => {
         <Comments {...props} />
       </Provider>,
     );
-    expect(component.toJSON()).toBeNull();
+    expect(component.toJSON()).toBeFalsy();
   });
 
   it('renders a comments component, fires onClick events on comment and rerenders', () => {

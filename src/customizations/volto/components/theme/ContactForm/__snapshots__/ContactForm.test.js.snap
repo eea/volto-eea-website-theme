@@ -10,7 +10,6 @@ exports[`Contact form renders a contact form 1`] = `
      
     <a
       href="/"
-      onClick={[Function]}
     >
       /
     </a>
@@ -28,7 +27,6 @@ exports[`Contact form renders a contact form with error message 1`] = `
      
     <a
       href="/"
-      onClick={[Function]}
     >
       /
     </a>

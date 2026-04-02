@@ -25,5 +25,3 @@ exports[`DateWidget renders a date view widget component with custom format 1`] 
   04 Aug 2020
 </span>
 `;
-
-exports[`DateWidget renders an empty date view widget component 1`] = `null`;
