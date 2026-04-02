@@ -15,7 +15,6 @@ const FlexGroup = (props) => {
     selected,
     selectedBlock,
     onSelectBlock,
-    setSelectedBlock,
     manage,
     childBlocksForm,
     formDescription,
