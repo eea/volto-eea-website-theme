@@ -171,7 +171,7 @@ export const TitleBlockEdit = (props) => {
         banner={{
           title: {
             view: (
-              <Slate editor={editor} onChange={handleChange} value={val}>
+              <Slate editor={editor} onChange={handleChange} initialValue={val}>
                 <Editable
                   readOnly={!editable}
                   onKeyDown={handleKeyDown}
