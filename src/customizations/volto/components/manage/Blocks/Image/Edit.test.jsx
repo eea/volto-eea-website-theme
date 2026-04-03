@@ -20,6 +20,16 @@
 // jest.mock() calls are hoisted above all imports by babel-jest.
 /* eslint-disable no-undef */
 
+/* eslint-enable no-undef */
+
+import config from '@plone/volto/registry';
+import '@testing-library/jest-dom';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { Provider } from 'react-intl-redux';
+import configureMockStore from 'redux-mock-store';
+import Edit, { getImageBlockSizes } from './Edit';
+
 jest.mock('@plone/volto/components', () => {
   const React = require('react');
 
@@ -54,42 +64,32 @@ jest.mock('@plone/volto/components', () => {
 jest.mock(
   '@eeacms/volto-eea-design-system/ui',
   () => {
-  const React = require('react');
+    const React = require('react');
 
-  // Copyright is a compound component: Copyright / Copyright.Icon / Copyright.Text
-  const Copyright = (props) =>
-    React.createElement(
-      'div',
-      { 'data-testid': 'eea-copyright' },
-      props.children,
-    );
-  Copyright.Icon = (props) =>
-    React.createElement(
-      'span',
-      { 'data-testid': 'eea-copyright-icon' },
-      props.children,
-    );
-  Copyright.Text = (props) =>
-    React.createElement(
-      'span',
-      { 'data-testid': 'eea-copyright-text' },
-      props.children,
-    );
+    // Copyright is a compound component: Copyright / Copyright.Icon / Copyright.Text
+    const Copyright = (props) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'eea-copyright' },
+        props.children,
+      );
+    Copyright.Icon = (props) =>
+      React.createElement(
+        'span',
+        { 'data-testid': 'eea-copyright-icon' },
+        props.children,
+      );
+    Copyright.Text = (props) =>
+      React.createElement(
+        'span',
+        { 'data-testid': 'eea-copyright-text' },
+        props.children,
+      );
 
     return { Copyright };
   },
   { virtual: true },
 );
-
-/* eslint-enable no-undef */
-
-import config from '@plone/volto/registry';
-import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
-import React from 'react';
-import { Provider } from 'react-intl-redux';
-import configureMockStore from 'redux-mock-store';
-import Edit, { getImageBlockSizes } from './Edit';
 
 // Register our mock Image component so config.getComponent({ name: 'Image' })
 // returns something renderable during tests.
@@ -214,7 +214,9 @@ describe('Edit', () => {
     });
 
     expect(getByTestId('eea-copyright')).toBeInTheDocument();
-    expect(getByTestId('eea-copyright-text')).toHaveTextContent('EEA Copyright');
+    expect(getByTestId('eea-copyright-text')).toHaveTextContent(
+      'EEA Copyright',
+    );
   });
 
   it('shows the copyright overlay when no size is specified (defaults to showing)', () => {
@@ -266,7 +268,9 @@ describe('Edit', () => {
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
     // No copyright-wrapper when there is no image URL
-    expect(container.querySelector('.copyright-wrapper')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('.copyright-wrapper'),
+    ).not.toBeInTheDocument();
   });
 
   it('applies align class to both the outer block and the EEA container', () => {
