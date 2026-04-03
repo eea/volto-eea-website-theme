@@ -18,11 +18,6 @@
  * assert on the actual EEA-specific behavior instead.
  */
 
-jest.mock('@plone/volto/components', () => ({
-  // RenderGroups.jsx uses only Icon from the barrel
-  Icon: () => null,
-}));
-
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -30,6 +25,11 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 
 import RenderGroups from './RenderGroups';
+
+jest.mock('@plone/volto/components', () => ({
+  // RenderGroups.jsx uses only Icon from the barrel
+  Icon: () => null,
+}));
 
 const mockStore = configureStore();
 
