@@ -7,91 +7,16 @@ exports[`Comments renders a comments component 1`] = `
   <div
     id="comment-add-id"
   >
-    <div
-      className="ui container"
+    <form
+      onSubmit={[Function]}
     >
-      <form
-        className="ui form"
-        method="post"
-        onSubmit={[Function]}
+      <button
+        aria-label="Comment"
+        type="submit"
       >
-        <fieldset
-          className="invisible"
-        >
-          <div
-            className="ui raised segments"
-          >
-            <div
-              className="ui segment"
-            >
-              <div
-                className="mocked-textarea-widget"
-                id="mocked-field-comment"
-              >
-                Comment
-                 - 
-                No description
-              </div>
-            </div>
-            <div
-              className="ui clearing segment actions"
-            >
-              <button
-                aria-label="Comment"
-                className="ui basic primary right floated button"
-                onClick={[Function]}
-                title="Comment"
-                type="submit"
-              >
-                <svg
-                  className="icon circled"
-                  dangerouslySetInnerHTML={
-                    Object {
-                      "__html": undefined,
-                    }
-                  }
-                  onClick={null}
-                  style={
-                    Object {
-                      "fill": "currentColor",
-                      "height": "30px",
-                      "width": "auto",
-                    }
-                  }
-                  viewBox=""
-                  xmlns=""
-                />
-              </button>
-              <button
-                aria-label="Cancel"
-                className="ui basic secondary right floated button"
-                onClick={[Function]}
-                title="Cancel"
-              >
-                <svg
-                  className="icon circled"
-                  dangerouslySetInnerHTML={
-                    Object {
-                      "__html": undefined,
-                    }
-                  }
-                  onClick={null}
-                  style={
-                    Object {
-                      "fill": "currentColor",
-                      "height": "30px",
-                      "width": "auto",
-                    }
-                  }
-                  viewBox=""
-                  xmlns=""
-                />
-              </button>
-            </div>
-          </div>
-        </fieldset>
-      </form>
-    </div>
+        Comment
+      </button>
+    </form>
   </div>
   <div
     className="ui comments"
@@ -100,31 +25,9 @@ exports[`Comments renders a comments component 1`] = `
       className="comment"
     >
       <div
-        className="avatar circular"
-        title="admin"
+        className="avatar"
       >
-        <svg
-          height={30}
-          width={30}
-        >
-          <circle
-            cx={15}
-            cy={15}
-            fill="Teal"
-            r={15}
-          />
-          <text
-            dy=".3em"
-            fill="white"
-            fontFamily="Arial"
-            fontSize="15px"
-            textAnchor="middle"
-            x="50%"
-            y="50%"
-          >
-            A
-          </text>
-        </svg>
+        admin
       </div>
       <div
         className="content"
@@ -206,31 +109,9 @@ exports[`Comments renders a comments component 1`] = `
       className="comment"
     >
       <div
-        className="avatar circular"
-        title="Anonymous"
+        className="avatar"
       >
-        <svg
-          height={30}
-          width={30}
-        >
-          <circle
-            cx={15}
-            cy={15}
-            fill="Teal"
-            r={15}
-          />
-          <text
-            dy=".3em"
-            fill="white"
-            fontFamily="Arial"
-            fontSize="15px"
-            textAnchor="middle"
-            x="50%"
-            y="50%"
-          >
-            A
-          </text>
-        </svg>
+        Anonymous
       </div>
       <div
         className="content"
@@ -316,6 +197,3 @@ exports[`Comments renders a comments component 1`] = `
 </div>
 `;
 
-exports[`Comments renders a comments component withour viewing the comments 1`] = `""`;
-
-exports[`Comments renders a comments component without permissions 1`] = `""`;

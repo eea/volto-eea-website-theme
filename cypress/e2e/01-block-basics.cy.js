@@ -22,10 +22,12 @@ describe('Blocks Tests', () => {
 
     // test rss link
     cy.get('.documentFirstHeading').click();
-    cy.get('a').contains('Block').click();
-    cy.get(`[aria-label="Add RSS Link"]`).click();
-    cy.get('#field-title-0-rssLinks-0').type('RSS');
-    cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss');
+    cy.get('#blockform-fieldset-actions [aria-label="Add RSS Link"]')
+      .click({ force: true });
+    cy.get('#field-title-0-rssLinks-0').type('RSS', { force: true });
+    cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss', {
+      force: true,
+    });
 
     //add image block using slash command
     cy.getSlate().click().type('{enter}');

@@ -9,6 +9,10 @@ jest.mock('react-portal', () => ({
   Portal: jest.fn(() => <div id="Portal" />),
 }));
 
+jest.mock('@plone/volto/components', () => ({
+  UniversalLink: ({ href, children }) => <a href={href}>{children}</a>,
+}));
+
 const mockStore = configureStore();
 
 describe('Contact form', () => {
