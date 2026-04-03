@@ -44,7 +44,7 @@
 | `@plone/volto-slate/blocks/Text/TextBlockView.jsx` | Keeps EEA-specific text block rendering and text style variants. | Small upstream delta. | `compatible` | Keep, then re-check custom marks/classes after upgrade. | None |
 | `@plone/volto-slate/editor/SlateEditor.jsx` | Fixes multiple editors bound to the same prop and carries custom hotkey behavior. | Moderate upstream editor changes in Volto 18. | `needs rebase` | Rebase the same-prop sync fix and hotkey changes onto Volto 18 instead of copying the whole file. | README note in addon root, changelog refs `#264239` |
 | `@plone/volto-slate/editor/plugins/Table/less/public.less` | EEA table public styling override. | No upstream delta. | `compatible` | Keep. | None |
-| `@plone/volto-slate/editor/render.jsx` | Adds anchor link rendering and custom slate render behavior. | Small upstream delta. | `needs rebase` | Rebase custom anchor rendering on top of Volto 18 render helpers. | Changelog note for `renderLinkElement` |
+| `@plone/volto-slate/editor/render.jsx` | Adds anchor link rendering and custom slate render behavior. | Small upstream delta. | `compatible` ✅ verified | Keep — V17 installed and V18 have the same file structure. EEA key change: `Element.attrs` uses `cx` to merge `element.styleName` + `attributes.className` instead of `Object.assign` which would overwrite. `renderLinkElement` is identical in V17/V18 and pulled from `@eeacms/volto-anchors` at runtime anyway. | Changelog note for `renderLinkElement` |
 | `@plone/volto-slate/elementEditor/utils.js` | Backports V18 fixes: setTimeout for selection restore, getSavedSelection fallback in _unwrapElement. | V18 file is identical to the shadow. | `upstream absorbed` ⚠️ keep for dual-support | Keep while V17 is still supported — shadow = V18 source, so V18 falls through to upstream and V17 gets the backport. Remove when V17 is dropped. | README and changelog point to upstreamed work |
 | `@plone/volto-slate/utils/blocks.js` | Empty-block and copy/paste handling for slate block transforms. | Volto 18 changed block utilities. | `needs rebase` | Re-implement only the transform behavior still needed for `#273976`, `#261770`, and Word paste fixes. | Changelog refs `#273976`, `#265782`, `#261770` |
 | `@root/theme.js` | Replaces default semantic import with EEA design-system semantic theme plus Pastanaga extras. | Volto 18 root theme entry is materially the same. | `compatible` | Keep, verify the design-system LESS still builds on Volto 18. | None |
@@ -55,7 +55,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `volto/actions/vocabularies/vocabularies.js` | Backports a newer vocabulary-fetch implementation from Volto 19.x. | Volto 18 target file is unchanged vs 17 for this area. | `compatible` | Keep for now; later compare directly with Volto 19 before removing. | `vocabularies.js.md`, `.diff`, test shadow |
 | `volto/helpers/Html/Html.jsx` | CSP-safe HTML rendering — adds `nonce` prop to both inline scripts. | V18 added cssLayers, head.style, SITE_DEFAULT_LANGUAGE, and updated mobile meta. | `needs rebase` ✅ done | Rebased: added cssLayers + head.style.toComponent(), SITE_DEFAULT_LANGUAGE, mobile-web-app-capable, lodash tree-shake. Nonce customization kept. No cypress test needed (SSR-only). | `Readme.md` |
-| `volto/reducers/breadcrumbs/breadcrumbs.js` | Supports custom breadcrumb behavior used by EEA header/view stack. | Small upstream delta. | `needs rebase` | Keep only the breadcrumb-state changes still required by the custom header and breadcrumbs components. | None |
+| `volto/reducers/breadcrumbs/breadcrumbs.js` | Supports custom breadcrumb behavior used by EEA header/view stack. | Small upstream delta. | `compatible` ✅ verified | Keep — V17→V18 delta is import style only (lodash tree-shaking + direct helper paths). EEA barrel imports (`@plone/volto/helpers`) still resolve in V18. Key addition: `portal_type` preserved on each breadcrumb item. | None |
 | `volto/server.jsx` | CSP headers, nonce generation, language-aware redirects, and script extraction on error pages. | Volto 18 server changed heavily. | `needs rebase` ✅ done | Rebased in bf86da8: CSP nonce generation, buildCSPHeader, supportedLanguages from config, etag disabled, ErrorBoundary from registry. Remaining diffs vs V18 are cosmetic (import paths, inline vs sendHtmlResponse helper). | Inline comments; paired with `Html.jsx` |
 
 ### Manage UI: blocks
@@ -67,11 +67,11 @@
 | `volto/components/manage/Blocks/Image/Edit.jsx` | EEA image editor UX, object browser preview, copyright fields, link settings, and custom scales. | Volto 18 image editor changed a lot. | `needs rebase` | Rebase behavior onto Volto 18 `Edit.jsx` and `ImageSidebar.jsx`; do not carry the old structure forward. | `Edit.test.jsx`, paired schema/view shadows |
 | `volto/components/manage/Blocks/Image/View.jsx` | EEA image rendering, preview-image links, copyright overlays, and custom link handling. | Moderate upstream delta. | `needs rebase` | Rebase onto Volto 18 view component and keep only rendering differences still needed. | Paired image schema/edit shadows |
 | `volto/components/manage/Blocks/Image/schema.js` | Adds copyright fieldset, icon selection, and object-browser link settings. | Volto 18 counterpart moved to `schema.jsx` and now feeds `ImageSidebar.jsx`. | `moved/renamed` | Port only the extra schema fields to Volto 18 `schema.jsx`; remove the old path shadow. | Paired image shadows |
-| `volto/components/manage/Blocks/LeadImage/AlignChooser.jsx` | Historical alignment UI override for lead image. | No standalone counterpart in Volto 18. | `moved/renamed` | Check whether the customization is obsolete because alignment is now handled in sidebar/edit flow; remove unless a missing control is confirmed. | Test and snapshot shadow exist |
-| `volto/components/manage/Blocks/LeadImage/Edit.jsx` | EEA lead-image editing and schema wiring. | Volto 18 lead-image edit changed significantly. | `needs rebase` | Rebase onto Volto 18 `Edit.jsx` and use the new sidebar/data flow. | Paired with sidebar/view/schema shadows |
-| `volto/components/manage/Blocks/LeadImage/LeadImageSidebar.jsx` | EEA lead-image sidebar with custom fields and behavior. | Small upstream delta, but the surrounding edit flow changed. | `needs rebase` | Rebase the extra fields and any EEA help text into Volto 18 sidebar. | Paired with edit/view/schema shadows |
-| `volto/components/manage/Blocks/LeadImage/View.jsx` | EEA lead-image rendering and link/image behavior. | Very small upstream delta. | `needs rebase` | Keep the rendering logic, but sync to Volto 18 imports and link component changes. | Paired with edit/sidebar shadows |
-| `volto/components/manage/Blocks/LeadImage/schema.js` | Historical lead-image schema customization. | No standalone schema file in Volto 18. | `moved/renamed` | Fold any still-needed schema fields into Volto 18 `LeadImageSidebar.jsx`; remove this path shadow. | Related to removed AlignChooser path |
+| `volto/components/manage/Blocks/LeadImage/AlignChooser.jsx` | Historical alignment UI override for lead image. | No standalone counterpart in V17 or V18. | `candidate removal` ✅ removed | Deleted — not shadowing any real upstream file, not imported anywhere in runtime code. Alignment handled by `copyrightPosition` widget in `LeadImageSchema`. | Test and snapshot also removed |
+| `volto/components/manage/Blocks/LeadImage/Edit.jsx` | EEA lead-image editing: copyright display, `image-block-container` wrapper, objectPosition class. | V18 converted to functional component; barrel imports still available. | `compatible` ✅ verified | Keep — all barrel imports (`LeadImageSidebar`, `SidebarPortal`) still in V18 barrel. Class component + copyright rendering is valid on V18. Cypress test `07-lead-image.cy.js` added. | Paired with sidebar/view/schema shadows |
+| `volto/components/manage/Blocks/LeadImage/LeadImageSidebar.jsx` | EEA lead-image sidebar using BlockDataForm + LeadImageSchema with copyright fieldset. | V18 sidebar kept similar structure; `BlockDataForm` still in V18 barrel. | `compatible` ✅ verified | Keep — `BlockDataForm` and `Icon` in V18 barrel, `flattenToAppURL` in `@plone/volto/helpers`. Copyright fields are EEA-specific additions via schema. Cypress test `07-lead-image.cy.js` added. | Paired with edit/view/schema shadows |
+| `volto/components/manage/Blocks/LeadImage/View.jsx` | EEA lead-image rendering: copyright overlay, `image-block-container` wrapper, loading="lazy". | Very small upstream delta. | `compatible` ✅ verified | Keep — `UniversalLink` barrel import still works in V18. EEA additions are pure extensions. | Paired with edit/sidebar shadows |
+| `volto/components/manage/Blocks/LeadImage/schema.js` | EEA lead-image schema with copyright fieldset (not shadowing any upstream file). | No standalone schema file in V17 or V18. | `compatible` ✅ verified | Keep as local support file for `LeadImageSidebar.jsx` — imported via relative path, not a shadow. | Related to sidebar shadow |
 
 ### Manage UI: editorial tooling
 
@@ -130,12 +130,18 @@
 ## Recommended Next Pass
 
 1. ✅ Remove clear dead weight first:
-   `SidebarPopup copy.jsx` removed. `@plone/volto-slate/elementEditor/utils.js` restored — needed for V17 dual-support (remove when V17 dropped).
-2. Rebase the SSR/CSP layer together:
+   `SidebarPopup copy.jsx` removed. `AlignChooser.jsx` + test/snapshot removed (not shadowing any upstream file).
+   `@plone/volto-slate/elementEditor/utils.js` restored — needed for V17 dual-support (remove when V17 dropped).
+2. ✅ Rebase the SSR/CSP layer together:
    `volto/server.jsx` and `volto/helpers/Html/Html.jsx`.
-3. Rework image and lead-image against Volto 18 structure:
-   use Volto 18 `ImageSidebar.jsx`, `schema.jsx`, and current lead-image sidebar instead of preserving old file paths.
-4. Rebase editorial shell components next:
+3. ✅ Verify lead-image family:
+   All five files (`Edit.jsx`, `View.jsx`, `LeadImageSidebar.jsx`, `schema.js`, `AlignChooser.jsx`) verified compatible or removed. Cypress test `07-lead-image.cy.js` added.
+4. ✅ Verify additional compatible shadows:
+   `@plone/volto-slate/editor/render.jsx` — `Element` cx-merge is key EEA feature, compatible with V18.
+   `volto/reducers/breadcrumbs/breadcrumbs.js` — `portal_type` addition, barrel imports work in V18.
+5. Rework Image block against Volto 18 structure:
+   `Image/Edit.jsx`, `Image/View.jsx`, `Image/schema.js` → use Volto 18 `ImageSidebar.jsx` and `schema.jsx`.
+6. Rebase editorial shell components next:
    sidebar/object browser, toolbar more menu, display, history, workflow, and diff field.
-5. Rebase the public EEA theme stack last:
+7. Rebase the public EEA theme stack last:
    header, breadcrumbs, default/event views, footer, tags, and comments.
