@@ -81,16 +81,14 @@ class SlateEditor extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.getSavedSelection = this.getSavedSelection.bind(this);
     this.setSavedSelection = this.setSavedSelection.bind(this);
+    this.getEditorValue = this.getEditorValue.bind(this);
 
     this.savedSelection = null;
 
     const uid = uuid(); // used to namespace the editor's plugins
 
     this.slateSettings = props.slateSettings || config.settings.slate;
-    this.initialValue =
-      this.props.value && this.props.value.length > 0
-        ? cloneDeep(this.props.value)
-        : this.slateSettings.defaultValue();
+    this.initialValue = this.getEditorValue(this.props.value);
 
     this.state = {
       editor: this.createEditor(uid),
@@ -101,6 +99,21 @@ class SlateEditor extends Component {
 
     this.editor = null;
     this.selectionTimeout = null;
+  }
+
+  getEditorValue(value = this.props.value) {
+    if (Array.isArray(value) && value.length > 0) {
+      return cloneDeep(value);
+    }
+
+    return (
+      this.slateSettings.defaultValue?.() || [
+        {
+          type: 'p',
+          children: [{ text: '' }],
+        },
+      ]
+    );
   }
 
   getSavedSelection() {
@@ -183,10 +196,7 @@ class SlateEditor extends Component {
       !isEqual(this.props.value, this.state.internalValue)
     ) {
       const { editor } = this.state;
-      const newValue =
-        this.props.value && this.props.value.length > 0
-          ? cloneDeep(this.props.value)
-          : this.slateSettings.defaultValue();
+      const newValue = this.getEditorValue(this.props.value);
 
       resetNodes(editor, { nodes: newValue });
 
@@ -290,7 +300,7 @@ class SlateEditor extends Component {
         <EditorContext.Provider value={editor}>
           <Slate
             editor={editor}
-            initialValue={this.initialValue}
+            initialValue={this.getEditorValue()}
             onChange={this.handleChange}
           >
             {selected ? (

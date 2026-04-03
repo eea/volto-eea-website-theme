@@ -8,7 +8,6 @@ import express from 'express';
 import { renderToString } from 'react-dom/server';
 import { createMemoryHistory } from 'history';
 import { parse as parseUrl } from 'url';
-import { keys } from 'lodash';
 import locale from 'locale';
 import { detect } from 'detect-browser';
 import path from 'path';
@@ -37,8 +36,6 @@ import userSession from '@plone/volto/reducers/userSession/userSession';
 
 import ErrorPage from '@plone/volto/error';
 
-import languages from '@plone/volto/constants/Languages';
-
 import configureStore from '@plone/volto/store';
 import {
   ReduxAsyncConnect,
@@ -61,7 +58,10 @@ function reactIntlErrorHandler(error) {
   debug('i18n')(error);
 }
 
-const supported = new locale.Locales(keys(languages), 'en');
+const supported = new locale.Locales(
+  config.settings?.supportedLanguages || ['en'],
+  'en',
+);
 
 const server = express()
   .disable('x-powered-by')

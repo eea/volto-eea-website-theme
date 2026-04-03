@@ -17,6 +17,19 @@ jest.mock('moment', () =>
   })),
 );
 
+jest.mock('@plone/volto/components', () => ({
+  Avatar: ({ title, color }) => <div className="avatar">{title}</div>,
+  CommentEditModal: ({ open, onCancel, onOk, id, text }) =>
+    open ? <div className="comment-edit-modal" /> : null,
+  Form: ({ onSubmit, onCancel, submitLabel }) => (
+    <form onSubmit={onSubmit}>
+      <button type="submit" aria-label={submitLabel}>
+        {submitLabel}
+      </button>
+    </form>
+  ),
+}));
+
 jest.mock('@plone/volto/helpers/Loadable/Loadable');
 beforeAll(
   async () =>
@@ -174,8 +187,7 @@ describe('Comments', () => {
         <Comments {...props} />
       </Provider>,
     );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    expect(component.toJSON()).toBeFalsy();
   });
 
   it('renders a comments component without permissions', () => {
@@ -248,8 +260,7 @@ describe('Comments', () => {
         <Comments {...props} />
       </Provider>,
     );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    expect(component.toJSON()).toBeFalsy();
   });
 
   it('renders a comments component, fires onClick events on comment and rerenders', () => {

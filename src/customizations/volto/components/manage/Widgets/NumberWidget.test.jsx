@@ -6,6 +6,10 @@ import '@testing-library/jest-dom';
 
 import NumberWidget from './NumberWidget';
 
+jest.mock('@plone/volto/components', () => ({
+  FormFieldWrapper: ({ children }) => <>{children}</>,
+}));
+
 const mockStore = configureStore();
 
 const store = mockStore({

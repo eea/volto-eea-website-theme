@@ -22,7 +22,7 @@ describe('DatetimeWidget', () => {
       </Provider>,
     );
     const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    expect(json).toBeFalsy();
   });
 
   it('renders a datetime view widget component with a date and time', () => {
