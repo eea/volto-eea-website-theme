@@ -15,16 +15,44 @@
  */
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
+const setPageLeadImageBehavior = (enabled) => {
+  cy.autologin();
+  cy.visit('/controlpanel/dexterity-types/Document');
+  cy.contains('#page-controlpanel .menu .item', 'Behaviors').click();
+
+  cy.get('#field-plone\\.leadimage').then(($checkbox) => {
+    const isChecked = $checkbox.prop('checked');
+
+    if (isChecked !== enabled) {
+      cy.get('label[for="field-plone\\.leadimage"]').click({ force: true });
+    }
+  });
+
+  cy.get('#field-plone\\.leadimage').should(
+    enabled ? 'be.checked' : 'not.be.checked',
+  );
+
+  cy.get('#toolbar-save').click();
+};
+
 describe('LeadImage block shadow', () => {
   beforeEach(slateBeforeEach);
-  afterEach(slateAfterEach);
+  afterEach(() => {
+    slateAfterEach();
+    setPageLeadImageBehavior(false);
+  });
 
   it('adds a LeadImage block and renders the no-image placeholder in edit mode', () => {
-    // Add a Lead Image Field block
-    cy.getSlate().click();
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get('.blocks-chooser input').type('Lead Image');
-    cy.get('.blocks-chooser .leadimage').first().click();
+    // The Lead Image block is only available when the content type has the
+    // Lead Image behavior enabled.
+    setPageLeadImageBehavior(true);
+    cy.visit('/cypress/my-page');
+    cy.navigate('/cypress/my-page/edit');
+    cy.get('#field-image').should('exist');
+
+    // Add a Lead Image Field block using the slash command, which is stable
+    // across Volto 17/18 and avoids the toolbar add-button differences.
+    cy.getSlate().click().type('/lead{enter}');
 
     // EEA Edit.jsx: outer wrapper div should exist
     cy.get('.block-editor-leadimage').should('exist');

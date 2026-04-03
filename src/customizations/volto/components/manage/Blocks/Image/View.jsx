@@ -25,7 +25,8 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 export const View = (props) => {
   const { className, data, detached, style } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const href = data?.href?.[0]?.['@id'] || '';
+  const hrefItem = data?.href?.[0];
+  const href = hrefItem?.['@id'] || '';
   const showCopyright = data?.size === 'l' || !data.size;
 
   const Image = config.getComponent({ name: 'Image' }).component;
@@ -130,7 +131,7 @@ export const View = (props) => {
                 if (href) {
                   return (
                     <UniversalLink
-                      href={href}
+                      item={hrefItem}
                       openLinkInNewTab={data.openLinkInNewTab}
                     >
                       {image}
