@@ -45,7 +45,7 @@
 | `@plone/volto-slate/editor/SlateEditor.jsx` | Fixes multiple editors bound to the same prop and carries custom hotkey behavior. | Moderate upstream editor changes in Volto 18. | `needs rebase` | Rebase the same-prop sync fix and hotkey changes onto Volto 18 instead of copying the whole file. | README note in addon root, changelog refs `#264239` |
 | `@plone/volto-slate/editor/plugins/Table/less/public.less` | EEA table public styling override. | No upstream delta. | `compatible` | Keep. | None |
 | `@plone/volto-slate/editor/render.jsx` | Adds anchor link rendering and custom slate render behavior. | Small upstream delta. | `needs rebase` | Rebase custom anchor rendering on top of Volto 18 render helpers. | Changelog note for `renderLinkElement` |
-| `@plone/volto-slate/elementEditor/utils.js` | Historical slate editing fix. | Volto 18 file is identical to the customization. | `upstream absorbed` | Remove the shadow. | README and changelog point to upstreamed work |
+| `@plone/volto-slate/elementEditor/utils.js` | Historical slate editing fix. | Volto 18 file is identical to the customization. | `upstream absorbed` ✅ removed | ~~Remove the shadow.~~ Done. | README and changelog point to upstreamed work |
 | `@plone/volto-slate/utils/blocks.js` | Empty-block and copy/paste handling for slate block transforms. | Volto 18 changed block utilities. | `needs rebase` | Re-implement only the transform behavior still needed for `#273976`, `#261770`, and Word paste fixes. | Changelog refs `#273976`, `#265782`, `#261770` |
 | `@root/theme.js` | Replaces default semantic import with EEA design-system semantic theme plus Pastanaga extras. | Volto 18 root theme entry is materially the same. | `compatible` | Keep, verify the design-system LESS still builds on Volto 18. | None |
 
@@ -84,10 +84,10 @@
 | `volto/components/manage/Sidebar/ObjectBrowserBody.jsx` | Uses rights as default alt text and supports image preview. | Large upstream delta. | `needs rebase` | Reapply alt-default and preview behavior to the Volto 18 object browser body. | Sidebar `README.md`, inline comment |
 | `volto/components/manage/Sidebar/ObjectBrowserNav.jsx` | Enables previewing images from file picker navigation. | Large upstream delta. | `needs rebase` | Rebase image-preview navigation behavior only. | Sidebar `README.md` |
 | `volto/components/manage/Sidebar/SidebarPopup.jsx` | Backport from Volto PR `#5520`. | Moderate upstream delta; likely partly upstreamed already. | `needs rebase` | Diff against the original PR and keep only the remaining non-upstreamed behavior. | Sidebar `README.md` |
-| `volto/components/manage/Sidebar/SidebarPopup copy.jsx` | Backup copy, not a real customization target. | No Volto 18 counterpart. | `candidate removal` | Delete as dead support material once the audit is converted into code changes. | None |
+| `volto/components/manage/Sidebar/SidebarPopup copy.jsx` | Backup copy, not a real customization target. | No Volto 18 counterpart. | `candidate removal` ✅ removed | ~~Delete as dead support material.~~ Done. | None |
 | `volto/components/manage/Toolbar/More.jsx` | EEA editorial actions in More menu, including `historyview`, local roles, and custom routing. | Very large upstream delta. | `needs rebase` | Re-implement menu item injections against Volto 18 menu composition, not by keeping the old full shadow. | None |
 | `volto/components/manage/UniversalLink/UniversalLink.jsx` | Removes `noreferrer` from external links. | Volto 18 counterpart moved to `UniversalLink.tsx`. | `moved/renamed` | Reassess whether the SEO requirement still justifies overriding the new typed component; if yes, patch the TSX implementation minimally. | Inline comment in shadow |
-| `volto/components/manage/Widgets/NumberWidget.jsx` | Normalizes string input to numeric value. | Tiny upstream delta. | `compatible` | Keep and verify form serialization. | Test, widgets `README.md` |
+| `volto/components/manage/Widgets/NumberWidget.jsx` | Normalizes string input to numeric value. | Tiny upstream delta. | `compatible` ✅ verified | Keep — `FormFieldWrapper` still exported unchanged in V18. Cypress test added: `cypress/e2e/05-number-widget.cy.js`. | Test, widgets `README.md` |
 | `volto/components/manage/Widgets/ObjectBrowserWidget.jsx` | Preserves hash anchors in pasted internal URLs. | Moderate upstream delta. | `needs rebase` | Rebase only the anchor-preservation logic. | Widgets `README.md` |
 | `volto/components/manage/Workflow/Workflow.jsx` | Old workflow UI fork kept for EEA editorial flow/history behavior. | Small upstream delta, but the shadow is based on older Volto 16 code. | `needs rebase` | Rebuild the desired workflow behavior on current Volto 18 code; do not keep the old 16-era copy. | `README.txt`, test |
 
@@ -129,7 +129,7 @@
 
 ## Recommended Next Pass
 
-1. Remove clear dead weight first:
+1. ✅ Remove clear dead weight first:
    `@plone/volto-slate/elementEditor/utils.js` and `SidebarPopup copy.jsx`.
 2. Rebase the SSR/CSP layer together:
    `volto/server.jsx` and `volto/helpers/Html/Html.jsx`.
