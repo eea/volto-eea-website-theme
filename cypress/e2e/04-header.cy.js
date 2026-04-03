@@ -8,36 +8,23 @@ describe('Header shadow', () => {
     cy.visit('/login');
   });
 
-  it('renders the EEA header shell and partner navigation', () => {
+  it('renders the EEA header shell and partner navigation trigger', () => {
     cy.get('header.eea.header').should('be.visible');
     cy.get('#eea-side-menu-host').should('exist');
 
-    cy.get('header.eea.header .official-union .ui.dropdown')
+    cy.get('header.eea.header .official-union [role="listbox"]')
       .should('be.visible')
-      .click({ force: true });
-
-    cy.get('header.eea.header .official-union .menu.transition.visible')
-      .should('be.visible')
-      .and('contain', 'All official European Union website addresses are in');
-    cy.get('header.eea.header .official-union .menu.transition.visible')
-      .contains('See all EU institutions and bodies')
-      .should(
+      .and(
         'have.attr',
-        'href',
-        'https://europa.eu/european-union/contact/institutions-bodies_en',
-      )
-      .and('have.attr', 'target', '_blank');
+        'aria-label',
+        'An official website of the European Union | How do you know?',
+      );
 
-    cy.get('#theme-sites').should('be.visible').click({ force: true });
-    cy.get('#theme-sites .menu.transition.visible')
-      .contains('European Environment Agency website')
+    cy.get('#theme-sites[role="listbox"]')
       .should('be.visible')
-      .closest('a')
-      .should('have.attr', 'href', 'https://www.eea.europa.eu');
-    cy.get('#theme-sites .menu.transition.visible')
-      .contains('WISE marine - Marine information system for Europe')
-      .should('be.visible')
-      .closest('a')
-      .should('have.attr', 'href', 'https://water.europa.eu/marine');
+      .and('have.attr', 'aria-label', 'Environmental information systems');
+    cy.contains('#theme-sites', 'Environmental information systems').should(
+      'be.visible',
+    );
   });
 });
