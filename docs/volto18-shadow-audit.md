@@ -54,9 +54,9 @@
 | Shadow | Why customized in 17 | Volto 18 delta | Status | Next action | Support |
 | --- | --- | --- | --- | --- | --- |
 | `volto/actions/vocabularies/vocabularies.js` | Backports a newer vocabulary-fetch implementation from Volto 19.x. | Volto 18 target file is unchanged vs 17 for this area. | `compatible` | Keep for now; later compare directly with Volto 19 before removing. | `vocabularies.js.md`, `.diff`, test shadow |
-| `volto/helpers/Html/Html.jsx` | CSP-safe HTML rendering. | Volto 18 changed the helper enough to require a real merge. | `needs rebase` | Rebase the CSP behavior onto Volto 18 helper code, then verify nonce/script extraction end-to-end. | `Readme.md` |
+| `volto/helpers/Html/Html.jsx` | CSP-safe HTML rendering — adds `nonce` prop to both inline scripts. | V18 added cssLayers, head.style, SITE_DEFAULT_LANGUAGE, and updated mobile meta. | `needs rebase` ✅ done | Rebased: added cssLayers + head.style.toComponent(), SITE_DEFAULT_LANGUAGE, mobile-web-app-capable, lodash tree-shake. Nonce customization kept. No cypress test needed (SSR-only). | `Readme.md` |
 | `volto/reducers/breadcrumbs/breadcrumbs.js` | Supports custom breadcrumb behavior used by EEA header/view stack. | Small upstream delta. | `needs rebase` | Keep only the breadcrumb-state changes still required by the custom header and breadcrumbs components. | None |
-| `volto/server.jsx` | CSP headers, nonce generation, language-aware redirects, and script extraction on error pages. | Volto 18 server changed heavily. | `needs rebase` | Rebuild this customization against Volto 18 server entry instead of copying the file; test SSR, CSP, and error pages together. | Inline comments; paired with `Html.jsx` |
+| `volto/server.jsx` | CSP headers, nonce generation, language-aware redirects, and script extraction on error pages. | Volto 18 server changed heavily. | `needs rebase` ✅ done | Rebased in bf86da8: CSP nonce generation, buildCSPHeader, supportedLanguages from config, etag disabled, ErrorBoundary from registry. Remaining diffs vs V18 are cosmetic (import paths, inline vs sendHtmlResponse helper). | Inline comments; paired with `Html.jsx` |
 
 ### Manage UI: blocks
 
