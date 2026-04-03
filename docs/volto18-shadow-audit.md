@@ -45,7 +45,7 @@
 | `@plone/volto-slate/editor/SlateEditor.jsx` | Fixes multiple editors bound to the same prop and carries custom hotkey behavior. | Moderate upstream editor changes in Volto 18. | `needs rebase` | Rebase the same-prop sync fix and hotkey changes onto Volto 18 instead of copying the whole file. | README note in addon root, changelog refs `#264239` |
 | `@plone/volto-slate/editor/plugins/Table/less/public.less` | EEA table public styling override. | No upstream delta. | `compatible` | Keep. | None |
 | `@plone/volto-slate/editor/render.jsx` | Adds anchor link rendering and custom slate render behavior. | Small upstream delta. | `needs rebase` | Rebase custom anchor rendering on top of Volto 18 render helpers. | Changelog note for `renderLinkElement` |
-| `@plone/volto-slate/elementEditor/utils.js` | Historical slate editing fix. | Volto 18 file is identical to the customization. | `upstream absorbed` ✅ removed | ~~Remove the shadow.~~ Done. | README and changelog point to upstreamed work |
+| `@plone/volto-slate/elementEditor/utils.js` | Backports V18 fixes: setTimeout for selection restore, getSavedSelection fallback in _unwrapElement. | V18 file is identical to the shadow. | `upstream absorbed` ⚠️ keep for dual-support | Keep while V17 is still supported — shadow = V18 source, so V18 falls through to upstream and V17 gets the backport. Remove when V17 is dropped. | README and changelog point to upstreamed work |
 | `@plone/volto-slate/utils/blocks.js` | Empty-block and copy/paste handling for slate block transforms. | Volto 18 changed block utilities. | `needs rebase` | Re-implement only the transform behavior still needed for `#273976`, `#261770`, and Word paste fixes. | Changelog refs `#273976`, `#265782`, `#261770` |
 | `@root/theme.js` | Replaces default semantic import with EEA design-system semantic theme plus Pastanaga extras. | Volto 18 root theme entry is materially the same. | `compatible` | Keep, verify the design-system LESS still builds on Volto 18. | None |
 
@@ -130,7 +130,7 @@
 ## Recommended Next Pass
 
 1. ✅ Remove clear dead weight first:
-   `@plone/volto-slate/elementEditor/utils.js` and `SidebarPopup copy.jsx`.
+   `SidebarPopup copy.jsx` removed. `@plone/volto-slate/elementEditor/utils.js` restored — needed for V17 dual-support (remove when V17 dropped).
 2. Rebase the SSR/CSP layer together:
    `volto/server.jsx` and `volto/helpers/Html/Html.jsx`.
 3. Rework image and lead-image against Volto 18 structure:
