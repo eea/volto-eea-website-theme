@@ -71,6 +71,7 @@ Cypress.Commands.add(
           id: contentId,
           title: contentTitle,
           image: {
+            // prettier-ignore
             data:
               'iVBORw0KGgoAAAANSUhEUgAAANcAAAA4CAMAAABZsZ3QAAAAM1BMVEX29fK42OU+oMvn7u9drtIPisHI4OhstdWZyt4fkcXX5+sAg74umMhNp86p0eJ7vNiKw9v/UV4wAAAAAXRSTlMAQObYZgAABBxJREFUeF7tmuty4yAMhZG4X2zn/Z92J5tsBJwWXG/i3XR6frW2Y/SBLIRAfaQUDNt8E5tLUt9BycfcKfq3R6Mlfyimtx4rzp+K3dtibXkor99zsEqLYZltblTecciogoh+TXfY1Ve4dn07rCDGG9dHSEEOg/GmXl0U1XDxTKxNK5De7BxsyyBr6gGm2/vPxKJ8F6f7BXKfRMp1xIWK9A+5ks25alSb353dWnDJN1k35EL5f8dVGifTf/4tjUuuFq7u4srmXC60yAmldLXIWbg65RKU87lcGxJCFqUPv0IacW0PmSivOZFLE908inPToMmii/roG+MRV/O8FU88i8tFsxV3a06MFUw0Qu7RmAtdV5/HVVaOVMTWNOWSwMljLhzhcB6XIS7OK5V6AvRDNN7t5VJWQs1J40UmalbK56usBG/CuCHSYuc+rkUGeMCViNRARPrzW52N3oQLe6WifNliSuuGaH3czbVNudI9s7ZLUCLHVwWlyES522o1t14uvmbblmVTKqFjaZYJFSTPP4dLL1kU1z7p0lzdbRulmEWLxoQX+z9ce7A8GqEEucllLxePuZwdJl1Lezu0hoswvTPt61DrFcRuujV/2cmlxaGBC7Aw6cpovGANwRiSdOAWJ5AGy4gLL64dl0QhUEAuEUNws+XxV+OKGPdw/hESGYF9XEGaFC7sNLMSXWJjHsnanYi87VK428N2uxpOjOFANcagLM5l+7mSycM8KknZpKLcGi6jmzWGr/vLurZ/0g4u9AZuAoeb5r1ceQhyiTPY1E4wUR6u/F3H2ojSpXMMriBPT9cezTto8Cx+MsglHL4fv1Rxrb1LVw9yvyQpJ3AhFnLZfuRLH2QsOG3FGGD20X/th/u5bFAt16Bt308KjF+MNOXgl/SquIEySX3GhaZvc67KZbDxcCDORz2N8yCWPaY5lyQZO7lQ29fnZbt3Xu6qoge4+DjXl/MocySPOp9rlvdyznahRyHEYd77v3LhugOXDv4J65QXfl803BDAdaWBEDhfVx7nKofjoVCgxnUAqw/UAUDPn788BDvQuG4TDtdtUPvzjSlXAB8DvaDOhhrmhwbywylXAm8CvaouikJTL93gs3y7Yy4VYbIxOHrcMizPqWOjqO9l3Uz52kibQy4xxOgqhJvD+w5rvokOcAlGvNCfeqCv1ste1stzLm0f71Iq3ZfTrPfuE5nhPtF+LvQE2lffQC7pYtQy3tdzdrKvd5TLVVzDetScS3nEKmmwDyt1Cev1kX3YfbvzNK4fzrlw+cB6vm+uiUgf2zdXI62241LawCb7Pi5FXFPF8KpzDoF/Sw2lg+GrHNbno1mhPu+VCF/vfMnw06PnUl6j48dVHD3jHNHPua+fc3o/5yp/zsGi0vYtzi3Pz5mHd4T6BWMIlewacd63AAAAAElFTkSuQmCC',
             encoding: 'base64',
@@ -401,7 +402,9 @@ Cypress.Commands.add('getSlate', ({ createNewSlate = true } = {}) => {
     cy.get('body').then(($delayedBody) => {
       if ($delayedBody.find(SLATE_SELECTOR).length === 0) {
         // Create a new Text block via chooser (no Enter key), then use it as slate target.
-        cy.get('.block.inner', { timeout: 10000 }).last().click({ force: true });
+        cy.get('.block.inner', { timeout: 10000 })
+          .last()
+          .click({ force: true });
         cy.get('.ui.basic.icon.button.block-add-button', { timeout: 10000 })
           .first()
           .click({ force: true });
@@ -419,14 +422,21 @@ Cypress.Commands.add('getSlate', ({ createNewSlate = true } = {}) => {
 });
 
 // Add a new block via the slash command.
-// Clicks the first filtered slash-menu entry instead of pressing Enter,
-// which is more reliable in CI (avoids occasional Slate Enter key races).
+// Works on both Volto 17 and Volto 18:
+// - if slash menu is rendered, click first filtered entry
+// - otherwise fallback to Enter key selection
 Cypress.Commands.add('addNewBlock', (blockName) => {
-  cy.getSlate().click().type(`/${blockName}`);
-  cy.get('.power-user-menu', { timeout: 10000 }).should('be.visible');
-  cy.get('.power-user-menu .menu .item', { timeout: 10000 })
-    .first()
-    .click({ force: true });
+  cy.getSlate().focus().click().type(`/${blockName}`);
+  cy.wait(200);
+  cy.get('body').then(($body) => {
+    if ($body.find('.power-user-menu .menu .item').length > 0) {
+      cy.get('.power-user-menu .menu .item', { timeout: 10000 })
+        .first()
+        .click({ force: true });
+    } else {
+      cy.getSlate({ createNewSlate: false }).focus().click().type('{enter}');
+    }
+  });
 });
 
 Cypress.Commands.add('clearSlate', (selector) => {

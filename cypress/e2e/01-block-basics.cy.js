@@ -42,7 +42,7 @@ describe('Blocks Tests', () => {
         cy.get('.blocks-chooser input').type('Image');
         cy.get('.blocks-chooser .image').first().click();
       } else {
-        cy.getSlate().focus().click().lineBreakInSlate();
+        cy.getSlate().focus().click().type('{end}{enter}');
         cy.addNewBlock('image');
       }
     });
