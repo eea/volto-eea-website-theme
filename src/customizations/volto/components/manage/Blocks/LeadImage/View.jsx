@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { UniversalLink } from '@plone/volto/components';
 import cx from 'classnames';
 import config from '@plone/volto/registry';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 import { Icon } from 'semantic-ui-react';
 
 /**

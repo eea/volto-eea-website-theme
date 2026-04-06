@@ -17,7 +17,7 @@ import { isEqual } from 'lodash';
 import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
 import { Icon as IconSemantic } from 'semantic-ui-react';
 import { createContent } from '@plone/volto/actions';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 import {
   flattenToAppURL,

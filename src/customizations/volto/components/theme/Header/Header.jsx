@@ -12,7 +12,7 @@ import { UniversalLink } from '@plone/volto/components';
 import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
 import { getNavigation } from '@plone/volto/actions';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
-import { Header } from '@eeacms/volto-eea-design-system/ui';
+import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';

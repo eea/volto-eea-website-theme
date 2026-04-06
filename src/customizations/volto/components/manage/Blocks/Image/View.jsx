@@ -15,7 +15,7 @@ import {
   withBlockExtensions,
 } from '@plone/volto/helpers';
 import config from '@plone/volto/registry';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 /**
  * View image block class.

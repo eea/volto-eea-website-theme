@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
-import { Logo } from '@eeacms/volto-eea-design-system/ui';
+import Logo from '@eeacms/volto-eea-design-system/ui/Logo/Logo';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-logo.svg';
 
 const messages = defineMessages({
