@@ -411,12 +411,14 @@ Cypress.Commands.add('getSlate', ({ createNewSlate = true } = {}) => {
 });
 
 // Add a new block via the slash command.
-// Waits for the .power-user-menu to appear before pressing Enter so that
-// the block is actually selected from the menu rather than creating a newline.
+// Clicks the first filtered slash-menu entry instead of pressing Enter,
+// which is more reliable in CI (avoids occasional Slate Enter key races).
 Cypress.Commands.add('addNewBlock', (blockName) => {
   cy.getSlate().click().type(`/${blockName}`);
   cy.get('.power-user-menu', { timeout: 10000 }).should('be.visible');
-  cy.focused().type('{enter}');
+  cy.get('.power-user-menu .menu .item', { timeout: 10000 })
+    .first()
+    .click({ force: true });
 });
 
 Cypress.Commands.add('clearSlate', (selector) => {

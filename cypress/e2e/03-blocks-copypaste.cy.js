@@ -1,5 +1,14 @@
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
+const imageUrl = 'https://eea.github.io/volto-eea-design-system/img/eea_icon.png';
+const imageUrlInput = '.block.image .toolbar-inner .ui.input input';
+const imageUrlSubmitButton = '.block.image .toolbar-inner .ui.basic.primary.button';
+
+const setImageUrl = () => {
+  cy.get(imageUrlInput).type(imageUrl);
+  cy.get(imageUrlSubmitButton).should('not.be.disabled').click({ force: true });
+};
+
 describe('Blocks copy/paste', () => {
   beforeEach(slateBeforeEach);
   afterEach(slateAfterEach);
@@ -8,12 +17,7 @@ describe('Blocks copy/paste', () => {
     // GIVEN: A page with multiple blocks
     cy.addNewBlock('image');
     cy.get('.block-editor-image').should('exist');
-
-    cy.get(`.block.image .toolbar-inner .ui.input input`)
-      .type(
-        'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
-      )
-      .type('{enter}');
+    setImageUrl();
 
     cy.getSlateEditorAndType('Noam Avram Chomsky').contains(
       'Noam Avram Chomsky',
@@ -44,11 +48,7 @@ describe('Blocks copy/paste', () => {
     // GIVEN: A page with multiple blocks
     cy.addNewBlock('image');
     cy.get('.block-editor-image').should('exist');
-    cy.get(`.block.image .toolbar-inner .ui.input input`)
-      .type(
-        'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
-      )
-      .type('{enter}');
+    setImageUrl();
 
     cy.getSlateEditorAndType('Noam Avram Chomsky').contains(
       'Noam Avram Chomsky',
@@ -79,11 +79,7 @@ describe('Blocks copy/paste', () => {
     // GIVEN: A page with multiple blocks
     cy.addNewBlock('image');
     cy.get('.block-editor-image').should('exist');
-    cy.get(`.block.image .toolbar-inner .ui.input input`)
-      .type(
-        'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
-      )
-      .type('{enter}');
+    setImageUrl();
 
     cy.getSlateEditorAndType('Noam Avram Chomsky').contains(
       'Noam Avram Chomsky',

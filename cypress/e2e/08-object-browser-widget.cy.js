@@ -19,14 +19,15 @@ import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 const imageUrl =
   'https://eea.github.io/volto-eea-design-system/img/eea_icon.png';
 const imageLinkField = '.field-wrapper-href .objectbrowser-field';
+const imageUrlSubmitButton = '.block.image .toolbar-inner .ui.basic.primary.button';
+const linkSubmitButton = `${imageLinkField} .ui.basic.primary.button`;
 
 const addImageBlockWithLinkField = () => {
   cy.addNewBlock('image');
   cy.get('.block-editor-image').should('exist');
 
-  cy.get('.block.image .toolbar-inner .ui.input input')
-    .type(imageUrl)
-    .type('{enter}');
+  cy.get('.block.image .toolbar-inner .ui.input input').type(imageUrl);
+  cy.get(imageUrlSubmitButton).should('not.be.disabled').click({ force: true });
 
   cy.get('.block-editor-image').click({ force: true });
   cy.get('.field-wrapper-href').scrollIntoView();
@@ -43,7 +44,10 @@ describe('ObjectBrowserWidget & SidebarPopup shadows', () => {
     const urlWithHash = `${Cypress.config().baseUrl}/cypress/my-page#section`;
     cy.get('.field-wrapper-href').scrollIntoView();
     cy.get(`${imageLinkField} input:visible`).first().type(urlWithHash);
-    cy.get(`${imageLinkField} input:visible`).first().type('{enter}');
+    cy.get(linkSubmitButton)
+      .first()
+      .should('not.be.disabled')
+      .click({ force: true });
 
     cy.get(`${imageLinkField} .ui.label`).first().should('contain', 'My Page');
 
@@ -64,7 +68,12 @@ describe('ObjectBrowserWidget & SidebarPopup shadows', () => {
       .click({ force: true });
 
     cy.contains('.sidebar-container', 'Choose Target').should('exist');
-    cy.get('body').type('{esc}');
+    cy.document().trigger('keyup', {
+      key: 'Escape',
+      code: 'Escape',
+      keyCode: 27,
+      which: 27,
+    });
     cy.contains('.sidebar-container', 'Choose Target').should('not.exist');
   });
 });

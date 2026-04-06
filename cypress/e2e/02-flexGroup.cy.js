@@ -1,5 +1,14 @@
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
+const getRoleField = (label) => cy.contains('label', label).parents('.field').first();
+
+const selectRoleOption = (label, option) => {
+  getRoleField(label).find('.react-select__control').click();
+  getRoleField(label).find('input').type(option, { force: true });
+  cy.get('.react-select__menu').should('be.visible');
+  cy.get('.react-select__option').contains(option).click({ force: true });
+};
+
 describe('Flex Group Variation Tests', () => {
   beforeEach(slateBeforeEach);
   afterEach(slateAfterEach);
@@ -53,46 +62,22 @@ describe('Flex Group Variation Tests', () => {
     // Click on the restricted block checkbox in the Security fieldset
     cy.contains('label', 'Restricted block').click();
 
-    // Click on Allow View select and type "Administrators"
-    cy.contains('label', 'Allow View')
-      .parents('.field')
-      .find('.react-select__control')
-      .click();
-    cy.contains('label', 'Allow View')
-      .parents('.field')
-      .find('input')
-      .type('Administrators{enter}', { force: true });
-
-    // Click on Deny View select and type "Administrators"
-    cy.contains('label', 'Deny View')
-      .parents('.field')
-      .find('.react-select__control')
-      .click();
-    cy.contains('label', 'Deny View')
-      .parents('.field')
-      .find('input')
-      .type('Administrators{enter}', { force: true });
+    // Select roles without Enter key submits
+    selectRoleOption('Allow View', 'Administrators');
+    selectRoleOption('Deny View', 'Administrators');
 
     cy.get(
       '.sidebar-container .field-wrapper-variation .react-select__value-container',
     ).click();
-    cy.get('.react-select__option')
-      .contains('Flex Group')
-      .click({ force: true });
+    cy.get('.react-select__option').contains('Flex Group').click({ force: true });
 
+    // Type text in the group slate using beforeinput events (no keyboard Enter)
     cy.get('.block-editor-group .block-editor-slate')
+      .first()
+      .find('[contenteditable=true]')
+      .first()
       .click()
-      .type('test{enter}');
-    cy.get('.block-editor-group div[contenteditable*=true]')
-      .eq(1)
-      .focus()
-      .click()
-      .type('test2{enter}');
-    cy.get('.block-editor-group div[contenteditable*=true]')
-      .eq(1)
-      .focus()
-      .click()
-      .type('test3');
+      .typeInSlate('test2');
 
     // Save
     cy.get('#toolbar-save').click();

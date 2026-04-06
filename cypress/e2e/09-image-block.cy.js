@@ -23,6 +23,7 @@ import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
 const imageUrl =
   'https://eea.github.io/volto-eea-design-system/img/eea_icon.png';
+const imageUrlSubmitButton = '.block.image .toolbar-inner .ui.basic.primary.button';
 
 /**
  * Add an Image block via the slash command and set its URL via the inline
@@ -33,9 +34,8 @@ const addImageBlockWithUrl = () => {
   cy.addNewBlock('image');
   cy.get('.block-editor-image').should('exist');
 
-  cy.get('.block.image .toolbar-inner .ui.input input')
-    .type(imageUrl)
-    .type('{enter}');
+  cy.get('.block.image .toolbar-inner .ui.input input').type(imageUrl);
+  cy.get(imageUrlSubmitButton).should('not.be.disabled').click({ force: true });
 
   // Wait for the image to be accepted and the block to update
   cy.get('.block.image .image-block-container').should('exist');

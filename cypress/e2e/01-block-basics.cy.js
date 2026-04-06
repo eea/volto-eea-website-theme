@@ -1,5 +1,7 @@
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
+const imageUrlSubmitButton = '.block.image .toolbar-inner .ui.basic.primary.button';
+
 describe('Blocks Tests', () => {
   beforeEach(slateBeforeEach);
   afterEach(slateAfterEach);
@@ -29,13 +31,15 @@ describe('Blocks Tests', () => {
       force: true,
     });
 
-    //add image block using slash command
-    cy.getSlate().click().type('{enter}');
+    // add image block using slash command
+    // Clear the selected slate so slash command is parsed deterministically.
+    cy.getSlate().focus().click().type('{selectAll}{backspace}');
     cy.addNewBlock('image');
     cy.get('.block-editor-image').should('exist');
     cy.get('.block.image .ui.input input[type="text"]').type(
-      'https://eea.github.io/volto-eea-design-system/img/eea_icon.png{enter}',
+      'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
     );
+    cy.get(imageUrlSubmitButton).should('not.be.disabled').click({ force: true });
 
     // Test all 4 alignment buttons: left, center, right, full
     cy.get('.align-buttons .ui.basic.icon.button').first().click(); // left
