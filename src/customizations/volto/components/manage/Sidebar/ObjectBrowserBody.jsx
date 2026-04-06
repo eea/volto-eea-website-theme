@@ -25,6 +25,11 @@ import linkSVG from '@plone/volto/icons/link.svg';
 import homeSVG from '@plone/volto/icons/home.svg';
 
 import ObjectBrowserNav from '@plone/volto/components/manage/Sidebar/ObjectBrowserNav';
+import {
+  isItemAlreadySelected,
+  isSelectableObjectBrowserItem,
+  shouldCloseAfterObjectBrowserSelection,
+} from './objectBrowserSelection';
 
 const messages = defineMessages({
   SearchInputPlaceholder: {
@@ -74,6 +79,7 @@ class ObjectBrowserBody extends Component {
     maximumSelectionSize: PropTypes.number,
     contextURL: PropTypes.string,
     searchableTypes: PropTypes.arrayOf(PropTypes.string),
+    onlyFolderishSelectable: PropTypes.bool,
   };
 
   /**
@@ -89,6 +95,7 @@ class ObjectBrowserBody extends Component {
     selectableTypes: [],
     searchableTypes: null,
     maximumSelectionSize: null,
+    onlyFolderishSelectable: false,
   };
 
   /**
@@ -299,9 +306,15 @@ class ObjectBrowserBody extends Component {
   };
 
   isSelectable = (item) => {
-    return this.props.selectableTypes.length > 0
-      ? this.props.selectableTypes.indexOf(item['@type']) >= 0
-      : true;
+    return isSelectableObjectBrowserItem({
+      item,
+      selectableTypes: this.props.selectableTypes,
+      onlyFolderishSelectable: this.props.onlyFolderishSelectable,
+      maximumSelectionSize: this.props.maximumSelectionSize,
+      data: this.props.data,
+      mode: this.props.mode,
+      normalize: flattenToAppURL,
+    });
   };
 
   handleClickOnItem = (item) => {
@@ -318,15 +331,23 @@ class ObjectBrowserBody extends Component {
           !this.props.maximumSelectionSize ||
           this.props.mode === 'multiple' ||
           !this.props.data ||
-          this.props.data.length < this.props.maximumSelectionSize
+          this.props.data.length <= this.props.maximumSelectionSize
         ) {
-          this.onSelectItem(item);
-          let length = this.props.data ? this.props.data.length : 0;
+          const isDeselecting =
+            this.props.mode === 'multiple' &&
+            isItemAlreadySelected({
+              data: this.props.data,
+              item,
+              normalize: flattenToAppURL,
+            });
 
-          let stopSelecting =
-            this.props.mode !== 'multiple' ||
-            (this.props.maximumSelectionSize > 0 &&
-              length + 1 >= this.props.maximumSelectionSize);
+          this.onSelectItem(item);
+          const stopSelecting = shouldCloseAfterObjectBrowserSelection({
+            mode: this.props.mode,
+            maximumSelectionSize: this.props.maximumSelectionSize,
+            currentLength: this.props.data ? this.props.data.length : 0,
+            isDeselecting,
+          });
 
           if (stopSelecting) {
             this.props.closeObjectBrowser();

@@ -18,12 +18,13 @@ import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
 
 import config from '@plone/volto/registry';
-import { compose } from 'recompose';
+import { compose } from 'redux';
 
 import cx from 'classnames';
 import loadable from '@loadable/component';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
+const EMPTY_NAVIGATION_SETTINGS = {};
 
 function removeTrailingSlash(path) {
   return path.replace(/\/+$/, '');
@@ -60,9 +61,9 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
   const previousToken = usePrevious(token);
-  const navigationSettings = useSelector(
-    (state) => state.navigationSettings?.settings || {},
-  );
+  const navigationSettings =
+    useSelector((state) => state.navigationSettings?.settings) ||
+    EMPTY_NAVIGATION_SETTINGS;
   const updateRequest = useSelector((state) => state.content.update);
 
   // Combine navigation settings from backend with config fallback

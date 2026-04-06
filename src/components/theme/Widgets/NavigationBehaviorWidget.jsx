@@ -13,6 +13,8 @@ import { numbersToMenuItemColumns } from '@eeacms/volto-eea-design-system/ui/Hea
 import upSVG from '@plone/volto/icons/up-key.svg';
 import downSVG from '@plone/volto/icons/down-key.svg';
 
+const EMPTY_NAVIGATION = [];
+
 const messages = defineMessages({
   loadNavigationRoutes: {
     id: 'Load Main Navigation Routes',
@@ -257,7 +259,8 @@ const NavigationBehaviorWidget = (props) => {
   const { value = '{}', id, onChange } = props;
   const intl = useIntl();
   const dispatch = useDispatch();
-  const navigation = useSelector((state) => state.navigation?.items || []);
+  const navigation =
+    useSelector((state) => state.navigation?.items) || EMPTY_NAVIGATION;
   const navigationLoaded = useSelector((state) => state.navigation?.loaded);
 
   // Parse JSON string to object

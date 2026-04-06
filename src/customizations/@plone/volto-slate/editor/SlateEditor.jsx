@@ -249,6 +249,7 @@ class SlateEditor extends Component {
 
   render() {
     const {
+      id,
       selected,
       placeholder,
       onKeyDown,
@@ -377,6 +378,7 @@ class SlateEditor extends Component {
                 if (handled) return;
                 onKeyDown && onKeyDown({ editor, event });
               }}
+              aria-labelledby={id ? `field-${id}` : undefined}
               {...editableProps}
             />
             {selected &&
