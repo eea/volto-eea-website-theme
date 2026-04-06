@@ -1,6 +1,7 @@
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
-const imageUrlSubmitButton = '.block.image .toolbar-inner .ui.basic.primary.button';
+const imageUrlSubmitButton =
+  '.block.image .toolbar-inner .ui.basic.primary.button';
 
 describe('Blocks Tests', () => {
   beforeEach(slateBeforeEach);
@@ -24,22 +25,26 @@ describe('Blocks Tests', () => {
 
     // test rss link
     cy.get('.documentFirstHeading').click();
-    cy.get('#blockform-fieldset-actions [aria-label="Add RSS Link"]')
-      .click({ force: true });
+    cy.get('#blockform-fieldset-actions [aria-label="Add RSS Link"]').click({
+      force: true,
+    });
     cy.get('#field-title-0-rssLinks-0').type('RSS', { force: true });
     cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss', {
       force: true,
     });
 
-    // add image block using slash command
-    // Insert a new line using beforeinput API (no keyboard Enter key).
-    cy.getSlate().focus().click().lineBreakInSlate();
-    cy.addNewBlock('image');
+    // add image block using the block chooser (slash command is flaky here
+    // after previous rich-text toolbar interactions on the same slate block)
+    cy.get('.ui.basic.icon.button.block-add-button').first().click();
+    cy.get('.blocks-chooser input').type('Image');
+    cy.get('.blocks-chooser .image').first().click();
     cy.get('.block-editor-image').should('exist');
     cy.get('.block.image .ui.input input[type="text"]').type(
       'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
     );
-    cy.get(imageUrlSubmitButton).should('not.be.disabled').click({ force: true });
+    cy.get(imageUrlSubmitButton)
+      .should('not.be.disabled')
+      .click({ force: true });
 
     // Test all 4 alignment buttons: left, center, right, full
     cy.get('.align-buttons .ui.basic.icon.button').first().click(); // left
