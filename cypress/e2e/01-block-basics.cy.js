@@ -33,11 +33,19 @@ describe('Blocks Tests', () => {
       force: true,
     });
 
-    // add image block using the block chooser (slash command is flaky here
-    // after previous rich-text toolbar interactions on the same slate block)
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get('.blocks-chooser input').type('Image');
-    cy.get('.blocks-chooser .image').first().click();
+    // add image block in a Volto-version compatible way:
+    // - Volto 18: block chooser button is available and stable here
+    // - Volto 17: fallback to slash command flow
+    cy.get('body').then(($body) => {
+      if ($body.find('.ui.basic.icon.button.block-add-button').length > 0) {
+        cy.get('.ui.basic.icon.button.block-add-button').first().click();
+        cy.get('.blocks-chooser input').type('Image');
+        cy.get('.blocks-chooser .image').first().click();
+      } else {
+        cy.getSlate().focus().click().lineBreakInSlate();
+        cy.addNewBlock('image');
+      }
+    });
     cy.get('.block-editor-image').should('exist');
     cy.get('.block.image .ui.input input[type="text"]').type(
       'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
