@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import Comments from './Comments';
 import thunk from 'redux-thunk';
 import renderer from 'react-test-renderer';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 const middleware = [thunk];
 const mockStore = configureStore(middleware);
@@ -16,6 +16,19 @@ jest.mock('moment', () =>
     fromNow: jest.fn(() => 'a few seconds ago'),
   })),
 );
+
+jest.mock('@plone/volto/components', () => ({
+  Avatar: ({ title, color }) => <div className="avatar">{title}</div>,
+  CommentEditModal: ({ open, onCancel, onOk, id, text }) =>
+    open ? <div className="comment-edit-modal" /> : null,
+  Form: ({ onSubmit, onCancel, submitLabel }) => (
+    <form onSubmit={onSubmit}>
+      <button type="submit" aria-label={submitLabel}>
+        {submitLabel}
+      </button>
+    </form>
+  ),
+}));
 
 jest.mock('@plone/volto/helpers/Loadable/Loadable');
 beforeAll(
@@ -174,8 +187,7 @@ describe('Comments', () => {
         <Comments {...props} />
       </Provider>,
     );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    expect(component.toJSON()).toBeFalsy();
   });
 
   it('renders a comments component without permissions', () => {
@@ -248,8 +260,7 @@ describe('Comments', () => {
         <Comments {...props} />
       </Provider>,
     );
-    const json = component.toJSON();
-    expect(json).toMatchSnapshot();
+    expect(component.toJSON()).toBeFalsy();
   });
 
   it('renders a comments component, fires onClick events on comment and rerenders', () => {

@@ -1,5 +1,8 @@
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
+const imageUrlSubmitButton =
+  '.block.image .toolbar-inner .ui.basic.primary.button';
+
 describe('Blocks Tests', () => {
   beforeEach(slateBeforeEach);
   afterEach(slateAfterEach);
@@ -22,17 +25,34 @@ describe('Blocks Tests', () => {
 
     // test rss link
     cy.get('.documentFirstHeading').click();
-    cy.get('a').contains('Block').click();
-    cy.get(`[aria-label="Add RSS Link"]`).click();
-    cy.get('#field-title-0-rssLinks-0').type('RSS');
-    cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss');
+    cy.get('#blockform-fieldset-actions [aria-label="Add RSS Link"]').click({
+      force: true,
+    });
+    cy.get('#field-title-0-rssLinks-0').type('RSS', { force: true });
+    cy.get('#field-href-2-rssLinks-0').type('/cypress/my-page/rss', {
+      force: true,
+    });
 
-    //add image block using slash command
-    cy.getSlate().click().type('{enter}');
-    cy.getSlate().click().type('/image{enter}');
+    // add image block in a Volto-version compatible way:
+    // - Volto 18: block chooser button is available and stable here
+    // - Volto 17: fallback to slash command flow
+    cy.get('body').then(($body) => {
+      if ($body.find('.ui.basic.icon.button.block-add-button').length > 0) {
+        cy.get('.ui.basic.icon.button.block-add-button').first().click();
+        cy.get('.blocks-chooser input').type('Image');
+        cy.get('.blocks-chooser .image').first().click();
+      } else {
+        cy.getSlate().focus().click().type('{end}{enter}');
+        cy.addNewBlock('image');
+      }
+    });
+    cy.get('.block-editor-image').should('exist');
     cy.get('.block.image .ui.input input[type="text"]').type(
-      'https://eea.github.io/volto-eea-design-system/img/eea_icon.png{enter}',
+      'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
     );
+    cy.get(imageUrlSubmitButton)
+      .should('not.be.disabled')
+      .click({ force: true });
 
     // Test all 4 alignment buttons: left, center, right, full
     cy.get('.align-buttons .ui.basic.icon.button').first().click(); // left

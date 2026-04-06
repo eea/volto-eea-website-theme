@@ -126,7 +126,7 @@ exports[`Header renders a header component with homepage_inverse_view layout 1`]
                   alt="Global search"
                   class="ui image header-search-icon"
                   height="45"
-                  src="search-line.svg"
+                  src="ai-search.svg"
                   width="45"
                 />
               </button>

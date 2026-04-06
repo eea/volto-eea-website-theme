@@ -4,7 +4,7 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import ReportNavigation from './ReportNavigation';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 const mockStore = configureStore();
 const store = mockStore({
