@@ -6,7 +6,8 @@ describe('Blocks copy/paste', () => {
 
   it('Copy/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.getSlate().click().type('/image{enter}');
+    cy.addNewBlock('image');
+    cy.get('.block-editor-image').should('exist');
 
     cy.get(`.block.image .toolbar-inner .ui.input input`)
       .type(
@@ -41,8 +42,8 @@ describe('Blocks copy/paste', () => {
 
   it('Cut/paste multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-
-    cy.getSlate().click().type('/image{enter}');
+    cy.addNewBlock('image');
+    cy.get('.block-editor-image').should('exist');
     cy.get(`.block.image .toolbar-inner .ui.input input`)
       .type(
         'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',
@@ -76,7 +77,8 @@ describe('Blocks copy/paste', () => {
 
   it('Delete multiple blocks', () => {
     // GIVEN: A page with multiple blocks
-    cy.getSlate().click().type('/image{enter}');
+    cy.addNewBlock('image');
+    cy.get('.block-editor-image').should('exist');
     cy.get(`.block.image .toolbar-inner .ui.input input`)
       .type(
         'https://eea.github.io/volto-eea-design-system/img/eea_icon.png',

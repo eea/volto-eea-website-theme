@@ -30,7 +30,7 @@ const imageUrl =
  * covered by 08-object-browser-widget.cy.js.
  */
 const addImageBlockWithUrl = () => {
-  cy.getSlate().click().type('/image{enter}');
+  cy.addNewBlock('image');
   cy.get('.block-editor-image').should('exist');
 
   cy.get('.block.image .toolbar-inner .ui.input input')

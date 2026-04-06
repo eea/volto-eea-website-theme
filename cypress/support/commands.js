@@ -322,8 +322,10 @@ Cypress.Commands.add(
 // --- waitForResourceToLoad ----------------------------------------------------------
 Cypress.Commands.add('waitForResourceToLoad', (fileName, type) => {
   const resourceCheckInterval = 40;
+  const maxChecks = 250; // ~10 seconds max
 
-  return new Cypress.Promise((resolve) => {
+  return new Cypress.Promise((resolve, reject) => {
+    let checks = 0;
     const checkIfResourceHasBeenLoaded = () => {
       const resource = cy
         .state('window')
@@ -333,7 +335,16 @@ Cypress.Commands.add('waitForResourceToLoad', (fileName, type) => {
 
       if (resource) {
         resolve();
+        return;
+      }
 
+      checks++;
+      if (checks >= maxChecks) {
+        reject(
+          new Error(
+            `waitForResourceToLoad: timed out waiting for "${fileName}"`,
+          ),
+        );
         return;
       }
 
@@ -388,12 +399,24 @@ Cypress.Commands.add('getSlate', ({ createNewSlate = true } = {}) => {
     },
     () => {
       if (createNewSlate) {
-        cy.get('.block.inner').last().type('{moveToEnd}{enter}');
+        cy.get('.block.inner', { timeout: 10000 })
+          .last()
+          .click()
+          .type('{moveToEnd}{enter}');
       }
       slate = cy.get(SLATE_SELECTOR, { timeout: 10000 }).last();
     },
   );
   return slate;
+});
+
+// Add a new block via the slash command.
+// Waits for the .power-user-menu to appear before pressing Enter so that
+// the block is actually selected from the menu rather than creating a newline.
+Cypress.Commands.add('addNewBlock', (blockName) => {
+  cy.getSlate().click().type(`/${blockName}`);
+  cy.get('.power-user-menu', { timeout: 10000 }).should('be.visible');
+  cy.focused().type('{enter}');
 });
 
 Cypress.Commands.add('clearSlate', (selector) => {

@@ -31,7 +31,8 @@ describe('Blocks Tests', () => {
 
     //add image block using slash command
     cy.getSlate().click().type('{enter}');
-    cy.getSlate().click().type('/image{enter}');
+    cy.addNewBlock('image');
+    cy.get('.block-editor-image').should('exist');
     cy.get('.block.image .ui.input input[type="text"]').type(
       'https://eea.github.io/volto-eea-design-system/img/eea_icon.png{enter}',
     );

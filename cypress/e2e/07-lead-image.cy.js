@@ -52,7 +52,7 @@ describe('LeadImage block shadow', () => {
 
     // Add a Lead Image Field block using the slash command, which is stable
     // across Volto 17/18 and avoids the toolbar add-button differences.
-    cy.getSlate().click().type('/lead{enter}');
+    cy.addNewBlock('lead');
 
     // EEA Edit.jsx: outer wrapper div should exist
     cy.get('.block-editor-leadimage').should('exist');

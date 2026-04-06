@@ -21,7 +21,7 @@ const imageUrl =
 const imageLinkField = '.field-wrapper-href .objectbrowser-field';
 
 const addImageBlockWithLinkField = () => {
-  cy.getSlate().click().type('/image{enter}');
+  cy.addNewBlock('image');
   cy.get('.block-editor-image').should('exist');
 
   cy.get('.block.image .toolbar-inner .ui.input input')
