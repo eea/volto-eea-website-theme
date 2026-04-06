@@ -391,23 +391,31 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('getSlate', ({ createNewSlate = true } = {}) => {
-  let slate;
-  cy.getIfExists(
-    SLATE_SELECTOR,
-    () => {
-      slate = cy.get(SLATE_SELECTOR).last();
-    },
-    () => {
-      if (createNewSlate) {
-        cy.get('.block.inner', { timeout: 10000 })
-          .last()
-          .click()
-          .type('{moveToEnd}{enter}');
+  return cy.get('body').then(($body) => {
+    if ($body.find(SLATE_SELECTOR).length > 0 || !createNewSlate) {
+      return cy.get(SLATE_SELECTOR, { timeout: 10000 }).last();
+    }
+
+    // Wait briefly to avoid racing async render on slower CI workers.
+    cy.wait(300);
+    cy.get('body').then(($delayedBody) => {
+      if ($delayedBody.find(SLATE_SELECTOR).length === 0) {
+        // Create a new Text block via chooser (no Enter key), then use it as slate target.
+        cy.get('.block.inner', { timeout: 10000 }).last().click({ force: true });
+        cy.get('.ui.basic.icon.button.block-add-button', { timeout: 10000 })
+          .first()
+          .click({ force: true });
+        cy.get('.blocks-chooser .title', { timeout: 10000 })
+          .contains('Text')
+          .click({ force: true });
+        cy.get('.ui.basic.icon.button.slate', { timeout: 10000 })
+          .contains('Text')
+          .click({ force: true });
       }
-      slate = cy.get(SLATE_SELECTOR, { timeout: 10000 }).last();
-    },
-  );
-  return slate;
+    });
+
+    return cy.get(SLATE_SELECTOR, { timeout: 10000 }).last();
+  });
 });
 
 // Add a new block via the slash command.

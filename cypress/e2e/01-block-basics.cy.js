@@ -32,8 +32,8 @@ describe('Blocks Tests', () => {
     });
 
     // add image block using slash command
-    // Clear the selected slate so slash command is parsed deterministically.
-    cy.getSlate().focus().click().type('{selectAll}{backspace}');
+    // Insert a new line using beforeinput API (no keyboard Enter key).
+    cy.getSlate().focus().click().lineBreakInSlate();
     cy.addNewBlock('image');
     cy.get('.block-editor-image').should('exist');
     cy.get('.block.image .ui.input input[type="text"]').type(
