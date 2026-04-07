@@ -13,7 +13,7 @@ import {
 } from '@plone/volto/actions/content/content';
 import { getLayoutFieldname } from '@plone/volto/helpers/Content/Content';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import { FormFieldWrapper } from '@plone/volto/components/manage/Widgets';
+import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 import { defineMessages, injectIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 

@@ -48,9 +48,9 @@ jest.mock('@plone/volto/components/theme/Icon/Icon', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/components/manage/Widgets', () => ({
+jest.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
   __esModule: true,
-  FormFieldWrapper: ({ children, ...props }) => (
+  default: ({ children, ...props }) => (
     <div data-testid="form-field-wrapper" {...props}>
       {children}
     </div>

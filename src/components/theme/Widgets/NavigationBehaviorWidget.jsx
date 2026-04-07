@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import { FormFieldWrapper } from '@plone/volto/components/manage/Widgets';
+import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 import ObjectWidget from '@plone/volto/components/manage/Widgets/ObjectWidget';
 import { Accordion, Button, Segment, Form, Dropdown } from 'semantic-ui-react';
 import { getNavigation } from '@plone/volto/actions/navigation/navigation';

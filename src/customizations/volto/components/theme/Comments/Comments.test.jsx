@@ -22,15 +22,14 @@ jest.mock('@plone/volto/components/theme/Avatar/Avatar', () => ({
   default: ({ title }) => <div className="avatar">{title}</div>,
 }));
 
-jest.mock('@plone/volto/components/theme/Comments', () => ({
+jest.mock('@plone/volto/components/theme/Comments/CommentEditModal', () => ({
   __esModule: true,
-  CommentEditModal: ({ open }) =>
-    open ? <div className="comment-edit-modal" /> : null,
+  default: ({ open }) => (open ? <div className="comment-edit-modal" /> : null),
 }));
 
-jest.mock('@plone/volto/components/manage/Form', () => ({
+jest.mock('@plone/volto/components/manage/Form/Form', () => ({
   __esModule: true,
-  Form: ({ onSubmit, submitLabel }) => (
+  default: ({ onSubmit, submitLabel }) => (
     <form onSubmit={(event) => event.preventDefault()}>
       <button
         type="button"

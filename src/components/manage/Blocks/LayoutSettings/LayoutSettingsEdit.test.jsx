@@ -11,9 +11,9 @@ jest.mock('./schema', () => ({
   EditSchema: jest.fn(),
 }));
 
-jest.mock('@plone/volto/components/manage/Form', () => ({
+jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
   __esModule: true,
-  BlockDataForm: jest.fn(({ title, schema, formData, onChangeField }) => (
+  default: jest.fn(({ title, schema, formData, onChangeField }) => (
     <div data-testid="block-data-form">
       <div data-testid="form-title">{title}</div>
       <div data-testid="form-schema">{JSON.stringify(schema)}</div>
@@ -48,7 +48,8 @@ jest.mock('./LayoutSettingsView', () => ({
 
 const mockLayoutSettingsView = require('./LayoutSettingsView').default;
 
-const { BlockDataForm } = require('@plone/volto/components/manage/Form');
+const BlockDataForm =
+  require('@plone/volto/components/manage/Form/BlockDataForm').default;
 const SidebarPortal =
   require('@plone/volto/components/manage/Sidebar/SidebarPortal').default;
 
