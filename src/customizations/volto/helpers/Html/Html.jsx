@@ -158,8 +158,8 @@ class Html extends Component {
               rel: !criticalCss
                 ? elem.props.rel
                 : elem.props.as === 'style'
-                ? 'prefetch'
-                : elem.props.rel,
+                  ? 'prefetch'
+                  : elem.props.rel,
             }),
           )}
           {/* Styles in development are loaded with Webpack's style-loader, in production,
@@ -172,8 +172,8 @@ class Html extends Component {
                     __html: CRITICAL_CSS_TEMPLATE,
                   }}
                 ></script>
-                {extractor.getStyleElements().map((elem) => (
-                  <noscript>
+                {extractor.getStyleElements().map((elem, index) => (
+                  <noscript key={elem.key ?? `noscript-style-${index}`}>
                     {React.cloneElement(elem, {
                       rel: 'stylesheet',
                       crossOrigin:

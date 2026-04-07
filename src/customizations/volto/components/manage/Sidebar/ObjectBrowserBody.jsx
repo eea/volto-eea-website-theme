@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 import { Input, Segment, Breadcrumb } from 'semantic-ui-react';
 
-import { join } from 'lodash';
+import join from 'lodash/join';
 
 // These absolute imports (without using the corresponding centralized index.js) are required
 // to cut circular import problems, this file should never use them. This is because of
@@ -113,27 +113,27 @@ class ObjectBrowserBody extends Component {
         this.props.mode === 'multiple'
           ? '/'
           : this.props.mode === 'image' && this.props.data?.url
-          ? getParentURL(this.props.data.url)
-          : '/',
+            ? getParentURL(this.props.data.url)
+            : '/',
       currentLinkFolder:
         this.props.mode === 'multiple'
           ? '/'
           : this.props.mode === 'link' && this.props.data?.href
-          ? getParentURL(this.props.data.href)
-          : '/',
+            ? getParentURL(this.props.data.href)
+            : '/',
       parentFolder: '',
       selectedImage:
         this.props.mode === 'multiple'
           ? ''
           : this.props.mode === 'image' && this.props.data?.url
-          ? flattenToAppURL(this.props.data.url)
-          : '',
+            ? flattenToAppURL(this.props.data.url)
+            : '',
       selectedHref:
         this.props.mode === 'multiple'
           ? ''
           : this.props.mode === 'link' && this.props.data?.href
-          ? flattenToAppURL(this.props.data.href)
-          : '',
+            ? flattenToAppURL(this.props.data.href)
+            : '',
       showSearchInput: false,
       // In image mode, the searchable types default to the image types which
       // can be overridden with the property if specified.
@@ -159,8 +159,8 @@ class ObjectBrowserBody extends Component {
       mode === 'multiple'
         ? ''
         : mode === 'image'
-        ? this.state.selectedImage
-        : this.state.selectedHref;
+          ? this.state.selectedImage
+          : this.state.selectedHref;
     if (currentSelected && isInternalURL(currentSelected)) {
       this.props.searchContent(
         getParentURL(currentSelected),

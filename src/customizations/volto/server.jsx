@@ -21,16 +21,16 @@ import crypto from 'crypto';
 import routes from '@plone/volto/routes';
 import config from '@plone/volto/registry';
 
+import Html from '@plone/volto/helpers/Html/Html';
+import Api from '@plone/volto/helpers/Api/Api';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
 import {
-  flattenToAppURL,
-  Html,
-  Api,
-  persistAuthToken,
   toBackendLang,
   toGettextLang,
   toReactIntlLang,
-} from '@plone/volto/helpers';
-import { changeLanguage } from '@plone/volto/actions';
+} from '@plone/volto/helpers/Utils/Utils';
+import { changeLanguage } from '@plone/volto/actions//language/language';
 
 import userSession from '@plone/volto/reducers/userSession/userSession';
 

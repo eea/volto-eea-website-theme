@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ErrorBoundary } from '@plone/volto/components';
+import ErrorBoundary from '@plone/volto/components/theme/Error/ErrorBoundary';
 import withErrorBoundary from './withErrorBoundary';
 
 // Mock the ErrorBoundary component from Volto

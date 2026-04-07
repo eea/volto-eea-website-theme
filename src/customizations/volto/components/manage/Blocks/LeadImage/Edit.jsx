@@ -2,6 +2,7 @@
  * Edit image block.
  * @module components/manage/Blocks/Image/Edit
  */
+/* eslint-disable no-restricted-syntax */
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -9,11 +10,12 @@ import { compose } from 'redux';
 import { defineMessages, injectIntl } from 'react-intl';
 import cx from 'classnames';
 import { Message } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 import { Icon } from 'semantic-ui-react';
-import { LeadImageSidebar, SidebarPortal } from '@plone/volto/components';
+import LeadImageSidebar from '@plone/volto/components/manage/Blocks/LeadImage/LeadImageSidebar';
+import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 import config from '@plone/volto/registry';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';

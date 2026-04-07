@@ -1,6 +1,7 @@
 import React from 'react';
 import { EditSchema } from './schema';
-import { BlockDataForm, SidebarPortal } from '@plone/volto/components';
+import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
+import { BlockDataForm } from '@plone/volto/components/manage/Form';
 import LayoutSettingsView from './LayoutSettingsView';
 
 const LayoutSettingsEdit = (props) => {

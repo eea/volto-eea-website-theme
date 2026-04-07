@@ -6,7 +6,7 @@ import {
   BlockButton,
 } from '@plone/volto-slate/editor/ui';
 import installCallout from '@plone/volto-slate/editor/plugins/Callout';
-import { Icon } from '@plone/volto/components';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { Editor, Transforms, Text } from 'slate';
 import { useSlate } from 'slate-react';
 

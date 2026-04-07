@@ -1,5 +1,5 @@
 import React from 'react';
-import { ErrorBoundary } from '@plone/volto/components';
+import ErrorBoundary from '@plone/volto/components/theme/Error/ErrorBoundary';
 
 export default function withErrorBoundary(WrappedComponent, options = {}) {
   // Handle backward compatibility - if second param is a component, treat as fallback

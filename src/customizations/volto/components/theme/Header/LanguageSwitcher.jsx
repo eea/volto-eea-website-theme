@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Dropdown, Image } from 'semantic-ui-react';
-import { flattenToAppURL } from '@plone/volto/helpers';
-import { find } from 'lodash';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import find from 'lodash/find';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import config from '@plone/volto/registry';
 import { Header } from '@eeacms/volto-eea-design-system/ui';

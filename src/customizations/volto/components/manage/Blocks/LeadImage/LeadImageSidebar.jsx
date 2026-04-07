@@ -1,9 +1,11 @@
+/* eslint-disable no-restricted-syntax */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Segment } from 'semantic-ui-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { Icon, BlockDataForm } from '@plone/volto/components';
-import { flattenToAppURL } from '@plone/volto/helpers';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
+import { BlockDataForm } from '@plone/volto/components/manage/Form';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { LeadImageSchema } from './schema';
 import imageSVG from '@plone/volto/icons/image.svg';
 

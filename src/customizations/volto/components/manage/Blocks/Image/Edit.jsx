@@ -2,6 +2,7 @@
  * Edit image block.
  * @module components/manage/Blocks/Image/Edit
  */
+/* eslint-disable no-restricted-syntax */
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -12,20 +13,22 @@ import { Button, Dimmer, Input, Loader, Message } from 'semantic-ui-react';
 import { defineMessages, injectIntl } from 'react-intl';
 import loadable from '@loadable/component';
 import cx from 'classnames';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 
-import { Icon, ImageSidebar, SidebarPortal } from '@plone/volto/components';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
+import ImageSidebar from '@plone/volto/components/manage/Blocks/Image/ImageSidebar';
+import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 import { Icon as IconSemantic } from 'semantic-ui-react';
-import { createContent } from '@plone/volto/actions';
+import { createContent } from '@plone/volto/actions/content/content';
 import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 
 import {
   flattenToAppURL,
   getBaseUrl,
   isInternalURL,
-  withBlockExtensions,
-  validateFileUploadSize,
-} from '@plone/volto/helpers';
+} from '@plone/volto/helpers/Url/Url';
+import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
+import { validateFileUploadSize } from '@plone/volto/helpers//FormValidation/FormValidation';
 import config from '@plone/volto/registry';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
@@ -321,25 +324,25 @@ class Edit extends Component {
                   data.image_scales
                     ? undefined
                     : isInternalURL(data.url)
-                    ? // Backwards compat in the case that the block is storing the full server URL
-                      (() => {
-                        if (data.size === 'l')
+                      ? // Backwards compat in the case that the block is storing the full server URL
+                        (() => {
+                          if (data.size === 'l')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/large`;
+                          if (data.size === 'm')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/preview`;
+                          if (data.size === 's')
+                            return `${flattenToAppURL(
+                              data.url,
+                            )}/@@images/image/mini`;
                           return `${flattenToAppURL(
                             data.url,
                           )}/@@images/image/large`;
-                        if (data.size === 'm')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/preview`;
-                        if (data.size === 's')
-                          return `${flattenToAppURL(
-                            data.url,
-                          )}/@@images/image/mini`;
-                        return `${flattenToAppURL(
-                          data.url,
-                        )}/@@images/image/large`;
-                      })()
-                    : data.url
+                        })()
+                      : data.url
                 }
                 sizes={config.blocks.blocksConfig.image.getSizes(data)}
                 alt={data.alt || ''}

@@ -4,8 +4,9 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk'; // ✅ Add redux-thunk middleware
 import { render } from '@testing-library/react';
 import withRootNavigation from './withRootNavigation';
-import { getNavigation } from '@plone/volto/actions';
-import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
+import { getNavigation } from '@plone/volto/actions/navigation/navigation';
+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
 import config from '@plone/volto/registry';
 
 // Mock dependencies

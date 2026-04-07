@@ -1,5 +1,5 @@
 import React from 'react';
-import { BlocksForm } from '@plone/volto/components';
+import { BlocksForm } from '@plone/volto/components/manage/Form';
 import cx from 'classnames';
 
 import RenderBlocks from './RenderBlocks';

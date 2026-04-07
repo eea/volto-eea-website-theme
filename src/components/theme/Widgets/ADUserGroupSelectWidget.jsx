@@ -10,7 +10,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 import { Popup } from 'semantic-ui-react';
-import { Icon } from '@plone/volto/components';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { getSharing } from '@plone/volto/actions/sharing/sharing';
 import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 
@@ -27,7 +27,7 @@ import {
   MenuList,
 } from '@plone/volto/components/manage/Widgets/SelectStyling';
 
-import { FormFieldWrapper } from '@plone/volto/components';
+import { FormFieldWrapper } from '@plone/volto/components/manage/Widgets';
 
 const messages = defineMessages({
   select: {

@@ -1,5 +1,6 @@
 import React from 'react';
-import { flattenToAppURL, withBlockExtensions } from '@plone/volto/helpers';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import DefaultTemplate from './variations/Default';
 
 function arePropsEqual(prevProps, nextProps) {
