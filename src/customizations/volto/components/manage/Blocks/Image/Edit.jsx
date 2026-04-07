@@ -272,6 +272,7 @@ class Edit extends Component {
       this.props.data.placeholder ||
       this.props.intl.formatMessage(messages.ImageBlockInputPlaceholder);
     const { copyright, copyrightIcon, copyrightPosition } = data;
+    const resolvedCopyrightPosition = copyrightPosition || 'left';
 
     const showCopyright = data?.size === 'l' || !data.size;
 
@@ -347,11 +348,13 @@ class Edit extends Component {
                 loading="lazy"
                 responsive={true}
               />
-              <div className={`copyright-wrapper ${copyrightPosition}`}>
+              <div
+                className={`copyright-wrapper ${resolvedCopyrightPosition}`}
+              >
                 {copyright && showCopyright ? (
-                  <Copyright copyrightPosition={copyrightPosition}>
+                  <Copyright copyrightPosition={resolvedCopyrightPosition}>
                     <Copyright.Icon>
-                      <IconSemantic name={copyrightIcon} />
+                      <IconSemantic className={copyrightIcon} />
                     </Copyright.Icon>
                     <Copyright.Text>{copyright}</Copyright.Text>
                   </Copyright>
