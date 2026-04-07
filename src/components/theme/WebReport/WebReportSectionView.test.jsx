@@ -8,13 +8,14 @@ import WebReportSectionView from './WebReportSectionView';
 import '@testing-library/jest-dom';
 
 // Mock external dependencies
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Url/Url', () => ({
   isInternalURL: jest.fn(),
   flattenToAppURL: jest.fn(),
 }));
 
-jest.mock('@plone/volto/components/', () => ({
-  DefaultView: jest.fn(({ children, content, token, ...otherProps }) => (
+jest.mock('@plone/volto/components/theme/View/DefaultView', () => ({
+  __esModule: true,
+  default: jest.fn(({ children }) => (
     <div data-testid="default-view">{children}</div>
   )),
 }));
@@ -24,8 +25,12 @@ jest.mock('react-router-dom', () => ({
   Redirect: jest.fn(({ to }) => <div data-testid="redirect" data-to={to} />),
 }));
 
-const { isInternalURL, flattenToAppURL } = require('@plone/volto/helpers');
-const { DefaultView } = require('@plone/volto/components/');
+const {
+  isInternalURL,
+  flattenToAppURL,
+} = require('@plone/volto/helpers/Url/Url');
+const DefaultView =
+  require('@plone/volto/components/theme/View/DefaultView').default;
 const { Redirect } = require('react-router-dom');
 
 describe('WebReportSectionView', () => {

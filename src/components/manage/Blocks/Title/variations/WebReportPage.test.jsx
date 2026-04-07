@@ -14,8 +14,9 @@ jest.mock('react-portal', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/components', () => ({
-  MaybeWrap: ({ children, condition, as: Component }) =>
+jest.mock('@plone/volto/components/manage/MaybeWrap/MaybeWrap', () => ({
+  __esModule: true,
+  default: ({ children, condition, as: Component }) =>
     condition ? <Component>{children}</Component> : <div>{children}</div>,
 }));
 
@@ -51,8 +52,9 @@ jest.mock(
 
 jest.mock('clsx', () => jest.fn((classes) => classes));
 
-jest.mock('@plone/volto/helpers', () => ({
-  BodyClass: ({ className }) => (
+jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+  __esModule: true,
+  default: ({ className }) => (
     <div data-testid="body-class" data-classname={className} />
   ),
 }));

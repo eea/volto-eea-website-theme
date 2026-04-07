@@ -6,16 +6,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { UniversalLink } from '@plone/volto/components';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
-import {
-  flattenToAppURL,
-  isInternalURL,
-  withBlockExtensions,
-} from '@plone/volto/helpers';
+import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
+import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
 import config from '@plone/volto/registry';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 /**
  * View image block class.
@@ -85,25 +82,25 @@ export const View = (props) => {
                         data.image_scales
                           ? undefined
                           : isInternalURL(data.url)
-                          ? // Backwards compat in the case that the block is storing the full server URL
-                            (() => {
-                              if (data.size === 'l')
+                            ? // Backwards compat in the case that the block is storing the full server URL
+                              (() => {
+                                if (data.size === 'l')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/large`;
+                                if (data.size === 'm')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/preview`;
+                                if (data.size === 's')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/mini`;
                                 return `${flattenToAppURL(
                                   data.url,
                                 )}/@@images/image/large`;
-                              if (data.size === 'm')
-                                return `${flattenToAppURL(
-                                  data.url,
-                                )}/@@images/image/preview`;
-                              if (data.size === 's')
-                                return `${flattenToAppURL(
-                                  data.url,
-                                )}/@@images/image/mini`;
-                              return `${flattenToAppURL(
-                                data.url,
-                              )}/@@images/image/large`;
-                            })()
-                          : data.url
+                              })()
+                            : data.url
                       }
                       sizes={config.blocks.blocksConfig.image.getSizes(data)}
                       alt={data.alt || ''}

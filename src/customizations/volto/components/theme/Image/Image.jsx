@@ -1,6 +1,7 @@
 import cx from 'classnames';
 import PropTypes from 'prop-types';
-import { flattenScales, flattenToAppURL } from '@plone/volto/helpers';
+import { flattenScales } from '@plone/volto/helpers/Url/Url';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
 /**
  * Determines the image scale name based on the provided data.
@@ -111,6 +112,7 @@ export default function Image({
     attrs.fetchpriority = 'high';
   }
 
+  // eslint-disable-next-line no-restricted-syntax
   return <img {...attrs} alt={alt} {...imageProps} />;
 }
 

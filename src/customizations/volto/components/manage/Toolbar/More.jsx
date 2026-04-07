@@ -9,22 +9,20 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { Link, withRouter } from 'react-router-dom';
-import { find } from 'lodash';
+import find from 'lodash/find';
 import { toast } from 'react-toastify';
-import { Toast } from '@plone/volto/components';
+import Toast from '@plone/volto/components/manage/Toast/Toast';
 import { Pluggable, Plug } from '@plone/volto/components/manage/Pluggable';
-import {
-  FormattedDate,
-  Icon,
-  Display,
-  Workflow,
-} from '@plone/volto/components';
+import FormattedDate from '@plone/volto/components/theme/FormattedDate/FormattedDate';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
+import Display from '@plone/volto/components/manage/Display/Display';
+import Workflow from '@plone/volto/components/manage/Workflow/Workflow';
 import {
   applyWorkingCopy,
   createWorkingCopy,
   removeWorkingCopy,
-} from '@plone/volto/actions';
-import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers';
+} from '@plone/volto/actions//workingcopy/workingcopy';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import config from '@plone/volto/registry';
 
 import rightArrowSVG from '@plone/volto/icons/right-key.svg';

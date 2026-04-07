@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { getBaseUrl, hasApiExpander } from '@plone/volto/helpers';
-import { getNavigation } from '@plone/volto/actions';
+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
+import { getNavigation } from '@plone/volto/actions/navigation/navigation';
 import config from '@plone/volto/registry';
 
 export default function withRootNavigation(WrappedComponent) {

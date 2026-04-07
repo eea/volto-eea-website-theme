@@ -3,14 +3,15 @@
  * @module components/theme/Comments/Comments
  */
 
-import {
-  addComment,
-  deleteComment,
-  listComments,
-  listMoreComments,
-} from '@plone/volto/actions';
-import { Avatar, CommentEditModal, Form } from '@plone/volto/components';
-import { flattenToAppURL, getBaseUrl, getColor } from '@plone/volto/helpers';
+import { addComment } from '@plone/volto/actions/comments/comments';
+import { deleteComment } from '@plone/volto/actions/comments/comments';
+import { listComments } from '@plone/volto/actions/comments/comments';
+import { listMoreComments } from '@plone/volto/actions/comments/comments';
+import Avatar from '@plone/volto/components/theme/Avatar/Avatar';
+import CommentEditModal from '@plone/volto/components/theme/Comments/CommentEditModal';
+import Form from '@plone/volto/components/manage/Form/Form';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { getColor } from '@plone/volto/helpers/Utils/Utils';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';

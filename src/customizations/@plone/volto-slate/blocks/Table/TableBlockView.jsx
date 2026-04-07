@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'semantic-ui-react';
-import { map } from 'lodash';
+import map from 'lodash/map';
 import {
   serializeNodes,
   serializeNodesToText,
@@ -80,8 +80,8 @@ const View = ({ data }) => {
         state.column !== index
           ? 'ascending'
           : state.direction === 'ascending'
-          ? 'descending'
-          : 'ascending',
+            ? 'descending'
+            : 'ascending',
     });
   };
 

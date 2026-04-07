@@ -3,7 +3,7 @@ import cx from 'classnames';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { BodyClass } from '@plone/volto/helpers';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import { isSubsiteRoot } from 'volto-subsites/utils';
 
 const EMPTY_SUBSITE = {};

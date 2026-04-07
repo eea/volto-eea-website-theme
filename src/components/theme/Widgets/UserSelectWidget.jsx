@@ -16,14 +16,17 @@ import {
 } from '@plone/volto/components/manage/Widgets/SelectUtils';
 import checkSVG from '@plone/volto/icons/check.svg';
 import checkBlankSVG from '@plone/volto/icons/check-blank.svg';
-import { Icon } from '@plone/volto/components';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
 
 import {
   getVocabFromHint,
   getVocabFromField,
   getVocabFromItems,
-} from '@plone/volto/helpers';
-import { getVocabulary, getVocabularyTokenTitle } from '@plone/volto/actions';
+} from '@plone/volto/helpers/Vocabularies/Vocabularies';
+import {
+  getVocabulary,
+  getVocabularyTokenTitle,
+} from '@plone/volto/actions/vocabularies/vocabularies';
 
 import {
   ClearIndicator,
@@ -34,7 +37,7 @@ import {
   MenuList,
 } from '@plone/volto/components/manage/Widgets/SelectStyling';
 
-import { FormFieldWrapper } from '@plone/volto/components';
+import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 
 const messages = defineMessages({
   select: {
@@ -319,12 +322,12 @@ export default compose(
       return props.items?.choices
         ? { choices: props.items.choices, lang: state.intl.locale }
         : vocabState
-        ? {
-            choices: vocabState,
-            vocabBaseUrl,
-            lang: state.intl.locale,
-          }
-        : { vocabBaseUrl, lang: state.intl.locale };
+          ? {
+              choices: vocabState,
+              vocabBaseUrl,
+              lang: state.intl.locale,
+            }
+          : { vocabBaseUrl, lang: state.intl.locale };
     },
     { getVocabulary, getVocabularyTokenTitle },
   ),

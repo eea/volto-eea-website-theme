@@ -4,12 +4,9 @@
  * Customized reducer as part of ticket 271001 in order to receive portal_type info
  */
 
-import { map } from 'lodash';
-import {
-  flattenToAppURL,
-  getBaseUrl,
-  hasApiExpander,
-} from '@plone/volto/helpers';
+import map from 'lodash/map';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
 
 import {
   GET_BREADCRUMBS,

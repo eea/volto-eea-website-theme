@@ -4,8 +4,10 @@ import cx from 'classnames';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
 
-import { flattenToAppURL } from '@plone/volto/helpers';
-import { UniversalLink, MaybeWrap, Icon } from '@plone/volto/components';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
+import MaybeWrap from '@plone/volto/components/manage/MaybeWrap/MaybeWrap';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 
 import downloadSVG from '@plone/volto/icons/download.svg';

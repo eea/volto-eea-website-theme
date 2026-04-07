@@ -13,8 +13,9 @@ jest.mock('volto-subsites/utils', () => ({
   isSubsiteRoot: (...args) => mockIsSubsiteRoot(...args),
 }));
 
-jest.mock('@plone/volto/helpers', () => ({
-  BodyClass: ({ className }) => (
+jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+  __esModule: true,
+  default: ({ className }) => (
     <div data-testid="body-class" data-classname={className} />
   ),
 }));
