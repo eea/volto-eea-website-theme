@@ -5,7 +5,7 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import find from 'lodash/find';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import config from '@plone/volto/registry';
-import { Header } from '@eeacms/volto-eea-design-system/ui';
+import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 
 /**
  * LanguageSwitcher component.
