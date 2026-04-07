@@ -2,8 +2,6 @@
  * Edit image block.
  * @module components/manage/Blocks/Image/Edit
  */
-/* eslint-disable no-restricted-syntax */
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -386,6 +384,7 @@ class Edit extends Component {
                           </Dimmer>
                         )}
                         <div className="no-image-wrapper">
+                          {/* eslint-disable-next-line no-restricted-syntax */}
                           <img src={imageBlockSVG} alt="" />
                           <div className="toolbar-inner">
                             <Button.Group>

@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { flattenScales } from '@plone/volto/helpers/Url/Url';
@@ -113,6 +112,7 @@ export default function Image({
     attrs.fetchpriority = 'high';
   }
 
+  // eslint-disable-next-line no-restricted-syntax
   return <img {...attrs} alt={alt} {...imageProps} />;
 }
 

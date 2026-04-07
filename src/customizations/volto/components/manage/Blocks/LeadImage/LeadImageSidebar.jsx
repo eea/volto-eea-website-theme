@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Segment } from 'semantic-ui-react';
@@ -50,6 +49,7 @@ const LeadImageSidebar = ({ properties, data, block, onChangeBlock, intl }) => {
         <>
           <Segment className="sidebar-metadata-container" secondary>
             {properties.image.filename}
+            {/* eslint-disable-next-line no-restricted-syntax */}
             <img
               src={
                 properties.image.data

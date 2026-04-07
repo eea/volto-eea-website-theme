@@ -2,8 +2,6 @@
  * Edit image block.
  * @module components/manage/Blocks/Image/Edit
  */
-/* eslint-disable no-restricted-syntax */
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
@@ -113,6 +111,7 @@ class Edit extends Component {
           {!hasImage && (
             <Message>
               <center>
+                {/* eslint-disable-next-line no-restricted-syntax */}
                 <img src={imageBlockSVG} alt="" />
                 <div className="message-text">{placeholder}</div>
               </center>
@@ -120,6 +119,7 @@ class Edit extends Component {
           )}
           {hasImage && hasImageData && (
             <div className="image-block">
+              {/* eslint-disable-next-line no-restricted-syntax */}
               <img
                 className={(className, data?.styles?.objectPosition)}
                 src={`data:${properties.image['content-type']};base64,${properties.image.data}`}
