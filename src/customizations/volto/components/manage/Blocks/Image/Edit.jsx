@@ -348,9 +348,7 @@ class Edit extends Component {
                 loading="lazy"
                 responsive={true}
               />
-              <div
-                className={`copyright-wrapper ${resolvedCopyrightPosition}`}
-              >
+              <div className={`copyright-wrapper ${resolvedCopyrightPosition}`}>
                 {copyright && showCopyright ? (
                   <Copyright copyrightPosition={resolvedCopyrightPosition}>
                     <Copyright.Icon>
