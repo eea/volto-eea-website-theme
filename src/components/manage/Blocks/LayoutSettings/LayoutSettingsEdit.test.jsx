@@ -11,7 +11,8 @@ jest.mock('./schema', () => ({
   EditSchema: jest.fn(),
 }));
 
-jest.mock('@plone/volto/components', () => ({
+jest.mock('@plone/volto/components/manage/Form', () => ({
+  __esModule: true,
   BlockDataForm: jest.fn(({ title, schema, formData, onChangeField }) => (
     <div data-testid="block-data-form">
       <div data-testid="form-title">{title}</div>
@@ -25,7 +26,11 @@ jest.mock('@plone/volto/components', () => ({
       </button>
     </div>
   )),
-  SidebarPortal: jest.fn(({ selected, children }) => (
+}));
+
+jest.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
+  __esModule: true,
+  default: jest.fn(({ selected, children }) => (
     <div data-testid="sidebar-portal" data-selected={selected}>
       {children}
     </div>
@@ -43,7 +48,9 @@ jest.mock('./LayoutSettingsView', () => ({
 
 const mockLayoutSettingsView = require('./LayoutSettingsView').default;
 
-const { BlockDataForm, SidebarPortal } = require('@plone/volto/components');
+const { BlockDataForm } = require('@plone/volto/components/manage/Form');
+const SidebarPortal =
+  require('@plone/volto/components/manage/Sidebar/SidebarPortal').default;
 
 describe('LayoutSettingsEdit', () => {
   const mockSchema = {

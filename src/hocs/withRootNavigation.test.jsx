@@ -9,20 +9,23 @@ import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
 import config from '@plone/volto/registry';
 
-// Mock dependencies
-jest.mock('@plone/volto/actions', () => ({
-  getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })), // ✅ Ensure it returns a plain object
+jest.mock('@plone/volto/actions/navigation/navigation', () => ({
+  getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })),
 }));
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Url/Url', () => ({
   getBaseUrl: jest.fn(() => '/en'),
+}));
+jest.mock('@plone/volto/helpers/Utils/Utils', () => ({
   hasApiExpander: jest.fn(() => false),
 }));
 jest.mock('@plone/volto/registry', () => ({
-  settings: { navDepth: 2 },
+  __esModule: true,
+  default: {
+    settings: { navDepth: 2 },
+  },
 }));
 
-// ✅ Use redux-thunk middleware
-const mockStore = configureStore([thunk]); // Add thunk to support async actions
+const mockStore = configureStore([thunk]);
 
 const initialState = {
   navigation: { items: [{ title: 'Home', url: '/' }] },
@@ -52,13 +55,13 @@ describe('withRootNavigation HOC', () => {
       </Provider>,
     );
 
-    expect(getBaseUrl).toHaveBeenCalledWith('/en'); // Check base URL calculation
-    expect(hasApiExpander).toHaveBeenCalledWith('navigation', '/en'); // Ensure API expander is checked
-    expect(getNavigation).toHaveBeenCalledWith('/en', config.settings.navDepth); // Ensure getNavigation is dispatched
+    expect(getBaseUrl).toHaveBeenCalledWith('/en');
+    expect(hasApiExpander).toHaveBeenCalledWith('navigation', '/en');
+    expect(getNavigation).toHaveBeenCalledWith('/en', config.settings.navDepth);
   });
 
   test('does not call getNavigation if API expander is already set', () => {
-    hasApiExpander.mockReturnValue(true); // Simulate that API expander is already set
+    hasApiExpander.mockReturnValue(true);
 
     render(
       <Provider store={store}>
@@ -66,6 +69,6 @@ describe('withRootNavigation HOC', () => {
       </Provider>,
     );
 
-    expect(getNavigation).not.toHaveBeenCalled(); // Ensure getNavigation is NOT called
+    expect(getNavigation).not.toHaveBeenCalled();
   });
 });

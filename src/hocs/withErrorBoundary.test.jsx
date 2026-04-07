@@ -3,16 +3,9 @@ import '@testing-library/jest-dom';
 import ErrorBoundary from '@plone/volto/components/theme/Error/ErrorBoundary';
 import withErrorBoundary from './withErrorBoundary';
 
-// Mock the ErrorBoundary component from Volto
-jest.mock('@plone/volto/components', () => ({
-  ErrorBoundary: jest.fn(({ children, fallback, onError }) => {
-    try {
-      return children;
-    } catch (error) {
-      if (onError) onError(error, { componentStack: 'test-stack' });
-      return fallback || <div>Error occurred</div>;
-    }
-  }),
+jest.mock('@plone/volto/components/theme/Error/ErrorBoundary', () => ({
+  __esModule: true,
+  default: jest.fn(({ children, fallback }) => children || fallback || null),
 }));
 
 // Test components

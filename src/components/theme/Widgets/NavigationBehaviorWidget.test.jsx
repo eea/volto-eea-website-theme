@@ -9,14 +9,13 @@ import '@testing-library/jest-dom';
 
 const mockStore = configureStore([thunk]);
 
-// Mock the getNavigation action
 const mockGetNavigation = jest.fn(() => ({ type: 'GET_NAVIGATION' }));
-jest.mock('@plone/volto/actions', () => ({
+jest.mock('@plone/volto/actions/navigation/navigation', () => ({
   getNavigation: mockGetNavigation,
 }));
 
-// Mock the config
 jest.mock('@plone/volto/registry', () => ({
+  __esModule: true,
   default: {
     settings: {
       menuItemsLayouts: {
@@ -42,11 +41,15 @@ jest.mock('uuid', () => ({
   v4: () => 'test-uuid-123',
 }));
 
-// Mock Volto components
-jest.mock('@plone/volto/components', () => ({
-  Icon: ({ name, size }) => (
+jest.mock('@plone/volto/components/theme/Icon/Icon', () => ({
+  __esModule: true,
+  default: ({ name, size }) => (
     <div data-testid="icon" data-name={name} data-size={size} />
   ),
+}));
+
+jest.mock('@plone/volto/components/manage/Widgets', () => ({
+  __esModule: true,
   FormFieldWrapper: ({ children, ...props }) => (
     <div data-testid="form-field-wrapper" {...props}>
       {children}
@@ -54,11 +57,12 @@ jest.mock('@plone/volto/components', () => ({
   ),
 }));
 
-// Mock ObjectWidget
 jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
-  return function MockObjectWidget({ id, schema, value, onChange }) {
-    return (
-      <div data-testid="object-widget" data-id={id}>
+  return {
+    __esModule: true,
+    default: function MockObjectWidget({ id, schema, value, onChange }) {
+      return (
+        <div data-testid="object-widget" data-id={id}>
         {schema.properties.hideChildrenFromNavigation && (
           <div>
             <label>Hide Children From Navigation</label>
@@ -94,8 +98,9 @@ jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
             </div>
           </div>
         )}
-      </div>
-    );
+        </div>
+      );
+    },
   };
 });
 
