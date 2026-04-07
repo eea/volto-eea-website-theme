@@ -25,7 +25,10 @@ jest.mock('react-router-dom', () => ({
   Redirect: jest.fn(({ to }) => <div data-testid="redirect" data-to={to} />),
 }));
 
-const { isInternalURL, flattenToAppURL } = require('@plone/volto/helpers/Url/Url');
+const {
+  isInternalURL,
+  flattenToAppURL,
+} = require('@plone/volto/helpers/Url/Url');
 const DefaultView =
   require('@plone/volto/components/theme/View/DefaultView').default;
 const { Redirect } = require('react-router-dom');

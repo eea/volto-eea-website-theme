@@ -63,41 +63,41 @@ jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
     default: function MockObjectWidget({ id, schema, value, onChange }) {
       return (
         <div data-testid="object-widget" data-id={id}>
-        {schema.properties.hideChildrenFromNavigation && (
-          <div>
-            <label>Hide Children From Navigation</label>
-            <input
-              type="checkbox"
-              checked={value.hideChildrenFromNavigation || false}
-              onChange={(e) =>
-                onChange(id, {
-                  ...value,
-                  hideChildrenFromNavigation: e.target.checked,
-                })
-              }
-            />
-          </div>
-        )}
-        {schema.properties.menuItemColumns && (
-          <div>
-            <label>Menu Item Columns</label>
-            <div data-testid="menu-item-columns">
-              {(value.menuItemColumns || []).map((col, index) => (
-                <span key={index}>{col}</span>
-              ))}
+          {schema.properties.hideChildrenFromNavigation && (
+            <div>
+              <label>Hide Children From Navigation</label>
+              <input
+                type="checkbox"
+                checked={value.hideChildrenFromNavigation || false}
+                onChange={(e) =>
+                  onChange(id, {
+                    ...value,
+                    hideChildrenFromNavigation: e.target.checked,
+                  })
+                }
+              />
             </div>
-          </div>
-        )}
-        {schema.properties.menuItemChildrenListColumns && (
-          <div>
-            <label>Menu Item Children List Columns</label>
-            <div data-testid="menu-item-children-columns">
-              {(value.menuItemChildrenListColumns || []).map((col, index) => (
-                <span key={index}>{col}</span>
-              ))}
+          )}
+          {schema.properties.menuItemColumns && (
+            <div>
+              <label>Menu Item Columns</label>
+              <div data-testid="menu-item-columns">
+                {(value.menuItemColumns || []).map((col, index) => (
+                  <span key={index}>{col}</span>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          {schema.properties.menuItemChildrenListColumns && (
+            <div>
+              <label>Menu Item Children List Columns</label>
+              <div data-testid="menu-item-children-columns">
+                {(value.menuItemChildrenListColumns || []).map((col, index) => (
+                  <span key={index}>{col}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       );
     },
