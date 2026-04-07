@@ -1,11 +1,13 @@
 import React from 'react';
 import { EditSchema } from './schema';
-import { SidebarPortal } from '@plone/volto/components';
+import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 
 import ContextNavigationView from './ContextNavigationView';
 
 import { useSelector, shallowEqual } from 'react-redux';
+
+const EMPTY_TYPES = Object.freeze([]);
 
 function arePropsEqual(oldProps, newProps) {
   return (
@@ -17,7 +19,7 @@ function arePropsEqual(oldProps, newProps) {
 
 const ContextNavigationFillEdit = (props) => {
   const contentTypes = useSelector(
-    (state) => state.types?.types || [],
+    (state) => state.types?.types ?? EMPTY_TYPES,
     shallowEqual,
   );
 

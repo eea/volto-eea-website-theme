@@ -8,14 +8,16 @@ jest.mock('react-portal', () => ({
   Portal: ({ children }) => <div data-testid="portal">{children}</div>,
 }));
 
-jest.mock('@plone/volto/helpers', () => ({
-  BodyClass: ({ className }) => (
+jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+  __esModule: true,
+  default: ({ className }) => (
     <div data-testid="body-class" className={className} />
   ),
 }));
 
-jest.mock('@plone/volto/components', () => ({
-  MaybeWrap: ({ condition, as: As, children }) =>
+jest.mock('@plone/volto/components/manage/MaybeWrap/MaybeWrap', () => ({
+  __esModule: true,
+  default: ({ condition, as: As, children }) =>
     condition ? <As>{children}</As> : children,
 }));
 

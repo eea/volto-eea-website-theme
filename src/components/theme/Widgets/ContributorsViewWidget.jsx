@@ -9,7 +9,7 @@ const ContributorsViewWidget = ({ value, content, children, className }) => {
         const key = `${label}-${index}`;
         return (
           <span key={key}>
-            {index ? ', ' : ''}
+            {index > 0 && ', '}
             {children ? children(label) : label}
           </span>
         );

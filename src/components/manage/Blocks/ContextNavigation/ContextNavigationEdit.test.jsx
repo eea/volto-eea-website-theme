@@ -5,22 +5,16 @@ import { Router } from 'react-router-dom';
 import { Provider } from 'react-intl-redux';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
-jest.mock('@plone/volto/components', () => ({
-  InlineForm: ({ onChangeField }) => (
+jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
+  __esModule: true,
+  default: ({ onChangeField }) => (
     <div>
-      <p>InlineForm</p>
+      <p>BlockDataForm</p>
       <input id="test" onChange={onChangeField} />
     </div>
   ),
-  SidebarPortal: ({ children, selected }) =>
-    selected ? (
-      <div>
-        <div>SidebarPortal</div>
-        {children}
-      </div>
-    ) : null,
 }));
 
 jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
@@ -32,11 +26,19 @@ jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   };
 });
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
+  __esModule: true,
+  default: ({ children, selected }) =>
+    selected ? (
+      <div>
+        <div>SidebarPortal</div>
+        {children}
+      </div>
+    ) : null,
+}));
+
+jest.mock('@plone/volto/helpers/Extensions', () => ({
   withBlockExtensions: jest.fn((Component) => Component),
-  emptyBlocksForm: jest.fn(),
-  getBlocksLayoutFieldname: () => 'blocks_layout',
-  withVariationSchemaEnhancer: jest.fn((Component) => Component),
 }));
 
 const mockStore = configureStore();
@@ -53,14 +55,14 @@ describe('ContextNavigationEdit', () => {
     const { getByText, queryByText } = render(
       <Provider store={store}>
         <Router history={history}>
-          <ContextNavigationEdit selected={false} />
+          <ContextNavigationEdit selected={false} data={{}} />
         </Router>
       </Provider>,
     );
 
     expect(getByText('Context navigation')).toBeInTheDocument();
     expect(getByText('ConnectedContextNavigation')).toBeInTheDocument();
-    expect(queryByText('InlineForm')).toBeNull();
+    expect(queryByText('BlockDataForm')).toBeNull();
     expect(queryByText('SidebarPortal')).toBeNull();
   });
 
@@ -69,14 +71,18 @@ describe('ContextNavigationEdit', () => {
     const { container, getByText } = render(
       <Provider store={store}>
         <Router history={history}>
-          <ContextNavigationEdit selected={true} onChangeBlock={() => {}} />
+          <ContextNavigationEdit
+            selected={true}
+            onChangeBlock={() => {}}
+            data={{}}
+          />
         </Router>
       </Provider>,
     );
 
     expect(getByText('Context navigation')).toBeInTheDocument();
     expect(getByText('ConnectedContextNavigation')).toBeInTheDocument();
-    expect(getByText('InlineForm')).toBeInTheDocument();
+    expect(getByText('BlockDataForm')).toBeInTheDocument();
     expect(getByText('SidebarPortal')).toBeInTheDocument();
 
     fireEvent.change(container.querySelector('#test'), {

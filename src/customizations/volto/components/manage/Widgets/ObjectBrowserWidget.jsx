@@ -1,26 +1,35 @@
 /**
  * ObjectBrowserWidget component.
  * @module components/manage/Widgets/ObjectBrowserWidget
+ *
+ * EEA customization: preserves hash anchors in pasted internal URLs.
+ * When a URL like `/path/to/page#section` is entered, the hash is stored in
+ * `linkWithHash` on the selected item so the link renders with the anchor.
  */
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
-import { compact, isArray, isEmpty, remove } from 'lodash';
+import compact from 'lodash/compact';
+import includes from 'lodash/includes';
+import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
+import remove from 'lodash/remove';
 import { connect } from 'react-redux';
 import { Label, Popup, Button } from 'semantic-ui-react';
 import {
   flattenToAppURL,
   isInternalURL,
-  isUrl,
   normalizeUrl,
   removeProtocol,
 } from '@plone/volto/helpers/Url/Url';
+import { messages as validationMessages } from '@plone/volto/helpers/MessageLabels/MessageLabels';
 import { searchContent } from '@plone/volto/actions/search/search';
 import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrowser';
 import { defineMessages, injectIntl } from 'react-intl';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
+import config from '@plone/volto/registry';
 
 import navTreeSVG from '@plone/volto/icons/nav.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -28,6 +37,7 @@ import homeSVG from '@plone/volto/icons/home.svg';
 import aheadSVG from '@plone/volto/icons/ahead.svg';
 import blankSVG from '@plone/volto/icons/blank.svg';
 import { withRouter } from 'react-router';
+import Image from '@plone/volto/components/theme/Image/Image';
 
 const messages = defineMessages({
   placeholder: {
@@ -47,6 +57,24 @@ const messages = defineMessages({
     defaultMessage: 'Open object browser',
   },
 });
+
+// Volto 17 does not expose the Volto 18 core helper
+// `urlValidator` from `@plone/volto/helpers/FormValidation/validators`.
+// When Volto 17 support is dropped, replace this fallback with that import.
+const validateExternalUrl = ({ value, formatMessage }) => {
+  const urlRegex = new RegExp(
+    '^(https?:\\/\\/)?' +
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+      '((\\d{1,3}\\.){3}\\d{1,3}))|' +
+      '(localhost)' +
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+      '(\\?[;&a-z\\d%_.~+=-]*)?' +
+      '(\\#[-a-z\\d_]*)?$',
+    'i',
+  );
+  const isValid = urlRegex.test(value);
+  return !isValid ? formatMessage(validationMessages.isValidURL) : null;
+};
 
 /**
  * ObjectBrowserWidget component class.
@@ -76,6 +104,7 @@ export class ObjectBrowserWidgetComponent extends Component {
     openObjectBrowser: PropTypes.func.isRequired,
     allowExternals: PropTypes.bool,
     placeholder: PropTypes.string,
+    onlyFolderishSelectable: PropTypes.bool,
   };
 
   /**
@@ -92,11 +121,13 @@ export class ObjectBrowserWidgetComponent extends Component {
     return: 'multiple',
     initialPath: '',
     allowExternals: false,
+    onlyFolderishSelectable: false,
   };
 
   state = {
     manualLinkInput: '',
     validURL: false,
+    errors: [],
   };
 
   constructor(props) {
@@ -105,7 +136,7 @@ export class ObjectBrowserWidgetComponent extends Component {
     this.placeholderRef = React.createRef();
   }
   renderLabel(item) {
-    // show linkWithHash if available, otherwise @id
+    // EEA: use linkWithHash if available so the anchor is preserved in the label
     const href = item['linkWithHash'] || item['@id'];
     return (
       <Popup
@@ -123,7 +154,16 @@ export class ObjectBrowserWidgetComponent extends Component {
         }
         trigger={
           <Label>
-            <div className="item-title">{item.title}</div>
+            <div className="item-title">
+              {includes(config.settings.imageObjects, item['@type']) ? (
+                <Image
+                  className="small ui image"
+                  src={`${item['@id']}/@@images/image/thumb`}
+                />
+              ) : (
+                item.title
+              )}
+            </div>
             <div>
               {this.props.mode === 'multiple' && (
                 <Icon
@@ -164,7 +204,6 @@ export class ObjectBrowserWidgetComponent extends Component {
     }
     let exists = false;
     let index = -1;
-
     value.forEach((_item, _index) => {
       if (flattenToAppURL(_item['@id']) === flattenToAppURL(item['@id'])) {
         exists = true;
@@ -183,8 +222,8 @@ export class ObjectBrowserWidgetComponent extends Component {
           ...this.props.selectedItemAttrs,
           // Add the required attributes for the widget to work
           '@id',
-          'linkWithHash', // add linkWithHash to the allowed attributes
           'title',
+          'linkWithHash', // EEA: preserve anchor hash stored by onSubmitManualLink
         ];
         resultantItem = Object.keys(item)
           .filter((key) => allowedItemKeys.includes(key))
@@ -218,17 +257,25 @@ export class ObjectBrowserWidgetComponent extends Component {
   };
 
   validateManualLink = (url) => {
-    if (this.props.allowExternals) {
-      return isUrl(url);
+    if (this.props.allowExternals && !url.startsWith('/')) {
+      const error = validateExternalUrl({
+        value: url,
+        formatMessage: this.props.intl.formatMessage,
+      });
+      if (error && url !== '') {
+        this.setState({ errors: [error] });
+      } else {
+        this.setState({ errors: [] });
+      }
+      return !Boolean(error);
     } else {
       return isInternalURL(url);
     }
   };
 
   /**
-   * Splits a URL into its link and hash components.
-   * @param {string} url - The URL to split.
-   * @returns {[string, string]} - An array containing the link and hash components of the URL.
+   * EEA: splits a URL into its path and hash components.
+   * e.g. '/path/to/page#section' → ['/path/to/page', 'section']
    */
   getHashAndLinkFromUrl = (url) => {
     return url.split('#');
@@ -237,6 +284,7 @@ export class ObjectBrowserWidgetComponent extends Component {
   onSubmitManualLink = () => {
     if (this.validateManualLink(this.state.manualLinkInput)) {
       if (isInternalURL(this.state.manualLinkInput)) {
+        // EEA: split off any hash anchor before searching
         const [link, hash] = this.getHashAndLinkFromUrl(
           this.state.manualLinkInput,
         );
@@ -256,7 +304,7 @@ export class ObjectBrowserWidgetComponent extends Component {
           )
           .then((resp) => {
             if (resp.items?.length > 0) {
-              // if there is a hash within the url, add it to the item as linkWithHash
+              // EEA: if there is a hash, store it as linkWithHash on the item
               if (hash) {
                 resp.items[0]['linkWithHash'] = `${relative_link}#${hash}`;
               }
@@ -309,6 +357,9 @@ export class ObjectBrowserWidgetComponent extends Component {
       maximumSelectionSize:
         this.props.widgetOptions?.pattern_options?.maximumSelectionSize ||
         this.props.maximumSelectionSize,
+      onlyFolderishSelectable:
+        this.props.widgetOptions?.pattern_options?.onlyFolderishSelectable ||
+        this.props.onlyFolderishSelectable,
     });
   };
 
@@ -349,6 +400,8 @@ export class ObjectBrowserWidgetComponent extends Component {
     return (
       <FormFieldWrapper
         {...this.props}
+        // At the moment, OBW handles its own errors and validation
+        error={this.state.errors}
         className={description ? 'help text' : 'text'}
       >
         <div
@@ -377,6 +430,7 @@ export class ObjectBrowserWidgetComponent extends Component {
               items.length === 0 &&
               this.props.mode !== 'multiple' && (
                 <input
+                  onBlur={this.onSubmitManualLink}
                   onKeyDown={this.onKeyDownManualLink}
                   onChange={this.onManualLinkInput}
                   value={this.state.manualLinkInput}

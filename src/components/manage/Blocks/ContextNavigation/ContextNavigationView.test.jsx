@@ -5,7 +5,7 @@ import { Router } from 'react-router-dom';
 import { Provider } from 'react-intl-redux';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   return {
@@ -16,10 +16,12 @@ jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   };
 });
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Extensions', () => ({
   withBlockExtensions: jest.fn((Component) => Component),
-  emptyBlocksForm: jest.fn(),
-  getBlocksLayoutFieldname: () => 'blocks_layout',
+}));
+
+jest.mock('@plone/volto/helpers/Url/Url', () => ({
+  __esModule: true,
   flattenToAppURL: () => '',
 }));
 

@@ -6,16 +6,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { UniversalLink } from '@plone/volto/components';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { Icon } from 'semantic-ui-react';
 import cx from 'classnames';
-import {
-  flattenToAppURL,
-  isInternalURL,
-  withBlockExtensions,
-} from '@plone/volto/helpers';
+import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
+import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
 import config from '@plone/volto/registry';
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 
 /**
  * View image block class.
@@ -25,7 +22,8 @@ import { Copyright } from '@eeacms/volto-eea-design-system/ui';
 export const View = (props) => {
   const { className, data, detached, style } = props;
   const { copyright, copyrightIcon, copyrightPosition } = data;
-  const href = data?.href?.[0]?.['@id'] || '';
+  const hrefItem = data?.href?.[0];
+  const href = hrefItem?.['@id'] || '';
   const showCopyright = data?.size === 'l' || !data.size;
 
   const Image = config.getComponent({ name: 'Image' }).component;
@@ -84,25 +82,25 @@ export const View = (props) => {
                         data.image_scales
                           ? undefined
                           : isInternalURL(data.url)
-                          ? // Backwards compat in the case that the block is storing the full server URL
-                            (() => {
-                              if (data.size === 'l')
+                            ? // Backwards compat in the case that the block is storing the full server URL
+                              (() => {
+                                if (data.size === 'l')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/large`;
+                                if (data.size === 'm')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/preview`;
+                                if (data.size === 's')
+                                  return `${flattenToAppURL(
+                                    data.url,
+                                  )}/@@images/image/mini`;
                                 return `${flattenToAppURL(
                                   data.url,
                                 )}/@@images/image/large`;
-                              if (data.size === 'm')
-                                return `${flattenToAppURL(
-                                  data.url,
-                                )}/@@images/image/preview`;
-                              if (data.size === 's')
-                                return `${flattenToAppURL(
-                                  data.url,
-                                )}/@@images/image/mini`;
-                              return `${flattenToAppURL(
-                                data.url,
-                              )}/@@images/image/large`;
-                            })()
-                          : data.url
+                              })()
+                            : data.url
                       }
                       sizes={config.blocks.blocksConfig.image.getSizes(data)}
                       alt={data.alt || ''}
@@ -130,7 +128,7 @@ export const View = (props) => {
                 if (href) {
                   return (
                     <UniversalLink
-                      href={href}
+                      item={hrefItem}
                       openLinkInNewTab={data.openLinkInNewTab}
                     >
                       {image}

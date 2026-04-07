@@ -1,10 +1,11 @@
 import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
-import { Icon, FormFieldWrapper } from '@plone/volto/components';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
+import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 import ObjectWidget from '@plone/volto/components/manage/Widgets/ObjectWidget';
 import { Accordion, Button, Segment, Form, Dropdown } from 'semantic-ui-react';
-import { getNavigation } from '@plone/volto/actions';
+import { getNavigation } from '@plone/volto/actions/navigation/navigation';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
@@ -12,6 +13,8 @@ import { numbersToMenuItemColumns } from '@eeacms/volto-eea-design-system/ui/Hea
 
 import upSVG from '@plone/volto/icons/up-key.svg';
 import downSVG from '@plone/volto/icons/down-key.svg';
+
+const EMPTY_NAVIGATION = [];
 
 const messages = defineMessages({
   loadNavigationRoutes: {
@@ -257,7 +260,8 @@ const NavigationBehaviorWidget = (props) => {
   const { value = '{}', id, onChange } = props;
   const intl = useIntl();
   const dispatch = useDispatch();
-  const navigation = useSelector((state) => state.navigation?.items || []);
+  const navigation =
+    useSelector((state) => state.navigation?.items) || EMPTY_NAVIGATION;
   const navigationLoaded = useSelector((state) => state.navigation?.loaded);
 
   // Parse JSON string to object

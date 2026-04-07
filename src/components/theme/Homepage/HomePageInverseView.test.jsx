@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import HomePageInverseView from './HomePageInverseView';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 describe('HomePageInverseView Component', () => {
   it('renders without crashing', () => {

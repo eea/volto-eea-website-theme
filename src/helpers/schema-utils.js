@@ -5,7 +5,7 @@ import imageFullSVG from '@plone/volto/icons/image-full.svg';
 import alignTopSVG from '@plone/volto/icons/move-up.svg';
 import alignCenterSVG from '@plone/volto/icons/row.svg';
 import alignBottomSVG from '@plone/volto/icons/move-down.svg';
-import { addStyling } from '@plone/volto/helpers';
+import { addStyling } from '@plone/volto/helpers/Extensions';
 
 export const ALIGN_INFO_MAP = {
   narrow_width: [imageNarrowSVG, 'Narrow width'],

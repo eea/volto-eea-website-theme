@@ -1,5 +1,5 @@
 import React from 'react';
-import { BodyClass } from '@plone/volto/helpers';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import { getVoltoStyles } from '@eeacms/volto-eea-website-theme/helpers/schema-utils';
 import cx from 'classnames';
 

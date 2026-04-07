@@ -9,14 +9,13 @@ import '@testing-library/jest-dom';
 
 const mockStore = configureStore([thunk]);
 
-// Mock the getNavigation action
 const mockGetNavigation = jest.fn(() => ({ type: 'GET_NAVIGATION' }));
-jest.mock('@plone/volto/actions', () => ({
+jest.mock('@plone/volto/actions/navigation/navigation', () => ({
   getNavigation: mockGetNavigation,
 }));
 
-// Mock the config
 jest.mock('@plone/volto/registry', () => ({
+  __esModule: true,
   default: {
     settings: {
       menuItemsLayouts: {
@@ -42,60 +41,66 @@ jest.mock('uuid', () => ({
   v4: () => 'test-uuid-123',
 }));
 
-// Mock Volto components
-jest.mock('@plone/volto/components', () => ({
-  Icon: ({ name, size }) => (
+jest.mock('@plone/volto/components/theme/Icon/Icon', () => ({
+  __esModule: true,
+  default: ({ name, size }) => (
     <div data-testid="icon" data-name={name} data-size={size} />
   ),
-  FormFieldWrapper: ({ children, ...props }) => (
+}));
+
+jest.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
+  __esModule: true,
+  default: ({ children, ...props }) => (
     <div data-testid="form-field-wrapper" {...props}>
       {children}
     </div>
   ),
 }));
 
-// Mock ObjectWidget
 jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
-  return function MockObjectWidget({ id, schema, value, onChange }) {
-    return (
-      <div data-testid="object-widget" data-id={id}>
-        {schema.properties.hideChildrenFromNavigation && (
-          <div>
-            <label>Hide Children From Navigation</label>
-            <input
-              type="checkbox"
-              checked={value.hideChildrenFromNavigation || false}
-              onChange={(e) =>
-                onChange(id, {
-                  ...value,
-                  hideChildrenFromNavigation: e.target.checked,
-                })
-              }
-            />
-          </div>
-        )}
-        {schema.properties.menuItemColumns && (
-          <div>
-            <label>Menu Item Columns</label>
-            <div data-testid="menu-item-columns">
-              {(value.menuItemColumns || []).map((col, index) => (
-                <span key={index}>{col}</span>
-              ))}
+  return {
+    __esModule: true,
+    default: function MockObjectWidget({ id, schema, value, onChange }) {
+      return (
+        <div data-testid="object-widget" data-id={id}>
+          {schema.properties.hideChildrenFromNavigation && (
+            <div>
+              <label>Hide Children From Navigation</label>
+              <input
+                type="checkbox"
+                checked={value.hideChildrenFromNavigation || false}
+                onChange={(e) =>
+                  onChange(id, {
+                    ...value,
+                    hideChildrenFromNavigation: e.target.checked,
+                  })
+                }
+              />
             </div>
-          </div>
-        )}
-        {schema.properties.menuItemChildrenListColumns && (
-          <div>
-            <label>Menu Item Children List Columns</label>
-            <div data-testid="menu-item-children-columns">
-              {(value.menuItemChildrenListColumns || []).map((col, index) => (
-                <span key={index}>{col}</span>
-              ))}
+          )}
+          {schema.properties.menuItemColumns && (
+            <div>
+              <label>Menu Item Columns</label>
+              <div data-testid="menu-item-columns">
+                {(value.menuItemColumns || []).map((col, index) => (
+                  <span key={index}>{col}</span>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    );
+          )}
+          {schema.properties.menuItemChildrenListColumns && (
+            <div>
+              <label>Menu Item Children List Columns</label>
+              <div data-testid="menu-item-children-columns">
+                {(value.menuItemChildrenListColumns || []).map((col, index) => (
+                  <span key={index}>{col}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    },
   };
 });
 

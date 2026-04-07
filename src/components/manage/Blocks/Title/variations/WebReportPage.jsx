@@ -7,11 +7,11 @@ import React from 'react';
 import { Portal } from 'react-portal';
 import PropTypes from 'prop-types';
 
-import { MaybeWrap } from '@plone/volto/components';
+import MaybeWrap from '@plone/volto/components/manage/MaybeWrap/MaybeWrap';
 import BannerView from '@eeacms/volto-eea-website-theme/components/theme/Banner/View';
 import clsx from 'clsx';
 
-import { BodyClass } from '@plone/volto/helpers';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 
 function IsomorphicPortal({ children }) {
   const [isClient, setIsClient] = React.useState();

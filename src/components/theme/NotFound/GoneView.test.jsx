@@ -14,19 +14,20 @@ jest.mock('@eeacms/volto-eea-website-theme/hocs', () => ({
 }));
 
 jest.mock('@plone/volto/helpers/Utils/Utils', () => ({
+  toBackendLang: jest.fn((lang) => lang),
   withServerErrorCode: () => (Component) => Component,
 }));
 
-jest.mock('@plone/volto/helpers', () => ({
-  BodyClass: ({ className, children }) => (
+jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+  __esModule: true,
+  default: ({ className, children }) => (
     <div data-testid="body-class" data-classname={className}>
       {children}
     </div>
   ),
-  toBackendLang: jest.fn((lang) => lang),
 }));
 
-jest.mock('@plone/volto/actions', () => ({
+jest.mock('@plone/volto/actions/navigation/navigation', () => ({
   getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })),
 }));
 

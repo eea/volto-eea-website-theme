@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
-import { flattenToAppURL, Helmet } from '@plone/volto/helpers';
+import Helmet from '@plone/volto/helpers//Helmet/Helmet';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
 export default function BaseTag(props) {
   const contentId = useSelector((store) => store?.content?.data?.['@id']);

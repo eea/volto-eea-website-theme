@@ -9,8 +9,8 @@ import PropTypes from 'prop-types';
 import { Editor, createEditor, Transforms, Node, Range } from 'slate';
 import { ReactEditor, Editable, Slate, withReact } from 'slate-react';
 import config from '@plone/volto/registry';
-import { SidebarPortal } from '@plone/volto/components';
-import { BodyClass } from '@plone/volto/helpers';
+import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import View from '@eeacms/volto-eea-website-theme/components/manage/Blocks/Title/View';
 import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 import schema from './schema';
@@ -171,7 +171,7 @@ export const TitleBlockEdit = (props) => {
         banner={{
           title: {
             view: (
-              <Slate editor={editor} onChange={handleChange} value={val}>
+              <Slate editor={editor} onChange={handleChange} initialValue={val}>
                 <Editable
                   readOnly={!editable}
                   onKeyDown={handleKeyDown}

@@ -1,4 +1,5 @@
-import { BodyClass, flattenToAppURL } from '@plone/volto/helpers';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';

@@ -8,10 +8,10 @@ import { Accordion, Icon } from 'semantic-ui-react';
 
 import Slugger from 'github-slugger';
 
-import { UniversalLink } from '@plone/volto/components';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { withContentNavigation } from '@plone/volto/components/theme/Navigation/withContentNavigation';
 import withEEASideMenu from '@eeacms/volto-block-toc/hocs/withEEASideMenu';
-import { flattenToAppURL } from '@plone/volto/helpers';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
 const messages = defineMessages({
   navigation: {
