@@ -72,7 +72,8 @@ pipeline {
       }
       parallel {
 
-      stage("Volto ${env.CURRENT_VOLTO}") {
+      // Declarative stage names must stay string literals.
+      stage('Volto 18-yarn') {
         agent { node { label 'docker-1.13'} }
         stages {
       	  stage('Build test image') {
@@ -157,7 +158,7 @@ pipeline {
                 }
               }
           }
-            
+
           stage('Integration tests') {
               when { environment name: 'SKIP_TESTS', value: '' }
               steps {
@@ -260,9 +261,9 @@ pipeline {
         }
       }
 
-      stage("Volto ${env.PREVIOUS_VOLTO ?: 'previous'}") { 
+      stage('Volto 17') {
         agent { node { label 'integration'} }
-        when { 
+        when {
           allOf {
             environment name: 'SKIP_TESTS', value: ''
             expression { return !!env.PREVIOUS_VOLTO?.trim() }
@@ -355,10 +356,10 @@ pipeline {
           allOf {
             not { environment name: 'CHANGE_ID', value: '' }
             environment name: 'CHANGE_TARGET', value: 'develop'
-            environment name: 'SKIP_TESTS', value: '' 
+            environment name: 'SKIP_TESTS', value: ''
           }
           allOf {
-            environment name: 'SKIP_TESTS', value: '' 
+            environment name: 'SKIP_TESTS', value: ''
             environment name: 'CHANGE_ID', value: ''
             branch 'develop'
             not { changelog '.*^Automated release [0-9\\.]+$' }
