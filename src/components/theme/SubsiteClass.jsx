@@ -3,13 +3,15 @@ import cx from 'classnames';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { BodyClass } from '@plone/volto/helpers';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import { isSubsiteRoot } from 'volto-subsites/utils';
 
+const EMPTY_SUBSITE = {};
+
 const SubsiteClass = () => {
-  const subsite = useSelector(
-    (state) => state.content?.data?.['@components']?.subsite || {},
-  );
+  const subsite =
+    useSelector((state) => state.content?.data?.['@components']?.subsite) ||
+    EMPTY_SUBSITE;
   const location = useLocation();
 
   return (

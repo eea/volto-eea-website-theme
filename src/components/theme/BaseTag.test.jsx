@@ -6,7 +6,8 @@ import BaseTag from './BaseTag';
 
 const mockStore = configureStore();
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Url/Url', () => ({
+  __esModule: true,
   flattenToAppURL: jest.fn((url) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       const urlObj = new URL(url);
@@ -14,7 +15,11 @@ jest.mock('@plone/volto/helpers', () => ({
     }
     return url;
   }),
-  Helmet: ({ base }) => (
+}));
+
+jest.mock('@plone/volto/helpers//Helmet/Helmet', () => ({
+  __esModule: true,
+  default: ({ base }) => (
     <div
       data-testid="helmet-base"
       data-target={base?.target}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
-import { Icon } from '@plone/volto/components';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { default as TokenWidgetEdit } from '@plone/volto/components/manage/Widgets/TokenWidget';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
@@ -396,8 +396,8 @@ const applyConfig = (config) => {
       return override_toc && level
         ? [parseInt(level.slice(1)), entry_text]
         : config.settings.slate.topLevelTargetElements.includes(type)
-        ? [parseInt(type.slice(1)), plaintext]
-        : null;
+          ? [parseInt(type.slice(1)), plaintext]
+          : null;
     };
   }
   // Apply accordion block customization

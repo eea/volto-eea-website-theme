@@ -5,14 +5,15 @@ import { compose } from 'redux';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
 
 import jwtDecode from 'jwt-decode';
+import { getSchema } from '@plone/volto/actions/schema/schema';
+import { getUser } from '@plone/volto/actions/users/users';
 import {
-  getSchema,
-  getUser,
   updateContent,
   getContent,
-} from '@plone/volto/actions';
-import { getLayoutFieldname } from '@plone/volto/helpers';
-import { FormFieldWrapper, Icon } from '@plone/volto/components';
+} from '@plone/volto/actions/content/content';
+import { getLayoutFieldname } from '@plone/volto/helpers/Content/Content';
+import Icon from '@plone/volto/components/theme/Icon/Icon';
+import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 import { defineMessages, injectIntl } from 'react-intl';
 import config from '@plone/volto/registry';
 
@@ -101,8 +102,8 @@ const customSelectStyles = {
     color: state.isSelected
       ? '#007bc1'
       : state.isFocused
-      ? '#4a4a4a'
-      : 'inherit',
+        ? '#4a4a4a'
+        : 'inherit',
     ':active': {
       backgroundColor: null,
     },

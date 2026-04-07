@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
-import { flattenToAppURL } from '@plone/volto/helpers';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
 import config from '@plone/volto/registry';
 import isArray from 'lodash/isArray';

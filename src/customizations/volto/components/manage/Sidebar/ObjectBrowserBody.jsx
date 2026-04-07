@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 import { Input, Segment, Breadcrumb } from 'semantic-ui-react';
 
-import { join } from 'lodash';
+import join from 'lodash/join';
 
 // These absolute imports (without using the corresponding centralized index.js) are required
 // to cut circular import problems, this file should never use them. This is because of
@@ -25,6 +25,11 @@ import linkSVG from '@plone/volto/icons/link.svg';
 import homeSVG from '@plone/volto/icons/home.svg';
 
 import ObjectBrowserNav from '@plone/volto/components/manage/Sidebar/ObjectBrowserNav';
+import {
+  isItemAlreadySelected,
+  isSelectableObjectBrowserItem,
+  shouldCloseAfterObjectBrowserSelection,
+} from './objectBrowserSelection';
 
 const messages = defineMessages({
   SearchInputPlaceholder: {
@@ -74,6 +79,7 @@ class ObjectBrowserBody extends Component {
     maximumSelectionSize: PropTypes.number,
     contextURL: PropTypes.string,
     searchableTypes: PropTypes.arrayOf(PropTypes.string),
+    onlyFolderishSelectable: PropTypes.bool,
   };
 
   /**
@@ -89,6 +95,7 @@ class ObjectBrowserBody extends Component {
     selectableTypes: [],
     searchableTypes: null,
     maximumSelectionSize: null,
+    onlyFolderishSelectable: false,
   };
 
   /**
@@ -106,27 +113,27 @@ class ObjectBrowserBody extends Component {
         this.props.mode === 'multiple'
           ? '/'
           : this.props.mode === 'image' && this.props.data?.url
-          ? getParentURL(this.props.data.url)
-          : '/',
+            ? getParentURL(this.props.data.url)
+            : '/',
       currentLinkFolder:
         this.props.mode === 'multiple'
           ? '/'
           : this.props.mode === 'link' && this.props.data?.href
-          ? getParentURL(this.props.data.href)
-          : '/',
+            ? getParentURL(this.props.data.href)
+            : '/',
       parentFolder: '',
       selectedImage:
         this.props.mode === 'multiple'
           ? ''
           : this.props.mode === 'image' && this.props.data?.url
-          ? flattenToAppURL(this.props.data.url)
-          : '',
+            ? flattenToAppURL(this.props.data.url)
+            : '',
       selectedHref:
         this.props.mode === 'multiple'
           ? ''
           : this.props.mode === 'link' && this.props.data?.href
-          ? flattenToAppURL(this.props.data.href)
-          : '',
+            ? flattenToAppURL(this.props.data.href)
+            : '',
       showSearchInput: false,
       // In image mode, the searchable types default to the image types which
       // can be overridden with the property if specified.
@@ -152,8 +159,8 @@ class ObjectBrowserBody extends Component {
       mode === 'multiple'
         ? ''
         : mode === 'image'
-        ? this.state.selectedImage
-        : this.state.selectedHref;
+          ? this.state.selectedImage
+          : this.state.selectedHref;
     if (currentSelected && isInternalURL(currentSelected)) {
       this.props.searchContent(
         getParentURL(currentSelected),
@@ -299,9 +306,15 @@ class ObjectBrowserBody extends Component {
   };
 
   isSelectable = (item) => {
-    return this.props.selectableTypes.length > 0
-      ? this.props.selectableTypes.indexOf(item['@type']) >= 0
-      : true;
+    return isSelectableObjectBrowserItem({
+      item,
+      selectableTypes: this.props.selectableTypes,
+      onlyFolderishSelectable: this.props.onlyFolderishSelectable,
+      maximumSelectionSize: this.props.maximumSelectionSize,
+      data: this.props.data,
+      mode: this.props.mode,
+      normalize: flattenToAppURL,
+    });
   };
 
   handleClickOnItem = (item) => {
@@ -318,15 +331,23 @@ class ObjectBrowserBody extends Component {
           !this.props.maximumSelectionSize ||
           this.props.mode === 'multiple' ||
           !this.props.data ||
-          this.props.data.length < this.props.maximumSelectionSize
+          this.props.data.length <= this.props.maximumSelectionSize
         ) {
-          this.onSelectItem(item);
-          let length = this.props.data ? this.props.data.length : 0;
+          const isDeselecting =
+            this.props.mode === 'multiple' &&
+            isItemAlreadySelected({
+              data: this.props.data,
+              item,
+              normalize: flattenToAppURL,
+            });
 
-          let stopSelecting =
-            this.props.mode !== 'multiple' ||
-            (this.props.maximumSelectionSize > 0 &&
-              length + 1 >= this.props.maximumSelectionSize);
+          this.onSelectItem(item);
+          const stopSelecting = shouldCloseAfterObjectBrowserSelection({
+            mode: this.props.mode,
+            maximumSelectionSize: this.props.maximumSelectionSize,
+            currentLength: this.props.data ? this.props.data.length : 0,
+            isDeselecting,
+          });
 
           if (stopSelecting) {
             this.props.closeObjectBrowser();

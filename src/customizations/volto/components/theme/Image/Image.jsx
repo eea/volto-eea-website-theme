@@ -1,6 +1,7 @@
 import cx from 'classnames';
 import PropTypes from 'prop-types';
-import { flattenScales, flattenToAppURL } from '@plone/volto/helpers';
+import { flattenScales } from '@plone/volto/helpers/Url/Url';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
 /**
  * Determines the image scale name based on the provided data.
@@ -42,10 +43,10 @@ export default function Image({
   // TypeScript hints for editor autocomplete :)
   /** @type {React.ImgHTMLAttributes<HTMLImageElement>} */
   const attrs = {};
+  attrs.className = cx(className, { responsive }) || undefined;
 
   if (!item && src) {
     attrs.src = src;
-    attrs.className = cx(className, { responsive });
   } else {
     const isFromRealObject = !item.image_scales;
     const imageFieldWithDefault = imageField || item.image_field || 'image';
@@ -68,7 +69,6 @@ export default function Image({
     attrs.src = `${relativeBasePath}/${image.download}`;
     attrs.width = image.width;
     attrs.height = image.height;
-    attrs.className = cx(className, { responsive });
 
     const original = {
       download: `${image.download}`,
@@ -112,6 +112,7 @@ export default function Image({
     attrs.fetchpriority = 'high';
   }
 
+  // eslint-disable-next-line no-restricted-syntax
   return <img {...attrs} alt={alt} {...imageProps} />;
 }
 

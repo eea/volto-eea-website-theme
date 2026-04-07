@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react';
 import { useLocation, Link, useHistory } from 'react-router-dom';
-import { getBaseUrl } from '@plone/volto/helpers';
+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { Container, Button } from 'semantic-ui-react';
 
 import { FormattedMessage } from 'react-intl';

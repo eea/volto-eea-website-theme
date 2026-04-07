@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import { isInternalURL, flattenToAppURL } from '@plone/volto/helpers';
-import { DefaultView } from '@plone/volto/components/';
+import { isInternalURL, flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import DefaultView from '@plone/volto/components/theme/View/DefaultView';
 import { Redirect } from 'react-router-dom';
 
 const WebReportSectionView = (props) => {

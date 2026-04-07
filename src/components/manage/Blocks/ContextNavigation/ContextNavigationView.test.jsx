@@ -16,10 +16,12 @@ jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   };
 });
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Extensions', () => ({
   withBlockExtensions: jest.fn((Component) => Component),
-  emptyBlocksForm: jest.fn(),
-  getBlocksLayoutFieldname: () => 'blocks_layout',
+}));
+
+jest.mock('@plone/volto/helpers/Url/Url', () => ({
+  __esModule: true,
   flattenToAppURL: () => '',
 }));
 

@@ -2,18 +2,18 @@
  * Edit image block.
  * @module components/manage/Blocks/Image/Edit
  */
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { defineMessages, injectIntl } from 'react-intl';
 import cx from 'classnames';
 import { Message } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 import { Icon } from 'semantic-ui-react';
-import { LeadImageSidebar, SidebarPortal } from '@plone/volto/components';
+import LeadImageSidebar from '@plone/volto/components/manage/Blocks/LeadImage/LeadImageSidebar';
+import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 import config from '@plone/volto/registry';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
@@ -111,6 +111,7 @@ class Edit extends Component {
           {!hasImage && (
             <Message>
               <center>
+                {/* eslint-disable-next-line no-restricted-syntax */}
                 <img src={imageBlockSVG} alt="" />
                 <div className="message-text">{placeholder}</div>
               </center>
@@ -118,6 +119,7 @@ class Edit extends Component {
           )}
           {hasImage && hasImageData && (
             <div className="image-block">
+              {/* eslint-disable-next-line no-restricted-syntax */}
               <img
                 className={(className, data?.styles?.objectPosition)}
                 src={`data:${properties.image['content-type']};base64,${properties.image.data}`}

@@ -1,4 +1,4 @@
-import { flattenToAppURL } from '@plone/volto/helpers';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { GET_NAVIGATION_SETTINGS } from '../constants/ActionTypes';
 
 export const getNavigationSettings = (url = '') => {

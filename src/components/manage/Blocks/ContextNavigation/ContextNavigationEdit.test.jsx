@@ -7,16 +7,6 @@ import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 
-jest.mock('@plone/volto/components', () => ({
-  SidebarPortal: ({ children, selected }) =>
-    selected ? (
-      <div>
-        <div>SidebarPortal</div>
-        {children}
-      </div>
-    ) : null,
-}));
-
 jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
   __esModule: true,
   default: ({ onChangeField }) => (
@@ -36,11 +26,19 @@ jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   };
 });
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
+  __esModule: true,
+  default: ({ children, selected }) =>
+    selected ? (
+      <div>
+        <div>SidebarPortal</div>
+        {children}
+      </div>
+    ) : null,
+}));
+
+jest.mock('@plone/volto/helpers/Extensions', () => ({
   withBlockExtensions: jest.fn((Component) => Component),
-  emptyBlocksForm: jest.fn(),
-  getBlocksLayoutFieldname: () => 'blocks_layout',
-  withVariationSchemaEnhancer: jest.fn((Component) => Component),
 }));
 
 const mockStore = configureStore();

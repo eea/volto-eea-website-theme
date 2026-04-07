@@ -6,7 +6,8 @@
 import React from 'react';
 
 import PropTypes from 'prop-types';
-import { withBlockExtensions, BodyClass } from '@plone/volto/helpers';
+import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
+import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
 import DefaultTemplate from './variations/Default';
 
 /**

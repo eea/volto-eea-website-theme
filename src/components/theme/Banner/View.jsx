@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { Helmet } from '@plone/volto/helpers';
+import Helmet from '@plone/volto/helpers/Helmet/Helmet';
 import { compose } from 'redux';
 import { connect, useDispatch } from 'react-redux';
 import { withRouter } from 'react-router';

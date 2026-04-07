@@ -16,7 +16,7 @@ jest.mock('@plone/volto/icons/move-up.svg', () => 'move-up-svg');
 jest.mock('@plone/volto/icons/row.svg', () => 'row-svg');
 jest.mock('@plone/volto/icons/move-down.svg', () => 'move-down-svg');
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Extensions', () => ({
   addStyling: jest.fn((props) => ({
     properties: {
       styles: {
