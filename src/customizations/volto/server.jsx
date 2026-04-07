@@ -18,25 +18,23 @@ import cookiesMiddleware from 'universal-cookie-express';
 import debug from 'debug';
 import crypto from 'crypto';
 
-import routes from '@plone/volto/routes';
+import routes from '@root/routes';
 import config from '@plone/volto/registry';
 
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import Html from '@plone/volto/helpers/Html/Html';
 import Api from '@plone/volto/helpers/Api/Api';
-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
 import {
   toBackendLang,
   toGettextLang,
   toReactIntlLang,
 } from '@plone/volto/helpers/Utils/Utils';
-import { changeLanguage } from '@plone/volto/actions//language/language';
+import { changeLanguage } from '@plone/volto/actions/language/language';
 
 import userSession from '@plone/volto/reducers/userSession/userSession';
-
-import ErrorPage from '@plone/volto/error';
-
 import configureStore from '@plone/volto/store';
+import ErrorPage from '@plone/volto/error';
 import {
   ReduxAsyncConnect,
   loadOnServer,
