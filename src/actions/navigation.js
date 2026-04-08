@@ -1,5 +1,5 @@
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
-import { GET_NAVIGATION_SETTINGS } from '../constants/ActionTypes';
+import { GET_NAVIGATION_SETTINGS } from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
 
 export const getNavigationSettings = (url = '') => {
   let cleanedUrl = typeof url === 'string' ? url : '';

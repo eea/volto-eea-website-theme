@@ -1,5 +1,5 @@
 import { getNavigationSettings } from './navigation';
-import { GET_NAVIGATION_SETTINGS } from '../constants/ActionTypes';
+import { GET_NAVIGATION_SETTINGS } from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
 
 jest.mock('@plone/volto/helpers', () => ({
   flattenToAppURL: jest.fn((url) => {

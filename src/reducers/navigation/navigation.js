@@ -1,4 +1,4 @@
-import { GET_NAVIGATION_SETTINGS } from '../../constants/ActionTypes';
+import { GET_NAVIGATION_SETTINGS } from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
 
 const initialState = {
   error: null,
