@@ -21,9 +21,9 @@ import crypto from 'crypto';
 import routes from '@root/routes';
 import config from '@plone/volto/registry';
 
-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import Html from '@plone/volto/helpers/Html/Html';
 import Api from '@plone/volto/helpers/Api/Api';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
 import {
   toBackendLang,
