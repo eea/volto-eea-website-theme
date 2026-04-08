@@ -10,7 +10,7 @@ import cx from 'classnames';
 import { Message } from 'semantic-ui-react';
 import isEqual from 'lodash/isEqual';
 
-import { Copyright } from '@eeacms/volto-eea-design-system/ui';
+import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
 import { Icon } from 'semantic-ui-react';
 import LeadImageSidebar from '@plone/volto/components/manage/Blocks/LeadImage/LeadImageSidebar';
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';

@@ -61,35 +61,33 @@ jest.mock('@plone/volto/components', () => {
   };
 });
 
-jest.mock(
-  '@eeacms/volto-eea-design-system/ui',
-  () => {
-    const React = require('react');
+jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
+  const React = require('react');
 
-    // Copyright is a compound component: Copyright / Copyright.Icon / Copyright.Text
-    const Copyright = (props) =>
-      React.createElement(
-        'div',
-        { 'data-testid': 'eea-copyright' },
-        props.children,
-      );
-    Copyright.Icon = (props) =>
-      React.createElement(
-        'span',
-        { 'data-testid': 'eea-copyright-icon' },
-        props.children,
-      );
-    Copyright.Text = (props) =>
-      React.createElement(
-        'span',
-        { 'data-testid': 'eea-copyright-text' },
-        props.children,
-      );
+  const Copyright = (props) =>
+    React.createElement(
+      'div',
+      { 'data-testid': 'eea-copyright' },
+      props.children,
+    );
+  Copyright.Icon = (props) =>
+    React.createElement(
+      'span',
+      { 'data-testid': 'eea-copyright-icon' },
+      props.children,
+    );
+  Copyright.Text = (props) =>
+    React.createElement(
+      'span',
+      { 'data-testid': 'eea-copyright-text' },
+      props.children,
+    );
 
-    return { Copyright };
-  },
-  { virtual: true },
-);
+  return {
+    __esModule: true,
+    default: Copyright,
+  };
+});
 
 // Register our mock Image component so config.getComponent({ name: 'Image' })
 // returns something renderable during tests.

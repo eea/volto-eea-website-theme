@@ -17,8 +17,8 @@ import { CookiesProvider } from 'react-cookie';
 import cookiesMiddleware from 'universal-cookie-express';
 import debug from 'debug';
 import crypto from 'crypto';
-
-import routes from '@plone/volto/routes';
+// eslint-disable-next-line
+import routes from '@root/routes';
 import config from '@plone/volto/registry';
 
 import Html from '@plone/volto/helpers/Html/Html';
@@ -30,13 +30,11 @@ import {
   toGettextLang,
   toReactIntlLang,
 } from '@plone/volto/helpers/Utils/Utils';
-import { changeLanguage } from '@plone/volto/actions//language/language';
+import { changeLanguage } from '@plone/volto/actions/language/language';
 
 import userSession from '@plone/volto/reducers/userSession/userSession';
-
-import ErrorPage from '@plone/volto/error';
-
 import configureStore from '@plone/volto/store';
+import ErrorPage from '@plone/volto/error';
 import {
   ReduxAsyncConnect,
   loadOnServer,
