@@ -57,10 +57,12 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   const { eea } = config.settings;
   const headerOpts = eea.headerOpts || {};
-  const headerSearchBox = eea.headerSearchBox || [];
   const { logo, logoWhite } = headerOpts;
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
+
+  const eeaSettings = useSelector((state) => state.eeaSettings?.data);
+  const headerSearchBox = eeaSettings?.headerSearchBox || eea.headerSearchBox || [];
   const previousToken = usePrevious(token);
   const navigationSettings =
     useSelector((state) => state.navigationSettings?.settings) ||
