@@ -17,7 +17,7 @@ import { CookiesProvider } from 'react-cookie';
 import cookiesMiddleware from 'universal-cookie-express';
 import debug from 'debug';
 import crypto from 'crypto';
-
+// eslint-disable-next-line
 import routes from '@root/routes';
 import config from '@plone/volto/registry';
 
