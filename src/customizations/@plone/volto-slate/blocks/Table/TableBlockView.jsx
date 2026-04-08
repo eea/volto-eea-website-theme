@@ -13,7 +13,6 @@ import {
 } from '@plone/volto-slate/editor/render';
 import { Node } from 'slate';
 
-// TODO: loading LESS files with `volto-slate/...` paths does not work currently
 import '../../editor/plugins/Table/less/public.less';
 
 /**
