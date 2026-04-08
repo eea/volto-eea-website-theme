@@ -14,7 +14,7 @@ import {
 import { Node } from 'slate';
 
 // TODO: loading LESS files with `volto-slate/...` paths does not work currently
-import '../../editor/plugins/Table/less/public.less';
+import '@eeacms/volto-eea-website-theme/customizations/@plone/volto-slate/editor/plugins/Table/less/public.less';
 
 /**
  * Slate Table block's View class.
