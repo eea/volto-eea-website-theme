@@ -62,7 +62,8 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const dispatch = useDispatch();
 
   const eeaSettings = useSelector((state) => state.eeaSettings?.data);
-  const headerSearchBox = eeaSettings?.headerSearchBox || eea.headerSearchBox || [];
+  const headerSearchBox =
+    eeaSettings?.headerSearchBox || eea.headerSearchBox || [];
   const previousToken = usePrevious(token);
   const navigationSettings =
     useSelector((state) => state.navigationSettings?.settings) ||
