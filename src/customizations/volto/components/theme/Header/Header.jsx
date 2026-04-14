@@ -63,7 +63,7 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
 
   const eeaSettings = useSelector((state) => state.eeaSettings?.data);
   const headerSearchBox =
-    eeaSettings?.headerSearchBox || eea.headerSearchBox || [];
+    eeaSettings?.header?.searchBox || eea.headerSearchBox || [];
   const previousToken = usePrevious(token);
   const navigationSettings =
     useSelector((state) => state.navigationSettings?.settings) ||
