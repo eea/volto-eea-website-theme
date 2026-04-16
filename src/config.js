@@ -242,6 +242,10 @@ export const headerOpts = {
         title: 'Copernicus InSitu',
         href: 'https://insitu.copernicus.eu',
       },
+      {
+        title: 'Circularity Metrics Lab',
+        href: 'https://www.eea.europa.eu/en/circularity',
+      },
     ],
   },
   logoWidth: 350,
