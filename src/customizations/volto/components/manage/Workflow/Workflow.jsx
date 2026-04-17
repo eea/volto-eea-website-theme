@@ -25,6 +25,8 @@ import downSVG from '@plone/volto/icons/down-key.svg';
 import upSVG from '@plone/volto/icons/up-key.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 
+import './workflow-toast.css';
+
 const messages = defineMessages({
   messageUpdated: {
     id: 'Workflow updated.',
@@ -246,6 +248,7 @@ const Workflow = (props) => {
           title={intl.formatMessage(messages.messageUpdated)}
           content=""
         />,
+        { position: 'top-center' },
       );
     } else {
       toast.error(
@@ -254,6 +257,7 @@ const Workflow = (props) => {
           title={intl.formatMessage(messages.notAllowedToUpdateWorkflow)}
           content=""
         />,
+        { position: 'top-center' },
       );
     }
   };
