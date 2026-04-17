@@ -33,6 +33,8 @@ import {
 import { changeLanguage } from '@plone/volto/actions/language/language';
 
 import userSession from '@plone/volto/reducers/userSession/userSession';
+import { getEEASettings } from '@eeacms/volto-eea-website-theme/actions';
+
 import configureStore from '@plone/volto/store';
 import ErrorPage from '@plone/volto/error';
 import {
@@ -262,6 +264,7 @@ server.get('/*', (req, res) => {
   const location = parseUrl(url);
 
   loadOnServer({ store, location, routes, api })
+    .then(() => Promise.all([store.dispatch(getEEASettings())]).catch(() => {}))
     .then(() => {
       const initialLang =
         req.universalCookies.get('I18N_LANGUAGE') ||
