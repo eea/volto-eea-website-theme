@@ -11,6 +11,10 @@ import config from '@plone/volto/registry';
 import deleteSVG from '@plone/volto/icons/delete.svg';
 import dragSVG from '@plone/volto/icons/drag.svg';
 
+// TEMPORARY PATCH (Volto issue #6481):
+// Remove this customization once the upstream fixes are released and adopted.
+// Upstream PRs: https://github.com/plone/volto/pull/8124 and
+// https://github.com/plone/volto/pull/8125
 export const Item = forwardRef(
   (
     {
