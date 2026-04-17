@@ -310,7 +310,6 @@ export const headerSearchBox = [
     type: 'search-input',
     path: '/en/datahub',
     placeholder: 'Search Datahub...',
-    buttonTitle: 'Go to advanced search',
   },
   {
     type: 'info',
