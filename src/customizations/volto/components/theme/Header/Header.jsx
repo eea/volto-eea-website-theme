@@ -61,9 +61,12 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
   const width = useSelector((state) => state.screen?.width);
   const dispatch = useDispatch();
 
-  const eeaSettings = useSelector((state) => state.eeaSettings?.data);
+  const headerSettings = useSelector(
+    (state) => state.reduxAsyncConnect?.headerSettings,
+  );
+
   const headerSearchBox =
-    eeaSettings?.header?.searchBox || eea.headerSearchBox || [];
+    headerSettings?.searchBox || eea.headerSearchBox || [];
   const previousToken = usePrevious(token);
   const navigationSettings =
     useSelector((state) => state.navigationSettings?.settings) ||
