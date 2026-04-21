@@ -49,7 +49,8 @@ import okMiddleware from './middleware/ok';
 import voltoCustomCSSMiddleware from './middleware/voltoCustom';
 import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
-import { print, navigationSettings, eeaSettings } from './reducers';
+import { print, navigationSettings } from './reducers';
+import { headerSettingsExtender } from './helpers/headerSettingsExtender';
 
 import * as eea from './config';
 
@@ -676,8 +677,12 @@ const applyConfig = (config) => {
     ...(config.addonReducers || {}),
     print,
     navigationSettings,
-    eeaSettings,
   };
+
+  config.settings.asyncPropsExtenders = [
+    ...(config.settings.asyncPropsExtenders || []),
+    headerSettingsExtender,
+  ];
 
   // Mega menu object
   if (!config.settings.menuItemsLayouts) {

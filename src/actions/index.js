@@ -1,3 +1,3 @@
 export * from './print';
 export * from './navigation';
-export * from './eea-settings';
+export * from './header-settings';
