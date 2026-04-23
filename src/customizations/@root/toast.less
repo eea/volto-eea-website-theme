@@ -1,0 +1,99 @@
+.Toastify__toast-container--bottom-center {
+  top: 24px;
+  bottom: auto;
+  left: 50%;
+  width: ~'min(480px, calc(100vw - 32px))';
+  padding: 0;
+  margin-left: 0;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+
+  .Toastify__toast {
+    display: flex;
+    overflow: visible;
+    min-height: 0;
+    align-items: flex-start;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    margin-bottom: 12px;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+    cursor: default;
+  }
+
+  .Toastify__toast-body {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding: 0;
+    margin: 0;
+  }
+
+  .Toastify__close-button {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: 4px;
+    border: 0;
+    margin: -4px -4px -4px 12px;
+    background: transparent;
+    color: inherit;
+    opacity: 1;
+  }
+
+  .Toastify__close-button:hover,
+  .Toastify__close-button:focus {
+    opacity: 1;
+  }
+
+  .Toastify__toast--info .Toastify__close-button {
+    color: #003052;
+  }
+
+  .Toastify__toast--success .Toastify__close-button {
+    color: #005248;
+  }
+
+  .Toastify__toast--error .Toastify__close-button {
+    color: #b83230;
+  }
+
+  .Toastify__toast--warning .Toastify__close-button {
+    color: #3d2201;
+  }
+
+  .toast-dismiss-action {
+    display: none;
+  }
+
+  .toast-dismiss-action svg {
+    fill: currentColor;
+  }
+
+  .ui.message.eea-toast {
+    width: 100%;
+    margin: 0;
+    cursor: default;
+  }
+
+  .toast-inner-content {
+    min-width: 0;
+    margin-left: 0;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .Toastify__toast-container--bottom-center {
+    top: 16px;
+    bottom: auto;
+    width: ~'min(480px, calc(100vw - 24px))';
+
+    .Toastify__toast {
+      margin-bottom: 8px;
+    }
+
+    .Toastify__close-button {
+      margin-left: 8px;
+    }
+  }
+}
