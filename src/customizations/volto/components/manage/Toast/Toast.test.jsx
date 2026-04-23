@@ -4,15 +4,6 @@ import '@testing-library/jest-dom';
 
 import Toast from './Toast';
 
-jest.mock('@plone/volto/components/theme/Icon/Icon', () => {
-  const React = require('react');
-
-  return {
-    __esModule: true,
-    default: ({ className }) => <span className={className} />,
-  };
-});
-
 describe('Toast', () => {
   it('renders the title, content, and Volto compatibility class', () => {
     const { container, getByText } = render(
@@ -25,8 +16,11 @@ describe('Toast', () => {
       'ui',
       'message',
       'success',
+      'small',
+      'icon',
       'eea-toast--success',
     );
+    expect(container.querySelector('.exclamation.circle.icon')).toBeInTheDocument();
     expect(container.querySelector('.toast-inner-content')).toBeInTheDocument();
   });
 
