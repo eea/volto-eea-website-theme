@@ -20,7 +20,9 @@ describe('Toast', () => {
       'icon',
       'eea-toast--success',
     );
-    expect(container.querySelector('.exclamation.circle.icon')).toBeInTheDocument();
+    expect(
+      container.querySelector('.exclamation.circle.icon'),
+    ).toBeInTheDocument();
     expect(container.querySelector('.toast-inner-content')).toBeInTheDocument();
   });
 
