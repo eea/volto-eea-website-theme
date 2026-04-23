@@ -16,7 +16,7 @@ describe('Toast', () => {
       'ui',
       'message',
       'success',
-      'small',
+      'large',
       'icon',
       'eea-toast--success',
     );
