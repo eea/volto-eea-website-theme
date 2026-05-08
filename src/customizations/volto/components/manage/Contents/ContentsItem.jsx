@@ -75,40 +75,6 @@ function getColor(string) {
   }
 }
 
-export function getMetadataDate(item, fields) {
-  const field = fields.find((field) => item[field] && item[field] !== 'None');
-  return field ? item[field] : null;
-}
-
-export function getIndexValue(item, id) {
-  const dateAliases = {
-    EffectiveDate: ['EffectiveDate', 'effective'],
-    ExpirationDate: ['ExpirationDate', 'expires'],
-  };
-
-  return dateAliases[id] ? getMetadataDate(item, dateAliases[id]) : item[id];
-}
-
-export function isPastDate(value) {
-  const timestamp = new Date(value).getTime();
-  return Number.isFinite(timestamp) && timestamp < new Date().getTime();
-}
-
-export function isFutureDate(value) {
-  const timestamp = new Date(value).getTime();
-  return Number.isFinite(timestamp) && timestamp > new Date().getTime();
-}
-
-export function getDisplayTitle(title, hasStatusBadge) {
-  const maxLength = 32;
-
-  if (!hasStatusBadge || !title || title.length <= maxLength) {
-    return title;
-  }
-
-  return `${title.slice(0, maxLength - 3)}...`;
-}
-
 /**
  * Contents item component class.
  * @function ContentsItemComponent
@@ -131,11 +97,6 @@ export const ContentsItemComponent = ({
   order,
 }) => {
   const intl = useIntl();
-  const expirationDate = getMetadataDate(item, ['ExpirationDate', 'expires']);
-  const effectiveDate = getMetadataDate(item, ['EffectiveDate', 'effective']);
-  const isExpired = expirationDate && isPastDate(expirationDate);
-  const isScheduled = effectiveDate && isFutureDate(effectiveDate);
-  const displayTitle = getDisplayTitle(item.title, isExpired || isScheduled);
 
   return connectDropTarget(
     connectDragPreview(
@@ -202,62 +163,79 @@ export const ContentsItemComponent = ({
                 color="#878f93"
                 title={item['Type'] || item['@type']}
               />{' '}
-              <span title={item.title}> {displayTitle}</span>
+              <span
+                title={item.title}
+                style={{
+                  maxWidth:
+                    (item.ExpirationDate !== 'None' &&
+                      new Date(item.ExpirationDate).getTime() <
+                        new Date().getTime()) ||
+                    (item.EffectiveDate !== 'None' &&
+                      new Date(item.EffectiveDate).getTime() >
+                        new Date().getTime())
+                      ? '230px'
+                      : '100%',
+                }}
+              >
+                {' '}
+                {item.title}
+              </span>
             </div>
-            {isExpired && (
-              <Button className="button-margin" size="mini">
-                <FormattedMessage id="Expired" defaultMessage="Expired" />
-              </Button>
-            )}
-            {isScheduled && (
-              <Button className="button-margin effective-future" size="mini">
-                <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
-              </Button>
-            )}
+            {item.ExpirationDate !== 'None' &&
+              new Date(item.ExpirationDate).getTime() <
+                new Date().getTime() && (
+                <Button className="button-margin" size="mini">
+                  <FormattedMessage id="Expired" defaultMessage="Expired" />
+                </Button>
+              )}
+            {item.EffectiveDate !== 'None' &&
+              new Date(item.EffectiveDate).getTime() > new Date().getTime() && (
+                <Button className="button-margin effective-future" size="mini">
+                  <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
+                </Button>
+              )}
           </Link>
         </Table.Cell>
-        {map(indexes, (index) => {
-          const indexValue = getIndexValue(item, index.id);
-
-          return (
-            <Table.Cell
-              className={cx('', { 'dragging-cell': isDragging })}
-              key={index.id}
-            >
-              {index.type === 'boolean' &&
-                (indexValue ? (
-                  <FormattedMessage id="Yes" defaultMessage="Yes" />
+        {map(indexes, (index) => (
+          <Table.Cell
+            className={cx('', { 'dragging-cell': isDragging })}
+            key={index.id}
+          >
+            {index.type === 'boolean' &&
+              (item[index.id] ? (
+                <FormattedMessage id="Yes" defaultMessage="Yes" />
+              ) : (
+                <FormattedMessage id="No" defaultMessage="No" />
+              ))}
+            {index.type === 'string' &&
+              index.id !== 'review_state' &&
+              item[index.id]}
+            {index.id === 'review_state' && (
+              <div>
+                <span>
+                  <Circle color={getColor(item[index.id])} size="15px" />
+                </span>
+                {messages[item[index.id]]
+                  ? intl.formatMessage(messages[item[index.id]])
+                  : item['review_title'] ||
+                    item['review_state'] ||
+                    intl.formatMessage(messages.no_workflow_state)}
+              </div>
+            )}
+            {index.type === 'date' && (
+              <>
+                {item[index?.id] && item[index.id] !== 'None' ? (
+                  <FormattedDate date={item[index.id]} />
                 ) : (
-                  <FormattedMessage id="No" defaultMessage="No" />
-                ))}
-              {index.type === 'string' &&
-                index.id !== 'review_state' &&
-                indexValue}
-              {index.id === 'review_state' && (
-                <div>
-                  <span>
-                    <Circle color={getColor(item[index.id])} size="15px" />
-                  </span>
-                  {messages[item[index.id]]
-                    ? intl.formatMessage(messages[item[index.id]])
-                    : item['review_title'] ||
-                      item['review_state'] ||
-                      intl.formatMessage(messages.no_workflow_state)}
-                </div>
-              )}
-              {index.type === 'date' && (
-                <>
-                  {indexValue ? (
-                    <FormattedDate date={indexValue} />
-                  ) : (
-                    intl.formatMessage(messages.none)
-                  )}
-                </>
-              )}
-              {index.type === 'array' && <span>{indexValue?.join(', ')}</span>}
-            </Table.Cell>
-          );
-        })}
+                  intl.formatMessage(messages.none)
+                )}
+              </>
+            )}
+            {index.type === 'array' && (
+              <span>{item[index.id]?.join(', ')}</span>
+            )}
+          </Table.Cell>
+        ))}
         <Table.Cell
           className={cx('', { 'dragging-cell': isDragging })}
           textAlign="right"
