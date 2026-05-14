@@ -97,6 +97,11 @@ export const ContentsItemComponent = ({
   order,
 }) => {
   const intl = useIntl();
+  const now = Date.now();
+  const expirationTime = new Date(item.ExpirationDate).getTime();
+  const effectiveTime = new Date(item.EffectiveDate).getTime();
+  const isExpired = item.ExpirationDate !== 'None' && expirationTime < now;
+  const isScheduled = item.EffectiveDate !== 'None' && effectiveTime > now;
 
   return connectDropTarget(
     connectDragPreview(
@@ -155,7 +160,10 @@ export const ContentsItemComponent = ({
             className="icon-align-name"
             to={`${item['@id']}${item.is_folderish ? '/contents' : ''}`}
           >
-            <div className="expire-align">
+            <div
+              className="expire-align"
+              style={{ flex: '1 1 auto', minWidth: 0 }}
+            >
               <Icon
                 name={getContentIcon(item['@type'], item.is_folderish)}
                 size="20px"
@@ -165,35 +173,30 @@ export const ContentsItemComponent = ({
               />{' '}
               <span
                 title={item.title}
-                style={{
-                  maxWidth:
-                    (item.ExpirationDate !== 'None' &&
-                      new Date(item.ExpirationDate).getTime() <
-                        new Date().getTime()) ||
-                    (item.EffectiveDate !== 'None' &&
-                      new Date(item.EffectiveDate).getTime() >
-                        new Date().getTime())
-                      ? '230px'
-                      : '100%',
-                }}
+                style={{ flex: '1 1 auto', minWidth: 0 }}
               >
                 {' '}
                 {item.title}
               </span>
             </div>
-            {item.ExpirationDate !== 'None' &&
-              new Date(item.ExpirationDate).getTime() <
-                new Date().getTime() && (
-                <Button className="button-margin" size="mini">
-                  <FormattedMessage id="Expired" defaultMessage="Expired" />
-                </Button>
-              )}
-            {item.EffectiveDate !== 'None' &&
-              new Date(item.EffectiveDate).getTime() > new Date().getTime() && (
-                <Button className="button-margin effective-future" size="mini">
-                  <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
-                </Button>
-              )}
+            {isExpired && (
+              <Button
+                className="button-margin"
+                size="mini"
+                style={{ flexShrink: 0 }}
+              >
+                <FormattedMessage id="Expired" defaultMessage="Expired" />
+              </Button>
+            )}
+            {isScheduled && (
+              <Button
+                className="button-margin effective-future"
+                size="mini"
+                style={{ flexShrink: 0 }}
+              >
+                <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
+              </Button>
+            )}
           </Link>
         </Table.Cell>
         {map(indexes, (index) => (
