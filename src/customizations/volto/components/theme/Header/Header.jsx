@@ -117,7 +117,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
     );
   });
 
-  const prevTokenRef = useRef(token);
+  const prevTokenRef = useRef(undefined);
 
   // Derived / memoized values
   const headerSearchBox =
@@ -201,21 +201,18 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   // Otherwise the expander already supplied correct navigation; no fetch.
   useEffect(() => {
     const { settings } = config;
-    const langMismatch =
-      settings.navigationLanguage &&
-      navrootLang &&
-      navrootLang !== settings.navigationLanguage;
+    const navLang = settings.navigationLanguage;
+    const langMismatch = navLang && navrootLang && navrootLang !== navLang;
     const tokenChanged = prevTokenRef.current !== token;
 
     if (
-      settings.navigationLanguage ||
       langMismatch ||
       tokenChanged ||
       !hasApiExpander('navigation', baseUrl)
     ) {
       dispatch(getNavigation(baseUrl, settings.navDepth));
     }
-  }, [dispatch, pathname, baseUrl, navrootLang, token]);
+  }, [dispatch, baseUrl, navrootLang, token]);
 
   // Track the previous token value. Runs after the fetch effect so the
   // comparison above sees the value from the prior render.
