@@ -3,24 +3,24 @@
  * @module components/theme/Header/Header
  */
 
+import loadable from '@loadable/component';
+import cx from 'classnames';
 import { useEffect, useMemo, useRef } from 'react';
-import { Dropdown, Image } from 'semantic-ui-react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
-import cx from 'classnames';
-import loadable from '@loadable/component';
+import { Dropdown, Image } from 'semantic-ui-react';
 
-import config from '@plone/volto/registry';
+import { getNavigation } from '@plone/volto/actions/navigation/navigation';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
-import { getNavigation } from '@plone/volto/actions/navigation/navigation';
+import config from '@plone/volto/registry';
 
-import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
-import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
-import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
+import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
+import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
+import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 const EMPTY_NAVIGATION_SETTINGS = {};
@@ -204,6 +204,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
     const tokenChanged = prevTokenRef.current !== token;
 
     if (
+      settings.navigationLanguage ||
       langMismatch ||
       tokenChanged ||
       !hasApiExpander('navigation', baseUrl)
