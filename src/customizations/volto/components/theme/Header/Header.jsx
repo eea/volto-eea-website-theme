@@ -128,11 +128,12 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   // Prefer navroot.language; fall back to extracting language from pathname
   // (validated against supportedLanguages) when navroot is not yet loaded.
   const navrootLang = useMemo(() => {
-    const { supportedLanguages } = config.settings;
+    const { supportedLanguages, navigationLanguage } = config.settings;
     if (navroot?.language?.token) return navroot.language.token;
     const supported = supportedLanguages || [];
     const first = pathname.split('/').filter(Boolean)[0];
-    return first && supported.includes(first) ? first : null;
+    if (first === undefined) return navigationLanguage || null;
+    return supported.includes(first) ? first : null;
   }, [navroot, pathname]);
 
   // Normalize pathname for menu active-item matching when using
@@ -154,20 +155,23 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
 
   const baseUrl = useMemo(() => {
     const { settings } = config;
+    const navLang = settings.navigationLanguage;
     let url = getBaseUrl(pathname);
+
+    if (isSubsite || !navLang || !navrootLang) {
+      return url;
+    }
 
     // When the current navroot's language differs from the configured
     // navigationLanguage, override the base url so navigation is fetched from
     // the configured language root instead of the current navroot.
-    if (
-      settings.navigationLanguage &&
-      navrootLang &&
-      navrootLang !== settings.navigationLanguage
-    ) {
+    if (navLang !== navrootLang) {
       url = `/${settings.navigationLanguage}`;
+    } else if (!url && navLang === navrootLang) {
+      url = `/${navLang}`;
     }
     return url;
-  }, [pathname, navrootLang]);
+  }, [pathname, navrootLang, isSubsite]);
 
   // Fetch navigation settings on pathname change.
   useEffect(() => {
