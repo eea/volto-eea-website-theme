@@ -1,0 +1,73 @@
+--- node_modules/@plone/volto/src/components/manage/Contents/ContentsItem.jsx
++++ src/customizations/volto/components/manage/Contents/ContentsItem.jsx
+@@ -97,6 +97,11 @@
+   order,
+ }) => {
+   const intl = useIntl();
++  const now = Date.now();
++  const expirationTime = new Date(item.ExpirationDate).getTime();
++  const effectiveTime = new Date(item.EffectiveDate).getTime();
++  const isExpired = item.ExpirationDate !== 'None' && expirationTime < now;
++  const isScheduled = item.EffectiveDate !== 'None' && effectiveTime > now;
+ 
+   return connectDropTarget(
+     connectDragPreview(
+@@ -155,7 +160,10 @@
+             className="icon-align-name"
+             to={`${item['@id']}${item.is_folderish ? '/contents' : ''}`}
+           >
+-            <div className="expire-align">
++            <div
++              className="expire-align"
++              style={{ flex: '1 1 auto', minWidth: 0 }}
++            >
+               <Icon
+                 name={getContentIcon(item['@type'], item.is_folderish)}
+                 size="20px"
+@@ -163,21 +171,32 @@
+                 color="#878f93"
+                 title={item['Type'] || item['@type']}
+               />{' '}
+-              <span title={item.title}> {item.title}</span>
++              <span
++                title={item.title}
++                style={{ flex: '1 1 auto', minWidth: 0 }}
++              >
++                {' '}
++                {item.title}
++              </span>
+             </div>
+-            {item.ExpirationDate !== 'None' &&
+-              new Date(item.ExpirationDate).getTime() <
+-                new Date().getTime() && (
+-                <Button className="button-margin" size="mini">
+-                  <FormattedMessage id="Expired" defaultMessage="Expired" />
+-                </Button>
+-              )}
+-            {item.EffectiveDate !== 'None' &&
+-              new Date(item.EffectiveDate).getTime() > new Date().getTime() && (
+-                <Button className="button-margin effective-future" size="mini">
+-                  <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
+-                </Button>
+-              )}
++            {isExpired && (
++              <Button
++                className="button-margin"
++                size="mini"
++                style={{ flexShrink: 0 }}
++              >
++                <FormattedMessage id="Expired" defaultMessage="Expired" />
++              </Button>
++            )}
++            {isScheduled && (
++              <Button
++                className="button-margin effective-future"
++                size="mini"
++                style={{ flexShrink: 0 }}
++              >
++                <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
++              </Button>
++            )}
+           </Link>
+         </Table.Cell>
+         {map(indexes, (index) => (
