@@ -3,26 +3,24 @@
  * @module components/theme/Header/Header
  */
 
-import React from 'react';
-import { Dropdown, Image } from 'semantic-ui-react';
+import loadable from '@loadable/component';
+import cx from 'classnames';
+import { useEffect, useMemo, useRef } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-
 import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
+import { Dropdown, Image } from 'semantic-ui-react';
+
+import { getNavigation } from '@plone/volto/actions/navigation/navigation';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
-import { getNavigation } from '@plone/volto/actions/navigation/navigation';
-import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
-import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
-import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
-import { usePrevious } from '@eeacms/volto-eea-design-system/helpers';
-import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
-
 import config from '@plone/volto/registry';
-import { compose } from 'redux';
 
-import cx from 'classnames';
-import loadable from '@loadable/component';
+import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/eea.png';
+import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
+import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
+import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 const EMPTY_NAVIGATION_SETTINGS = {};
@@ -32,14 +30,78 @@ function removeTrailingSlash(path) {
 }
 
 /**
- * EEA Specific Header component.
+ * Merge backend navigation settings into the config-level menu layouts.
  */
-const EEAHeader = ({ pathname, token, items, history, subsite }) => {
-  const router_pathname = useSelector((state) => {
-    return removeTrailingSlash(state.router?.location?.pathname) || '';
+function buildEnhancedLayouts(items, navigationSettings) {
+  const configLayouts = config.settings?.menuItemsLayouts || {};
+  const enhancedLayouts = { ...configLayouts };
+
+  if (!items) return enhancedLayouts;
+
+  items.forEach(() => {
+    Object.keys(navigationSettings).forEach((routeId) => {
+      const route = navigationSettings[routeId];
+      const backendSettings = {};
+
+      if (route.hideChildrenFromNavigation !== undefined) {
+        backendSettings.hideChildrenFromNavigation =
+          route.hideChildrenFromNavigation;
+      }
+
+      if (route.menuItemChildrenListColumns !== undefined) {
+        backendSettings.menuItemChildrenListColumns = Array.isArray(
+          route.menuItemChildrenListColumns,
+        )
+          ? route.menuItemChildrenListColumns
+              .map((val) => (typeof val === 'string' ? parseInt(val, 10) : val))
+              .filter((val) => !isNaN(val))
+          : route.menuItemChildrenListColumns;
+      }
+
+      if (route.menuItemColumns !== undefined) {
+        backendSettings.menuItemColumns = route.menuItemColumns;
+      }
+
+      if (Object.keys(backendSettings).length > 0) {
+        enhancedLayouts[routeId] = {
+          ...enhancedLayouts[routeId],
+          ...backendSettings,
+        };
+      }
+    });
   });
 
+  return enhancedLayouts;
+}
+
+/**
+ * EEA Specific Header component.
+ */
+const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
+  // Config / static derived values
+  const { eea } = config.settings;
+  const headerOpts = eea.headerOpts || {};
+  const { logo, logoWhite } = headerOpts;
+
   const isSubsite = subsite?.['@type'] === 'Subsite';
+
+  // Redux state
+  const dispatch = useDispatch();
+  const width = useSelector((state) => state.screen?.width);
+
+  const router_pathname = useSelector(
+    (state) => removeTrailingSlash(state.router?.location?.pathname) || '',
+  );
+
+  const headerSettings = useSelector(
+    (state) => state.reduxAsyncConnect?.headerSettings,
+  );
+
+  const navigationSettings =
+    useSelector((state) => state.navigationSettings?.settings) ||
+    EMPTY_NAVIGATION_SETTINGS;
+
+  const updateRequest = useSelector((state) => state.content.update);
 
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
@@ -55,85 +117,69 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     );
   });
 
-  const { eea } = config.settings;
-  const headerOpts = eea.headerOpts || {};
-  const { logo, logoWhite } = headerOpts;
-  const width = useSelector((state) => state.screen?.width);
-  const dispatch = useDispatch();
+  const prevTokenRef = useRef(undefined);
 
-  const headerSettings = useSelector(
-    (state) => state.reduxAsyncConnect?.headerSettings,
-  );
-
+  // Derived / memoized values
   const headerSearchBox =
     headerSettings?.searchBox || eea.headerSearchBox || [];
-  const previousToken = usePrevious(token);
-  const navigationSettings =
-    useSelector((state) => state.navigationSettings?.settings) ||
-    EMPTY_NAVIGATION_SETTINGS;
-  const updateRequest = useSelector((state) => state.content.update);
 
-  // Combine navigation settings from backend with config fallback
-  const configLayouts = config.settings?.menuItemsLayouts || {};
-  const enhancedLayouts = { ...configLayouts };
+  const enhancedLayouts = buildEnhancedLayouts(items, navigationSettings);
 
-  // Map navigation settings to menu item URLs
-  if (items) {
-    items.forEach((menuItem) => {
-      // Check if we have navigation settings for any route that might match this menu item
-      Object.keys(navigationSettings).forEach((routeId) => {
-        const route = navigationSettings[routeId];
-        const backendSettings = {};
+  // Prefer navroot.language; fall back to extracting language from pathname
+  // (validated against supportedLanguages) when navroot is not yet loaded.
+  const navrootLang = useMemo(() => {
+    const { supportedLanguages, navigationLanguage } = config.settings;
+    if (navroot?.language?.token) return navroot.language.token;
+    const supported = supportedLanguages || [];
+    const first = pathname.split('/').filter(Boolean)[0];
+    if (first === undefined) return navigationLanguage || null;
+    return supported.includes(first) ? first : null;
+  }, [navroot, pathname]);
 
-        if (route.hideChildrenFromNavigation !== undefined) {
-          backendSettings.hideChildrenFromNavigation =
-            route.hideChildrenFromNavigation;
-        }
+  // Normalize pathname for menu active-item matching when using
+  // navigationLanguage. Menu items come from the configured language; rewrite
+  // the current language prefix to match. E.g. navLang='en' on /fr/topics ->
+  // /en/topics. Uses navroot.language as source of truth instead of parsing
+  // the first path segment.
+  const normalizedPathname = useMemo(() => {
+    const navLang = config.settings.navigationLanguage;
+    if (!navLang || !navrootLang || navrootLang === navLang) return pathname;
 
-        if (route.menuItemChildrenListColumns !== undefined) {
-          // Convert strings back to integers for header usage
-          backendSettings.menuItemChildrenListColumns = Array.isArray(
-            route.menuItemChildrenListColumns,
-          )
-            ? route.menuItemChildrenListColumns
-                .map((val) =>
-                  typeof val === 'string' ? parseInt(val, 10) : val,
-                )
-                .filter((val) => !isNaN(val))
-            : route.menuItemChildrenListColumns;
-        }
+    const prefix = `/${navrootLang}`;
+    if (pathname === prefix) return `/${navLang}`;
+    if (pathname.startsWith(`${prefix}/`)) {
+      return `/${navLang}${pathname.slice(prefix.length)}`;
+    }
+    return pathname;
+  }, [pathname, navrootLang]);
 
-        if (route.menuItemColumns !== undefined) {
-          // Use menuItemColumns directly as they're already in semantic UI format
-          backendSettings.menuItemColumns = route.menuItemColumns;
-        }
-
-        if (Object.keys(backendSettings).length > 0) {
-          // Override the config setting with backend data
-          enhancedLayouts[routeId] = {
-            ...enhancedLayouts[routeId],
-            ...backendSettings,
-          };
-        }
-      });
-    });
-  }
-
-  // Memoize navigationBaseUrl so it doesn't change on every pathname change
-  // when navigationLanguage is set to a fixed language
-  const navigationBaseUrl = React.useMemo(() => {
+  const baseUrl = useMemo(() => {
     const { settings } = config;
-    return settings.navigationLanguage
-      ? `/${settings.navigationLanguage}`
-      : getBaseUrl(pathname);
-  }, [pathname]);
+    const navLang = settings.navigationLanguage;
+    let url = getBaseUrl(pathname);
 
-  React.useEffect(() => {
+    if (isSubsite || !navLang || !navrootLang) {
+      return url;
+    }
+
+    // When the current navroot's language differs from the configured
+    // navigationLanguage, override the base url so navigation is fetched from
+    // the configured language root instead of the current navroot.
+    if (navLang !== navrootLang) {
+      url = `/${settings.navigationLanguage}`;
+    } else if (!url && navLang === navrootLang) {
+      url = `/${navLang}`;
+    }
+    return url;
+  }, [pathname, navrootLang, isSubsite]);
+
+  // Fetch navigation settings on pathname change.
+  useEffect(() => {
     dispatch(getNavigationSettings(pathname));
   }, [dispatch, pathname]);
 
-  // Separate effect for update request to avoid duplicate calls
-  React.useEffect(() => {
+  // Re-fetch navigation settings after a content update for the current page.
+  useEffect(() => {
     if (
       updateRequest?.loaded &&
       removeTrailingSlash(updateRequest?.content?.['@id'] || '') ===
@@ -143,46 +189,36 @@ const EEAHeader = ({ pathname, token, items, history, subsite }) => {
     }
   }, [updateRequest, dispatch, pathname]);
 
-  React.useEffect(() => {
+  // Fetch the main navigation tree.
+  // Cases that force a fetch:
+  //   1. Language mismatch — the current navroot's language differs from the
+  //      configured navigationLanguage, so the API expander's navigation (if
+  //      any) is in the wrong language and must be replaced.
+  //   2. Token change — auth state affects which nav items are visible, so
+  //      expander data loaded under the previous token may be stale.
+  //   3. No expander available — backend did not pre-supply navigation for
+  //      this base url, so we fetch it explicitly.
+  // Otherwise the expander already supplied correct navigation; no fetch.
+  useEffect(() => {
     const { settings } = config;
+    const navLang = settings.navigationLanguage;
+    const langMismatch = navLang && navrootLang && navrootLang !== navLang;
+    const tokenChanged = prevTokenRef.current !== token;
 
-    // When navigationLanguage is configured, always fetch navigation from that language
-    // We MUST call getNavigation directly because API expanders fetch navigation for the current page
-    if (settings.navigationLanguage) {
-      // Always fetch navigation for the configured language
-      dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
-    } else {
-      // When navigationLanguage is not configured, fetch navigation for current page language
-      // Check if navigation data needs to be fetched based on the API expander availability
-      if (!hasApiExpander('navigation', navigationBaseUrl)) {
-        dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
-      }
-
-      // Additional check for token changes
-      if (token !== previousToken) {
-        dispatch(getNavigation(navigationBaseUrl, settings.navDepth));
-      }
+    if (
+      langMismatch ||
+      tokenChanged ||
+      !hasApiExpander('navigation', baseUrl)
+    ) {
+      dispatch(getNavigation(baseUrl, settings.navDepth));
     }
-  }, [navigationBaseUrl, token, dispatch, previousToken]);
+  }, [dispatch, baseUrl, navrootLang, token]);
 
-  // Normalize pathname for menu matching when using navigationLanguage
-  // This ensures menu items from the configured language match correctly even when on other language pages
-  const normalizedPathname = React.useMemo(() => {
-    const navLang = config.settings.navigationLanguage;
-    if (!navLang) {
-      return pathname;
-    }
-
-    // Replace the language prefix with the configured navigation language for menu matching
-    // e.g., if navLang='en': /fr/topics -> /en/topics
-    const pathParts = pathname.split('/').filter(Boolean);
-    if (pathParts.length > 0 && pathParts[0].length === 2) {
-      // First segment is a language code, replace it with the navigation language
-      const rest = pathParts.slice(1).join('/');
-      return rest ? `/${navLang}/${rest}` : `/${navLang}`;
-    }
-    return pathname;
-  }, [pathname]);
+  // Track the previous token value. Runs after the fetch effect so the
+  // comparison above sees the value from the prior render.
+  useEffect(() => {
+    prevTokenRef.current = token;
+  }, [token]);
 
   return (
     <Header menuItems={items}>
@@ -327,6 +363,7 @@ export default compose(
     (state) => ({
       token: state.userSession.token,
       items: state.navigation.items,
+      navroot: state.content.data?.['@components']?.navroot?.navroot,
       subsite: state.content.data?.['@components']?.subsite,
     }),
     { getNavigation },
