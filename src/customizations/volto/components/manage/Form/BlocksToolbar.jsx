@@ -10,7 +10,6 @@ import {
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import { Plug } from '@plone/volto/components/manage/Pluggable';
 import { v4 as uuid } from 'uuid';
-import { load } from 'redux-localstorage-simple';
 import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
 import without from 'lodash/without';
@@ -25,35 +24,10 @@ import copySVG from '@plone/volto/icons/copy.svg';
 import cutSVG from '@plone/volto/icons/cut.svg';
 import pasteSVG from '@plone/volto/icons/paste.svg';
 import trashSVG from '@plone/volto/icons/delete.svg';
-// eslint-disable-next-line import/no-unresolved
-import { cloneBlocks } from '@plone/volto/helpers/Blocks/cloneBlocks';
-
-const fallbackBlocksClipboardStates = [
-  'blocksClipboard.cut',
-  'blocksClipboard.copy',
-];
-
-const getBlocksClipboardStates = () => {
-  const persistentReducers = config.settings?.persistentReducers || [];
-  const blocksClipboardStates = persistentReducers.filter(
-    (state) =>
-      state === 'blocksClipboard' || state.startsWith('blocksClipboard.'),
-  );
-
-  return blocksClipboardStates.length
-    ? blocksClipboardStates
-    : fallbackBlocksClipboardStates;
-};
-
-const loadBlocksClipboardFromStorage = () =>
-  load({
-    states: getBlocksClipboardStates(),
-    disableWarnings: true,
-  })?.blocksClipboard ||
-  load({
-    states: ['blocksClipboard'],
-    disableWarnings: true,
-  })?.blocksClipboard;
+import {
+  cloneBlocks,
+  loadBlocksClipboardFromStorage,
+} from './blocksClipboardUtils';
 
 export class BlocksToolbarComponent extends React.Component {
   constructor(props) {
