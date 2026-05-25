@@ -291,6 +291,76 @@ describe('setupPrintView', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_PRINT' });
   });
 
+  it('expands report navigation details while printing and restores closed details afterwards', async () => {
+    document.body.innerHTML += `
+      <nav class="report-navigation">
+        <details><summary>Section</summary><a href="/section">Section</a></details>
+      </nav>
+    `;
+    const detail = document.querySelector('.report-navigation details');
+    const dispatch = jest.fn();
+    let changeHandler;
+
+    matchMediaMock.addEventListener = jest.fn((event, handler) => {
+      if (event === 'change') {
+        changeHandler = handler;
+      }
+    });
+
+    await act(async () => {
+      setupPrintView(dispatch);
+
+      expect(detail.open).toBe(true);
+      expect(detail.dataset.printWasOpen).toBe('false');
+
+      for (let i = 0; i < 10; i++) {
+        jest.runAllTimers();
+        await Promise.resolve();
+      }
+
+      changeHandler({ matches: false });
+      jest.runAllTimers();
+    });
+
+    expect(detail.open).toBe(false);
+    expect(detail.dataset.printWasOpen).toBeUndefined();
+  });
+
+  it('keeps report navigation details open when they were already open before printing', async () => {
+    document.body.innerHTML += `
+      <nav class="report-navigation">
+        <details open><summary>Section</summary><a href="/section">Section</a></details>
+      </nav>
+    `;
+    const detail = document.querySelector('.report-navigation details');
+    const dispatch = jest.fn();
+    let changeHandler;
+
+    matchMediaMock.addEventListener = jest.fn((event, handler) => {
+      if (event === 'change') {
+        changeHandler = handler;
+      }
+    });
+
+    await act(async () => {
+      setupPrintView(dispatch);
+
+      expect(detail.open).toBe(true);
+      expect(detail.dataset.printWasOpen).toBe('true');
+
+      for (let i = 0; i < 10; i++) {
+        jest.runAllTimers();
+        await Promise.resolve();
+      }
+
+      changeHandler({ matches: false });
+      jest.runAllTimers();
+    });
+
+    expect(detail.open).toBe(true);
+    expect(detail.dataset.printWasOpen).toBeUndefined();
+  });
+
   it('handles afterprint event', async () => {
     const dispatch = jest.fn();
     let afterPrintHandler;
