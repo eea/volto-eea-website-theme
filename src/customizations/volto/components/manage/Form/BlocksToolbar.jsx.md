@@ -15,17 +15,18 @@ The upstream `loadFromStorage()` only queries for `states: ['blocksClipboard']` 
 
 ### 1. Import changes
 
-| Upstream | Override |
-|----------|----------|
-| `import { load } from 'redux-localstorage-simple'` | _Removed_ |
-| `import { cloneBlocks } from '@plone/volto/helpers/Blocks/cloneBlocks'` | _Removed_ |
-| — | `import { cloneBlocks, loadBlocksClipboardFromStorage } from './blocksClipboardUtils'` |
+| Upstream                                                                | Override                                                                               |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `import { load } from 'redux-localstorage-simple'`                      | _Removed_                                                                              |
+| `import { cloneBlocks } from '@plone/volto/helpers/Blocks/cloneBlocks'` | _Removed_                                                                              |
+| —                                                                       | `import { cloneBlocks, loadBlocksClipboardFromStorage } from './blocksClipboardUtils'` |
 
 Both `load` and `cloneBlocks` are now provided by the local `blocksClipboardUtils.js` module instead of being imported directly from Volto.
 
 ### 2. `loadFromStorage(event)` — the core bug fix
 
 **Upstream:**
+
 ```js
 loadFromStorage() {
   const clipboard = load({ states: ['blocksClipboard'] })?.blocksClipboard;
@@ -35,6 +36,7 @@ loadFromStorage() {
 ```
 
 **Override:**
+
 ```js
 loadFromStorage(event) {
   if (event?.key && !event.key.includes('blocksClipboard')) {
@@ -67,6 +69,7 @@ Three improvements:
 ### 3. `componentDidMount()` — eager rehydration
 
 **Upstream:**
+
 ```js
 componentDidMount() {
   window.addEventListener('storage', this.loadFromStorage, true);
@@ -74,6 +77,7 @@ componentDidMount() {
 ```
 
 **Override:**
+
 ```js
 componentDidMount() {
   this.loadFromStorage();
