@@ -107,7 +107,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
     const layout = state.content?.data?.layout;
     const has_home_layout =
       layout === 'homepage_inverse_view' ||
-      (__CLIENT__ && document.body.classList.contains('homepage-inverse'));
+      (__CLIENT__ && document.body?.classList.contains('homepage-inverse'));
 
     return (
       has_home_layout &&
