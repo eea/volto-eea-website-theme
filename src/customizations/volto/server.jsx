@@ -101,7 +101,7 @@ server.use(function (err, req, res, next) {
      * TODO:
      * - get ignored codes from Plone error_log
      */
-    const ignoredErrors = [301, 302, 401, 404];
+    const ignoredErrors = [301, 302, 401, 404, 410];
     if (!ignoredErrors.includes(err.status)) console.error(err);
 
     res
@@ -184,7 +184,7 @@ function setupServer(req, res, next) {
      * TODO:
      * - get ignored codes from Plone error_log
      */
-    const ignoredErrors = [301, 302, 401, 404];
+    const ignoredErrors = [301, 302, 401, 404, 410];
     if (!ignoredErrors.includes(error.status)) console.error(error);
 
     res
