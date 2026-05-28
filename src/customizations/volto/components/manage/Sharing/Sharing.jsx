@@ -554,7 +554,7 @@ export default compose(
       available_roles: state.sharing.data.available_roles,
       updateRequest: state.sharing.update,
       pathname: props.location.pathname,
-      title: state.content.data?.title || "",
+      title: state.content.data?.title || '',
       login: state.userSession.token
         ? jwtDecode(state.userSession.token).sub
         : '',

@@ -7,7 +7,7 @@ This customization shadows Volto core's
 
 - **Null-safe access to `state.content.data.title`**: The original code
   accesses `state.content.data.title` directly, which throws a `TypeError:
-  Cannot read properties of null (reading 'title')` when `state.content.data`
+Cannot read properties of null (reading 'title')` when `state.content.data`
   is `null` (e.g., when the content hasn't loaded yet, or when SSR renders a
   page where the content API returned an error/null).
 
