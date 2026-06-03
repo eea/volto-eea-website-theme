@@ -21,6 +21,86 @@ if (window.addEventListener) {
   window.onload=alter
 }`;
 
+const CRITICAL_HEADER_SHELL_CSS = `body {
+  margin: 0;
+}
+
+header,
+nav,
+main,
+section {
+  display: block;
+}
+
+.eea.header,
+.top.bar,
+.main.bar {
+  display: block;
+}
+
+.top.bar .ui.container,
+.top.bar .item,
+.main.bar > .ui.container,
+.main-menu,
+.search-action,
+.burger-action {
+  display: flex;
+  align-items: center;
+}
+
+.top.bar .ui.container,
+.main.bar > .ui.container {
+  justify-content: space-between;
+}
+
+.main.bar {
+  position: relative;
+  width: 100%;
+  scrollbar-gutter: stable;
+}
+
+.main.bar > .ui.container > .ui.grid {
+  width: 100%;
+  margin: 0;
+}
+
+.main-menu {
+  width: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.search-action,
+.burger-action {
+  justify-content: center;
+  border: 0;
+}
+
+@media only screen and (min-width: 992px) {
+  .main.bar > .ui.container {
+    height: 160px;
+  }
+
+  .view-viewview.light-header .main.bar {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    margin-bottom: -160px;
+  }
+
+  .burger-action.mobile {
+    display: none;
+  }
+
+  .main.bar .ui.text.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin: 0;
+    padding-left: 0;
+  }
+}`;
+
 export const loadReducers = (state = {}) => {
   const { settings } = config;
   return Object.assign(
@@ -110,6 +190,11 @@ class Html extends Component {
           )}
 
           {head.style.toComponent()}
+
+          <style
+            nonce={nonce}
+            dangerouslySetInnerHTML={{ __html: CRITICAL_HEADER_SHELL_CSS }}
+          />
 
           {React.createElement('script', {
             nonce: nonce,
