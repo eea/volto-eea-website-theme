@@ -76,6 +76,10 @@ section {
   border: 0;
 }
 
+.ui.dropdown .menu {
+  display: none;
+}
+
 @media only screen and (min-width: 992px) {
   .main.bar > .ui.container {
     height: 160px;
