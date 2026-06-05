@@ -1,0 +1,11 @@
+--- node_modules/@plone/volto/src/components/manage/Sharing/Sharing.jsx	2026-05-27 09:41:17
++++ src/addons/volto-eea-website-theme/src/customizations/volto/components/manage/Sharing/Sharing.jsx	2026-05-28 15:16:25
+@@ -554,7 +554,7 @@
+       available_roles: state.sharing.data.available_roles,
+       updateRequest: state.sharing.update,
+       pathname: props.location.pathname,
+-      title: state.content.data.title,
++      title: state.content.data?.title || "",
+       login: state.userSession.token
+         ? jwtDecode(state.userSession.token).sub
+         : '',

@@ -1,0 +1,33 @@
+13d12
+< import { load } from 'redux-localstorage-simple';
+28c27,30
+< import { cloneBlocks } from '@plone/volto/helpers/Blocks/cloneBlocks';
+---
+> import {
+>   cloneBlocks,
+>   loadBlocksClipboardFromStorage,
+> } from './blocksClipboardUtils';
+42,44c44,58
+<   loadFromStorage() {
+<     const clipboard = load({ states: ['blocksClipboard'] })?.blocksClipboard;
+<     if (!isEqual(clipboard, this.props.blocksClipboard))
+---
+>   loadFromStorage(event) {
+>     if (event?.key && !event.key.includes('blocksClipboard')) {
+>       return;
+>     }
+>
+>     const clipboard = loadBlocksClipboardFromStorage();
+>     const currentClipboard = this.props.blocksClipboard || {};
+>     const currentClipboardHasBlocks =
+>       currentClipboard?.cut || currentClipboard?.copy;
+>
+>     if (!event && !clipboard && currentClipboardHasBlocks) {
+>       return;
+>     }
+>
+>     if (!isEqual(clipboard || {}, currentClipboard)) {
+45a60
+>     }
+48a64
+>     this.loadFromStorage();

@@ -81,7 +81,10 @@ server.use(function (err, req, res, next) {
     const { store } = res.locals;
     const ErrorComponent =
       config.getComponent('ErrorBoundary')?.component || null;
-    const errorPage = (
+
+    // If no Redux store is available (e.g. setupServer failed before
+    // creating one), render a minimal error page without Provider
+    const errorPage = store ? (
       <Provider store={store} onError={reactIntlErrorHandler}>
         <StaticRouter context={{}} location={req.url}>
           {ErrorComponent ? (
@@ -91,6 +94,10 @@ server.use(function (err, req, res, next) {
           )}
         </StaticRouter>
       </Provider>
+    ) : (
+      <StaticRouter context={{}} location={req.url}>
+        <ErrorPage message={err.message} />
+      </StaticRouter>
     );
 
     res.set({
@@ -101,7 +108,7 @@ server.use(function (err, req, res, next) {
      * TODO:
      * - get ignored codes from Plone error_log
      */
-    const ignoredErrors = [301, 302, 401, 404];
+    const ignoredErrors = [301, 302, 401, 404, 410];
     if (!ignoredErrors.includes(err.status)) console.error(err);
 
     res
@@ -184,7 +191,7 @@ function setupServer(req, res, next) {
      * TODO:
      * - get ignored codes from Plone error_log
      */
-    const ignoredErrors = [301, 302, 401, 404];
+    const ignoredErrors = [301, 302, 401, 404, 410];
     if (!ignoredErrors.includes(error.status)) console.error(error);
 
     res
