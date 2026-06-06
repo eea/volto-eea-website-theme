@@ -45,6 +45,15 @@ describe('GoneView Component', () => {
   let history;
   let store;
 
+  const renderGoneView = () =>
+    render(
+      <Provider store={store}>
+        <Router history={history}>
+          <GoneView />
+        </Router>
+      </Provider>,
+    );
+
   beforeEach(() => {
     history = createMemoryHistory();
     store = mockStore({
@@ -135,13 +144,7 @@ describe('GoneView Component', () => {
   });
 
   it('opens first accordion when clicked', () => {
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <GoneView />
-        </Router>
-      </Provider>,
-    );
+    renderGoneView();
 
     const firstAccordion = screen.getByText('View archived version');
     fireEvent.click(firstAccordion);
@@ -150,13 +153,7 @@ describe('GoneView Component', () => {
   });
 
   it('opens second accordion when clicked', () => {
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <GoneView />
-        </Router>
-      </Provider>,
-    );
+    renderGoneView();
 
     const secondAccordion = screen.getByText('Looking for something specific?');
     fireEvent.click(secondAccordion);
@@ -213,5 +210,54 @@ describe('GoneView Component', () => {
 
     expect(searchLink.getAttribute('href')).toBe('/en/advanced-search');
     expect(homepageLink.getAttribute('href')).toBe('/en');
+  });
+
+  it('updates aria-expanded when the accordion titles are clicked', () => {
+    renderGoneView();
+
+    const archiveTitle = screen.getByRole('button', {
+      name: 'View archived version',
+    });
+    const searchTitle = screen.getByRole('button', {
+      name: 'Looking for something specific?',
+    });
+
+    expect(archiveTitle.getAttribute('aria-expanded')).toBe('false');
+    expect(searchTitle.getAttribute('aria-expanded')).toBe('false');
+
+    fireEvent.click(archiveTitle);
+
+    expect(archiveTitle.getAttribute('aria-expanded')).toBe('true');
+    expect(searchTitle.getAttribute('aria-expanded')).toBe('false');
+
+    fireEvent.click(searchTitle);
+
+    expect(archiveTitle.getAttribute('aria-expanded')).toBe('false');
+    expect(searchTitle.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('toggles accordion titles with Enter and Space', () => {
+    renderGoneView();
+
+    const archiveTitle = screen.getByRole('button', {
+      name: 'View archived version',
+    });
+    const searchTitle = screen.getByRole('button', {
+      name: 'Looking for something specific?',
+    });
+
+    fireEvent.keyDown(archiveTitle, { keyCode: 13 });
+
+    expect(archiveTitle.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByText('Wayback Machine')).toBeTruthy();
+
+    fireEvent.keyDown(archiveTitle, { keyCode: 32 });
+
+    expect(archiveTitle.getAttribute('aria-expanded')).toBe('false');
+
+    fireEvent.keyDown(searchTitle, { keyCode: 32 });
+
+    expect(searchTitle.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByText('search')).toBeTruthy();
   });
 });
