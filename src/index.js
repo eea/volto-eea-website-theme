@@ -174,10 +174,6 @@ const applyConfig = (config) => {
   // #160689 Redirect contact-form to contact-us
   config.settings.contactForm = '/contact';
 
-  // Insert scripts on Error pages
-  if (config.settings?.serverConfig?.extractScripts) {
-    config.settings.serverConfig.extractScripts.errorPages = true;
-  }
   // Set cloneData function for slate block, in order to change the uuids of fragments in the copy process
   if (config.blocks?.blocksConfig?.slate) {
     config.blocks.blocksConfig.slate.cloneData = (data) => {

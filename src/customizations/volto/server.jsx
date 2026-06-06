@@ -336,10 +336,6 @@ server.get('/*', (req, res) => {
                   nonce={nonce}
                   markup={markup}
                   store={store}
-                  extractScripts={
-                    config.settings.serverConfig.extractScripts?.errorPages ||
-                    process.env.NODE_ENV !== 'production'
-                  }
                   criticalCss={readCriticalCss(req)}
                   apiPath={res.locals.detectedHost || config.settings.apiPath}
                   publicURL={
