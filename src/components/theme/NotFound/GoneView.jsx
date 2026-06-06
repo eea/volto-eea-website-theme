@@ -76,6 +76,7 @@ const GoneView = () => {
             aria-expanded={activeIndex === 0}
             onKeyDown={(e) => {
               if (e.keyCode === 13 || e.keyCode === 32) {
+                e.preventDefault();
                 handleAccordionClick(e, { index: 0 });
               }
             }}
@@ -128,6 +129,7 @@ const GoneView = () => {
             aria-expanded={activeIndex === 2}
             onKeyDown={(e) => {
               if (e.keyCode === 13 || e.keyCode === 32) {
+                e.preventDefault();
                 handleAccordionClick(e, { index: 2 });
               }
             }}
