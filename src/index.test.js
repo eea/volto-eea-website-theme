@@ -285,7 +285,9 @@ describe('applyConfig', () => {
 
     expect(config.settings.eea).toEqual(eea);
     expect(config.settings.contactForm).toBe('/contact');
-    expect(config.settings.serverConfig.extractScripts.errorPages).toBe(true);
+    expect(
+      config.settings.serverConfig.extractScripts.errorPages,
+    ).toBeUndefined();
     expect(config.settings.showTags).toBe(false);
     expect(config.blocks.blocksConfig['teaser'].restricted).toBe(true);
     expect(config.blocks.blocksConfig['title'].restricted).toBe(false);
