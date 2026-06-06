@@ -10,34 +10,12 @@ import {
 } from '@eeacms/volto-eea-website-theme/actions/print';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 
-const expandPrintDetails = () => {
-  const details = document.querySelectorAll('.report-navigation details');
-
-  Array.from(details).forEach((detail) => {
-    detail.dataset.printWasOpen = detail.open ? 'true' : 'false';
-    detail.open = true;
-  });
-};
-
-const restorePrintDetails = () => {
-  const details = document.querySelectorAll('.report-navigation details');
-
-  Array.from(details).forEach((detail) => {
-    if (detail.dataset.printWasOpen === 'false') {
-      detail.open = false;
-    }
-
-    delete detail.dataset.printWasOpen;
-  });
-};
-
 export const setupPrintView = (dispatch) => {
   // Set tabs to be visible
   const tabs = document.getElementsByClassName('ui tab');
   Array.from(tabs).forEach((tab) => {
     tab.style.display = 'block';
   });
-  expandPrintDetails();
 
   dispatch(setIsPrint(true));
   dispatch(setPrintLoading(true));
@@ -221,7 +199,6 @@ export const setupPrintView = (dispatch) => {
         if (printDialogClosed) return; // Prevent multiple resets
         printDialogClosed = true;
 
-        restorePrintDetails();
         dispatch(setIsPrint(false));
 
         // Clean up listeners
@@ -278,7 +255,6 @@ export const setupPrintView = (dispatch) => {
       window.print();
     } catch (error) {
       // Still try to print even if there was an error
-      restorePrintDetails();
       Array.from(tabs).forEach((tab) => {
         tab.style.display = '';
       });
