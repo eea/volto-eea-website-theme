@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import cx from 'classnames';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
-import { Transforms, Editor, Point } from 'slate'; // , Transforms
+import { Transforms, Editor, Point, Range, Node, Text } from 'slate'; // , Transforms
 import { Slate, Editable, ReactEditor } from 'slate-react';
 import React, { Component } from 'react'; // , useState
 import { v4 as uuid } from 'uuid';
@@ -71,6 +71,36 @@ function resetNodes(editor, options = {}) {
     Transforms.select(editor, point);
   }
 }
+
+const getTextPoint = (editor, point) => {
+  try {
+    const node = Node.get(editor, point.path);
+
+    if (Text.isText(node)) {
+      return point;
+    }
+
+    return point.offset === 0
+      ? Editor.start(editor, point.path)
+      : Editor.end(editor, point.path);
+  } catch {
+    return Editor.start(editor, []);
+  }
+};
+
+const normalizeCollapsedSelection = (editor) => {
+  const { selection } = editor;
+
+  if (!selection || !Range.isCollapsed(selection)) {
+    return;
+  }
+
+  const anchor = getTextPoint(editor, selection.anchor);
+
+  if (!Point.equals(anchor, selection.anchor)) {
+    Transforms.select(editor, { anchor, focus: anchor });
+  }
+};
 
 // TODO: implement onFocus
 class SlateEditor extends Component {
@@ -144,6 +174,8 @@ class SlateEditor extends Component {
   }
 
   handleChange(value) {
+    normalizeCollapsedSelection(this.state.editor);
+
     ReactDOM.unstable_batchedUpdates(() => {
       const newValue = cloneDeep(value);
       this.setState({ internalValue: newValue });
