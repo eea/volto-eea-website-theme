@@ -88,6 +88,8 @@ export const _unwrapElement = (elementType) => (editor) => {
         at: selection.anchor.path,
       });
     } catch (ex) {
+      // EEA customization: deleting an already-empty/removed inline element can
+      // leave no previous entry. Bail out instead of destructuring a bad value.
       return false;
     }
   }

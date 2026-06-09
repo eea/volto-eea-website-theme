@@ -7,6 +7,9 @@ import { makeEditor } from '@plone/volto-slate/utils/editor';
 import { LI } from '@plone/volto-slate/constants';
 import config from '@plone/volto/registry';
 
+// Full shadow copy of Volto Slate's selection utility. EEA customization is
+// limited to isCursorAtBlockStart below.
+
 /**
  * Get the nodes with a type included in `types` in the selection (from root to leaf).
  *
@@ -83,6 +86,8 @@ export function isCursorAtBlockStart(editor) {
   }
 
   try {
+    // EEA customization: only join with the previous block when the caret is at
+    // the start of the whole Slate block, not just offset 0 inside an inline.
     return Point.equals(editor.selection.anchor, Editor.start(editor, []));
   } catch {
     return false;

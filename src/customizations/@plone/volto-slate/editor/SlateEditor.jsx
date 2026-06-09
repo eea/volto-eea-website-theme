@@ -88,6 +88,9 @@ const getTextPoint = (editor, point) => {
   }
 };
 
+// EEA customization: Slate can leave a collapsed selection on an inline element
+// after deleting formatted links. Move it to a text leaf so Slate React can
+// resolve the selection back to a DOM node.
 const normalizeCollapsedSelection = (editor) => {
   const { selection } = editor;
 

@@ -21,6 +21,9 @@ import '@plone/volto-slate/editor/less/slate.less';
 
 const OMITTED = ['editor', 'path'];
 
+// EEA customization: Volto 18 inline markup renderers do not pass Slate
+// attributes, which breaks DOM resolution for nested structures like
+// strong > link. These elements are rendered with attributes below.
 const inlineMarkupElements = {
   em: 'em',
   i: 'i',
