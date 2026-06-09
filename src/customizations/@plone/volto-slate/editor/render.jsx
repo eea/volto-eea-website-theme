@@ -20,6 +20,18 @@ import linkSVG from '@plone/volto/icons/link.svg';
 import '@plone/volto-slate/editor/less/slate.less';
 
 const OMITTED = ['editor', 'path'];
+const INLINE_MARKUP_ELEMENTS = {
+  em: 'em',
+  i: 'i',
+  b: 'b',
+  strong: 'strong',
+  u: 'u',
+  s: 'del',
+  del: 'del',
+  sub: 'sub',
+  sup: 'sup',
+  code: 'code',
+};
 
 // TODO: read, see if relevant
 // https://reactjs.org/docs/higher-order-components.html#dont-use-hocs-inside-the-render-method
@@ -45,6 +57,14 @@ export const Element = ({ element, attributes = {}, extras, ...rest }) => {
   // END CUSTOMIZATION
 
   attrs.ref = attributes?.ref; // never remove the ref
+
+  if (INLINE_MARKUP_ELEMENTS[element.type]) {
+    return React.createElement(
+      INLINE_MARKUP_ELEMENTS[element.type],
+      attrs,
+      rest.children,
+    );
+  }
 
   return (
     <El

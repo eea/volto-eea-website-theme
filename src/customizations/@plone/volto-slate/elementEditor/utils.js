@@ -88,8 +88,12 @@ export const _unwrapElement = (elementType) => (editor) => {
         at: selection.anchor.path,
       });
     } catch (ex) {
-      link = [];
+      return false;
     }
+  }
+
+  if (!Array.isArray(link) || !link[1]) {
+    return false;
   }
 
   const [, path] = link;

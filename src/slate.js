@@ -20,6 +20,19 @@ import smallIcon from './icons/small.svg';
 import clearIcon from './icons/eraser.svg';
 import fontMono from './icons/font-mono.svg';
 
+const INLINE_MARKUP_ELEMENTS = {
+  em: 'em',
+  i: 'i',
+  b: 'b',
+  strong: 'strong',
+  u: 'u',
+  s: 'del',
+  del: 'del',
+  sub: 'sub',
+  sup: 'sup',
+  code: 'code',
+};
+
 const installSlateToolbarButton = ({
   config,
   key,
@@ -147,6 +160,11 @@ export default function installSlate(config) {
     let renderLinkElement;
     // Callout slate button
     config = installCallout(config);
+
+    Object.entries(INLINE_MARKUP_ELEMENTS).forEach(([type, tagName]) => {
+      config.settings.slate.elements[type] = ({ attributes, children }) =>
+        React.createElement(tagName, attributes, children);
+    });
 
     try {
       renderLinkElement =
