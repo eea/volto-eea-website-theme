@@ -21,12 +21,29 @@ import '@plone/volto-slate/editor/less/slate.less';
 
 const OMITTED = ['editor', 'path'];
 
+const inlineMarkupElements = {
+  em: 'em',
+  i: 'i',
+  b: 'b',
+  strong: 'strong',
+  u: 'u',
+  s: 'del',
+  del: 'del',
+  sub: 'sub',
+  sup: 'sup',
+  code: 'code',
+};
+
 // TODO: read, see if relevant
 // https://reactjs.org/docs/higher-order-components.html#dont-use-hocs-inside-the-render-method
 export const Element = ({ element, attributes = {}, extras, ...rest }) => {
   const { slate } = config.settings;
   const { elements } = slate;
-  const El = elements[element.type] || elements['default'];
+  const inlineMarkupTag = inlineMarkupElements[element.type];
+  const El = inlineMarkupTag
+    ? ({ attributes, children }) =>
+        React.createElement(inlineMarkupTag, attributes, children)
+    : elements[element.type] || elements['default'];
 
   // CUSTOMIZATION Code fix
   const attrs = Object.keys(attributes || {}).reduce(
