@@ -180,6 +180,8 @@ describe('Header', () => {
                   mini: {
                     download:
                       'http://localhost:8080/Plone/subsite_logo/@@images/image/mini',
+                    width: 80,
+                    height: 80,
                   },
                 },
               },

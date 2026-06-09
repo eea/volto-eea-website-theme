@@ -224,7 +224,13 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
     <Header menuItems={items}>
       <Header.TopHeader>
         <Header.TopItem className="official-union">
-          <Image src={eeaFlag} alt="European Union flag"></Image>
+          <Image
+            src={eeaFlag}
+            alt="European Union flag"
+            width={34}
+            height={24}
+            style={{ aspectRatio: '34 / 24' }}
+          ></Image>
           <Header.TopDropdownMenu
             text="An official website of the European Union | How do you know?"
             tabletText="EEA information systems"
@@ -314,6 +320,16 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
                   <Image
                     src={subsite.subsite_logo.scales.mini.download}
                     alt={subsite.title}
+                    width={subsite.subsite_logo.scales.mini.width || 80}
+                    height={subsite.subsite_logo.scales.mini.height || 80}
+                    style={
+                      (subsite.subsite_logo.scales.mini.width || 80) &&
+                      (subsite.subsite_logo.scales.mini.height || 80)
+                        ? {
+                            aspectRatio: `${subsite.subsite_logo.scales.mini.width || 80} / ${subsite.subsite_logo.scales.mini.height || 80}`,
+                          }
+                        : undefined
+                    }
                   />
                 ) : (
                   subsite.title

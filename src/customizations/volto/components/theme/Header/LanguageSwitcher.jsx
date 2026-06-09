@@ -51,7 +51,15 @@ const LanguageSwitcher = ({ width, history }) => {
       className="item"
       text={`${language.toUpperCase()}`}
       mobileText={`${language.toUpperCase()}`}
-      icon={<Image src={globeIcon} alt="language dropdown globe icon"></Image>}
+      icon={
+        <Image
+          src={globeIcon}
+          alt="language dropdown globe icon"
+          width={24}
+          height={24}
+          style={{ aspectRatio: '24 / 24' }}
+        />
+      }
       viewportWidth={width}
     >
       <ul
