@@ -18,7 +18,9 @@ exports[`Header renders a header component with homepage_inverse_view layout 1`]
           <img
             alt="European Union flag"
             class="ui image"
+            height="24"
             src="eea.png"
+            width="34"
           />
           <div
             aria-expanded="false"

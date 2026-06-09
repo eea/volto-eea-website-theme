@@ -168,6 +168,7 @@ class Html extends Component {
             criticalCss ? (
               <>
                 <script
+                  nonce={nonce}
                   dangerouslySetInnerHTML={{
                     __html: CRITICAL_CSS_TEMPLATE,
                   }}
