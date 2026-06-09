@@ -255,6 +255,9 @@ export const setupPrintView = (dispatch) => {
       window.print();
     } catch (error) {
       // Still try to print even if there was an error
+      Array.from(tabs).forEach((tab) => {
+        tab.style.display = '';
+      });
       dispatch(setPrintLoading(false));
       dispatch(setIsPrint(false));
       window.print();
