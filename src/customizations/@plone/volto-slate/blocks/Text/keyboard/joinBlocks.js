@@ -20,7 +20,6 @@ import {
   getBlocksLayoutFieldname,
 } from '@plone/volto/helpers/Blocks/Blocks';
 
-// Full shadow copy of Volto 18's joinBlocks keyboard handler.
 // Actual customization: joinWithPreviousBlock restores the Volto 17 guard that
 // only allows Backspace block merges when the previous block is also Slate.
 

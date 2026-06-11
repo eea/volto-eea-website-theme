@@ -11,7 +11,7 @@ import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import Toast from '@plone/volto/components/manage/Toast/Toast';
-import { messages } from '@plone/volto/helpers//MessageLabels/MessageLabels';
+import { messages } from '@plone/volto/helpers/MessageLabels/MessageLabels';
 import { addAppURL } from '@plone/volto/helpers/Url/Url';
 import useClipboard from '@plone/volto/hooks/clipboard/useClipboard';
 import config from '@plone/volto/registry';

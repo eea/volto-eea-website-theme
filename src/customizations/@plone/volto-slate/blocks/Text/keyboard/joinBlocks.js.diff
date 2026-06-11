@@ -1,18 +1,17 @@
 --- node_modules/@plone/volto-slate/src/blocks/Text/keyboard/joinBlocks.js	2026-06-05 17:35:10.949302482 +0300
-+++ src/addons/volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Text/keyboard/joinBlocks.js	2026-06-11 16:40:47.809380106 +0300
-@@ -19,6 +19,11 @@
++++ src/addons/volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Text/keyboard/joinBlocks.js	2026-06-11 17:35:57.282584459 +0300
+@@ -19,6 +19,10 @@
    getBlocksFieldname,
    getBlocksLayoutFieldname,
  } from '@plone/volto/helpers/Blocks/Blocks';
 +
-+// Full shadow copy of Volto 18's joinBlocks keyboard handler.
 +// Actual customization: joinWithPreviousBlock restores the Volto 17 guard that
 +// only allows Backspace block merges when the previous block is also Slate.
 +
  /**
   * Joins the current block (which has an active Slate Editor)
   * with the previous block, to make a single block.
-@@ -47,8 +52,10 @@
+@@ -47,8 +51,10 @@
    if (!prev) return;
    const [otherBlock = {}, otherBlockId] = prev;
  
