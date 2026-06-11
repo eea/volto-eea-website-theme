@@ -1,0 +1,28 @@
+--- node_modules/@plone/volto-slate/src/utils/selection.js	2026-06-05 17:35:11.013853456 +0300
++++ src/addons/volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/selection.js	2026-06-11 16:40:26.970972164 +0300
+@@ -7,6 +7,10 @@
+ import { LI } from '@plone/volto-slate/constants';
+ import config from '@plone/volto/registry';
+ 
++// Full shadow copy of Volto 18's selection utility.
++// Actual customization: isCursorAtBlockStart restores the stricter Volto 17
++// check so Backspace inside nested inline text is not treated as block start.
++
+ /**
+  * Get the nodes with a type included in `types` in the selection (from root to leaf).
+  *
+@@ -82,8 +86,12 @@
+ 
+   if (editor.selection && Range.isCollapsed(editor.selection)) {
+     const { anchor } = editor.selection;
+-    // Check if cursor is at offset 0 of any leaf node (not just the first one)
+-    return anchor.offset === 0;
++    // EEA customization: restore Volto 17 behavior. Volto 18 only checks
++    // anchor.offset === 0, which also matches the start of nested inline text.
++    return anchor.offset > 0
++      ? false
++      : anchor.path.reduce((acc, x) => acc + x, 0) === 0;
++    // anchor.path.length === 2 &&
+   }
+   return false;
+ }

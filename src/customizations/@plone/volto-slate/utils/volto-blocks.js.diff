@@ -1,0 +1,41 @@
+--- node_modules/@plone/volto-slate/src/utils/volto-blocks.js	2026-06-05 17:35:11.017650572 +0300
++++ src/addons/volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/volto-blocks.js	2026-06-11 16:40:38.107968133 +0300
+@@ -13,6 +13,10 @@
+ import omit from 'lodash/omit';
+ import config from '@plone/volto/registry';
+ 
++// Full shadow copy of Volto 18's Volto block utility.
++// Actual customization: normalize the cursor returned by
++// mergeSlateWithBlockBackward so Slate React receives a text point.
++
+ function fromEntries(pairs) {
+   const res = {};
+   pairs.forEach((p) => {
+@@ -21,6 +25,17 @@
+   return res;
+ }
+ 
++// EEA customization: after Backspace merges Slate blocks, Volto 18 can keep
++// the cursor on an inline element path. Slate React needs a text leaf path.
++function normalizeCursorToTextPoint(editor, cursor) {
++  try {
++    const point = Editor.start(editor, cursor.anchor.path);
++    return { anchor: point, focus: point };
++  } catch {
++    return cursor;
++  }
++}
++
+ export function mergeSlateWithBlockBackward(editor, prevBlock, event) {
+   // Merge the current block content into the previous block
+   // The current block content should be appended to the previous block
+@@ -78,7 +93,8 @@
+   // Update the editor with the merged content
+   editor.children = merged;
+ 
+-  return cursor;
++  // EEA customization: return a DOM-resolvable Slate selection.
++  return normalizeCursorToTextPoint(editor, cursor);
+ }
+ 
+ export function mergeSlateWithBlockForward(editor, nextBlock, event) {
