@@ -19,6 +19,7 @@ jobs:
 
       - name: Run Betterleaks
         id: betterleaks
+        continue-on-error: true
         uses: dortort/betterleaks-action@v0.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -39,3 +40,9 @@ jobs:
           name: betterleaks-report
           path: betterleaks-report.json
           if-no-files-found: ignore
+
+      - name: Fail if Betterleaks found leaks
+        if: steps.betterleaks.outcome == 'failure'
+        run: |
+          echo "Betterleaks detected one or more secrets. Download the betterleaks-report artifact from this workflow run for details."
+          exit 1
