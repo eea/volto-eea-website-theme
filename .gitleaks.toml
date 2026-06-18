@@ -1,11 +1,189 @@
-title = "volto-eea-website-theme Betterleaks config"
+title = "Global Helm/Rancher secret scanning"
 
 [extend]
 useDefault = true
 
-[[allowlists]]
-description = "Allow Jenkins SonarQube token environment variable reference"
-regexTarget = "line"
-regexes = [
-  '''SONAR_AUTH_TOKEN''',
+[[rules]]
+id = "helm-secret-literal-assignment"
+description = "Secret-like literal assignment in Helm/Rancher YAML, templates, env and config files"
+regex = '''(?i)([A-Za-z0-9_.-]*(?:password|passwd|pwd|pass|token|api[_-]?key|apikey|access[_-]?key|secret[_-]?access[_-]?key|private[_-]?key|client[_-]?secret|consumer[_-]?key|consumer[_-]?secret|auth[_-]?token|translate[_-]?auth|translation[_-]?auth|auth[_-]?password|auth[_-]?key|auth[_-]?credentials|credential|credentials|bearer|database[_-]?url|connection[_-]?string)[A-Za-z0-9_.-]*)[ \t]*[:=][ \t]*["'']?([^"''[:space:]#{}$.][^"''\n#{}]{2,})["'']?'''
+secretGroup = 2
+keywords = [
+  "pass",
+  "password",
+  "passwd",
+  "pwd",
+  "token",
+  "api_key",
+  "apikey",
+  "access_key",
+  "private_key",
+  "client_secret",
+  "consumer_key",
+  "consumer_secret",
+  "auth_token",
+  "translate_auth",
+  "translation_auth",
+  "auth_password",
+  "auth_key",
+  "auth_credentials",
+  "credential",
+  "credentials",
+  "bearer",
+  "database_url",
+  "connection_string"
 ]
+tags = ["helm", "rancher", "literal-secret"]
+
+[[rules]]
+id = "helm-named-secret-literal-assignment"
+description = "Literal assignment to explicit secret keys, without matching Kubernetes Secret references"
+regex = '''(?i)([A-Za-z0-9_.-]*(?:(?:^|[_.-])secret(?:$|[_.-])|secret[_-]key|signing[_-]?secret|cookie[_-]?secret|auth[_-]?secret|nextauth[_-]?secret|sentry[_-]?secret[_-]?key|secret[_-]?key[_-]?base)[A-Za-z0-9_.-]*)[ \t]*[:=][ \t]*["'']?([^"''[:space:]#{}$.][^"''\n#{}]{2,})["'']?'''
+secretGroup = 2
+keywords = [
+  "secret",
+  "secret_key",
+  "signing_secret",
+  "cookie_secret",
+  "auth_secret",
+  "nextauth_secret",
+  "sentry_secret_key"
+]
+tags = ["helm", "rancher", "literal-secret"]
+
+# Rules from ticket #304517 / note #9.
+
+[[rules]]
+id = "generic-password-yaml"
+description = "Hardcoded password in YAML env block - any var containing pass/pwd/passwd"
+regex = '''(?i)[A-Z0-9_]*(?:password|passwd|pass|pwd)[A-Z0-9_]*[^\S\n]*:[^\S\n]*["']?([^\$\{\s"'\n][^\s"'\n]{3,})'''
+entropy = 1.5
+[[rules.allowlists]]
+regexes = [
+  ':$',
+  '(?i)^\.(?:Values|Chart|Release|Capabilities)\.',
+  '^[a-z]+[A-Z][a-z]+',
+  '(?i)^(clickhouse|miniosecret|my[a-z]+)$',
+  '(?i)^(false|true|yes|no|null|none|changeme|placeholder|example|your_|<|password$|pass$|secret$|md5|sha\d*)$',
+]
+
+[[rules]]
+id = "generic-secret-yaml"
+description = "Hardcoded secret/token/key/auth in YAML env block - any var containing those words"
+regex = '''(?i)[A-Z0-9_]*(?:secret|token|api[_]?key|auth|credential|private[_]?key)[A-Z0-9_]*[^\S\n]*:[^\S\n]*["']?([^\$\{\s"'\n][^\s"'\n]{3,})'''
+entropy = 2.5
+[[rules.allowlists]]
+regexes = [
+  ':$',
+  '(?i)^\.(?:Values|Chart|Release|Capabilities)\.',
+  '(?i)^(ldap://|ldaps://|o=|dc=|cn=)',
+  '^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*){2,}$',
+  '^[a-z]+[A-Z][a-z]+',
+  '(?i)^(false|true|yes|no|null|none|changeme|placeholder|example|your_|<|token$|secret$|key$|auth$|fmetoken$)$',
+]
+[[rules.allowlists]]
+regexTarget = "match"
+regexes = [
+  '(?i)^[ \t]*(?:secretName|existingSecret|secretKeyRef|imagePullSecrets)[ \t]*:',
+]
+
+[[rules]]
+id = "generic-password-env"
+description = "Hardcoded password in shell/env format - any var containing pass/pwd/passwd"
+regex = '''(?i)[A-Z0-9_]*(?:password|passwd|pass|pwd)[A-Z0-9_]*=([^\$\{\s"'\n][^\s"'\n]{3,})'''
+entropy = 1.5
+[[rules.allowlists]]
+regexes = [
+  '(?i)^\.(?:Values|Chart|Release|Capabilities)\.',
+  '^[a-z]+[A-Z][a-z]+',
+  '(?i)^(false|true|yes|no|null|none|changeme|placeholder|example|your_|<|password$|pass$|md5|sha\d*)$',
+]
+
+[[rules]]
+id = "generic-secret-env"
+description = "Hardcoded secret/token/key/auth in shell/env format - any var containing those words"
+regex = '''(?i)[A-Z0-9_]*(?:secret|token|api[_]?key|auth|credential|private[_]?key)[A-Z0-9_]*=([^\$\{\s"'\n][^\s"'\n]{3,})'''
+entropy = 2.5
+[[rules.allowlists]]
+regexes = [
+  '(?i)^\.(?:Values|Chart|Release|Capabilities)\.',
+  '(?i)^(ldap://|ldaps://|o=|dc=)',
+  '(?:[A-Z][a-z]+){2,}',
+  '(?i)^(false|true|yes|no|null|none|changeme|placeholder|example|your_|token$|secret$|key$|auth$|fmetoken$)$',
+]
+
+[[rules]]
+id = "dsn-with-credentials"
+description = "DSN / connection string with embedded user:password"
+regex = '''(?i)(?:postgresql|mysql|mongodb|redis|amqp|smtp|ftp)s?://[^/\s@${"']{2,}:([^/\s@${"']{3,})@'''
+
+[[rules]]
+id = "http-basic-auth-url"
+description = "HTTP/HTTPS URL with embedded Basic Auth credentials"
+regex = '''https?://[^/\s${"'@]{2,}:([^/\s${"'@]{3,})@[a-zA-Z0-9]'''
+
+[[rules]]
+id = "fme-token"
+description = "FME Server token"
+regex = '''fmetoken\s+token=([a-f0-9]{32,})'''
+
+[[rules]]
+id = "rabbitmq-password"
+description = "Hardcoded RabbitMQ password"
+regex = '''(?i)rabbitmq[_-]?pass(?:word)?\s*[:=]\s*["']?([^\$\{\s"'\n]{6,})'''
+entropy = 2.0
+
+[[rules]]
+id = "minio-credentials"
+description = "Hardcoded MinIO root credentials"
+regex = '''(?i)minio[_-]?(?:root[_-]?)?(?:password|secret)\s*[:=]\s*["']?([^\$\{\s"'\n]{4,})'''
+entropy = 2.0
+[rules.allowlist]
+regexes = ['(?i)^(minio|miniosecret|my[a-z]+|changeme|password|secret)$']
+
+[[rules]]
+id = "clickhouse-password"
+description = "Hardcoded ClickHouse password"
+regex = '''(?i)clickhouse[_-]?password\s*[:=]\s*["']?([^\$\{\s"'\n]{4,})'''
+entropy = 2.0
+[rules.allowlist]
+regexes = ['(?i)^(clickhouse|my[a-z]+|changeme|password|secret)$']
+
+[[rules]]
+id = "nextauth-secret"
+description = "Hardcoded NextAuth secret"
+regex = '''(?i)nextauth[_-]?secret\s*[:=]\s*["']?([^\$\{\s"'\n]{4,})'''
+entropy = 2.0
+[rules.allowlist]
+regexes = ['(?i)^(my[a-z]+|changeme|secret|supersecret|yoursecret)$']
+
+[[rules]]
+id = "redis-auth"
+description = "Hardcoded Redis AUTH password"
+regex = '''(?i)redis[_-]?(?:auth|password)\s*[:=]\s*["']?([^\$\{\s"'\n]{4,})'''
+entropy = 2.0
+[rules.allowlist]
+regexes = ['(?i)^(redis|my[a-z]+|changeme|password|secret)$']
+
+[[rules]]
+id = "forbidden-secret-file"
+description = "Forbidden secret-bearing file committed to repository"
+path = '''(?i)(^|/)(\.env(\..*)?|\.npmrc|\.pypirc|id_rsa|id_ed25519|.*\.(pem|key|p12|pfx|jks|kubeconfig))$'''
+regex = '''(?s).{1,}'''
+tags = ["file", "secret-file"]
+
+[allowlist]
+paths = [
+  '''\.git''',
+  '''node_modules''',
+  '''vendor''',
+]
+
+[[rules]]
+id = "standalone-sk-token"
+description = "Standalone sk-* token not attached to a secret-like variable name"
+regex = '''(?i)\b(sk-[A-Za-z0-9][A-Za-z0-9_-]{20,})\b'''
+secretGroup = 1
+entropy = 2.5
+keywords = ["sk-"]
+tags = ["standalone-token", "generic"]
