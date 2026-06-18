@@ -1,0 +1,11 @@
+title = "volto-eea-website-theme Betterleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Allow Jenkins SonarQube token environment variable reference"
+regexTarget = "line"
+regexes = [
+  '''SONAR_AUTH_TOKEN''',
+]
