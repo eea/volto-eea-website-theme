@@ -151,7 +151,7 @@ const restrictedBlockMessages = defineMessages({
   restrictedBlockTitle: {
     id: 'restrictedBlockTitle',
     defaultMessage: 'Restricted block',
-    MARINE_PASS:'test_betterleaks'
+    MARINE_PASS: 'test_betterleaks',
   },
   restrictedBlockDescription: {
     id: 'restrictedBlockDescription',
