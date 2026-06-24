@@ -1,0 +1,30 @@
+--- node_modules/@plone/volto-slate/src/blocks/Text/keyboard/joinBlocks.js	2026-06-19 16:56:50.025195065 +0300
++++ src/addons/volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Text/keyboard/joinBlocks.js	2026-06-24 18:24:23.816712188 +0300
+@@ -50,6 +50,27 @@
+   // Don't join with required blocks
+   if (data?.required || otherBlock?.required) return;
+ 
++  // If the previous block is not a slate block (e.g., image), we can only
++  // handle the empty-block case (delete the current empty block and select
++  // the previous block). If the current block has text, we cannot merge
++  // text into a non-slate block, so let the default Slate behavior run.
++  // Without this guard, getBlockEndAsRange and mergeSlateWithBlockBackward
++  // crash because non-slate blocks have no `value` property. (#8347)
++  if (otherBlock['@type'] !== 'slate') {
++    const text = Editor.string(editor, []);
++    if (text) return; // let default behavior handle it
++
++    event.stopPropagation();
++    event.preventDefault();
++    const newFormData = deleteBlock(properties, block, intl);
++    ReactDOM.unstable_batchedUpdates(() => {
++      onChangeField(blocksFieldname, newFormData[blocksFieldname]);
++      onChangeField(blocksLayoutFieldname, newFormData[blocksLayoutFieldname]);
++      onSelectBlock(otherBlockId);
++    });
++    return true;
++  }
++
+   event.stopPropagation();
+   event.preventDefault();
+ 
