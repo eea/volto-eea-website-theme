@@ -62,9 +62,22 @@ keywords = ["sk-"]
 tags = ["standalone-token", "generic"]
 
 [[rules]]
+id = "dotenv-only-jest-setup"
+description = ".env may only contain JEST_USE_SETUP=ON"
+path = '''(?i)(^|/)\.env$'''
+regex = '''(?m)^(.+)$'''
+secretGroup = 1
+tags = ["file", "dotenv"]
+[[rules.allowlists]]
+regexTarget = "line"
+regexes = [
+  '''^JEST_USE_SETUP=ON\r?$''',
+]
+
+[[rules]]
 id = "forbidden-secret-file"
 description = "Forbidden secret-bearing file committed to repository"
-path = '''(?i)(^|/)(\.env(\..*)?|\.npmrc|\.pypirc|id_rsa|id_ed25519|.*\.(pem|key|p12|pfx|jks|kubeconfig))$'''
+path = '''(?i)(^|/)(\.env\..*|\.npmrc|\.pypirc|id_rsa|id_ed25519|.*\.(pem|key|p12|pfx|jks|kubeconfig))$'''
 regex = '''(?s).{1,}'''
 tags = ["file", "secret-file"]
 
