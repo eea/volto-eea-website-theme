@@ -15,19 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
-      - name: Resolve scan range
-        id: scan-range
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "log_opts=${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event.before }}" =~ ^0+$ ]]; then
-            echo "log_opts=${{ github.sha }}^..${{ github.sha }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "log_opts=${{ github.event.before }}..${{ github.sha }}" >> "$GITHUB_OUTPUT"
-          fi
+          fetch-depth: 1
 
       - name: Run Betterleaks
         id: betterleaks
@@ -35,9 +23,9 @@ jobs:
         uses: dortort/betterleaks-action@v0.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          scan-mode: git
+          scan-mode: dir
+          scan-path: .
           config: .gitleaks.toml
-          extra-args: --log-opts=${{ steps.scan-range.outputs.log_opts }}
           report-format: json
           report-path: betterleaks-report.json
           redact: "true"
