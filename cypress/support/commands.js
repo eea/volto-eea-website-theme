@@ -15,7 +15,7 @@ Cypress.Commands.add('autologin', () => {
       method: 'POST',
       url: `${api_url}/@login`,
       headers: { Accept: 'application/json' },
-      body: { login: user, password: password },
+      body: { login: user, password: password }, //betterleaks:allow
     })
     .then((response) => cy.setCookie('auth_token', response.body.token));
 });
