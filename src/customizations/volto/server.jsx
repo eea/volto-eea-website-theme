@@ -238,7 +238,7 @@ server.get('/*', (req, res) => {
       .toString(),
   );
 
-  const authToken = req.universalCookies.get('auth_token'); //betterleaks:allow
+  const authToken = req.universalCookies.get('auth_token');//betterleaks:allow
   const initialState = {
     userSession: { ...userSession(), token: authToken },
     form: req.body,
