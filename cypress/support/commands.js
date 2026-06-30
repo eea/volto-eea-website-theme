@@ -8,7 +8,7 @@ Cypress.Commands.add('autologin', () => {
   let api_url, user, password;
   api_url = Cypress.env('API_PATH') || 'http://localhost:8080/Plone';
   user = 'admin';
-  password = 'admin';
+  password = 'admin'; //betterleaks:allow
 
   return cy
     .request({
