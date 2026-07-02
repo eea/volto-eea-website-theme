@@ -71,7 +71,7 @@ tags = ["file", "dotenv"]
 [[rules.allowlists]]
 regexTarget = "match"
 regexes = [
-  '''^JEST_USE_SETUP=OFF\r?$''',
+  '''^JEST_USE_SETUP=OFF # Jest configuration variables: ON, OFF\r?$''',
 ]
 
 [[rules]]
