@@ -11,11 +11,19 @@ jobs:
   scan:
     name: Scan for secrets
     runs-on: ubuntu-latest
+    env:
+      BETTERLEAKS_SMTP_SERVER: ${{ secrets.BETTERLEAKS_SMTP_SERVER }}
+      BETTERLEAKS_SMTP_PORT: ${{ secrets.BETTERLEAKS_SMTP_PORT || '25' }}
+      BETTERLEAKS_SMTP_SECURE: ${{ secrets.BETTERLEAKS_SMTP_SECURE || 'false' }}
+      BETTERLEAKS_SMTP_USERNAME: ${{ secrets.BETTERLEAKS_SMTP_USERNAME }}
+      BETTERLEAKS_SMTP_PASSWORD: ${{ secrets.BETTERLEAKS_SMTP_PASSWORD }}
+      BETTERLEAKS_MAIL_FROM: ${{ secrets.BETTERLEAKS_MAIL_FROM }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Run Betterleaks
         id: betterleaks
@@ -40,6 +48,46 @@ jobs:
           name: betterleaks-report
           path: betterleaks-report.json
           if-no-files-found: ignore
+
+      - name: Resolve committer email
+        id: committer
+        if: steps.betterleaks.outcome == 'failure'
+        shell: bash
+        run: |
+          committer_email="$(git log -1 --format='%ce')"
+          author_email="$(git log -1 --format='%ae')"
+          email="$committer_email"
+          if [[ -z "$email" || "$email" == *"noreply.github.com"* ]]; then
+            email="$author_email"
+          fi
+          if [[ "$email" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ && "$email" != *"noreply.github.com"* ]]; then
+            echo "email=$email" >> "$GITHUB_OUTPUT"
+          else
+            echo "No deliverable committer email found; skipping Betterleaks email notification."
+            echo "email=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Email committer on Betterleaks failure
+        if: steps.betterleaks.outcome == 'failure' && steps.committer.outputs.email != '' && env.BETTERLEAKS_SMTP_SERVER != '' && env.BETTERLEAKS_MAIL_FROM != ''
+        uses: dawidd6/action-send-mail@v18
+        with:
+          server_address: ${{ env.BETTERLEAKS_SMTP_SERVER }}
+          server_port: ${{ env.BETTERLEAKS_SMTP_PORT }}
+          secure: ${{ env.BETTERLEAKS_SMTP_SECURE }}
+          username: ${{ env.BETTERLEAKS_SMTP_USERNAME }}
+          password: ${{ env.BETTERLEAKS_SMTP_PASSWORD }}
+          from: ${{ env.BETTERLEAKS_MAIL_FROM }}
+          to: ${{ steps.committer.outputs.email }}
+          subject: "[Betterleaks] Secret scan failed in ${{ github.repository }}"
+          body: |
+            Betterleaks detected one or more potential secrets.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Download the betterleaks-report artifact from the workflow run for details.
 
       - name: Fail if Betterleaks found leaks
         if: steps.betterleaks.outcome == 'failure'

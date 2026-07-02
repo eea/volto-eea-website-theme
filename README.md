@@ -126,6 +126,17 @@ repository content on every push and pull request. The scan uses the rules in
 `.gitleaks.toml` and uploads a `betterleaks-report` artifact when a finding is
 detected.
 
+If the optional SMTP secrets are configured, failed scans also send an email to
+the last commit committer. The workflow expects these repository or
+organization secrets:
+
+- `BETTERLEAKS_SMTP_SERVER`
+- `BETTERLEAKS_SMTP_PORT` (optional, defaults to `25`)
+- `BETTERLEAKS_SMTP_SECURE` (optional, defaults to `false`)
+- `BETTERLEAKS_SMTP_USERNAME` (optional)
+- `BETTERLEAKS_SMTP_PASSWORD` (optional)
+- `BETTERLEAKS_MAIL_FROM`
+
 There are three common outcomes:
 
 1. **Everything is OK.** The `Betterleaks / Scan for secrets` check is green and
