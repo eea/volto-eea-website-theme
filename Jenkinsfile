@@ -16,6 +16,38 @@ pipeline {
   }
 
   stages {
+    stage('Betterleaks') {
+      steps {
+        script {
+          checkout scm
+          sh '''rm -f betterleaks-report.json'''
+          betterleaksStatus = sh(script: '''set -o pipefail
+            BETTERLEAKS_VERSION="1.6.1"
+            BETTERLEAKS_TMP="$(mktemp -d)"
+            trap 'rm -rf "$BETTERLEAKS_TMP"' EXIT
+            curl -fsSL "https://github.com/betterleaks/betterleaks/releases/download/v${BETTERLEAKS_VERSION}/betterleaks_${BETTERLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz -C "$BETTERLEAKS_TMP"
+            "$BETTERLEAKS_TMP/betterleaks" dir . --config .gitleaks.toml --report-format json --report-path betterleaks-report.json --redact --no-color --no-banner
+          ''', returnStatus: true)
+
+          archiveArtifacts artifacts: 'betterleaks-report.json', fingerprint: true, allowEmptyArchive: true
+
+          def betterleaksSummary = betterleaksStatus == 0
+            ? 'No secrets found.'
+            : 'Betterleaks detected one or more potential secrets. Download betterleaks-report.json from Jenkins artifacts for details.'
+          def betterleaksReport = fileExists('betterleaks-report.json') ? readFile(file: 'betterleaks-report.json') : 'No Betterleaks report was generated.'
+
+          publishChecks name: 'Betterleaks', title: 'Betterleaks Secret Scan', summary: betterleaksSummary,
+                        text: betterleaksReport, conclusion: betterleaksStatus == 0 ? 'SUCCESS' : 'FAILURE',
+                        detailsURL: "${env.BUILD_URL}display/redirect"
+
+          if (betterleaksStatus != 0) {
+            env.BETTERLEAKS_FAILED = 'yes'
+            error 'Betterleaks detected one or more potential secrets.'
+          }
+        }
+      }
+    }
+
     stage('Release') {
       when {
         allOf {
@@ -406,16 +438,35 @@ pipeline {
     }
     changed {
       script {
-        def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}</h1>
-                         <p>Check console output at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
-                      """
-        emailext(
-        subject: '$DEFAULT_SUBJECT',
-        body: details,
-        attachLog: true,
-        compressLog: true,
-        recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
-        )
+        if (env.BETTERLEAKS_FAILED != 'yes') {
+          def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}</h1>
+                           <p>Check console output at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
+                        """
+          emailext(
+          subject: '$DEFAULT_SUBJECT',
+          body: details,
+          attachLog: true,
+          compressLog: true,
+          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
+          )
+        }
+      }
+    }
+    failure {
+      script {
+        if (env.BETTERLEAKS_FAILED == 'yes') {
+          def details = """<h1>Betterleaks detected potential secrets</h1>
+                           <p>${env.JOB_NAME} - Build #${env.BUILD_NUMBER}</p>
+                           <p>Check console output and the betterleaks-report.json artifact at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a>.</p>
+                        """
+          emailext(
+          subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
+          body: details,
+          attachLog: true,
+          compressLog: true,
+          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
+          )
+        }
       }
     }
   }

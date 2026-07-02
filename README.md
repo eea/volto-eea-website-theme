@@ -121,35 +121,26 @@ See [DEVELOP.md](https://github.com/eea/volto-eea-website-theme/blob/master/DEVE
 
 ## Secret Scanning
 
-This repository uses the Betterleaks GitHub Action to scan the current
-repository content on every push and pull request. The scan uses the rules in
-`.gitleaks.toml` and uploads a `betterleaks-report` artifact when a finding is
-detected.
+This repository uses the Betterleaks Jenkins stage to scan the current
+repository content on every build. The scan uses the rules in `.gitleaks.toml`
+and archives `betterleaks-report.json` when a finding is detected.
 
-If the optional SMTP secrets are configured, failed scans also send an email to
-the last commit committer. The workflow expects these repository or
-organization secrets:
-
-- `BETTERLEAKS_SMTP_SERVER`
-- `BETTERLEAKS_SMTP_PORT` (optional, defaults to `25`)
-- `BETTERLEAKS_SMTP_SECURE` (optional, defaults to `false`)
-- `BETTERLEAKS_SMTP_USERNAME` (optional)
-- `BETTERLEAKS_SMTP_PASSWORD` (optional)
-- `BETTERLEAKS_MAIL_FROM`
+Failed Betterleaks scans send an email through Jenkins `emailext` to the
+developers and culprits recipient providers.
 
 There are three common outcomes:
 
-1. **Everything is OK.** The `Betterleaks / Scan for secrets` check is green and
-   no action is needed. Regular references to runtime values are OK, for example:
+1. **Everything is OK.** The Jenkins `Betterleaks` check is green and no action
+   is needed. Regular references to runtime values are OK, for example:
 
    ```js
    const tokenFromCookie = req.universalCookies.get('auth_token');
    ```
 
-2. **A real secret was found.** The check is red and the workflow log asks you to
-   download the `betterleaks-report` artifact. Open the artifact from the GitHub
-   Actions run and check the reported file, line and rule. Remove the committed
-   value, move it to the proper secret store, and rotate it if it was exposed.
+2. **A real secret was found.** The check is red and Jenkins archives
+   `betterleaks-report.json`. Open the artifact from the Jenkins build and check
+   the reported file, line and rule. Remove the committed value, move it to the
+   proper secret store, and rotate it if it was exposed.
    A report entry looks like this:
 
    ```json
