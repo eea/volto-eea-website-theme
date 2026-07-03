@@ -136,6 +136,8 @@ organization secrets:
 - `SMTP_PASSWORD` (optional if the SMTP server does not require authentication)
 
 Port `465` is sent with direct TLS; other ports use the default SMTP handshake.
+The email includes a short finding summary from the redacted Betterleaks report,
+including the redacted matched line from each finding.
 
 There are three common outcomes:
 

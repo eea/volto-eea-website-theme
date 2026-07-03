@@ -47,6 +47,42 @@ jobs:
           path: betterleaks-report.json
           if-no-files-found: ignore
 
+      - name: Build Betterleaks email summary
+        id: leak_summary
+        if: steps.betterleaks.outcome == 'failure'
+        shell: bash
+        run: |
+          if [[ -s betterleaks-report.json ]]; then
+            jq -r '
+              def one_line:
+                tostring
+                | gsub("[\r\n]+"; " ")
+                | if length > 240 then .[0:240] + "..." else . end;
+
+              .[:20][]
+              | "- " + (.RuleID // "unknown-rule")
+                + " at " + (.File // "unknown-file")
+                + ":" + ((.StartLine // 0) | tostring)
+                + "\n  match: " + ((.Match // .Secret // "REDACTED") | one_line)
+            ' betterleaks-report.json > betterleaks-email-summary.txt
+
+            count="$(jq 'length' betterleaks-report.json)"
+            if (( count > 20 )); then
+              {
+                echo ""
+                echo "... and $((count - 20)) more finding(s). Download the artifact for full details."
+              } >> betterleaks-email-summary.txt
+            fi
+          else
+            echo "No JSON report was generated. Download the workflow logs for details." > betterleaks-email-summary.txt
+          fi
+
+          {
+            echo "text<<BETTERLEAKS_SUMMARY"
+            cat betterleaks-email-summary.txt
+            echo "BETTERLEAKS_SUMMARY"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Resolve committer email
         id: committer
         if: steps.betterleaks.outcome == 'failure'
@@ -84,6 +120,9 @@ jobs:
             Branch: ${{ github.ref_name }}
             Commit: ${{ github.sha }}
             Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Findings:
+            ${{ steps.leak_summary.outputs.text }}
 
             Download the betterleaks-report artifact from the workflow run for details.
 
