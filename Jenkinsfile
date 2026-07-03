@@ -31,6 +31,23 @@ pipeline {
 
           archiveArtifacts artifacts: 'betterleaks-report.json', fingerprint: true, allowEmptyArchive: true
 
+          def betterleaksCommitterEmail = sh(script: '''committer_email="$(git log -1 --format='%ce')"
+            author_email="$(git log -1 --format='%ae')"
+            email="$committer_email"
+            case "$email" in
+              *noreply.github.com*|"") email="$author_email" ;;
+            esac
+            case "$email" in
+              *@*.*) echo "$email" ;;
+              *) echo "" ;;
+            esac
+          ''', returnStdout: true).trim()
+          if (betterleaksCommitterEmail?.trim() && !betterleaksCommitterEmail.contains('noreply.github.com')) {
+            env.BETTERLEAKS_COMMITTER_EMAIL = betterleaksCommitterEmail
+          } else if (env.CHANGE_AUTHOR_EMAIL?.trim()) {
+            env.BETTERLEAKS_COMMITTER_EMAIL = env.CHANGE_AUTHOR_EMAIL
+          }
+
           def betterleaksSummary = betterleaksStatus == 0
             ? 'No secrets found.'
             : 'Betterleaks detected one or more potential secrets. Download betterleaks-report.json from Jenkins artifacts for details.'
@@ -459,13 +476,17 @@ pipeline {
                            <p>${env.JOB_NAME} - Build #${env.BUILD_NUMBER}</p>
                            <p>Check console output and the betterleaks-report.json artifact at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a>.</p>
                         """
-          emailext(
-          subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
-          body: details,
-          attachLog: true,
-          compressLog: true,
-          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
-          )
+          def mailArgs = [
+            subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
+            body: details,
+            attachLog: true,
+            compressLog: true,
+            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
+          ]
+          if (env.BETTERLEAKS_COMMITTER_EMAIL?.trim()) {
+            mailArgs.to = env.BETTERLEAKS_COMMITTER_EMAIL
+          }
+          emailext(mailArgs)
         }
       }
     }
