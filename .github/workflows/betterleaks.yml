@@ -12,12 +12,10 @@ jobs:
     name: Scan for secrets
     runs-on: ubuntu-latest
     env:
-      BETTERLEAKS_SMTP_SERVER: ${{ secrets.BETTERLEAKS_SMTP_SERVER }}
-      BETTERLEAKS_SMTP_PORT: ${{ secrets.BETTERLEAKS_SMTP_PORT || '25' }}
-      BETTERLEAKS_SMTP_SECURE: ${{ secrets.BETTERLEAKS_SMTP_SECURE || 'false' }}
-      BETTERLEAKS_SMTP_USERNAME: ${{ secrets.BETTERLEAKS_SMTP_USERNAME }}
-      BETTERLEAKS_SMTP_PASSWORD: ${{ secrets.BETTERLEAKS_SMTP_PASSWORD }}
-      BETTERLEAKS_MAIL_FROM: ${{ secrets.BETTERLEAKS_MAIL_FROM }}
+      SMTP_URL: ${{ secrets.SMTP_URL }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT || '25' }}
+      SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -68,15 +66,15 @@ jobs:
           fi
 
       - name: Email committer on Betterleaks failure
-        if: steps.betterleaks.outcome == 'failure' && steps.committer.outputs.email != '' && env.BETTERLEAKS_SMTP_SERVER != '' && env.BETTERLEAKS_MAIL_FROM != ''
+        if: steps.betterleaks.outcome == 'failure' && steps.committer.outputs.email != '' && env.SMTP_URL != '' && env.SMTP_EMAIL != ''
         uses: dawidd6/action-send-mail@v18
         with:
-          server_address: ${{ env.BETTERLEAKS_SMTP_SERVER }}
-          server_port: ${{ env.BETTERLEAKS_SMTP_PORT }}
-          secure: ${{ env.BETTERLEAKS_SMTP_SECURE }}
-          username: ${{ env.BETTERLEAKS_SMTP_USERNAME }}
-          password: ${{ env.BETTERLEAKS_SMTP_PASSWORD }}
-          from: ${{ env.BETTERLEAKS_MAIL_FROM }}
+          server_address: ${{ env.SMTP_URL }}
+          server_port: ${{ env.SMTP_PORT }}
+          secure: false
+          username: ${{ env.SMTP_EMAIL }}
+          password: ${{ env.SMTP_PASSWORD }}
+          from: ${{ env.SMTP_EMAIL }}
           to: ${{ steps.committer.outputs.email }}
           subject: "[Betterleaks] Secret scan failed in ${{ github.repository }}"
           body: |

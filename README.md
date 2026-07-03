@@ -130,12 +130,10 @@ If the optional SMTP secrets are configured, failed scans also send an email to
 the last commit committer. The workflow expects these repository or
 organization secrets:
 
-- `BETTERLEAKS_SMTP_SERVER`
-- `BETTERLEAKS_SMTP_PORT` (optional, defaults to `25`)
-- `BETTERLEAKS_SMTP_SECURE` (optional, defaults to `false`)
-- `BETTERLEAKS_SMTP_USERNAME` (optional)
-- `BETTERLEAKS_SMTP_PASSWORD` (optional)
-- `BETTERLEAKS_MAIL_FROM`
+- `SMTP_URL`
+- `SMTP_PORT` (optional, defaults to `25`)
+- `SMTP_EMAIL`
+- `SMTP_PASSWORD` (optional if the SMTP server does not require authentication)
 
 There are three common outcomes:
 
