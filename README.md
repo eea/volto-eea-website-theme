@@ -135,6 +135,8 @@ organization secrets:
 - `SMTP_EMAIL`
 - `SMTP_PASSWORD` (optional if the SMTP server does not require authentication)
 
+Port `465` is sent with direct TLS; other ports use the default SMTP handshake.
+
 There are three common outcomes:
 
 1. **Everything is OK.** The `Betterleaks / Scan for secrets` check is green and

@@ -71,7 +71,7 @@ jobs:
         with:
           server_address: ${{ env.SMTP_URL }}
           server_port: ${{ env.SMTP_PORT }}
-          secure: false
+          secure: ${{ env.SMTP_PORT == '465' }}
           username: ${{ env.SMTP_EMAIL }}
           password: ${{ env.SMTP_PASSWORD }}
           from: ${{ env.SMTP_EMAIL }}
