@@ -59,6 +59,28 @@ pipeline {
 
           if (betterleaksStatus != 0) {
             env.BETTERLEAKS_FAILED = 'yes'
+            def details = """<h1>Betterleaks detected potential secrets</h1>
+                             <p>${env.JOB_NAME} - Build #${env.BUILD_NUMBER}</p>
+                             <p>Check console output and the betterleaks-report.json artifact at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a>.</p>
+                          """
+            if (env.BETTERLEAKS_COMMITTER_EMAIL?.trim()) {
+              emailext(
+              subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
+              body: details,
+              attachLog: true,
+              compressLog: true,
+              to: env.BETTERLEAKS_COMMITTER_EMAIL,
+              recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
+              )
+            } else {
+              emailext(
+              subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
+              body: details,
+              attachLog: true,
+              compressLog: true,
+              recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
+              )
+            }
             error 'Betterleaks detected one or more potential secrets.'
           }
         }
@@ -466,27 +488,6 @@ pipeline {
           compressLog: true,
           recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
           )
-        }
-      }
-    }
-    failure {
-      script {
-        if (env.BETTERLEAKS_FAILED == 'yes') {
-          def details = """<h1>Betterleaks detected potential secrets</h1>
-                           <p>${env.JOB_NAME} - Build #${env.BUILD_NUMBER}</p>
-                           <p>Check console output and the betterleaks-report.json artifact at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a>.</p>
-                        """
-          def mailArgs = [
-            subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
-            body: details,
-            attachLog: true,
-            compressLog: true,
-            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
-          ]
-          if (env.BETTERLEAKS_COMMITTER_EMAIL?.trim()) {
-            mailArgs.to = env.BETTERLEAKS_COMMITTER_EMAIL
-          }
-          emailext(mailArgs)
         }
       }
     }
