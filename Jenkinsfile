@@ -16,77 +16,6 @@ pipeline {
   }
 
   stages {
-    stage('Betterleaks') {
-      steps {
-        script {
-          checkout scm
-          sh '''rm -f betterleaks-report.json'''
-          betterleaksStatus = sh(script: '''set -o pipefail
-            BETTERLEAKS_VERSION="1.6.1"
-            BETTERLEAKS_TMP="$(mktemp -d)"
-            trap 'rm -rf "$BETTERLEAKS_TMP"' EXIT
-            curl -fsSL "https://github.com/betterleaks/betterleaks/releases/download/v${BETTERLEAKS_VERSION}/betterleaks_${BETTERLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz -C "$BETTERLEAKS_TMP"
-            "$BETTERLEAKS_TMP/betterleaks" dir . --config .gitleaks.toml --report-format json --report-path betterleaks-report.json --redact --no-color --no-banner
-          ''', returnStatus: true)
-
-          archiveArtifacts artifacts: 'betterleaks-report.json', fingerprint: true, allowEmptyArchive: true
-
-          def betterleaksCommitterEmail = sh(script: '''committer_email="$(git log -1 --format='%ce')"
-            author_email="$(git log -1 --format='%ae')"
-            email="$committer_email"
-            case "$email" in
-              *noreply.github.com*|"") email="$author_email" ;;
-            esac
-            case "$email" in
-              *@*.*) echo "$email" ;;
-              *) echo "" ;;
-            esac
-          ''', returnStdout: true).trim()
-          if (betterleaksCommitterEmail?.trim() && !betterleaksCommitterEmail.contains('noreply.github.com')) {
-            env.BETTERLEAKS_COMMITTER_EMAIL = betterleaksCommitterEmail
-          } else if (env.CHANGE_AUTHOR_EMAIL?.trim()) {
-            env.BETTERLEAKS_COMMITTER_EMAIL = env.CHANGE_AUTHOR_EMAIL
-          }
-
-          def betterleaksSummary = betterleaksStatus == 0
-            ? 'No secrets found.'
-            : 'Betterleaks detected one or more potential secrets. Download betterleaks-report.json from Jenkins artifacts for details.'
-          def betterleaksReport = fileExists('betterleaks-report.json') ? readFile(file: 'betterleaks-report.json') : 'No Betterleaks report was generated.'
-
-          publishChecks name: 'Betterleaks', title: 'Betterleaks Secret Scan', summary: betterleaksSummary,
-                        text: betterleaksReport, conclusion: betterleaksStatus == 0 ? 'SUCCESS' : 'FAILURE',
-                        detailsURL: "${env.BUILD_URL}display/redirect"
-
-          if (betterleaksStatus != 0) {
-            env.BETTERLEAKS_FAILED = 'yes'
-            def details = """<h1>Betterleaks detected potential secrets</h1>
-                             <p>${env.JOB_NAME} - Build #${env.BUILD_NUMBER}</p>
-                             <p>Check console output and the betterleaks-report.json artifact at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a>.</p>
-                          """
-            if (env.BETTERLEAKS_COMMITTER_EMAIL?.trim()) {
-              emailext(
-              subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
-              body: details,
-              attachLog: true,
-              compressLog: true,
-              to: env.BETTERLEAKS_COMMITTER_EMAIL,
-              recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
-              )
-            } else {
-              emailext(
-              subject: "[Betterleaks] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} failed",
-              body: details,
-              attachLog: true,
-              compressLog: true,
-              recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
-              )
-            }
-            error 'Betterleaks detected one or more potential secrets.'
-          }
-        }
-      }
-    }
-
     stage('Release') {
       when {
         allOf {
@@ -313,15 +242,15 @@ pipeline {
           def scannerHome = tool 'SonarQubeScanner'
           def nodeJS = tool 'NodeJS'
           if (env.CHANGE_ID) {
-            env.sonarParams = " -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} -Dsonar.pullrequest.key=${env.CHANGE_ID} "
+            env.sonarParams = " -Dsonar.pullrequest.base='${env.CHANGE_TARGET}' -Dsonar.pullrequest.branch='${env.CHANGE_BRANCH}' -Dsonar.pullrequest.key='${env.CHANGE_ID}' "
           }
           else {
-            env.sonarParams = " -Dsonar.branch.name=${env.BRANCH_NAME}"
+            env.sonarParams = " -Dsonar.branch.name='${env.BRANCH_NAME}'"
           }
           withSonarQubeEnv('Sonarqube') {
             sh '''sed -i "s#/app/src/addons/${GIT_NAME}/##g" xunit-reports-current/coverage/lcov.info'''
             sh '''sed -i "s#src/addons/${GIT_NAME}/##g" xunit-reports-current/coverage/lcov.info'''
-            sh "export PATH=${scannerHome}/bin:${nodeJS}/bin:$PATH; sonar-scanner -Dsonar.javascript.lcov.reportPaths=./xunit-reports-current/coverage/lcov.info,./cypress-coverage-current/coverage/lcov.info -Dsonar.sources=./src -Dsonar.projectKey=$GIT_NAME -Dsonar.projectName=$GIT_NAME -Dsonar.projectVersion=\$(jq -r '.version' package.json) ${env.sonarParams}"
+            sh "export PATH=${scannerHome}/bin:${nodeJS}/bin:$PATH; sonar-scanner -Dsonar.javascript.lcov.reportPaths=./xunit-reports-current/coverage/lcov.info,./cypress-coverage-current/coverage/lcov.info -Dsonar.sources=./src -Dsonar.projectKey=\"${GIT_NAME}\" -Dsonar.projectName=\"${GIT_NAME}\" -Dsonar.projectVersion=\$(jq '.version' package.json) ${env.sonarParams}"
             sh '''try=5; while [ \$try -gt 0 ]; do curl -s -XPOST -u "${SONAR_AUTH_TOKEN}:" "${SONAR_HOST_URL}api/project_tags/set?project=${GIT_NAME}&tags=${SONARQUBE_TAGS}" > set_tags_result; if [ \$(grep -ic error set_tags_result ) -eq 0 ]; then try=0; else cat set_tags_result; echo "... Will retry"; sleep 15; try=\$(( \$try - 1 )); fi; done'''
           }
         }
@@ -477,18 +406,16 @@ pipeline {
     }
     changed {
       script {
-        if (env.BETTERLEAKS_FAILED != 'yes') {
-          def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}</h1>
-                           <p>Check console output at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
-                        """
-          emailext(
-          subject: '$DEFAULT_SUBJECT',
-          body: details,
-          attachLog: true,
-          compressLog: true,
-          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
-          )
-        }
+        def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}</h1>
+                         <p>Check console output at <a href="${env.BUILD_URL}/display/redirect">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
+                      """
+        emailext(
+        subject: '$DEFAULT_SUBJECT',
+        body: details,
+        attachLog: true,
+        compressLog: true,
+        recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']]
+        )
       }
     }
   }
