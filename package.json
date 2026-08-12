@@ -30,6 +30,9 @@
     "@eeacms/volto-block-toc": "*",
     "@eeacms/volto-eea-design-system": "*",
     "@eeacms/volto-group-block": "*",
+    "@loadable/component": "^5.16.0",
+    "react-dnd": "^5.0.0",
+    "react-dnd-html5-backend": "^5.0.0",
     "volto-subsites": "*"
   },
   "devDependencies": {
