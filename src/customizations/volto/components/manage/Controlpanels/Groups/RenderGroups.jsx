@@ -9,6 +9,7 @@ import { Dropdown, Table, Checkbox } from 'semantic-ui-react';
 import trashSVG from '@plone/volto/icons/delete.svg';
 import ploneSVG from '@plone/volto/icons/plone.svg';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
+import { canAssignRole } from '@plone/volto/helpers/User/User';
 
 /**
  * UsersControlpanelGroups class.
@@ -69,6 +70,15 @@ class RenderGroups extends Component {
   isAuthGroup = (roleId) => {
     return this.props.inheritedRole.includes(roleId);
   };
+
+  /**
+   *@returns {Boolean}
+   *@memberof RenderGroups
+   */
+  canDeleteGroup = () => {
+    if (this.props.isUserManager) return true;
+    return !this.props.group.roles.includes('Manager');
+  };
   /**
    * Render method.
    * @method render
@@ -100,22 +110,25 @@ class RenderGroups extends Component {
                 }
                 onChange={this.onChange}
                 value={`${this.props.group.id}&role=${role.id}`}
+                disabled={!canAssignRole(this.props.isUserManager, role)}
               />
             )}
           </Table.Cell>
         ))}
         <Table.Cell textAlign="right">
-          <Dropdown icon="ellipsis horizontal">
-            <Dropdown.Menu className="left">
-              <Dropdown.Item
-                onClick={this.props.onDelete}
-                value={this.props.group['@id']}
-              >
-                <Icon name={trashSVG} size="15px" />
-                <FormattedMessage id="Delete" defaultMessage="Delete" />
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          {this.canDeleteGroup() && (
+            <Dropdown icon="ellipsis horizontal">
+              <Dropdown.Menu className="left">
+                <Dropdown.Item
+                  onClick={this.props.onDelete}
+                  value={this.props.group['@id']}
+                >
+                  <Icon name={trashSVG} size="15px" />
+                  <FormattedMessage id="Delete" defaultMessage="Delete" />
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
         </Table.Cell>
       </Table.Row>
     );
