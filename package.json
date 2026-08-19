@@ -42,7 +42,8 @@
     "jsonwebtoken": "9.0.0",
     "lint-staged": "^14.0.1",
     "md5": "^2.3.0",
-    "postcss-less": "6.0.0"
+    "postcss-less": "6.0.0",
+    "uuid": "^8.3.2"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json}": [
