@@ -35,19 +35,20 @@ const modify = (config, { target, dev }, webpack) => {
    * 1. Remove the alias configurations below
    * 2. Remove the conditionalLocalStorage.js middleware file
    */
-  // Alias redux-localstorage-simple to conditional middleware
+  // Keep an exact alias to the original package for the wrapper itself.
+  // Resolve it from this add-on's dependencies so this also works with pnpm's
+  // strict node_modules layout.
+  alias['redux-localstorage-simple-original$'] = require.resolve(
+    'redux-localstorage-simple',
+  );
+
+  // Alias exact imports of redux-localstorage-simple to conditional middleware.
+  // The trailing `$` prevents this alias from also matching the original alias.
   const conditionalLocalStoragePath = path.resolve(
     __dirname,
     './src/middleware/conditionalLocalStorage',
   );
-  alias['redux-localstorage-simple'] = conditionalLocalStoragePath;
-
-  // Create an alias to access the original redux-localstorage-simple package
-  const originalReduxLocalStoragePath = path.resolve(
-    __dirname,
-    '../../../node_modules/redux-localstorage-simple',
-  );
-  alias['redux-localstorage-simple-original'] = originalReduxLocalStoragePath;
+  alias['redux-localstorage-simple$'] = conditionalLocalStoragePath;
 
   return config;
 };

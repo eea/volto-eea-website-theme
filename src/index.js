@@ -7,6 +7,7 @@ import TableBlockEdit from '@plone/volto-slate/blocks/Table/TableBlockEdit';
 import TableBlockView from '@plone/volto-slate/blocks/Table/TableBlockView';
 import { nanoid } from '@plone/volto-slate/utils';
 import { defineMessages } from 'react-intl';
+import loadable from '@loadable/component';
 import InpageNavigation from '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation';
 import CustomCSS from '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS';
 import DraftBackground from '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground';
@@ -159,11 +160,29 @@ const restrictedBlockMessages = defineMessages({
 });
 
 const applyConfig = (config) => {
+  // Register react-dnd loadables for Volto 19 compatibility
+  // (Volto 18 registers these in core, Volto 19 uses dnd-kit instead)
+  if (!config.settings.loadables) {
+    config.settings.loadables = {};
+  }
+  if (!config.settings.loadables.reactDnd) {
+    config.settings.loadables.reactDnd = loadable.lib(
+      () => import('react-dnd'),
+    );
+  }
+  if (!config.settings.loadables.reactDndHtml5Backend) {
+    config.settings.loadables.reactDndHtml5Backend = loadable.lib(
+      () => import('react-dnd-html5-backend'),
+    );
+  }
+
   // EEA specific settings
   config.settings.eea = {
     ...eea,
     ...(config.settings.eea || {}),
   };
+  config.settings.defaultLanguage =
+    config.settings.defaultLanguage || eea.defaultLanguage;
 
   //include site title in <title>
   if (!config.settings.siteTitleFormat) {

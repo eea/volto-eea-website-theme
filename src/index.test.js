@@ -49,6 +49,7 @@ jest.mock(
 jest.mock('@plone/volto/components', () => ({
   Icon: 'MockedIcon',
 }));
+jest.mock('superagent', () => ({}));
 
 jest.mock('uuid', () => {
   return {
