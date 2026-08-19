@@ -55,26 +55,24 @@ describe('Blocks Tests', () => {
       .click({ force: true });
 
     // Test all 4 alignment buttons: left, center, right, full
-    cy.get('.align-buttons .ui.basic.icon.button').first().click(); // left
-    cy.get('.align-buttons .ui.basic.icon.button').eq(1).click(); // center
-    cy.get('.align-buttons .ui.basic.icon.button').eq(2).click(); // right
-    cy.get('.align-buttons .ui.basic.icon.button').last().click(); // full
+    cy.get('.field-wrapper-align [aria-label="Left"]').click({ force: true });
+    cy.get('.field-wrapper-align [aria-label="Center"]').click({ force: true });
+    cy.get('.field-wrapper-align [aria-label="Right"]').click({ force: true });
+    cy.get('.field-wrapper-align [aria-label="Full"]').click({ force: true });
 
     // Set to left alignment to enable size buttons
-    cy.get('.align-buttons .ui.basic.icon.button').first().click();
+    cy.get('.field-wrapper-align [aria-label="Left"]').click({ force: true });
 
     // Test all size buttons: S, M, L
     cy.get('.field-image_size button[aria-label="Small"]').click(); // S (small)
     cy.get('.field-image_size button[aria-label="Medium"]').click(); // M (medium)
     cy.get('.field-image_size button[aria-label="Large"]').click(); // L (large)
 
-    // Test all 4 image position buttons: top, center, bottom, none
-    cy.get('.align-buttons .ui.buttons button').first().click(); // top
-    cy.get('.align-buttons .ui.buttons button').eq(1).click(); // center
-    cy.get('.align-buttons .ui.buttons button').eq(2).click(); // bottom
-    cy.get('.align-buttons .ui.buttons button').last().click(); // none
-    // Set back to top position
-    cy.get('.align-buttons .ui.buttons button').first().click();
+    // Set the image position in the styling fieldset
+    cy.get('#blockform-fieldset-styling').click();
+    cy.get('#field-objectPosition-0-styles')
+      .clear()
+      .type('has--object-position--top');
 
     // Save
     cy.get('#toolbar-save').click();
