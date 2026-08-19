@@ -47,16 +47,10 @@ const NumberWidget = (props) => {
         value={value ?? ''}
         placeholder={placeholder}
         onChange={({ target }) =>
-          onChange(
-            id,
-            target.value === '' ? undefined : Number(target.value),
-          )
+          onChange(id, target.value === '' ? undefined : Number(target.value))
         }
         onBlur={({ target }) =>
-          onBlur(
-            id,
-            target.value === '' ? undefined : Number(target.value),
-          )
+          onBlur(id, target.value === '' ? undefined : Number(target.value))
         }
         onClick={() => onClick()}
       />
