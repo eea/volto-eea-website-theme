@@ -9,7 +9,13 @@ import { Dropdown, Table, Checkbox } from 'semantic-ui-react';
 import trashSVG from '@plone/volto/icons/delete.svg';
 import ploneSVG from '@plone/volto/icons/plone.svg';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import { canAssignRole } from '@plone/volto/helpers/User/User';
+
+// Inlined from @plone/volto/helpers/User/User to avoid depending on a
+// helper that isn't exported by every supported Volto core version.
+function canAssignRole(isUserManager, role) {
+  if (isUserManager) return true;
+  return role.id !== 'Manager';
+}
 
 /**
  * UsersControlpanelGroups class.
