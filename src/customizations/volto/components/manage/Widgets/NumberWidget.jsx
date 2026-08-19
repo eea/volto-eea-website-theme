@@ -49,13 +49,13 @@ const NumberWidget = (props) => {
         onChange={({ target }) =>
           onChange(
             id,
-            target.value === '' ? undefined : window.parseInt(target.value),
+            target.value === '' ? undefined : Number(target.value),
           )
         }
         onBlur={({ target }) =>
           onBlur(
             id,
-            target.value === '' ? undefined : window.parseInt(target.value),
+            target.value === '' ? undefined : Number(target.value),
           )
         }
         onClick={() => onClick()}
