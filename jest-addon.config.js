@@ -5,12 +5,12 @@
  * - Detects the addon name from the config file path
  * - Configures test coverage to focus on the specific test path
  * - Handles different ways of specifying test paths:
- *   - Full paths like src/addons/addon-name/src/components
+ *   - Full paths like packages/addon-name/src/components
  *   - Just filenames like Component.test.jsx
  *   - Just directory names like components
  *
  * Usage:
- * RAZZLE_JEST_CONFIG=src/addons/addon-name/jest-addon.config.js CI=true yarn test [test-path] --collectCoverage
+ * pnpm --filter addon-name test [test-path] --coverage
  */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -18,21 +18,23 @@ require('dotenv').config({ path: __dirname + '/.env' });
 const path = require('path');
 const fs = require('fs');
 const fg = require('fast-glob');
+const projectRootPath = path.resolve(__dirname, '../..');
 
 const voltoSlatePath = fs.existsSync(
-  path.join(__dirname, '../../../node_modules/@plone/volto-slate/src'),
+  path.join(projectRootPath, 'core/packages/volto-slate/src'),
 )
-  ? '<rootDir>/node_modules/@plone/volto-slate/src'
-  : '<rootDir>/node_modules/@plone/volto/packages/volto-slate/src';
+  ? '<rootDir>/core/packages/volto-slate/src'
+  : '<rootDir>/node_modules/@plone/volto-slate/src';
+
+const voltoAddonLoaderPath = fs.existsSync(
+  path.join(projectRootPath, 'core/packages/volto/test-addons-loader.js'),
+)
+  ? '<rootDir>/core/packages/volto/test-addons-loader.js'
+  : '<rootDir>/node_modules/@plone/volto/jest-addons-loader.js';
 
 // Get the addon name from the current file path
-const pathParts = __filename.split(path.sep);
-const addonsIdx = pathParts.lastIndexOf('addons');
-const addonName =
-  addonsIdx !== -1 && addonsIdx < pathParts.length - 1
-    ? pathParts[addonsIdx + 1]
-    : path.basename(path.dirname(__filename)); // Fallback to folder name
-const addonBasePath = `src/addons/${addonName}/src`;
+const addonName = path.basename(__dirname);
+const addonBasePath = `packages/${addonName}/src`;
 
 // --- Performance caches ---
 const fileSearchCache = new Map();
@@ -233,7 +235,7 @@ const findImplementationFile = (testPath) => {
  * @returns {string|null} - The resolved test path or null if not found
  */
 const getTestPath = () => {
-  const args = process.argv;
+  const args = process.argv.slice(2);
   let testPath = null;
   const TEST_FILE_REGEX = /\.test\.[jt]sx?$/; // Matches .test.js, .test.jsx, .test.ts, .test.tsx
 
@@ -281,7 +283,7 @@ const getTestPath = () => {
     }
   } else if (
     TEST_FILE_REGEX.test(testPath) && // Check if it looks like a test file path
-    !testPath.startsWith('src/addons/')
+    !testPath.startsWith('packages/')
   ) {
     const testFileName = path.basename(testPath);
     const foundTestFile = findInAddon(testFileName, 'f');
@@ -304,7 +306,7 @@ const getTestPath = () => {
   if (
     !path
       .normalize(testPath)
-      .startsWith(path.join('src', 'addons', addonName, 'src')) &&
+      .startsWith(path.join('packages', addonName, 'src')) &&
     !path.isAbsolute(testPath) // Use path.isAbsolute for robust check
   ) {
     testPath = path.join(addonBasePath, testPath); // Use path.join for OS-agnostic paths
@@ -337,6 +339,7 @@ const getTestPath = () => {
  * @returns {string[]} - Array of coverage patterns
  */
 const getCoveragePatterns = () => {
+  const args = process.argv.slice(2);
   const excludePatterns = [
     '!src/**/*.d.ts',
     '!**/*.test.{js,jsx,ts,tsx}',
@@ -345,13 +348,13 @@ const getCoveragePatterns = () => {
   ];
 
   const defaultPatterns = [
-    `${addonBasePath}/**/*.{js,jsx,ts,tsx}`,
+    '**/*.{js,jsx,ts,tsx}',
     ...excludePatterns,
   ];
 
   const ANY_SCRIPT_FILE_REGEX = /\.[jt]sx?$/;
 
-  const directoryArg = process.argv.find(
+  const directoryArg = args.find(
     (arg) =>
       !arg.includes(path.sep) &&
       !arg.startsWith('--') &&
@@ -369,8 +372,7 @@ const getCoveragePatterns = () => {
         (reserved) =>
           arg === reserved || arg.startsWith(reserved.split('=')[0] + '='),
       ) &&
-      process.argv.indexOf(arg) >
-        process.argv.findIndex((item) => item === 'test'),
+      args.indexOf(arg) > args.findIndex((item) => item === 'test'),
   );
 
   if (directoryArg) {
@@ -409,8 +411,15 @@ const getCoveragePatterns = () => {
 const coverageConfig = getCoveragePatterns();
 
 module.exports = {
-  testMatch: ['**/src/addons/**/?(*.)+(spec|test).[jt]s?(x)'],
+  rootDir: projectRootPath,
+  roots: [`<rootDir>/packages/${addonName}/src`],
+  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
   collectCoverageFrom: coverageConfig,
+  moduleDirectories: [
+    path.join(projectRootPath, 'core/packages/volto/node_modules'),
+    path.join(projectRootPath, 'node_modules'),
+    'node_modules',
+  ],
   coveragePathIgnorePatterns: [
     '/node_modules/',
     'schema\\.[jt]s?$',
@@ -419,36 +428,36 @@ module.exports = {
   ],
   moduleNameMapper: {
     // Mock external modules that may not be available in test environment
-    'volto-subsites/utils': `<rootDir>/src/addons/${addonName}/src/__mocks__/volto-subsites-utils.js`,
-    'redux-localstorage-simple-original': `<rootDir>/src/addons/${addonName}/src/__mocks__/redux-localstorage-simple-original.js`,
+    'volto-subsites/utils': `<rootDir>/packages/${addonName}/src/__mocks__/volto-subsites-utils.js`,
+    'redux-localstorage-simple-original': `<rootDir>/packages/${addonName}/src/__mocks__/redux-localstorage-simple-original.js`,
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '@plone/volto/cypress': '<rootDir>/node_modules/@plone/volto/cypress',
     '@plone/volto/babel': '<rootDir>/node_modules/@plone/volto/babel',
     '@plone/volto/(.*)$': '<rootDir>/node_modules/@plone/volto/src/$1',
     '@package/(.*)$': '<rootDir>/node_modules/@plone/volto/src/$1',
     '@root/(.*)$': '<rootDir>/node_modules/@plone/volto/src/$1',
-    '@plone/volto-quanta/(.*)$': '<rootDir>/src/addons/volto-quanta/src/$1',
-    '@eeacms/search/(.*)$': '<rootDir>/src/addons/volto-searchlib/searchlib/$1',
-    '@eeacms/search': '<rootDir>/src/addons/volto-searchlib/searchlib',
+    '@plone/volto-quanta/(.*)$': '<rootDir>/packages/volto-quanta/src/$1',
+    '@eeacms/search/(.*)$': '<rootDir>/packages/volto-searchlib/searchlib/$1',
+    '@eeacms/search': '<rootDir>/packages/volto-searchlib/searchlib',
     // IMPORTANT: Map current addon to local source BEFORE the generic @eeacms pattern
     // This ensures tests use the local development version instead of node_modules
-    [`^@eeacms/${addonName}/(.*)$`]: `<rootDir>/src/addons/${addonName}/src/$1`,
-    '@eeacms/(.*?)/(.*)$': '<rootDir>/node_modules/@eeacms/$1/src/$2',
+    [`^@eeacms/${addonName}/(.*)$`]: `<rootDir>/packages/${addonName}/src/$1`,
+    '^@eeacms/(.*?)/(.*)$': `<rootDir>/packages/${addonName}/node_modules/@eeacms/$1/src/$2`,
     '@plone/volto-slate$': voltoSlatePath,
     '@plone/volto-slate/(.*)$': `${voltoSlatePath}/$1`,
-    '~/(.*)$': '<rootDir>/src/$1',
-    'load-volto-addons':
-      '<rootDir>/node_modules/@plone/volto/jest-addons-loader.js',
+    '~/(.*)$': '<rootDir>/core/packages/volto/src/$1',
+    'load-volto-addons': voltoAddonLoaderPath,
+    '^uuid$': `<rootDir>/packages/${addonName}/node_modules/uuid/dist/index.js`,
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(@plone|@root|@package|@eeacms)/).*/',
+    '/node_modules/(?!\\.pnpm/(?:@plone\\+|@root\\+|@package\\+|@eeacms\\+|query-string@|decode-uri-component@|filter-obj@|split-on-first@)|(?:@plone|@root|@package|@eeacms|query-string|decode-uri-component|filter-obj|split-on-first)/).*/',
   ],
   transform: {
     '^.+\\.js(x)?$': 'babel-jest',
     '^.+\\.ts(x)?$': 'babel-jest',
     '^.+\\.(png)$': 'jest-file',
     '^.+\\.(jpg)$': 'jest-file',
-    '^.+\\.(svg)$': './node_modules/@plone/volto/jest-svgsystem-transform.js',
+    '^.+\\.(svg)$': 'jest-file',
   },
   coverageThreshold: {
     global: {
@@ -458,19 +467,10 @@ module.exports = {
       statements: 5,
     },
   },
-  ...(process.env.JEST_USE_SETUP === 'ON' && {
-    setupFilesAfterEnv: [
-      fs.existsSync(
-        path.join(
-          __dirname,
-          'node_modules',
-          '@eeacms',
-          addonName,
-          'jest.setup.js',
-        ),
-      )
-        ? `<rootDir>/node_modules/@eeacms/${addonName}/jest.setup.js`
-        : `<rootDir>/src/addons/${addonName}/jest.setup.js`,
-    ],
-  }),
+  setupFilesAfterEnv: [
+    `<rootDir>/packages/${addonName}/jest.globals.js`,
+    ...(process.env.JEST_USE_SETUP === 'ON'
+      ? [`<rootDir>/packages/${addonName}/jest.setup.js`]
+      : []),
+  ],
 };

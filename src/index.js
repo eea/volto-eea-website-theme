@@ -181,6 +181,8 @@ const applyConfig = (config) => {
     ...eea,
     ...(config.settings.eea || {}),
   };
+  config.settings.defaultLanguage =
+    config.settings.defaultLanguage || eea.defaultLanguage;
 
   //include site title in <title>
   if (!config.settings.siteTitleFormat) {

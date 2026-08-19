@@ -1,7 +1,7 @@
 import { getNavigationSettings } from './navigation';
 import { GET_NAVIGATION_SETTINGS } from '@eeacms/volto-eea-website-theme/constants/ActionTypes';
 
-jest.mock('@plone/volto/helpers', () => ({
+jest.mock('@plone/volto/helpers/Url/Url', () => ({
   flattenToAppURL: jest.fn((url) => {
     // Simulate flattenToAppURL behavior - strip domain if present
     if (url.startsWith('http://') || url.startsWith('https://')) {
