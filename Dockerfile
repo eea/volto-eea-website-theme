@@ -50,7 +50,7 @@ RUN --mount=type=cache,id=pnpm,target=/app/.pnpm-store,uid=1000 \
       "@eeacms/volto-corsproxy" \
       "@eeacms/volto-eea-design-system" \
       "@eeacms/volto-group-block" \
-      "volto-subsites"; \
+      "volto-subsites@github:collective/volto-subsites#e0973caa66a164635c4f0976b3f16e10b44d679f"; \
     for dependency in \
       "components:@plone/components" \
       "volto-razzle:@plone/razzle" \
