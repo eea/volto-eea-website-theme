@@ -1,0 +1,5 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Grid/readme.md
+@@ -0,0 +1,2 @@
++These two customizations ensure backward compatibility with the legacy @kitconcept/volto-blocks-grid. For more details, refer to the ticket here: https://taskman.eionet.europa.eu/issues/265726.
++Also, if there is an empty block, it will convert to slate, so the "Unkown block" message will not appear

@@ -1,0 +1,89 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Workflow/Workflow.test.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Workflow/Workflow.test.jsx
+@@ -1,30 +1,21 @@
+ import React from 'react';
+ import configureStore from 'redux-mock-store';
+ import { Provider } from 'react-intl-redux';
+-import { render } from '@testing-library/react';
++import { waitFor, render, screen } from '@testing-library/react';
++import '@testing-library/jest-dom';
++import { MemoryRouter } from 'react-router-dom';
+ import config from '@plone/volto/registry';
++
+ import Workflow from './Workflow';
+ 
+ const mockStore = configureStore();
+ 
+-vi.mock('@plone/volto/components/manage/Widgets', async () => {
+-  return await import(
+-    '@plone/volto/components/manage/Widgets/__mocks__/index.vitest.tsx'
+-  );
+-});
+-vi.mock('@plone/volto/helpers/Loadable/Loadable', async () => {
+-  return await import(
+-    '@plone/volto/helpers/Loadable/__mocks__/Loadable.vitest.jsx'
+-  );
+-});
++jest.mock('@plone/volto/helpers/Loadable/Loadable');
++beforeAll(
++  async () =>
++    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
++);
+ 
+-beforeAll(async () => {
+-  const { __setLoadables } = await import(
+-    '@plone/volto/helpers/Loadable/Loadable'
+-  );
+-  await __setLoadables();
+-});
+-
+ beforeEach(() => {
+   config.settings.workflowMapping = {
+     published: { value: 'published', color: '#007bc1' },
+@@ -54,10 +45,21 @@
+     });
+     const { container } = render(
+       <Provider store={store}>
+-        <Workflow pathname="/test" />
++        <MemoryRouter>
++          <Workflow pathname="/test" />
++        </MemoryRouter>
+       </Provider>,
+     );
+-    expect(container).toMatchSnapshot();
++    await waitFor(() => screen.getByText(/Published/));
++
++    // Test behavior instead of snapshot due to dynamic react-select CSS classes
++    expect(screen.getByText('Published')).toBeInTheDocument();
++    expect(
++      container.querySelector('.react-select__control--is-disabled'),
++    ).toBeInTheDocument();
++    expect(
++      container.querySelector('.react-select__single-value'),
++    ).toHaveTextContent('Published');
+   });
+ 
+   it('renders a workflow component', async () => {
+@@ -77,9 +79,20 @@
+ 
+     const { container } = render(
+       <Provider store={store}>
+-        <Workflow pathname="/test" />
++        <MemoryRouter>
++          <Workflow pathname="/test" />
++        </MemoryRouter>
+       </Provider>,
+     );
+-    expect(container).toMatchSnapshot();
++    await waitFor(() => screen.getByText('Private'));
++
++    // Test behavior instead of snapshot due to dynamic react-select CSS classes
++    expect(screen.getByText('Private')).toBeInTheDocument();
++    expect(
++      container.querySelector('.react-select__control'),
++    ).toBeInTheDocument();
++    expect(
++      container.querySelector('.react-select__single-value'),
++    ).toHaveTextContent('Private');
+   });
+ });

@@ -1,0 +1,283 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/server.jsx
++++ volto-eea-website-theme/src/customizations/volto/server.jsx
+@@ -16,13 +16,14 @@
+ import { CookiesProvider } from 'react-cookie';
+ import cookiesMiddleware from 'universal-cookie-express';
+ import debug from 'debug';
+-
++import crypto from 'crypto';
++// eslint-disable-next-line
+ import routes from '@root/routes';
+ import config from '@plone/volto/registry';
+ 
+-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+ import Html from '@plone/volto/helpers/Html/Html';
+ import Api from '@plone/volto/helpers/Api/Api';
++import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+ import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
+ import {
+   toBackendLang,
+@@ -32,24 +33,23 @@
+ import { changeLanguage } from '@plone/volto/actions/language/language';
+ 
+ import userSession from '@plone/volto/reducers/userSession/userSession';
++
+ import configureStore from '@plone/volto/store';
+ import ErrorPage from '@plone/volto/error';
+-import { ReduxAsyncConnect, loadOnServer } from './helpers/AsyncConnect';
++import {
++  ReduxAsyncConnect,
++  loadOnServer,
++} from '@plone/volto/helpers/AsyncConnect';
+ 
+ let locales = {};
++const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
+ 
+ if (config.settings) {
+   config.settings.supportedLanguages.forEach((lang) => {
+     const langFileName = toGettextLang(lang);
+-    import(/* @vite-ignore */ '@root/../locales/' + langFileName + '.json')
+-      .then((locale) => {
+-        locales = { ...locales, [toReactIntlLang(lang)]: locale.default };
+-      })
+-      .catch(() => {
+-        debug('i18n')(
+-          `Locale file for ${lang} not found, using empty messages.`,
+-        );
+-      });
++    import('@root/../locales/' + langFileName + '.json').then((locale) => {
++      locales = { ...locales, [toReactIntlLang(lang)]: locale.default };
++    });
+   });
+ }
+ 
+@@ -58,12 +58,13 @@
+ }
+ 
+ const supported = new locale.Locales(
+-  config.settings.supportedLanguages,
+-  config.settings.defaultLanguage,
++  config.settings?.supportedLanguages || ['en'],
++  'en',
+ );
+ 
+ const server = express()
+   .disable('x-powered-by')
++  .set('etag', false)
+   .head('/*', function (req, res) {
+     // Support for HEAD requests. Required by start-test utility in CI.
+     res.send('');
+@@ -78,12 +79,25 @@
+ server.use(function (err, req, res, next) {
+   if (err) {
+     const { store } = res.locals;
+-    const errorPage = (
++    const ErrorComponent =
++      config.getComponent('ErrorBoundary')?.component || null;
++
++    // If no Redux store is available (e.g. setupServer failed before
++    // creating one), render a minimal error page without Provider
++    const errorPage = store ? (
+       <Provider store={store} onError={reactIntlErrorHandler}>
+         <StaticRouter context={{}} location={req.url}>
+-          <ErrorPage message={err.message} />
++          {ErrorComponent ? (
++            <ErrorComponent error={err} />
++          ) : (
++            <ErrorPage message={err.message} />
++          )}
+         </StaticRouter>
+       </Provider>
++    ) : (
++      <StaticRouter context={{}} location={req.url}>
++        <ErrorPage message={err.message} />
++      </StaticRouter>
+     );
+ 
+     res.set({
+@@ -94,7 +108,7 @@
+      * TODO:
+      * - get ignored codes from Plone error_log
+      */
+-    const ignoredErrors = [301, 302, 401, 404];
++    const ignoredErrors = [301, 302, 401, 404, 410];
+     if (!ignoredErrors.includes(err.status)) console.error(err);
+ 
+     res
+@@ -103,7 +117,28 @@
+   }
+ });
+ 
++function buildCSPHeader(opts, nonce) {
++  if (typeof opts === 'string') {
++    //CSP_HEADER
++    return opts.replaceAll('{nonce}', `'nonce-${nonce}'`);
++  }
++  return Object.keys(opts)
++    .sort()
++    .reduce((acc, key) => {
++      return [
++        ...acc,
++        `${key} ${opts[key].replaceAll('{nonce}', `'nonce-${nonce}'`)}`,
++      ];
++    }, [])
++    .join('; ');
++}
++
+ function setupServer(req, res, next) {
++  if (isCSP) {
++    const nonce = crypto.randomBytes(16).toString('base64');
++    res.locals.nonce = nonce;
++  }
++
+   const api = new Api(req);
+ 
+   const lang = toReactIntlLang(
+@@ -134,10 +169,16 @@
+   const store = configureStore(initialState, history, api);
+ 
+   function errorHandler(error) {
++    const ErrorComponent =
++      config.getComponent('ErrorBoundary').component || null;
+     const errorPage = (
+       <Provider store={store} onError={reactIntlErrorHandler}>
+         <StaticRouter context={{}} location={req.url}>
+-          <ErrorPage message={error.message} />
++          {ErrorComponent ? (
++            <ErrorComponent error={error} />
++          ) : (
++            <ErrorPage message={error.message} />
++          )}
+         </StaticRouter>
+       </Provider>
+     );
+@@ -150,7 +191,7 @@
+      * TODO:
+      * - get ignored codes from Plone error_log
+      */
+-    const ignoredErrors = [301, 302, 401, 404];
++    const ignoredErrors = [301, 302, 401, 404, 410];
+     if (!ignoredErrors.includes(error.status)) console.error(error);
+ 
+     res
+@@ -177,8 +218,12 @@
+ }
+ 
+ server.get('/*', (req, res) => {
+-  const { errorHandler } = res.locals;
++  const { errorHandler, nonce } = res.locals;
+ 
++  if (isCSP) {
++    res.setHeader('Content-Security-Policy', buildCSPHeader(isCSP, nonce));
++  }
++
+   const api = new Api(req);
+ 
+   const browserdetect = detect(req.headers['user-agent']);
+@@ -193,7 +238,7 @@
+       .toString(),
+   );
+ 
+-  const authToken = req.universalCookies.get('auth_token');
++  const authToken = req.universalCookies.get('auth_token'); //betterleaks:allow
+   const initialState = {
+     userSession: { ...userSession(), token: authToken },
+     form: req.body,
+@@ -243,13 +288,7 @@
+         : store.getState().content.data?.language?.token ||
+           config.settings.defaultLanguage;
+ 
+-      const isMultilingual = config.settings.isMultilingual;
+-
+-      if (
+-        toBackendLang(initialLang) !== contentLang &&
+-        !/\/\.well-known\/.*$/.test(location.pathname) &&
+-        !(isMultilingual && location.pathname === '/')
+-      ) {
++      if (toBackendLang(initialLang) !== contentLang && url !== '/') {
+         const newLang = toReactIntlLang(
+           new locale.Locales(contentLang).best(supported).toString(),
+         );
+@@ -282,48 +321,48 @@
+         });
+       }
+ 
+-      const sendHtmlResponse = (
+-        res,
+-        statusCode,
+-        extractor,
+-        markup,
+-        store,
+-        req,
+-        config,
+-      ) => {
+-        res.status(statusCode).send(
+-          `<!doctype html>
+-        ${renderToString(
+-          <Html
+-            extractor={extractor}
+-            markup={markup}
+-            store={store}
+-            criticalCss={readCriticalCss(req)}
+-            apiPath={res.locals.detectedHost || config.settings.apiPath}
+-            publicURL={res.locals.detectedHost || config.settings.publicURL}
+-          />,
+-        )}
+-      `,
+-        );
+-      };
+-
+       if (context.url) {
+         res.redirect(flattenToAppURL(context.url));
+       } else if (context.error_code) {
+         res.set({
+           'Cache-Control': 'no-cache',
+         });
+-        sendHtmlResponse(
+-          res,
+-          context.error_code,
+-          extractor,
+-          markup,
+-          store,
+-          req,
+-          config,
++
++        res.status(context.error_code).send(
++          `<!doctype html>
++              ${renderToString(
++                <Html
++                  extractor={extractor}
++                  nonce={nonce}
++                  markup={markup}
++                  store={store}
++                  criticalCss={readCriticalCss(req)}
++                  apiPath={res.locals.detectedHost || config.settings.apiPath}
++                  publicURL={
++                    res.locals.detectedHost || config.settings.publicURL
++                  }
++                />,
++              )}
++            `,
+         );
+       } else {
+-        sendHtmlResponse(res, 200, extractor, markup, store, req, config);
++        res.status(200).send(
++          `<!doctype html>
++              ${renderToString(
++                <Html
++                  extractor={extractor}
++                  nonce={nonce}
++                  markup={markup}
++                  store={store}
++                  criticalCss={readCriticalCss(req)}
++                  apiPath={res.locals.detectedHost || config.settings.apiPath}
++                  publicURL={
++                    res.locals.detectedHost || config.settings.publicURL
++                  }
++                />,
++              )}
++            `,
++        );
+       }
+     }, errorHandler)
+     .catch(errorHandler);

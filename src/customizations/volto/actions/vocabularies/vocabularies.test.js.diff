@@ -1,8 +1,6 @@
-diff --git a/src/customizations/volto/actions/vocabularies/vocabularies.test.js b/src/customizations/volto/actions/vocabularies/vocabularies.test.js
-index b7deafc..ca4fc8a 100644
---- a/src/customizations/volto/actions/vocabularies/vocabularies.test.js
-+++ b/src/customizations/volto/actions/vocabularies/vocabularies.test.js
-@@ -17,7 +17,7 @@ describe('Vocabularies actions', () => {
+--- volto-18.35.1-74d82edef/packages/volto/src/actions/vocabularies/vocabularies.test.js
++++ volto-eea-website-theme/src/customizations/volto/actions/vocabularies/vocabularies.test.js
+@@ -17,7 +17,7 @@
      });
      it('should create an action to get a vocabulary if a URL is passed', () => {
        const vocabNameOrURL =
@@ -10,8 +8,8 @@ index b7deafc..ca4fc8a 100644
 +        'http://localhost:3000/@vocabularies/plone.app.vocabularies.Keywords';
        const query = 'john';
        const action = getVocabulary({ vocabNameOrURL, query });
-
-@@ -30,7 +30,7 @@ describe('Vocabularies actions', () => {
+ 
+@@ -30,7 +30,7 @@
      });
      it('should create an action to get a vocabulary if a URL with path is passed', () => {
        const vocabNameOrURL =
@@ -19,8 +17,8 @@ index b7deafc..ca4fc8a 100644
 +        'http://localhost:3000/de/foo/bar/@vocabularies/plone.app.vocabularies.Keywords';
        const query = 'john';
        const action = getVocabulary({ vocabNameOrURL, query });
-
-@@ -38,19 +38,19 @@ describe('Vocabularies actions', () => {
+ 
+@@ -38,19 +38,19 @@
        expect(action.vocabulary).toEqual(vocabNameOrURL);
        expect(action.request.op).toEqual('get');
        expect(action.request.path).toEqual(
@@ -33,7 +31,7 @@ index b7deafc..ca4fc8a 100644
 -        'http://localhost:8080/de/foo/bar/@vocabularies/plone.app.vocabularies.Keywords';
 +        'http://localhost:3000/de/foo/bar/@vocabularies/plone.app.vocabularies.Keywords';
        const action = getVocabulary({ vocabNameOrURL, size: -1 });
-
+ 
        expect(action.type).toEqual(GET_VOCABULARY);
        expect(action.vocabulary).toEqual(vocabNameOrURL);
        expect(action.request.op).toEqual('get');

@@ -1,0 +1,238 @@
+--- volto-18.35.1-74d82edef/packages/volto-slate/src/editor/SlateEditor.jsx
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/SlateEditor.jsx
+@@ -1,7 +1,8 @@
+ import ReactDOM from 'react-dom';
+ import cx from 'classnames';
+ import isEqual from 'lodash/isEqual';
+-import { Transforms, Editor } from 'slate'; // , Transforms
++import cloneDeep from 'lodash/cloneDeep';
++import { Transforms, Editor, Point } from 'slate'; // , Transforms
+ import { Slate, Editable, ReactEditor } from 'slate-react';
+ import React, { Component } from 'react'; // , useState
+ import { v4 as uuid } from 'uuid';
+@@ -10,19 +11,21 @@
+ 
+ import { Element, Leaf } from './render';
+ 
+-import withTestingFeatures from './extensions/withTestingFeatures';
+-import { makeEditor } from '@plone/volto-slate/utils/editor';
+-import { toggleInlineFormat } from '@plone/volto-slate/utils/blocks';
+-import { toggleMark } from '@plone/volto-slate/utils/marks';
+-import { parseDefaultSelection } from '@plone/volto-slate/utils/selection';
+-import { InlineToolbar } from './ui';
+-import EditorContext from './EditorContext';
++import withTestingFeatures from '@plone/volto-slate/editor/extensions/withTestingFeatures';
++import {
++  makeEditor,
++  toggleInlineFormat,
++  toggleMark,
++  parseDefaultSelection,
++} from '@plone/volto-slate/utils';
++import { InlineToolbar } from '@plone/volto-slate/editor/ui';
++import EditorContext from '@plone/volto-slate/editor/EditorContext';
+ 
+ import isHotkey from 'is-hotkey';
+ 
+-import './less/editor.less';
++import '@plone/volto-slate/editor/less/editor.less';
+ 
+-import Toolbar from './ui/Toolbar';
++import Toolbar from '@plone/volto-slate/editor/ui/Toolbar';
+ 
+ const handleHotKeys = (editor, event, config) => {
+   let wasHotkey = false;
+@@ -46,6 +49,29 @@
+   return wasHotkey;
+ };
+ 
++function resetNodes(editor, options = {}) {
++  const children = [...editor.children];
++
++  children.forEach((node) =>
++    editor.apply({ type: 'remove_node', path: [0], node }),
++  );
++
++  if (options.nodes) {
++    options.nodes.forEach((node, i) =>
++      editor.apply({ type: 'insert_node', path: [i], node: node }),
++    );
++  }
++
++  const point =
++    options.at && Point.isPoint(options.at)
++      ? options.at
++      : Editor.end(editor, []);
++
++  if (point) {
++    Transforms.select(editor, point);
++  }
++}
++
+ // TODO: implement onFocus
+ class SlateEditor extends Component {
+   constructor(props) {
+@@ -56,22 +82,39 @@
+     this.handleChange = this.handleChange.bind(this);
+     this.getSavedSelection = this.getSavedSelection.bind(this);
+     this.setSavedSelection = this.setSavedSelection.bind(this);
++    this.getEditorValue = this.getEditorValue.bind(this);
+ 
+     this.savedSelection = null;
+ 
+     const uid = uuid(); // used to namespace the editor's plugins
+ 
+     this.slateSettings = props.slateSettings || config.settings.slate;
++    this.initialValue = this.getEditorValue(this.props.value);
+ 
+     this.state = {
+       editor: this.createEditor(uid),
+       showExpandedToolbar: config.settings.slate.showExpandedToolbar,
+-      internalValue: this.props.value || this.slateSettings.defaultValue(),
++      internalValue: this.initialValue,
+       uid,
+     };
+ 
+     this.editor = null;
+     this.selectionTimeout = null;
++  }
++
++  getEditorValue(value = this.props.value) {
++    if (Array.isArray(value) && value.length > 0) {
++      return cloneDeep(value);
++    }
++
++    return (
++      this.slateSettings.defaultValue?.() || [
++        {
++          type: 'p',
++          children: [{ text: '' }],
++        },
++      ]
++    );
+   }
+ 
+   getSavedSelection() {
+@@ -102,9 +145,10 @@
+ 
+   handleChange(value) {
+     ReactDOM.unstable_batchedUpdates(() => {
+-      this.setState({ internalValue: value });
+-      if (this.props.onChange && !isEqual(value, this.props.value)) {
+-        this.props.onChange(value, this.editor);
++      const newValue = cloneDeep(value);
++      this.setState({ internalValue: newValue });
++      if (this.props.onChange && !isEqual(newValue, this.props.value)) {
++        this.props.onChange(newValue, this.editor);
+       }
+     });
+   }
+@@ -153,8 +197,14 @@
+       !isEqual(this.props.value, this.state.internalValue)
+     ) {
+       const { editor } = this.state;
+-      editor.children = this.props.value;
++      const newValue = this.getEditorValue(this.props.value);
+ 
++      resetNodes(editor, { nodes: newValue });
++
++      this.setState({
++        internalValue: newValue,
++      });
++
+       if (this.props.defaultSelection) {
+         const selection = parseDefaultSelection(
+           editor,
+@@ -164,19 +214,8 @@
+         ReactEditor.focus(editor);
+         Transforms.select(editor, selection);
+       } else {
+-        try {
+-          Transforms.select(editor, Editor.end(editor, []));
+-        } catch (error) {
+-          // Weird error only happening in Cypress
+-          // Adding a try/catch
+-          // eslint-disable-next-line no-console
+-          console.log(error);
+-        }
++        Transforms.select(editor, Editor.end(editor, []));
+       }
+-
+-      this.setState({
+-        internalValue: this.props.value,
+-      });
+       return;
+     }
+ 
+@@ -184,7 +223,6 @@
+ 
+     if (!prevProps.selected && this.props.selected) {
+       // if the SlateEditor becomes selected from unselected
+-
+       if (window.getSelection().type === 'None') {
+         // TODO: why is this condition checked?
+         Transforms.select(
+@@ -192,7 +230,6 @@
+           Editor.range(this.state.editor, Editor.start(this.state.editor, [])),
+         );
+       }
+-
+       ReactEditor.focus(this.state.editor);
+     }
+ 
+@@ -265,7 +302,7 @@
+         <EditorContext.Provider value={editor}>
+           <Slate
+             editor={editor}
+-            initialValue={this.props.value || slateSettings.defaultValue()}
++            initialValue={this.getEditorValue()}
+             onChange={this.handleChange}
+           >
+             {selected ? (
+@@ -299,7 +336,7 @@
+               renderElement={(props) => <Element {...props} />}
+               renderLeaf={(props) => <Leaf {...props} />}
+               decorate={this.multiDecorator}
+-              spellCheck={false}
++              spellCheck={true}
+               scrollSelectionIntoView={
+                 slateSettings.scrollIntoView ? undefined : () => null
+               }
+@@ -307,7 +344,9 @@
+                 this.props.onBlur && this.props.onBlur();
+                 return null;
+               }}
+-              onClick={this.props.onClick}
++              onClick={(e) => {
++                return this.props.onClick && this.props.onClick(e);
++              }}
+               onSelect={(e) => {
+                 if (!selected && this.props.onFocus) {
+                   // we can't overwrite the onFocus of Editable, as the onFocus
+@@ -340,8 +379,8 @@
+                 if (handled) return;
+                 onKeyDown && onKeyDown({ editor, event });
+               }}
++              aria-labelledby={id ? `field-${id}` : undefined}
+               {...editableProps}
+-              aria-labelledby={`field-${id}`}
+             />
+             {selected &&
+               slateSettings.persistentHelpers.map((Helper, i) => {
+@@ -351,14 +390,13 @@
+               <ul>
+                 <li>{selected ? 'selected' : 'no-selected'}</li>
+                 <li>
++                  {ReactEditor.isFocused(editor) ? 'focused' : 'unfocused'}
++                </li>
++                <li>
+                   savedSelection: {JSON.stringify(editor.getSavedSelection())}
+                 </li>
+                 <li>live selection: {JSON.stringify(editor.selection)}</li>
+                 <li>children: {JSON.stringify(editor.children)}</li>
+-                <li> {selected ? 'selected' : 'notselected'}</li>
+-                <li>
+-                  {ReactEditor.isFocused(editor) ? 'focused' : 'unfocused'}
+-                </li>
+               </ul>
+             ) : (
+               ''

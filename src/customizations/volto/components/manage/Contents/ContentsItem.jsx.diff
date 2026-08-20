@@ -1,5 +1,5 @@
---- node_modules/@plone/volto/src/components/manage/Contents/ContentsItem.jsx
-+++ src/customizations/volto/components/manage/Contents/ContentsItem.jsx
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Contents/ContentsItem.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Contents/ContentsItem.jsx
 @@ -97,6 +97,11 @@
    order,
  }) => {

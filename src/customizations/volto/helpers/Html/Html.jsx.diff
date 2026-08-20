@@ -1,0 +1,109 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/helpers/Html/Html.jsx
++++ volto-eea-website-theme/src/customizations/volto/helpers/Html/Html.jsx
+@@ -79,6 +79,7 @@
+     store: PropTypes.shape({
+       getState: PropTypes.func,
+     }).isRequired,
++    nonce: PropTypes.string,
+   };
+ 
+   /**
+@@ -87,7 +88,7 @@
+    * @returns {string} Markup for the component.
+    */
+   render() {
+-    const { extractor, markup, store, criticalCss, apiPath, publicURL } =
++    const { extractor, markup, store, criticalCss, apiPath, publicURL, nonce } =
+       this.props;
+     const head = Helmet.rewind();
+     const bodyClass = join(BodyClass.rewind(), ' ');
+@@ -110,24 +111,28 @@
+ 
+           {head.style.toComponent()}
+ 
+-          <script
+-            dangerouslySetInnerHTML={{
+-              __html: `window.env = ${serialize({
+-                ...runtimeConfig,
+-                // Seamless mode requirement, the client need to know where the API is located
+-                // if not set in the API_PATH
+-                ...(apiPath && {
+-                  apiPath,
+-                }),
+-                ...(publicURL && {
+-                  publicURL,
+-                }),
+-                ...(process.env.SITE_DEFAULT_LANGUAGE && {
+-                  defaultLanguage: process.env.SITE_DEFAULT_LANGUAGE,
+-                }),
+-              })};`,
+-            }}
+-          />
++          {React.createElement('script', {
++            nonce: nonce,
++            dangerouslySetInnerHTML: {
++              __html: `window.env = ${serialize(
++                {
++                  ...runtimeConfig,
++                  // Seamless mode requirement, the client need to know where the API is located
++                  // if not set in the API_PATH
++                  ...(apiPath && {
++                    apiPath,
++                  }),
++                  ...(publicURL && {
++                    publicURL,
++                  }),
++                  ...(process.env.SITE_DEFAULT_LANGUAGE && {
++                    defaultLanguage: process.env.SITE_DEFAULT_LANGUAGE,
++                  }),
++                },
++                { space: 2 },
++              )};`,
++            },
++          })}
+ 
+           <link rel="icon" href="/favicon.ico" sizes="any" />
+           <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+@@ -163,13 +168,13 @@
+             criticalCss ? (
+               <>
+                 <script
++                  nonce={nonce}
+                   dangerouslySetInnerHTML={{
+                     __html: CRITICAL_CSS_TEMPLATE,
+                   }}
+                 ></script>
+-                {extractor.getStyleElements().map((elem) => (
+-                  // eslint-disable-next-line react/jsx-key
+-                  <noscript>
++                {extractor.getStyleElements().map((elem, index) => (
++                  <noscript key={elem.key ?? `noscript-style-${index}`}>
+                     {React.cloneElement(elem, {
+                       rel: 'stylesheet',
+                       crossOrigin:
+@@ -189,17 +194,20 @@
+           <div role="navigation" aria-label="Toolbar" id="toolbar" />
+           <div id="main" dangerouslySetInnerHTML={{ __html: markup }} />
+           <div role="complementary" aria-label="Sidebar" id="sidebar" />
+-          <script
+-            dangerouslySetInnerHTML={{
++          {React.createElement('script', {
++            nonce: nonce,
++            dangerouslySetInnerHTML: {
+               __html: `window.__data=${serialize(
+                 loadReducers(store.getState()),
++                { space: 2 },
+               )};`,
+-            }}
+-            charSet="UTF-8"
+-          />
++            },
++            charSet: 'UTF-8',
++          })}
+           {/* Add the crossorigin while in development */}
+           {extractor.getScriptElements().map((elem) =>
+             React.cloneElement(elem, {
++              nonce: nonce,
+               crossOrigin:
+                 process.env.NODE_ENV === 'production' ? undefined : 'true',
+             }),

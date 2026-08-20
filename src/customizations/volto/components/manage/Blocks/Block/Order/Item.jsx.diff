@@ -1,0 +1,64 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Blocks/Block/Order/Item.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Block/Order/Item.jsx
+@@ -2,16 +2,19 @@
+ import classNames from 'classnames';
+ import { useDispatch, useSelector } from 'react-redux';
+ import includes from 'lodash/includes';
++import isBoolean from 'lodash/isBoolean';
+ import cx from 'classnames';
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+ import { setUIState } from '@plone/volto/actions/form/form';
+-import { formatMessageWithFallback } from '@plone/volto/helpers/I18n/I18n';
+ import config from '@plone/volto/registry';
+-import { useIntl } from 'react-intl';
+ 
+ import deleteSVG from '@plone/volto/icons/delete.svg';
+ import dragSVG from '@plone/volto/icons/drag.svg';
+ 
++// TEMPORARY PATCH (Volto issue #6481):
++// Remove this customization once the upstream fixes are released and adopted.
++// Upstream PRs: https://github.com/plone/volto/pull/8124 and
++// https://github.com/plone/volto/pull/8125
+ export const Item = forwardRef(
+   (
+     {
+@@ -36,7 +39,6 @@
+     },
+     ref,
+   ) => {
+-    const intl = useIntl();
+     const selected = useSelector((state) => state.form.ui.selected);
+     const hovered = useSelector((state) => state.form.ui.hovered);
+     const multiSelected = useSelector((state) => state.form.ui.multiSelected);
+@@ -47,16 +49,11 @@
+       config.blocks.blocksConfig[data?.['@type']]?.icon ||
+       config.blocks.blocksConfig.title?.icon;
+ 
+-    const required =
+-      typeof data?.required === 'boolean'
+-        ? data.required
+-        : includes(config.blocks.requiredBlocks, data?.['@type']);
++    const required = isBoolean(data?.required)
++      ? data.required
++      : includes(config.blocks.requiredBlocks, data?.['@type']);
+     const fixed = !!data?.fixed;
+-    const configTitle = config.blocks.blocksConfig[data?.['@type']]?.title;
+-    const blockTitle =
+-      data?.plaintext ||
+-      formatMessageWithFallback(intl, configTitle) ||
+-      data?.title;
++
+     return (
+       <li
+         className={classNames(
+@@ -129,7 +126,9 @@
+                 style={{ verticalAlign: 'middle' }}
+               />
+             )}{' '}
+-            {blockTitle}
++            {data?.plaintext ||
++              config.blocks.blocksConfig[data?.['@type']]?.title ||
++              data?.title}
+           </span>
+           {!clone && onRemove && !required && (
+             <button

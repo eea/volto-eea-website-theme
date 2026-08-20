@@ -1,8 +1,15 @@
-diff --git a/src/customizations/volto/components/manage/Diff/DiffField.jsx b/src/customizations/volto/components/manage/Diff/DiffField.jsx
-index a9bad2a..5d306e5 100644
---- a/src/customizations/volto/components/manage/Diff/DiffField.jsx
-+++ b/src/customizations/volto/components/manage/Diff/DiffField.jsx
-@@ -135,6 +135,17 @@ const formatDiffPart = (part, value, side) => {
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Diff/DiffField.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Diff/DiffField.jsx
+@@ -12,7 +12,7 @@
+ import { Provider } from 'react-intl-redux';
+ import { createBrowserHistory } from 'history';
+ import { ConnectedRouter } from 'connected-react-router';
+-import { useSelector } from 'react-redux';
++import { useSelector, useStore } from 'react-redux';
+ import config from '@plone/volto/registry';
+ import Api from '@plone/volto/helpers/Api/Api';
+ import configureStore from '@plone/volto/store';
+@@ -136,6 +136,17 @@
    }
  };
  
@@ -20,7 +27,15 @@ index a9bad2a..5d306e5 100644
  /**
   * Diff field component.
   * @function DiffField
-@@ -164,8 +175,11 @@ const DiffField = ({
+@@ -154,6 +165,7 @@
+   schema,
+   diffLib,
+ }) => {
++  const reduxStore = useStore();
+   const language = useSelector((state) => state.intl.locale);
+   const readable_date_format = {
+     dateStyle: 'full',
+@@ -165,8 +177,11 @@
        splitWords(String(twoStr)),
      );
    };
@@ -33,7 +48,37 @@ index a9bad2a..5d306e5 100644
    if (schema.widget) {
      switch (schema.widget) {
        case 'richtext':
-@@ -272,33 +286,49 @@ const DiffField = ({
+@@ -185,7 +200,8 @@
+       case 'json': {
+         const api = new Api();
+         const history = createBrowserHistory();
+-        const store = configureStore(window.__data, history, api);
++        const currentState = reduxStore.getState();
++        const store = configureStore(currentState, history, api); //decouple the store from the redux store
+         parts = diffWords(
+           ReactDOMServer.renderToStaticMarkup(
+             <Provider store={store}>
+@@ -207,7 +223,8 @@
+       case 'slate': {
+         const api = new Api();
+         const history = createBrowserHistory();
+-        const store = configureStore(window.__data, history, api);
++        const currentState = reduxStore.getState();
++        const store = configureStore(currentState, history, api);
+         parts = diffWords(
+           ReactDOMServer.renderToStaticMarkup(
+             <Provider store={store}>
+@@ -233,7 +250,8 @@
+         if (Widget) {
+           const api = new Api();
+           const history = createBrowserHistory();
+-          const store = configureStore(window.__data, history, api);
++          const currentState = reduxStore.getState();
++          const store = configureStore(currentState, history, api);
+           parts = diffWords(
+             ReactDOMServer.renderToStaticMarkup(
+               <Provider store={store}>
+@@ -273,33 +291,51 @@
        {view === 'split' && (
          <Grid.Row>
            <Grid.Column width={6} verticalAlign="top">
@@ -69,6 +114,7 @@ index a9bad2a..5d306e5 100644
 +                  }}
 +                />
 +              }
++              newValue={two}
              />
            </Grid.Column>
            <Grid.Column width={6} verticalAlign="top">
@@ -104,10 +150,11 @@ index a9bad2a..5d306e5 100644
 +                  }}
 +                />
 +              }
++              oldValue={one}
              />
            </Grid.Column>
          </Grid.Row>
-@@ -306,18 +336,28 @@ const DiffField = ({
+@@ -307,18 +343,28 @@
        {view === 'unified' && (
          <Grid.Row>
            <Grid.Column width={16} verticalAlign="top">

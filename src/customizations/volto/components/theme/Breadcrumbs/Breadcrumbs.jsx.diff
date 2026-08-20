@@ -1,0 +1,152 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Breadcrumbs/Breadcrumbs.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/Breadcrumbs.jsx
+@@ -1,94 +1,72 @@
+-import { useEffect } from 'react';
+-import PropTypes from 'prop-types';
+-import { Link, useLocation } from 'react-router-dom';
+-import { Breadcrumb, Container, Segment } from 'semantic-ui-react';
+-import { defineMessages, useIntl } from 'react-intl';
+-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
++/**
++ * Breadcrumbs components.
++ * @module components/theme/Breadcrumbs/Breadcrumbs
++ */
+ 
+-import { getBreadcrumbs } from '@plone/volto/actions/breadcrumbs/breadcrumbs';
++import React, { useEffect } from 'react';
++import { useDispatch, useSelector } from 'react-redux';
++
++import { useLocation } from 'react-router';
+ import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+ import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
+-import Icon from '@plone/volto/components/theme/Icon/Icon';
+-import homeSVG from '@plone/volto/icons/home.svg';
++import { getBreadcrumbs } from '@plone/volto/actions/breadcrumbs/breadcrumbs';
++import config from '@plone/volto/registry';
+ 
+-const messages = defineMessages({
+-  home: {
+-    id: 'Home',
+-    defaultMessage: 'Home',
+-  },
+-  breadcrumbs: {
+-    id: 'Breadcrumbs',
+-    defaultMessage: 'Breadcrumbs',
+-  },
+-  controlpanel: {
+-    id: 'Site Setup',
+-    defaultMessage: 'Site Setup',
+-  },
+-});
++import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs';
+ 
+-const BreadcrumbsComponent = ({ pathname }) => {
+-  const intl = useIntl();
++const isContentRoute = (pathname) => {
++  const { settings } = config;
++  const normalized_nonContentRoutes = settings.nonContentRoutes.map((item) => {
++    if (item.test) {
++      return item;
++    } else {
++      return new RegExp(item + '$');
++    }
++  });
++
++  const isNonContentRoute =
++    normalized_nonContentRoutes.findIndex((item) => item.test(pathname)) > -1;
++
++  return !isNonContentRoute;
++};
++
++const Breadcrumbs = (props) => {
+   const dispatch = useDispatch();
+-  const { pathname: realPath } = useLocation();
+-  const controlpanelItems = [
+-    {
+-      url: '/controlpanel',
+-      title: intl.formatMessage(messages.controlpanel),
+-    },
+-  ];
++  const { items = [], root = '/' } = useSelector((state) => state?.breadcrumbs);
++  const token = useSelector((state) => state?.userSession?.token);
+ 
+-  const items = useSelector(
+-    (state) =>
+-      realPath.startsWith('/controlpanel')
+-        ? controlpanelItems
+-        : state.breadcrumbs.items,
+-    shallowEqual,
+-  );
+-  const root = useSelector((state) => state.breadcrumbs.root);
++  // const pathname = useSelector((state) => state.location.pathname);
++  const location = useLocation();
++  const { pathname } = location;
++  const contentTypesAsBreadcrumbSection = !token
++    ? config.settings.contentTypesAsBreadcrumbSection
++    : [];
+ 
++  const sections = items.map((item) => ({
++    ...item,
++    key: item.title,
++  }));
++
+   useEffect(() => {
+-    if (!hasApiExpander('breadcrumbs', getBaseUrl(pathname))) {
++    if (
++      !hasApiExpander('breadcrumbs', getBaseUrl(pathname)) &&
++      isContentRoute(pathname)
++    ) {
+       dispatch(getBreadcrumbs(getBaseUrl(pathname)));
+     }
+   }, [dispatch, pathname]);
+ 
+   return (
+-    <Segment
+-      role="navigation"
+-      aria-label={intl.formatMessage(messages.breadcrumbs)}
+-      className="breadcrumbs"
+-      secondary
+-      vertical
+-    >
+-      <Container>
+-        <Breadcrumb>
+-          <Link
+-            to={root || '/'}
+-            className="section"
+-            title={intl.formatMessage(messages.home)}
+-          >
+-            <Icon name={homeSVG} size="18px" />
+-          </Link>
+-          {items.map((item, index, items) => [
+-            <Breadcrumb.Divider key={`divider-${item.url}`} />,
+-            index < items.length - 1 ? (
+-              <Link key={item.url} to={item.url} className="section">
+-                {item.title}
+-              </Link>
+-            ) : (
+-              <Breadcrumb.Section key={item.url} active>
+-                {item.title}
+-              </Breadcrumb.Section>
+-            ),
+-          ])}
+-        </Breadcrumb>
+-      </Container>
+-    </Segment>
++    <React.Fragment>
++      <div id="page-header" />
++      <EEABreadcrumbs
++        pathname={pathname}
++        sections={sections}
++        root={root}
++        contentTypesAsBreadcrumbSection={contentTypesAsBreadcrumbSection}
++      />
++    </React.Fragment>
+   );
+ };
+ 
+-BreadcrumbsComponent.propTypes = {
+-  pathname: PropTypes.string.isRequired,
+-};
+-
+-export default BreadcrumbsComponent;
++export default Breadcrumbs;

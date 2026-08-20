@@ -1,0 +1,31 @@
+--- volto-18.35.1-74d82edef/packages/volto-slate/src/editor/plugins/Table/less/public.less
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/plugins/Table/less/public.less
+@@ -20,10 +20,24 @@
+   }
+ }
+ 
++table.slate-table-block {
++  th p,
++  td p {
++    margin-top: 0;
++    margin-bottom: 0;
++  }
++}
++
+ table.slate-table-block.sortable {
+-  tr th > * {
+-    // Header will contain both the slate and an icon when sorted
+-    // so this will keep them on the same line.
+-    display: inline-block;
++  tr th {
++    position: relative;
++    padding-right: 1.5em;
++
++    &::after {
++      position: absolute !important;
++      top: 50%;
++      right: 0.5em;
++      transform: translateY(-50%);
++    }
+   }
+ }

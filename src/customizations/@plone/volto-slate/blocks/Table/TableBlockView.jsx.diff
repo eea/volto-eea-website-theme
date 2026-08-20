@@ -1,0 +1,36 @@
+--- volto-18.35.1-74d82edef/packages/volto-slate/src/blocks/Table/TableBlockView.jsx
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Table/TableBlockView.jsx
+@@ -13,7 +13,6 @@
+ } from '@plone/volto-slate/editor/render';
+ import { Node } from 'slate';
+ 
+-// TODO: loading LESS files with `volto-slate/...` paths does not work currently
+ import '../../editor/plugins/Table/less/public.less';
+ 
+ /**
+@@ -49,6 +48,7 @@
+               cell.value && Node.string({ children: cell.value }).length > 0
+                 ? serializeNodesToText(cell.value)
+                 : '\u00A0',
++            align: cell.value?.[0]?.align || 'left',
+           };
+         });
+       }
+@@ -103,7 +103,7 @@
+                 {headers.map((cell, index) => (
+                   <Table.HeaderCell
+                     key={cell.key}
+-                    textAlign="left"
++                    textAlign={cell.value?.[0]?.align || 'left'}
+                     verticalAlign="middle"
+                     tabIndex={data.table.sortable ? '0' : '-1'}
+                     sorted={state.column === index ? state.direction : null}
+@@ -137,7 +137,7 @@
+                 {map(rows[row], (cell) => (
+                   <Table.Cell
+                     key={cell.key}
+-                    textAlign="left"
++                    textAlign={cell.align}
+                     verticalAlign="middle"
+                   >
+                     {cell.value}

@@ -1,0 +1,54 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
+@@ -3,6 +3,7 @@
+ import configureStore from 'redux-mock-store';
+ import { Provider } from 'react-intl-redux';
+ import { MemoryRouter } from 'react-router-dom';
++import config from '@plone/volto/registry';
+ 
+ import Breadcrumbs from './Breadcrumbs';
+ 
+@@ -32,4 +33,43 @@
+     const json = component.toJSON();
+     expect(json).toMatchSnapshot();
+   });
++
++  it('renders breadcrumbs with contentTypesAsBreadcrumbSection', () => {
++    // Mock the config settings
++    config.settings = {
++      ...config.settings,
++      contentTypesAsBreadcrumbSection: ['Folder', 'News Item'],
++    };
++
++    const store = mockStore({
++      breadcrumbs: {
++        items: [
++          { title: 'Home', url: '/' },
++          { title: 'News', url: '/news', portal_type: 'Folder' },
++          {
++            title: 'Latest Update',
++            url: '/news/latest-update',
++            portal_type: 'News Item',
++          },
++        ],
++      },
++      intl: {
++        locale: 'en',
++        messages: {},
++      },
++      userSession: {
++        token: null,
++      },
++    });
++
++    const component = renderer.create(
++      <Provider store={store}>
++        <MemoryRouter>
++          <Breadcrumbs pathname="/news/latest-update" />
++        </MemoryRouter>
++      </Provider>,
++    );
++    const json = component.toJSON();
++    expect(json).toMatchSnapshot();
++  });
+ });

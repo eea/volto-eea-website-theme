@@ -1,0 +1,80 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Blocks/Image/schema.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Image/schema.js
+@@ -1,6 +1,10 @@
+ import { defineMessages } from 'react-intl';
+ 
+ const messages = defineMessages({
++  Source: {
++    id: 'Source',
++    defaultMessage: 'Source',
++  },
+   Image: {
+     id: 'Image',
+     defaultMessage: 'Image',
+@@ -45,11 +49,21 @@
+       {
+         id: 'default',
+         title: 'Default',
+-        fields: [...(formData.url ? ['alt', 'align', 'size'] : [])],
++        fields: [...(formData.url ? ['url', 'alt', 'align', 'size'] : [])],
+       },
+-      ...(formData.url
++
++      ...(!formData?.size || formData?.size === 'l'
+         ? [
+             {
++              id: 'copyright',
++              title: 'Copyright',
++              fields: ['copyright', 'copyrightIcon', 'copyrightPosition'],
++            },
++          ]
++        : []),
++      ...(formData?.url
++        ? [
++            {
+               id: 'link_settings',
+               title: intl.formatMessage(messages.linkSettings),
+               fields: ['href', 'openLinkInNewTab'],
+@@ -58,6 +72,10 @@
+         : []),
+     ],
+     properties: {
++      url: {
++        title: intl.formatMessage(messages.Source),
++        widget: 'url',
++      },
+       alt: {
+         title: intl.formatMessage(messages.AltText),
+         description: (
+@@ -95,6 +113,31 @@
+         title: intl.formatMessage(messages.openLinkInNewTab),
+         type: 'boolean',
+       },
++      copyright: {
++        title: 'Text',
++      },
++      copyrightIcon: {
++        title: 'Icon',
++        description: (
++          <>
++            Ex. ri-copyright-line. See{' '}
++            <a
++              target="_blank"
++              rel="noopener"
++              href="https://eea.github.io/volto-eea-design-system/docs/webdev/Guidelines/iconography/#icon-set"
++            >
++              Remix Icon set
++            </a>
++          </>
++        ),
++        default: 'ri-copyright-line',
++      },
++      copyrightPosition: {
++        title: 'Align',
++        widget: 'align',
++        actions: ['left', 'right'],
++        defaultValue: 'left',
++      },
+     },
+     required: [],
+   };
