@@ -1,36 +1,45 @@
 import { Grid } from 'semantic-ui-react';
 import cx from 'classnames';
 import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
-import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
+import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
 
 const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
-  if (data?.['@type'] === 'teaserGrid')
+  if (data?.['@type'] === 'teaserGrid') {
     return {
       ...data,
       '@type': 'gridBlock',
-      blocks_layout: { items: data?.columns.map((c) => c.id) },
-      blocks: data?.columns?.reduce((acc, current) => {
-        return {
-          ...acc,
-          [current?.id]: { ...current, '@type': current['@type'] || 'slate' },
-        };
-      }, {}),
+      blocks_layout: { items: data?.columns.map((column) => column.id) },
+      blocks: data?.columns?.reduce(
+        (blocks, column) => ({
+          ...blocks,
+          [column?.id]: {
+            ...column,
+            '@type': column['@type'] || 'slate',
+          },
+        }),
+        {},
+      ),
     };
-  if (data.blocks)
+  }
+
+  if (data.blocks) {
     return {
       ...data,
-      blocks: Object.keys(data.blocks).reduce((acc, current) => {
-        return {
-          ...acc,
-          [current]: {
-            ...data.blocks[current],
-            '@type': data.blocks[current]?.['@type'] || 'slate',
+      blocks: Object.keys(data.blocks).reduce(
+        (blocks, blockId) => ({
+          ...blocks,
+          [blockId]: {
+            ...data.blocks[blockId],
+            '@type': data.blocks[blockId]?.['@type'] || 'slate',
           },
-        };
-      }, {}),
+        }),
+        {},
+      ),
     };
-  else return data;
+  }
+
+  return data;
 };
 
 const GridBlockView = (props) => {
@@ -43,7 +52,6 @@ const GridBlockView = (props) => {
   const location = {
     pathname: path,
   };
-
   return (
     <div
       className={cx('block', data['@type'], className, {

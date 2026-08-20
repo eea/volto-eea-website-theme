@@ -11,6 +11,19 @@ import includes from 'lodash/includes';
 import some from 'lodash/some';
 import { makeEditor } from '@plone/volto-slate/utils/editor';
 
+const safeEditorNodes = (editor, options) => {
+  try {
+    return Array.from(Editor.nodes(editor, options));
+  } catch (error) {
+    console.warn('safeEditorNodes: selection invalid or out of bounds:', {
+      options,
+      selection: editor.selection,
+      error,
+    });
+    return [];
+  }
+};
+
 // case sensitive; first in an inner array is the default and preffered format
 // in that array of formats
 const formatAliases = [
@@ -133,7 +146,7 @@ export function createParagraph(text) {
 }
 
 export const isSingleBlockTypeActive = (editor, format) => {
-  const [match] = Editor.nodes(editor, {
+  const [match] = safeEditorNodes(editor, {
     match: (n) => n.type === format,
   });
 

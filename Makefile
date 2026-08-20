@@ -44,7 +44,6 @@ endif
 ##############################################################################
 # SETTINGS AND VARIABLE
 DIR=$(shell basename "$$(pwd)")
-NODE_MODULES?="../../node_modules"
 PLONE_VERSION?=6
 VOLTO_VERSION?=19
 ADDON_PATH=${DIR}
@@ -82,11 +81,11 @@ shell:			## Start a shell in the frontend container
 
 .PHONY: cypress-open
 cypress-open:		## Open cypress integration tests
-	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress open
+	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development pnpm exec cypress open
 
 .PHONY: cypress-run
 cypress-run:	## Run cypress integration tests
-	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress run
+	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development pnpm exec cypress run
 
 .PHONY: test
 test:			## Run unit tests
@@ -98,37 +97,37 @@ test-update:	## Update unit test snapshots
 
 .PHONY: stylelint
 stylelint:		## Stylelint
-	$(NODE_MODULES)/.bin/stylelint --allow-empty-input 'src/**/*.{css,less}'
+	pnpm exec stylelint --allow-empty-input 'src/**/*.{css,less}'
 
 .PHONY: stylelint-overrides
 stylelint-overrides:
-	$(NODE_MODULES)/.bin/stylelint --custom-syntax less --allow-empty-input 'theme/**/*.overrides' 'src/**/*.overrides'
+	pnpm exec stylelint --custom-syntax less --allow-empty-input 'theme/**/*.overrides' 'src/**/*.overrides'
 
 .PHONY: stylelint-fix
 stylelint-fix:	## Fix stylelint
-	$(NODE_MODULES)/.bin/stylelint --allow-empty-input 'src/**/*.{css,less}' --fix
-	$(NODE_MODULES)/.bin/stylelint --custom-syntax less --allow-empty-input 'theme/**/*.overrides' 'src/**/*.overrides' --fix
+	pnpm exec stylelint --allow-empty-input 'src/**/*.{css,less}' --fix
+	pnpm exec stylelint --custom-syntax less --allow-empty-input 'theme/**/*.overrides' 'src/**/*.overrides' --fix
 
 .PHONY: prettier
 prettier:		## Prettier
-	$(NODE_MODULES)/.bin/prettier --single-quote --check 'src/**/*.{js,jsx,json,css,less,md}'
+	pnpm exec prettier --single-quote --check 'src/**/*.{js,jsx,json,css,less,md}'
 
 .PHONY: prettier-fix
 prettier-fix:	## Fix prettier
-	$(NODE_MODULES)/.bin/prettier --single-quote  --write 'src/**/*.{js,jsx,json,css,less,md}'
+	pnpm exec prettier --single-quote --write 'src/**/*.{js,jsx,json,css,less,md}'
 
 .PHONY: lint
 lint:			## ES Lint
-	$(NODE_MODULES)/.bin/eslint --max-warnings=0 'src/**/*.{js,jsx}'
+	pnpm exec eslint --max-warnings=0 'src/**/*.{js,jsx}'
 
 .PHONY: lint-fix
 lint-fix:		## Fix ES Lint
-	$(NODE_MODULES)/.bin/eslint --fix 'src/**/*.{js,jsx}'
+	pnpm exec eslint --fix 'src/**/*.{js,jsx}'
 
 .PHONY: i18n
 i18n:			## i18n
 	rm -rf build/messages
-	NODE_ENV=development $(NODE_MODULES)/.bin/i18n --addon
+	NODE_ENV=development pnpm exec i18n --addon
 
 .PHONY: help
 help:                   ## Show this help.
@@ -160,4 +159,4 @@ check-ci:
 .PHONY: cypress-ci
 cypress-ci:
 	pnpm --dir /app --filter @plone/volto exec wait-on -t 240000 http://localhost:3000
-	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress run --browser chromium
+	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development pnpm exec cypress run --browser chromium

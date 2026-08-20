@@ -181,7 +181,7 @@ export const ContentsItemComponent = ({
             </div>
             {isExpired && (
               <Button
-                className="button-margin"
+                className="button-margin expired-past"
                 size="mini"
                 style={{ flexShrink: 0 }}
               >
@@ -195,6 +195,14 @@ export const ContentsItemComponent = ({
                 style={{ flexShrink: 0 }}
               >
                 <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
+              </Button>
+            )}
+            {item.is_working_copy && (
+              <Button className="button-margin working-copy" size="mini">
+                <FormattedMessage
+                  id="Working copy"
+                  defaultMessage="Working copy"
+                />
               </Button>
             )}
           </Link>

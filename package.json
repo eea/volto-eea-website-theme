@@ -81,7 +81,7 @@
       "make lint-fix",
       "make prettier-fix"
     ],
-    "src/**/*.{jsx}": [
+    "src/**/*.jsx": [
       "make i18n"
     ],
     "theme/**/*.{css,less}": [

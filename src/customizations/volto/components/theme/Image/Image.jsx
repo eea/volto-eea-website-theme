@@ -1,18 +1,11 @@
-import cx from 'classnames';
 import PropTypes from 'prop-types';
-import { flattenScales } from '@plone/volto/helpers/Url/Url';
-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+import cx from 'classnames';
+import { useSelector } from 'react-redux';
+import { flattenToAppURL, flattenScales } from '@plone/volto/helpers/Url/Url';
+import { addSubpathPrefix } from '@eeacms/volto-eea-website-theme/helpers/addSubpathPrefix';
 
-/**
- * Determines the image scale name based on the provided data.
- *
- * @param {object} data - The data object containing the image size information.
- * @param {string} [data.size] - The size of the image, can be 'l', 'm', or 's'.
- * @returns {string} The name of the image scale, either 'large', 'preview', or 'mini'.
- */
 const imageScaleName = (data) => {
-  if (!data) return 'large';
-  if (data.size === 'l') return 'large';
+  if (!data || data.size === 'l') return 'large';
   if (data.size === 'm') return 'preview';
   if (data.size === 's') return 'mini';
   return 'large';
@@ -38,6 +31,9 @@ export default function Image({
   className = '',
   ...imageProps
 }) {
+  const site = useSelector((state) => state.site?.data);
+  const siteImageScales = site?.['plone.image_scales'] || {};
+
   if (!item && !src) return null;
 
   // TypeScript hints for editor autocomplete :)
@@ -46,7 +42,7 @@ export default function Image({
   attrs.className = cx(className, { responsive }) || undefined;
 
   if (!item && src) {
-    attrs.src = src;
+    attrs.src = addSubpathPrefix(src);
   } else {
     const isFromRealObject = !item.image_scales;
     const imageFieldWithDefault = imageField || item.image_field || 'image';
@@ -62,23 +58,17 @@ export default function Image({
 
     const isSvg = image['content-type'] === 'image/svg+xml';
     // In case `base_path` is present (`preview_image_link`) use it as base path
-    const basePath = image.base_path || item['@id'];
-    const relativeBasePath = flattenToAppURL(basePath);
+    const basePath = addSubpathPrefix(
+      flattenToAppURL(image.base_path || item['@id']),
+    );
     const selectedScale = imageScaleName(item.data);
+    attrs.src = `${basePath}/${image.download}`;
 
-    attrs.src = `${relativeBasePath}/${image.download}`;
     attrs.width = image.width;
     attrs.height = image.height;
 
-    const original = {
-      download: `${image.download}`,
-      width: image.width,
-      height: image.height,
-    };
-
     if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
       const defaults = ['large', 'preview', 'mini'];
-
       const filteredScales = [
         ...defaults,
         item.data?.align === 'full' ? 'huge' : undefined,
@@ -86,21 +76,26 @@ export default function Image({
         .map((key) => image.scales[key])
         .filter(Boolean);
 
-      if (filteredScales.length < defaults.length) {
-        // ensure original is added if there's no large or huge
-        filteredScales.push(original);
+      if (
+        filteredScales.length < defaults.length &&
+        Object.keys(siteImageScales).length > Object.keys(image.scales).length
+      ) {
+        filteredScales.push({
+          download: `${image.download}`,
+          width: image.width,
+          height: image.height,
+        });
       }
 
       const imageScale = image.scales[selectedScale];
       if (imageScale) {
-        // set default image size, width and height to the selected scale
         attrs.width = imageScale.width;
         attrs.height = imageScale.height;
-        attrs.src = `${relativeBasePath}/${imageScale.download}`;
+        attrs.src = `${basePath}/${imageScale.download}`;
       }
 
       attrs.srcSet = filteredScales
-        .map((scale) => `${relativeBasePath}/${scale.download} ${scale.width}w`)
+        .map((scale) => `${basePath}/${scale.download} ${scale.width}w`)
         .join(', ');
     }
   }
@@ -112,7 +107,6 @@ export default function Image({
     attrs.fetchpriority = 'high';
   }
 
-  // eslint-disable-next-line no-restricted-syntax
   return <img {...attrs} alt={alt} {...imageProps} />;
 }
 

@@ -17,9 +17,9 @@ if (configFile) {
 }
 
 const voltoEslintConfig = require(`${voltoPath}/.eslintrc.core.js`);
-const noRestrictedImports = voltoEslintConfig.rules[
-  'no-restricted-imports'
-].map((restriction) => {
+const noRestrictedImports = (
+  voltoEslintConfig.rules?.['no-restricted-imports'] || []
+).map((restriction) => {
   if (
     restriction?.name === 'semantic-ui-react' &&
     restriction.importNames?.includes('Image')
@@ -69,7 +69,9 @@ const defaultConfig = {
   rules: {
     // Keep the legacy Semantic UI Image until its callers can be migrated
     // without changing their rendered markup.
-    'no-restricted-imports': noRestrictedImports.filter(Boolean),
+    ...(noRestrictedImports.length && {
+      'no-restricted-imports': noRestrictedImports.filter(Boolean),
+    }),
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'react/jsx-no-target-blank': [
       'error',

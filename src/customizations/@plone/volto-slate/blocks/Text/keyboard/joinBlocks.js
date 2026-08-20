@@ -1,5 +1,5 @@
-import ReactDOM from 'react-dom';
 import cloneDeep from 'lodash/cloneDeep';
+import ReactDOM from 'react-dom';
 import { serializeNodesToText } from '@plone/volto-slate/editor/render';
 import { Editor } from 'slate';
 import {
@@ -84,10 +84,8 @@ export function joinWithPreviousBlock({ editor, event }, intl) {
 
     ReactDOM.unstable_batchedUpdates(() => {
       saveSlateBlockSelection(otherBlockId, cursor);
-
       onChangeField(blocksFieldname, newFormData[blocksFieldname]);
       onChangeField(blocksLayoutFieldname, newFormData[blocksLayoutFieldname]);
-
       onSelectBlock(otherBlockId);
     });
 
@@ -148,8 +146,7 @@ export function joinWithNextBlock({ editor, event }, intl) {
   }
 
   // Don't join with required blocks
-  if (data?.required || otherBlock?.required || otherBlock['@type'] !== 'slate')
-    return;
+  if (data?.required || otherBlock?.required) return;
 
   event.stopPropagation();
   event.preventDefault();
@@ -182,6 +179,7 @@ export function joinWithNextBlock({ editor, event }, intl) {
     });
     return true;
   }
+
   // Merge next text block into current one and delete the next block
   mergeSlateWithBlockForward(editor, otherBlock);
 
@@ -192,9 +190,7 @@ export function joinWithNextBlock({ editor, event }, intl) {
     value: combined,
     plaintext: serializeNodesToText(combined || []),
   });
-
   const newFormData = deleteBlock(formData, otherBlockId, intl);
-
   ReactDOM.unstable_batchedUpdates(() => {
     onChangeField(blocksFieldname, newFormData[blocksFieldname]);
     onChangeField(blocksLayoutFieldname, newFormData[blocksLayoutFieldname]);
