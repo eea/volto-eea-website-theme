@@ -7,13 +7,13 @@ import { EditSchema } from './schema';
 import '@testing-library/jest-dom';
 
 // Mock dependencies
-jest.mock('./schema', () => ({
-  EditSchema: jest.fn(),
+vi.mock('./schema', () => ({
+  EditSchema: vi.fn(),
 }));
 
-jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
+vi.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
   __esModule: true,
-  default: jest.fn(({ title, schema, formData, onChangeField }) => (
+  default: vi.fn(({ title, schema, formData, onChangeField }) => (
     <div data-testid="block-data-form">
       <div data-testid="form-title">{title}</div>
       <div data-testid="form-schema">{JSON.stringify(schema)}</div>
@@ -28,30 +28,32 @@ jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
   )),
 }));
 
-jest.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
+vi.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
   __esModule: true,
-  default: jest.fn(({ selected, children }) => (
+  default: vi.fn(({ selected, children }) => (
     <div data-testid="sidebar-portal" data-selected={selected}>
       {children}
     </div>
   )),
 }));
 
-jest.mock('./LayoutSettingsView', () => ({
+vi.mock('./LayoutSettingsView', () => ({
   __esModule: true,
-  default: jest.fn((props) => (
+  default: vi.fn((props) => (
     <div data-testid="layout-settings-view" data-props={JSON.stringify(props)}>
       Layout Settings View
     </div>
   )),
 }));
 
-const mockLayoutSettingsView = require('./LayoutSettingsView').default;
+const mockLayoutSettingsView = (await import('./LayoutSettingsView')).default;
 
-const BlockDataForm =
-  require('@plone/volto/components/manage/Form/BlockDataForm').default;
-const SidebarPortal =
-  require('@plone/volto/components/manage/Sidebar/SidebarPortal').default;
+const BlockDataForm = (
+  await import('@plone/volto/components/manage/Form/BlockDataForm')
+).default;
+const SidebarPortal = (
+  await import('@plone/volto/components/manage/Sidebar/SidebarPortal')
+).default;
 
 describe('LayoutSettingsEdit', () => {
   const mockSchema = {
@@ -82,12 +84,12 @@ describe('LayoutSettingsEdit', () => {
       layout_size: 'container_view',
       body_class: 'homepage',
     },
-    onChangeBlock: jest.fn(),
+    onChangeBlock: vi.fn(),
   };
 
   beforeEach(() => {
     EditSchema.mockReturnValue(mockSchema);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockLayoutSettingsView.mockClear();
   });
 
@@ -371,7 +373,7 @@ describe('LayoutSettingsEdit', () => {
   });
 
   it('handles onChangeBlock function prop correctly', () => {
-    const mockOnChangeBlock = jest.fn();
+    const mockOnChangeBlock = vi.fn();
     const propsWithMockFunction = {
       ...defaultProps,
       onChangeBlock: mockOnChangeBlock,

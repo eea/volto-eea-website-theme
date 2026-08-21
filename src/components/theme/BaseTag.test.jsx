@@ -6,9 +6,9 @@ import BaseTag from './BaseTag';
 
 const mockStore = configureStore();
 
-jest.mock('@plone/volto/helpers/Url/Url', () => ({
+vi.mock('@plone/volto/helpers/Url/Url', () => ({
   __esModule: true,
-  flattenToAppURL: jest.fn((url) => {
+  flattenToAppURL: vi.fn((url) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       const urlObj = new URL(url);
       return urlObj.pathname;
@@ -17,7 +17,7 @@ jest.mock('@plone/volto/helpers/Url/Url', () => ({
   }),
 }));
 
-jest.mock('@plone/volto/helpers//Helmet/Helmet', () => ({
+vi.mock('@plone/volto/helpers//Helmet/Helmet', () => ({
   __esModule: true,
   default: ({ base }) => (
     <div

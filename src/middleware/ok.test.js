@@ -2,7 +2,7 @@ import okMiddleware from './ok';
 
 let mockOkRoute = '/ok';
 
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
     settings: {
@@ -19,23 +19,23 @@ describe('okMiddleware', () => {
   beforeEach(() => {
     req = {};
     res = {
-      type: jest.fn(),
-      set: jest.fn(),
-      send: jest.fn(),
+      type: vi.fn(),
+      set: vi.fn(),
+      send: vi.fn(),
     };
-    next = jest.fn();
+    next = vi.fn();
 
     mockRouter = {
-      all: jest.fn(),
+      all: vi.fn(),
       id: null,
     };
 
     express = {
-      Router: jest.fn(() => mockRouter),
+      Router: vi.fn(() => mockRouter),
     };
 
     mockOkRoute = '/ok';
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('okMiddleware function', () => {
@@ -52,12 +52,12 @@ describe('okMiddleware', () => {
       expect(result.id).toBe('ok');
     });
 
-    it('should register route with custom okRoute from config', () => {
+    it('should register route with custom okRoute from config', async () => {
       mockOkRoute = '/custom-health-check';
 
       // Need to re-require to get updated config
-      jest.resetModules();
-      const freshOkMiddleware = require('./ok').default;
+      vi.resetModules();
+      const freshOkMiddleware = (await import('./ok')).default;
 
       freshOkMiddleware(express);
 
@@ -137,22 +137,22 @@ describe('okMiddleware', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle undefined okRoute in config by using default', () => {
+    it('should handle undefined okRoute in config by using default', async () => {
       mockOkRoute = undefined;
 
-      jest.resetModules();
-      const freshOkMiddleware = require('./ok').default;
+      vi.resetModules();
+      const freshOkMiddleware = (await import('./ok')).default;
 
       freshOkMiddleware(express);
 
       expect(mockRouter.all).toHaveBeenCalledWith('/ok', expect.any(Function));
     });
 
-    it('should handle null okRoute in config by using default', () => {
+    it('should handle null okRoute in config by using default', async () => {
       mockOkRoute = null;
 
-      jest.resetModules();
-      const freshOkMiddleware = require('./ok').default;
+      vi.resetModules();
+      const freshOkMiddleware = (await import('./ok')).default;
 
       freshOkMiddleware(express);
 

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ContributorsViewWidget renders a full vocabulary array view widget component 1`] = `
+exports[`ContributorsViewWidget > renders a full vocabulary array view widget component 1`] = `
 <span
   className="metadata array widget"
 >
@@ -14,7 +14,7 @@ exports[`ContributorsViewWidget renders a full vocabulary array view widget comp
 </span>
 `;
 
-exports[`ContributorsViewWidget renders a full vocabulary array view widget component with children 1`] = `
+exports[`ContributorsViewWidget > renders a full vocabulary array view widget component with children 1`] = `
 <span
   className="metadata array widget"
 >
@@ -32,7 +32,7 @@ exports[`ContributorsViewWidget renders a full vocabulary array view widget comp
 </span>
 `;
 
-exports[`ContributorsViewWidget renders a simple array view widget component 1`] = `
+exports[`ContributorsViewWidget > renders a simple array view widget component 1`] = `
 <span
   className="metadata array widget"
 >
@@ -46,7 +46,7 @@ exports[`ContributorsViewWidget renders a simple array view widget component 1`]
 </span>
 `;
 
-exports[`ContributorsViewWidget renders a vocabulary array view widget component 1`] = `
+exports[`ContributorsViewWidget > renders a vocabulary array view widget component 1`] = `
 <span
   className="metadata array widget"
 >
@@ -60,7 +60,7 @@ exports[`ContributorsViewWidget renders a vocabulary array view widget component
 </span>
 `;
 
-exports[`ContributorsViewWidget renders an empty array view widget component 1`] = `
+exports[`ContributorsViewWidget > renders an empty array view widget component 1`] = `
 <span
   className="array widget"
 />

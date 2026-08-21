@@ -9,12 +9,12 @@ import '@testing-library/jest-dom';
 
 const mockStore = configureStore([thunk]);
 
-const mockGetNavigation = jest.fn(() => ({ type: 'GET_NAVIGATION' }));
-jest.mock('@plone/volto/actions/navigation/navigation', () => ({
+const mockGetNavigation = vi.fn(() => ({ type: 'GET_NAVIGATION' }));
+vi.mock('@plone/volto/actions/navigation/navigation', () => ({
   getNavigation: mockGetNavigation,
 }));
 
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
     settings: {
@@ -37,18 +37,18 @@ jest.mock('@plone/volto/registry', () => ({
 }));
 
 // Mock uuid
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'test-uuid-123',
 }));
 
-jest.mock('@plone/volto/components/theme/Icon/Icon', () => ({
+vi.mock('@plone/volto/components/theme/Icon/Icon', () => ({
   __esModule: true,
   default: ({ name, size }) => (
     <div data-testid="icon" data-name={name} data-size={size} />
   ),
 }));
 
-jest.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
+vi.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
   __esModule: true,
   default: ({ children, ...props }) => (
     <div data-testid="form-field-wrapper" {...props}>
@@ -57,7 +57,7 @@ jest.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
+vi.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
   return {
     __esModule: true,
     default: function MockObjectWidget({ id, schema, value, onChange }) {
@@ -105,7 +105,7 @@ jest.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
 });
 
 // Mock semantic-ui-react components
-jest.mock('semantic-ui-react', () => {
+vi.mock('semantic-ui-react', () => {
   const MockAccordion = ({ children, fluid, styled, ...props }) => (
     <div className="ui accordion" data-testid="accordion" {...props}>
       {children}
@@ -144,14 +144,14 @@ jest.mock('semantic-ui-react', () => {
 });
 
 // Mock SVG imports
-jest.mock('@plone/volto/icons/up-key.svg', () => 'up-icon');
-jest.mock('@plone/volto/icons/down-key.svg', () => 'down-icon');
+vi.mock('@plone/volto/icons/up-key.svg', () => ({ default: 'up-icon' }));
+vi.mock('@plone/volto/icons/down-key.svg', () => ({ default: 'down-icon' }));
 
 describe('NavigationBehaviorWidget', () => {
   let store;
   let NavigationBehaviorWidget;
 
-  const mockOnChange = jest.fn();
+  const mockOnChange = vi.fn();
 
   const defaultNavigationItems = [
     {
@@ -181,8 +181,8 @@ describe('NavigationBehaviorWidget', () => {
     },
   ];
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+  beforeEach(async () => {
+    vi.clearAllMocks();
     store = mockStore({
       intl: {
         locale: 'en',
@@ -200,7 +200,8 @@ describe('NavigationBehaviorWidget', () => {
       vocabularies: {},
     });
 
-    NavigationBehaviorWidget = require('./NavigationBehaviorWidget').default;
+    NavigationBehaviorWidget = (await import('./NavigationBehaviorWidget'))
+      .default;
   });
 
   it('renders with navigation data', () => {
@@ -628,9 +629,9 @@ describe('NavigationBehaviorWidget', () => {
 describe('menuItemColumnsToNumbers', () => {
   let menuItemColumnsToNumbers;
 
-  beforeEach(() => {
-    menuItemColumnsToNumbers =
-      require('./NavigationBehaviorWidget').menuItemColumnsToNumbers;
+  beforeEach(async () => {
+    menuItemColumnsToNumbers = (await import('./NavigationBehaviorWidget'))
+      .menuItemColumnsToNumbers;
   });
 
   it('converts semantic UI column strings to numbers', () => {

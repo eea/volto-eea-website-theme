@@ -9,16 +9,16 @@ import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
 import config from '@plone/volto/registry';
 
-jest.mock('@plone/volto/actions/navigation/navigation', () => ({
-  getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })),
+vi.mock('@plone/volto/actions/navigation/navigation', () => ({
+  getNavigation: vi.fn(() => ({ type: 'GET_NAVIGATION' })),
 }));
-jest.mock('@plone/volto/helpers/Url/Url', () => ({
-  getBaseUrl: jest.fn(() => '/en'),
+vi.mock('@plone/volto/helpers/Url/Url', () => ({
+  getBaseUrl: vi.fn(() => '/en'),
 }));
-jest.mock('@plone/volto/helpers/Utils/Utils', () => ({
-  hasApiExpander: jest.fn(() => false),
+vi.mock('@plone/volto/helpers/Utils/Utils', () => ({
+  hasApiExpander: vi.fn(() => false),
 }));
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
     settings: { navDepth: 2 },
@@ -45,7 +45,7 @@ const WrappedComponent = withRootNavigation(MockComponent);
 
 describe('withRootNavigation HOC', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('calls getNavigation when API expander is not set', () => {

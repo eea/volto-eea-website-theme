@@ -6,12 +6,12 @@ import configureStore from 'redux-mock-store';
 import PrintLoader from './PrintLoader';
 import { IntlProvider } from 'react-intl';
 
-jest.mock('@eeacms/volto-eea-website-theme/helpers/setupPrintView', () => ({
-  setupPrintView: jest.fn(),
+vi.mock('@eeacms/volto-eea-website-theme/helpers/setupPrintView', () => ({
+  setupPrintView: vi.fn(),
 }));
 
-jest.mock('@eeacms/volto-eea-website-theme/helpers/loadLazyImages', () => ({
-  loadLazyImages: jest.fn(),
+vi.mock('@eeacms/volto-eea-website-theme/helpers/loadLazyImages', () => ({
+  loadLazyImages: vi.fn(),
 }));
 
 const mockStore = configureStore();
@@ -49,7 +49,7 @@ describe('PrintLoader', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('should call setupPrintView when Ctrl+P is pressed', () => {
+  it('should call setupPrintView when Ctrl+P is pressed', async () => {
     const store = mockStore({
       print: { isPrintLoading: false },
     });
@@ -64,12 +64,12 @@ describe('PrintLoader', () => {
 
     fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
     expect(
-      require('@eeacms/volto-eea-website-theme/helpers/setupPrintView')
+      (await import('@eeacms/volto-eea-website-theme/helpers/setupPrintView'))
         .setupPrintView,
     ).toHaveBeenCalled();
   });
 
-  it('should call loadLazyImages before printing', () => {
+  it('should call loadLazyImages before printing', async () => {
     const store = mockStore({
       print: { isPrintLoading: false },
     });
@@ -84,7 +84,7 @@ describe('PrintLoader', () => {
 
     window.dispatchEvent(new Event('beforeprint'));
     expect(
-      require('@eeacms/volto-eea-website-theme/helpers/loadLazyImages')
+      (await import('@eeacms/volto-eea-website-theme/helpers/loadLazyImages'))
         .loadLazyImages,
     ).toHaveBeenCalled();
   });

@@ -3,7 +3,7 @@
  * @module components/manage/Widgets/SimpleArrayWidget
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { defineMessages, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Button, Input, Label } from 'semantic-ui-react';
@@ -24,6 +24,14 @@ const SimpleArrayWidget = (props) => {
   const { id, value: rawValue, onChange, items, intl } = props;
   const [newValue, setNewValue] = useState('');
   const [showInput, setShowInput] = useState(false);
+  const focusTimeout = useRef();
+
+  useEffect(
+    () => () => {
+      clearTimeout(focusTimeout.current);
+    },
+    [],
+  );
 
   // Get min/max from schema
   const minValue = items?.minimum || 1;
@@ -47,7 +55,7 @@ const SimpleArrayWidget = (props) => {
   const handleShowInput = () => {
     setShowInput(true);
     // Focus input after it appears
-    setTimeout(() => {
+    focusTimeout.current = setTimeout(() => {
       const input = document.querySelector(`#${id}-input`);
       if (input) input.focus();
     }, 100);

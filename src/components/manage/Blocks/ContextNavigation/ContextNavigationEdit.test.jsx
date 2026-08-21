@@ -7,7 +7,7 @@ import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 
-jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
+vi.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
   __esModule: true,
   default: ({ onChangeField }) => (
     <div>
@@ -17,7 +17,7 @@ jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
+vi.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   return {
     __esModule: true,
     default: ({ params }) => {
@@ -26,7 +26,7 @@ jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   };
 });
 
-jest.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
+vi.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
   __esModule: true,
   default: ({ children, selected }) =>
     selected ? (
@@ -37,8 +37,8 @@ jest.mock('@plone/volto/components/manage/Sidebar/SidebarPortal', () => ({
     ) : null,
 }));
 
-jest.mock('@plone/volto/helpers/Extensions', () => ({
-  withBlockExtensions: jest.fn((Component) => Component),
+vi.mock('@plone/volto/helpers/Extensions', () => ({
+  withBlockExtensions: vi.fn((Component) => Component),
 }));
 
 const mockStore = configureStore();

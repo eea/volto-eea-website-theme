@@ -8,12 +8,12 @@ import NotFound from './NotFound';
 
 const mockStore = configureStore();
 
-jest.mock('@plone/volto/components/theme/NotFound/NotFound', () => ({
+vi.mock('@plone/volto/components/theme/NotFound/NotFound', () => ({
   __esModule: true,
   default: () => <div data-testid="volto-notfound">Not Found Page</div>,
 }));
 
-jest.mock('@eeacms/volto-eea-website-theme/hocs', () => ({
+vi.mock('@eeacms/volto-eea-website-theme/hocs', () => ({
   withRootNavigation: (Component) => Component,
 }));
 

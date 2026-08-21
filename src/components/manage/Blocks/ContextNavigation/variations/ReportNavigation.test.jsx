@@ -14,7 +14,7 @@ const store = mockStore({
   },
 });
 
-jest.mock(
+vi.mock(
   '@plone/volto/components/theme/Navigation/withContentNavigation',
   () => ({
     withContentNavigation: (Component) => (props) => (

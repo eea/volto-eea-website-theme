@@ -9,7 +9,7 @@ import View from './View';
 
 const mockStore = configureStore([thunk]);
 
-jest.mock('@plone/volto/helpers', () => ({
+vi.mock('@plone/volto/helpers', () => ({
   Helmet: ({ children, link }) => (
     <div data-testid="helmet" data-link={JSON.stringify(link)}>
       {children}
@@ -17,7 +17,7 @@ jest.mock('@plone/volto/helpers', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
     blocks: {
@@ -35,18 +35,20 @@ jest.mock('@plone/volto/registry', () => ({
   },
 }));
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Popup/Popup', () => {
-  return function MockPopup({ trigger, content }) {
-    return (
-      <div data-testid="popup">
-        <div data-testid="popup-trigger">{trigger}</div>
-        <div data-testid="popup-content">{content}</div>
-      </div>
-    );
+vi.mock('@eeacms/volto-eea-design-system/ui/Popup/Popup', () => {
+  return {
+    default: function MockPopup({ trigger, content }) {
+      return (
+        <div data-testid="popup">
+          <div data-testid="popup-trigger">{trigger}</div>
+          <div data-testid="popup-content">{content}</div>
+        </div>
+      );
+    },
   };
 });
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Banner/Banner', () => {
+vi.mock('@eeacms/volto-eea-design-system/ui/Banner/Banner', () => {
   const Banner = ({ children, image, styles }) => (
     <div
       data-testid="banner"
@@ -90,12 +92,12 @@ jest.mock('@eeacms/volto-eea-design-system/ui/Banner/Banner', () => {
   return {
     __esModule: true,
     default: Banner,
-    getImageSource: jest.fn((image) => (image ? '/path/to/image.jpg' : null)),
-    sharePage: jest.fn(),
+    getImageSource: vi.fn((image) => (image ? '/path/to/image.jpg' : null)),
+    sharePage: vi.fn(),
   };
 });
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
+vi.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
   const Copyright = ({ children, copyrightPosition }) => (
     <div data-testid="copyright" data-position={copyrightPosition}>
       {children}
@@ -116,8 +118,8 @@ jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
   };
 });
 
-jest.mock('@eeacms/volto-eea-website-theme/helpers/setupPrintView', () => ({
-  setupPrintView: jest.fn(),
+vi.mock('@eeacms/volto-eea-website-theme/helpers/setupPrintView', () => ({
+  setupPrintView: vi.fn(),
 }));
 
 describe('Banner View Component', () => {
@@ -153,7 +155,7 @@ describe('Banner View Component', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {
@@ -312,10 +314,10 @@ describe('Banner View Component', () => {
     expect(screen.getByTestId('banner-action-rssfeed')).toBeTruthy();
   });
 
-  it('calls setupPrintView when download button is clicked', () => {
-    const {
-      setupPrintView,
-    } = require('@eeacms/volto-eea-website-theme/helpers/setupPrintView');
+  it('calls setupPrintView when download button is clicked', async () => {
+    const { setupPrintView } = await import(
+      '@eeacms/volto-eea-website-theme/helpers/setupPrintView'
+    );
 
     render(
       <Provider store={store}>

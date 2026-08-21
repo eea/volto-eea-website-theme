@@ -35,13 +35,13 @@ const createMockStore = (
 };
 
 const defaultProps = {
-  getVocabulary: jest.fn(() => Promise.resolve({ items: [] })),
-  getVocabularyTokenTitle: jest.fn(),
+  getVocabulary: vi.fn(() => Promise.resolve({ items: [] })),
+  getVocabularyTokenTitle: vi.fn(),
   widgetOptions: { vocabulary: { '@id': 'plone.app.vocabularies.Users' } },
   id: 'user-field',
   title: 'User field',
   fieldSet: 'default',
-  onChange: jest.fn(),
+  onChange: vi.fn(),
 };
 
 const renderWidget = (props = {}, storeItems = []) => {
@@ -58,10 +58,12 @@ const renderWidget = (props = {}, storeItems = []) => {
   };
 };
 
-jest.mock('@plone/volto/helpers/Loadable/Loadable');
+vi.mock('@plone/volto/helpers/Loadable/Loadable');
 beforeAll(
   async () =>
-    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
+    await (
+      await import('@plone/volto/helpers/Loadable/Loadable')
+    ).__setLoadables(),
 );
 
 test('renders a select widget component', async () => {
@@ -355,7 +357,7 @@ test('updates termsPairsCache when choices become available', async () => {
 
 // Test handleChange - verify component renders with onChange prop
 test('component accepts onChange prop', async () => {
-  const onChange = jest.fn();
+  const onChange = vi.fn();
   const { container } = renderWidget({ onChange });
 
   await waitFor(() => screen.getByText('User field'));
@@ -411,7 +413,7 @@ test('renders with choices from items.choices prop', async () => {
 
 // Test noOptionsMessage based on searchLength
 test('shows correct message based on search length', async () => {
-  const getVocabulary = jest.fn(() =>
+  const getVocabulary = vi.fn(() =>
     Promise.resolve({
       items: [],
     }),
@@ -429,7 +431,7 @@ test('shows correct message based on search length', async () => {
     <Provider store={store}>
       <UserSelectWidget
         getVocabulary={getVocabulary}
-        getVocabularyTokenTitle={jest.fn()}
+        getVocabularyTokenTitle={vi.fn()}
         widgetOptions={{
           vocabulary: { '@id': 'plone.app.vocabularies.Users' },
         }}
@@ -461,13 +463,13 @@ test('shows correct message based on search length', async () => {
 
 // Test componentWillUnmount clears timeout
 test('clears timeout on unmount', async () => {
-  jest.useFakeTimers();
   const { unmount } = renderWidget();
 
   await waitFor(() => screen.getByText('User field'));
 
+  vi.useFakeTimers();
   unmount();
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 // Test with disabled prop
@@ -544,7 +546,7 @@ test('normalizes array with empty title', () => {
 
 // Test handleChange with null (clearing selection)
 test('component can clear selection', async () => {
-  const onChange = jest.fn();
+  const onChange = vi.fn();
   const choices = [
     { token: 'user1', title: 'User One', email: 'user1@test.com' },
   ];
@@ -561,11 +563,11 @@ test('component can clear selection', async () => {
 
 // Test componentWillUnmount with pending timeout
 test('clears pending timeout on unmount during search', async () => {
-  jest.useFakeTimers();
   const { container, unmount } = renderWidget();
 
   await waitFor(() => screen.getByText('User field'));
 
+  vi.useFakeTimers();
   const selectInput = container.querySelector('.react-select__input input');
   if (selectInput) {
     fireEvent.focus(selectInput);
@@ -573,8 +575,8 @@ test('clears pending timeout on unmount during search', async () => {
   }
 
   unmount();
-  jest.advanceTimersByTime(500);
-  jest.useRealTimers();
+  vi.advanceTimersByTime(500);
+  vi.useRealTimers();
 });
 
 // Test with MenuList component for large choice sets

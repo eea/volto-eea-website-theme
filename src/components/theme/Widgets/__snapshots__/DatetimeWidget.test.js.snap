@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`DatetimeWidget removes the comma in the formatted date and shows correct time 1`] = `
+exports[`DatetimeWidget > removes the comma in the formatted date and shows correct time 1`] = `
 <span
   className="metadata datetime widget"
 >
@@ -8,7 +8,7 @@ exports[`DatetimeWidget removes the comma in the formatted date and shows correc
 </span>
 `;
 
-exports[`DatetimeWidget renders a datetime view widget component with a date and time 1`] = `
+exports[`DatetimeWidget > renders a datetime view widget component with a date and time 1`] = `
 <span
   className="metadata datetime widget"
 >
@@ -16,7 +16,7 @@ exports[`DatetimeWidget renders a datetime view widget component with a date and
 </span>
 `;
 
-exports[`DatetimeWidget renders a datetime view widget component with children formatting 1`] = `
+exports[`DatetimeWidget > renders a datetime view widget component with children formatting 1`] = `
 <span
   className="metadata datetime widget"
 >

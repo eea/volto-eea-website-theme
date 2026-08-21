@@ -2,13 +2,13 @@ import { setupPrintView } from './setupPrintView';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 import { act } from '@testing-library/react';
 
-jest.mock('@eeacms/volto-eea-website-theme/actions/print', () => ({
-  setIsPrint: jest.fn(() => ({ type: 'SET_IS_PRINT' })),
-  setPrintLoading: jest.fn(() => ({ type: 'SET_PRINT_LOADING' })),
+vi.mock('@eeacms/volto-eea-website-theme/actions/print', () => ({
+  setIsPrint: vi.fn(() => ({ type: 'SET_IS_PRINT' })),
+  setPrintLoading: vi.fn(() => ({ type: 'SET_PRINT_LOADING' })),
 }));
 
-jest.mock('@eeacms/volto-eea-website-theme/helpers/loadLazyImages', () => ({
-  loadLazyImages: jest.fn(),
+vi.mock('@eeacms/volto-eea-website-theme/helpers/loadLazyImages', () => ({
+  loadLazyImages: vi.fn(),
 }));
 
 describe('setupPrintView', () => {
@@ -22,27 +22,27 @@ describe('setupPrintView', () => {
       <div class="visualization-wrapper"></div>
     `;
 
-    jest.useFakeTimers();
-    window.scrollTo = jest.fn();
-    window.print = jest.fn();
+    vi.useFakeTimers();
+    window.scrollTo = vi.fn();
+    window.print = vi.fn();
     window.innerHeight = 1000;
 
     // Mock matchMedia
     matchMediaMock = {
       matches: false,
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     };
-    window.matchMedia = jest.fn(() => matchMediaMock);
+    window.matchMedia = vi.fn(() => matchMediaMock);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
-    jest.useRealTimers();
+    vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   it('dispatches actions and triggers print', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
@@ -50,7 +50,7 @@ describe('setupPrintView', () => {
       // Run all timers and flush all promises multiple times
       // to handle the async/await chain in forceLoadLazyBlocks and waitForPlotlyCharts
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -73,13 +73,13 @@ describe('setupPrintView', () => {
     });
     document.body.appendChild(iframe);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -91,7 +91,7 @@ describe('setupPrintView', () => {
     const iframe = document.createElement('iframe');
     document.body.appendChild(iframe);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
@@ -100,7 +100,7 @@ describe('setupPrintView', () => {
       iframe.dispatchEvent(new Event('load'));
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -116,13 +116,13 @@ describe('setupPrintView', () => {
     });
     document.body.appendChild(img);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -138,7 +138,7 @@ describe('setupPrintView', () => {
     });
     document.body.appendChild(img);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
@@ -147,7 +147,7 @@ describe('setupPrintView', () => {
       img.dispatchEvent(new Event('load'));
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -163,7 +163,7 @@ describe('setupPrintView', () => {
     });
     document.body.appendChild(img);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
@@ -172,7 +172,7 @@ describe('setupPrintView', () => {
       img.dispatchEvent(new Event('error'));
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -196,13 +196,13 @@ describe('setupPrintView', () => {
     chart2.appendChild(plotlyDiv2);
     document.body.appendChild(chart2);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 15; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -216,7 +216,7 @@ describe('setupPrintView', () => {
     chart1.className = 'plotly-chart';
     document.body.appendChild(chart1);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
@@ -229,7 +229,7 @@ describe('setupPrintView', () => {
       }, 1000);
 
       for (let i = 0; i < 20; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -246,13 +246,13 @@ describe('setupPrintView', () => {
     });
     document.body.appendChild(pageDocument);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 15; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -262,10 +262,10 @@ describe('setupPrintView', () => {
   });
 
   it('handles print media query change event', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
     let changeHandler;
 
-    matchMediaMock.addEventListener = jest.fn((event, handler) => {
+    matchMediaMock.addEventListener = vi.fn((event, handler) => {
       if (event === 'change') {
         changeHandler = handler;
       }
@@ -275,14 +275,14 @@ describe('setupPrintView', () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
 
       // Simulate print dialog closing (media query becomes false)
       if (changeHandler) {
         changeHandler({ matches: false });
-        jest.runAllTimers();
+        vi.runAllTimers();
       }
     });
 
@@ -292,11 +292,11 @@ describe('setupPrintView', () => {
   });
 
   it('handles afterprint event', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
     let afterPrintHandler;
 
     const originalAddEventListener = window.addEventListener;
-    window.addEventListener = jest.fn((event, handler, options) => {
+    window.addEventListener = vi.fn((event, handler, options) => {
       if (event === 'afterprint') {
         afterPrintHandler = handler;
       }
@@ -307,14 +307,14 @@ describe('setupPrintView', () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
 
       // Simulate afterprint event
       if (afterPrintHandler) {
         afterPrintHandler();
-        jest.runAllTimers();
+        vi.runAllTimers();
       }
     });
 
@@ -322,11 +322,11 @@ describe('setupPrintView', () => {
   });
 
   it('handles window focus event after print', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
     let focusHandler;
 
     const originalAddEventListener = window.addEventListener;
-    window.addEventListener = jest.fn((event, handler, options) => {
+    window.addEventListener = vi.fn((event, handler, options) => {
       if (event === 'focus') {
         focusHandler = handler;
       }
@@ -337,14 +337,14 @@ describe('setupPrintView', () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
 
       // Simulate window focus event
       if (focusHandler) {
         focusHandler();
-        jest.runAllTimers();
+        vi.runAllTimers();
       }
     });
 
@@ -352,18 +352,18 @@ describe('setupPrintView', () => {
   });
 
   it('handles safety timeout for resetting print state', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
 
       // Fast-forward to trigger the 30-second safety timeout
-      jest.advanceTimersByTime(30000);
+      vi.advanceTimersByTime(30000);
     });
 
     expect(window.print).toHaveBeenCalled();
@@ -372,7 +372,7 @@ describe('setupPrintView', () => {
   });
 
   it('handles errors during content loading', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     // Create an iframe that will cause an error
     const iframe = document.createElement('iframe');
@@ -387,10 +387,10 @@ describe('setupPrintView', () => {
       setupPrintView(dispatch);
 
       // Trigger the iframe timeout to simulate error condition
-      jest.advanceTimersByTime(5000);
+      vi.advanceTimersByTime(5000);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -400,10 +400,10 @@ describe('setupPrintView', () => {
   });
 
   it('prevents multiple resets of print state', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
     let changeHandler;
 
-    matchMediaMock.addEventListener = jest.fn((event, handler) => {
+    matchMediaMock.addEventListener = vi.fn((event, handler) => {
       if (event === 'change') {
         changeHandler = handler;
       }
@@ -413,16 +413,16 @@ describe('setupPrintView', () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
 
       // Simulate print dialog closing multiple times
       if (changeHandler) {
         changeHandler({ matches: false });
-        jest.runAllTimers();
+        vi.runAllTimers();
         changeHandler({ matches: false });
-        jest.runAllTimers();
+        vi.runAllTimers();
       }
     });
 
@@ -436,13 +436,13 @@ describe('setupPrintView', () => {
       iframes[0].remove();
     }
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -457,13 +457,13 @@ describe('setupPrintView', () => {
       images[0].remove();
     }
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 10; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -473,7 +473,7 @@ describe('setupPrintView', () => {
 
   it('scrolls iframe into view on load', async () => {
     const iframe = document.createElement('iframe');
-    iframe.scrollIntoView = jest.fn();
+    iframe.scrollIntoView = vi.fn();
 
     // Make sure iframe is not considered already loaded
     Object.defineProperty(iframe, 'contentDocument', {
@@ -483,14 +483,14 @@ describe('setupPrintView', () => {
 
     document.body.appendChild(iframe);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
     let eventDispatched = false;
 
     await act(async () => {
       setupPrintView(dispatch);
 
       for (let i = 0; i < 15; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
 
         // Dispatch the load event after the first timer run to ensure listener is attached
@@ -515,14 +515,14 @@ describe('setupPrintView', () => {
     chart1.className = 'plotly-chart';
     document.body.appendChild(chart1);
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     await act(async () => {
       setupPrintView(dispatch);
 
       // Run enough iterations to hit the timeout (40 checks)
       for (let i = 0; i < 50; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });
@@ -531,14 +531,14 @@ describe('setupPrintView', () => {
   });
 
   it('handles actual error in Promise.all', async () => {
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
 
     // Create an iframe that will reject
     const iframe = document.createElement('iframe');
     document.body.appendChild(iframe);
 
     // Mock scrollIntoView to throw an error
-    iframe.scrollIntoView = jest.fn(() => {
+    iframe.scrollIntoView = vi.fn(() => {
       throw new Error('scrollIntoView error');
     });
 
@@ -553,7 +553,7 @@ describe('setupPrintView', () => {
       }
 
       for (let i = 0; i < 15; i++) {
-        jest.runAllTimers();
+        vi.runAllTimers();
         await Promise.resolve();
       }
     });

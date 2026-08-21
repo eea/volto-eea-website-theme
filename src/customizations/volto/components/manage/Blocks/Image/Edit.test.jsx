@@ -13,11 +13,11 @@
  *
  * Both mocks are version-agnostic — they expose the same API on V17 and V18.
  *
- * IMPORTANT: jest.mock() factories cannot reference out-of-scope variables
+ * IMPORTANT: vi.mock() factories cannot reference out-of-scope variables
  * (including React imported via ESM). Use require() inside the factory instead.
  */
 
-// jest.mock() calls are hoisted above all imports by babel-jest.
+// vi.mock() calls are hoisted above all imports by babel-vi.
 /* eslint-disable no-undef */
 
 /* eslint-enable no-undef */
@@ -30,8 +30,8 @@ import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
 import Edit, { getImageBlockSizes } from './Edit';
 
-jest.mock('@plone/volto/components', () => {
-  const React = require('react');
+vi.mock('@plone/volto/components', async () => {
+  const React = (await vi.importActual('react')).default;
 
   const MockImage = (props) =>
     React.createElement('img', {
@@ -61,8 +61,8 @@ jest.mock('@plone/volto/components', () => {
   };
 });
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
-  const React = require('react');
+vi.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', async () => {
+  const React = (await vi.importActual('react')).default;
 
   const Copyright = (props) =>
     React.createElement(
@@ -91,7 +91,7 @@ jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
 
 // Register our mock Image component so config.getComponent({ name: 'Image' })
 // returns something renderable during tests.
-const MockImage = jest.requireMock('@plone/volto/components').Image;
+const MockImage = (await vi.importMock('@plone/volto/components')).Image;
 config.set('components', {
   Image: { component: MockImage },
 });

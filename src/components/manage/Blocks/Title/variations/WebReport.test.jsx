@@ -4,38 +4,40 @@ import { render, screen } from '@testing-library/react';
 import WebReport from './WebReport';
 
 // Mock Portal since we are not in real DOM
-jest.mock('react-portal', () => ({
+vi.mock('react-portal', () => ({
   Portal: ({ children }) => <div data-testid="portal">{children}</div>,
 }));
 
-jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+vi.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
   __esModule: true,
   default: ({ className }) => (
     <div data-testid="body-class" className={className} />
   ),
 }));
 
-jest.mock('@plone/volto/components/manage/MaybeWrap/MaybeWrap', () => ({
+vi.mock('@plone/volto/components/manage/MaybeWrap/MaybeWrap', () => ({
   __esModule: true,
   default: ({ condition, as: As, children }) =>
     condition ? <As>{children}</As> : children,
 }));
 
-jest.mock(
-  '@eeacms/volto-eea-website-theme/components/theme/Banner/View',
-  () => (props) => (
+vi.mock('@eeacms/volto-eea-website-theme/components/theme/Banner/View', () => ({
+  default: (props) => (
     <div data-testid="banner-view">
       {props.data.aboveTitle}
       {props.data.belowTitle}
     </div>
   ),
-);
+}));
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Banner/Banner', () => {
+vi.mock('@eeacms/volto-eea-design-system/ui/Banner/Banner', () => {
   const Subtitle = ({ children }) => (
     <div data-testid="banner-subtitle">{children}</div>
   );
+  const Banner = ({ children }) => children;
+  Banner.Subtitle = Subtitle;
   return {
+    default: Banner,
     Subtitle,
   };
 });

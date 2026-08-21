@@ -1,7 +1,7 @@
 // Mock the external module before any imports
-jest.mock('redux-localstorage-simple-original', () => ({
-  save: jest.fn(),
-  load: jest.fn(),
+vi.mock('redux-localstorage-simple-original', () => ({
+  save: vi.fn(),
+  load: vi.fn(),
 }));
 
 // eslint-disable-next-line import/first
@@ -12,15 +12,16 @@ describe('conditionalLocalStorage middleware', () => {
   let next;
   let reduxLocalStorage;
 
-  beforeEach(() => {
-    reduxLocalStorage = require('redux-localstorage-simple-original');
+  beforeEach(async () => {
+    // eslint-disable-next-line import/no-unresolved
+    reduxLocalStorage = await import('redux-localstorage-simple-original');
     store = {
-      getState: jest.fn(),
+      getState: vi.fn(),
     };
-    next = jest.fn((action) => action);
+    next = vi.fn((action) => action);
 
     // Reset mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Setup mock middleware chain
     reduxLocalStorage.save.mockReturnValue(

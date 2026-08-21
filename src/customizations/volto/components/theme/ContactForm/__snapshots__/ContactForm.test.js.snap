@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Contact form renders a contact form 1`] = `
+exports[`Contact form > renders a contact form 1`] = `
 <div
   className="ui container"
   id="page-document"
@@ -17,7 +17,7 @@ exports[`Contact form renders a contact form 1`] = `
 </div>
 `;
 
-exports[`Contact form renders a contact form with error message 1`] = `
+exports[`Contact form > renders a contact form with error message 1`] = `
 <div
   className="ui container"
   id="page-document"

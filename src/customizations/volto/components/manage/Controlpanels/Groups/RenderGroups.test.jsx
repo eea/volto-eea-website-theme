@@ -26,7 +26,7 @@ import { Provider } from 'react-intl-redux';
 
 import RenderGroups from './RenderGroups';
 
-jest.mock('@plone/volto/components', () => ({
+vi.mock('@plone/volto/components', () => ({
   // RenderGroups.jsx uses only Icon from the barrel
   Icon: () => null,
 }));

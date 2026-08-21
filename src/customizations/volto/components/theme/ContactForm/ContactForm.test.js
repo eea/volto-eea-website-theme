@@ -5,11 +5,11 @@ import { Provider } from 'react-intl-redux';
 import { MemoryRouter } from 'react-router-dom';
 import ContactForm from './ContactForm';
 
-jest.mock('react-portal', () => ({
-  Portal: jest.fn(() => <div id="Portal" />),
+vi.mock('react-portal', () => ({
+  Portal: vi.fn(() => <div id="Portal" />),
 }));
 
-jest.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
+vi.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
   __esModule: true,
   default: ({ href, children }) => <a href={href}>{children}</a>,
 }));

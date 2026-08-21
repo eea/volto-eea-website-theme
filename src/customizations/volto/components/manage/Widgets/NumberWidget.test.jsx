@@ -6,7 +6,7 @@ import '@testing-library/jest-dom';
 
 import NumberWidget from './NumberWidget';
 
-jest.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
+vi.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
   __esModule: true,
   default: ({ children }) => <>{children}</>,
 }));
@@ -22,7 +22,7 @@ const store = mockStore({
 
 describe('NumberWidget', () => {
   it('renders a number widget component', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(
       <Provider store={store}>
         <NumberWidget
@@ -39,7 +39,7 @@ describe('NumberWidget', () => {
 
   describe('onChange behavior', () => {
     it('converts string value to number on change', () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       render(
         <Provider store={store}>
           <NumberWidget id="my-field" title="My field" onChange={onChange} />
@@ -53,7 +53,7 @@ describe('NumberWidget', () => {
     });
 
     it('handles empty value correctly', () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       render(
         <Provider store={store}>
           <NumberWidget
@@ -74,7 +74,7 @@ describe('NumberWidget', () => {
 
   describe('onBlur behavior', () => {
     it('calls onBlur with the current value', () => {
-      const onBlur = jest.fn();
+      const onBlur = vi.fn();
       render(
         <Provider store={store}>
           <NumberWidget

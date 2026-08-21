@@ -10,24 +10,24 @@ import '@testing-library/jest-dom';
 const middleware = [thunk];
 const mockStore = configureStore(middleware);
 
-jest.mock('moment', () =>
-  jest.fn(() => ({
-    format: jest.fn(() => 'Tuesday, August 1, 2023 12:09 PM'),
-    fromNow: jest.fn(() => 'a few seconds ago'),
+vi.mock('moment', () => ({
+  default: vi.fn(() => ({
+    format: vi.fn(() => 'Tuesday, August 1, 2023 12:09 PM'),
+    fromNow: vi.fn(() => 'a few seconds ago'),
   })),
-);
+}));
 
-jest.mock('@plone/volto/components/theme/Avatar/Avatar', () => ({
+vi.mock('@plone/volto/components/theme/Avatar/Avatar', () => ({
   __esModule: true,
   default: ({ title }) => <div className="avatar">{title}</div>,
 }));
 
-jest.mock('@plone/volto/components/theme/Comments/CommentEditModal', () => ({
+vi.mock('@plone/volto/components/theme/Comments/CommentEditModal', () => ({
   __esModule: true,
   default: ({ open }) => (open ? <div className="comment-edit-modal" /> : null),
 }));
 
-jest.mock('@plone/volto/components/manage/Form/Form', () => ({
+vi.mock('@plone/volto/components/manage/Form/Form', () => ({
   __esModule: true,
   default: ({ onSubmit, submitLabel }) => (
     <form onSubmit={(event) => event.preventDefault()}>
@@ -42,19 +42,21 @@ jest.mock('@plone/volto/components/manage/Form/Form', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/helpers/Loadable/Loadable');
+vi.mock('@plone/volto/helpers/Loadable/Loadable');
 beforeAll(
   async () =>
-    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
+    await (
+      await import('@plone/volto/helpers/Loadable/Loadable')
+    ).__setLoadables(),
 );
 
 describe('Comments', () => {
   it('renders a comments component', () => {
     const props = {
-      addComment: jest.fn(),
-      deleteComment: jest.fn(),
-      listComments: jest.fn(),
-      listMoreComments: jest.fn(),
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
       pathname: '/comments',
       items: [
         {
@@ -127,10 +129,10 @@ describe('Comments', () => {
 
   it('renders a comments component withour viewing the comments', () => {
     const props = {
-      addComment: jest.fn(),
-      deleteComment: jest.fn(),
-      listComments: jest.fn(),
-      listMoreComments: jest.fn(),
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
       pathname: '/comments',
       items: [
         {
@@ -203,10 +205,10 @@ describe('Comments', () => {
 
   it('renders a comments component without permissions', () => {
     const props = {
-      addComment: jest.fn(),
-      deleteComment: jest.fn(),
-      listComments: jest.fn(),
-      listMoreComments: jest.fn(),
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
       pathname: '/comments',
       items: [
         {
@@ -276,10 +278,10 @@ describe('Comments', () => {
 
   it('renders a comments component, fires onClick events on comment and rerenders', () => {
     const props = {
-      addComment: jest.fn(),
-      deleteComment: jest.fn(),
-      listComments: jest.fn(),
-      listMoreComments: jest.fn(),
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
       pathname: '/comments',
       items: [
         {

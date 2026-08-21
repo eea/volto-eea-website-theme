@@ -8,30 +8,30 @@ import WebReportSectionView from './WebReportSectionView';
 import '@testing-library/jest-dom';
 
 // Mock external dependencies
-jest.mock('@plone/volto/helpers/Url/Url', () => ({
-  isInternalURL: jest.fn(),
-  flattenToAppURL: jest.fn(),
+vi.mock('@plone/volto/helpers/Url/Url', () => ({
+  isInternalURL: vi.fn(),
+  flattenToAppURL: vi.fn(),
 }));
 
-jest.mock('@plone/volto/components/theme/View/DefaultView', () => ({
+vi.mock('@plone/volto/components/theme/View/DefaultView', () => ({
   __esModule: true,
-  default: jest.fn(({ children }) => (
+  default: vi.fn(({ children }) => (
     <div data-testid="default-view">{children}</div>
   )),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  Redirect: jest.fn(({ to }) => <div data-testid="redirect" data-to={to} />),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  Redirect: vi.fn(({ to }) => <div data-testid="redirect" data-to={to} />),
 }));
 
-const {
-  isInternalURL,
-  flattenToAppURL,
-} = require('@plone/volto/helpers/Url/Url');
-const DefaultView =
-  require('@plone/volto/components/theme/View/DefaultView').default;
-const { Redirect } = require('react-router-dom');
+const { isInternalURL, flattenToAppURL } = await import(
+  '@plone/volto/helpers/Url/Url'
+);
+const DefaultView = (
+  await import('@plone/volto/components/theme/View/DefaultView')
+).default;
+const { Redirect } = await import('react-router-dom');
 
 describe('WebReportSectionView', () => {
   let history;
@@ -44,7 +44,7 @@ describe('WebReportSectionView', () => {
 
   beforeEach(() => {
     history = createMemoryHistory();
-    history.replace = jest.fn();
+    history.replace = vi.fn();
 
     // Reset mocks
     isInternalURL.mockClear();

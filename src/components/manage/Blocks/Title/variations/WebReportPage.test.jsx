@@ -6,7 +6,7 @@ import WebReportPage from './WebReportPage';
 import '@testing-library/jest-dom';
 
 // Mock dependencies
-jest.mock('react-portal', () => ({
+vi.mock('react-portal', () => ({
   Portal: ({ children, node }) => (
     <div data-testid="portal" data-node={node?.tagName}>
       {children}
@@ -14,16 +14,15 @@ jest.mock('react-portal', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/components/manage/MaybeWrap/MaybeWrap', () => ({
+vi.mock('@plone/volto/components/manage/MaybeWrap/MaybeWrap', () => ({
   __esModule: true,
   default: ({ children, condition, as: Component }) =>
     condition ? <Component>{children}</Component> : <div>{children}</div>,
 }));
 
-jest.mock(
-  '@eeacms/volto-eea-website-theme/components/theme/Banner/View',
-  () => {
-    return function MockBannerView({ data, ...props }) {
+vi.mock('@eeacms/volto-eea-website-theme/components/theme/Banner/View', () => {
+  return {
+    default: function MockBannerView({ data, ...props }) {
       // Safe JSON stringify that handles circular references
       const safeStringify = (obj) => {
         try {
@@ -46,13 +45,13 @@ jest.mock(
           )}
         </div>
       );
-    };
-  },
-);
+    },
+  };
+});
 
-jest.mock('clsx', () => jest.fn((classes) => classes));
+vi.mock('clsx', () => ({ default: vi.fn((classes) => classes) }));
 
-jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+vi.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
   __esModule: true,
   default: ({ className }) => (
     <div data-testid="body-class" data-classname={className} />
@@ -75,13 +74,13 @@ describe('WebReportPage', () => {
 
   beforeEach(() => {
     // Mock document.querySelector for Portal
-    document.querySelector = jest.fn().mockReturnValue({
+    document.querySelector = vi.fn().mockReturnValue({
       tagName: 'HEADER',
     });
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('renders without crashing', () => {
@@ -187,7 +186,7 @@ describe('WebReportPage', () => {
     it('renders children directly on server side', () => {
       // Mock useState to simulate server-side rendering
       const originalUseState = React.useState;
-      React.useState = jest.fn().mockReturnValue([false, jest.fn()]);
+      React.useState = vi.fn().mockReturnValue([false, vi.fn()]);
 
       render(<WebReportPage {...defaultProps} />);
       expect(screen.getByTestId('banner-view')).toBeInTheDocument();
@@ -198,8 +197,8 @@ describe('WebReportPage', () => {
     it('renders in Portal on client side', () => {
       // Mock useState to simulate client-side rendering
       const originalUseState = React.useState;
-      const mockSetIsClient = jest.fn();
-      React.useState = jest.fn().mockReturnValue([true, mockSetIsClient]);
+      const mockSetIsClient = vi.fn();
+      React.useState = vi.fn().mockReturnValue([true, mockSetIsClient]);
 
       render(<WebReportPage {...defaultProps} />);
       expect(screen.getByTestId('portal')).toBeInTheDocument();
@@ -211,9 +210,9 @@ describe('WebReportPage', () => {
       const originalUseState = React.useState;
       const originalUseEffect = React.useEffect;
 
-      const mockSetIsClient = jest.fn();
-      React.useState = jest.fn().mockReturnValue([false, mockSetIsClient]);
-      React.useEffect = jest.fn().mockImplementation((fn) => fn());
+      const mockSetIsClient = vi.fn();
+      React.useState = vi.fn().mockReturnValue([false, mockSetIsClient]);
+      React.useEffect = vi.fn().mockImplementation((fn) => fn());
 
       render(<WebReportPage {...defaultProps} />);
 
@@ -225,7 +224,7 @@ describe('WebReportPage', () => {
   });
 
   it('handles document.querySelector returning null', () => {
-    document.querySelector = jest.fn().mockReturnValue(null);
+    document.querySelector = vi.fn().mockReturnValue(null);
 
     expect(() => {
       render(<WebReportPage {...defaultProps} />);

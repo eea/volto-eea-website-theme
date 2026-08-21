@@ -9,16 +9,16 @@ import GoneView from './GoneView';
 
 const mockStore = configureStore([thunk]);
 
-jest.mock('@eeacms/volto-eea-website-theme/hocs', () => ({
+vi.mock('@eeacms/volto-eea-website-theme/hocs', () => ({
   withRootNavigation: (Component) => Component,
 }));
 
-jest.mock('@plone/volto/helpers/Utils/Utils', () => ({
-  toBackendLang: jest.fn((lang) => lang),
+vi.mock('@plone/volto/helpers/Utils/Utils', () => ({
+  toBackendLang: vi.fn((lang) => lang),
   withServerErrorCode: () => (Component) => Component,
 }));
 
-jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
+vi.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
   __esModule: true,
   default: ({ className, children }) => (
     <div data-testid="body-class" data-classname={className}>
@@ -27,11 +27,11 @@ jest.mock('@plone/volto/helpers/BodyClass/BodyClass', () => ({
   ),
 }));
 
-jest.mock('@plone/volto/actions/navigation/navigation', () => ({
-  getNavigation: jest.fn(() => ({ type: 'GET_NAVIGATION' })),
+vi.mock('@plone/volto/actions/navigation/navigation', () => ({
+  getNavigation: vi.fn(() => ({ type: 'GET_NAVIGATION' })),
 }));
 
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
     settings: {
@@ -77,7 +77,7 @@ describe('GoneView Component', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {

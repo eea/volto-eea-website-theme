@@ -10,7 +10,7 @@ import ADUserGroupSelectWidget, {
 const mockStore = configureStore();
 
 // Mock the getSharing action
-const mockGetSharing = jest.fn(() =>
+const mockGetSharing = vi.fn(() =>
   Promise.resolve({
     entries: [],
   }),
@@ -38,7 +38,7 @@ const defaultProps = {
   id: 'usergroup-field',
   title: 'User/Group field',
   fieldSet: 'default',
-  onChange: jest.fn(),
+  onChange: vi.fn(),
   pathname: '/test-path',
 };
 
@@ -56,15 +56,17 @@ const renderWidget = (props = {}, storeEntries = []) => {
   };
 };
 
-jest.mock('@plone/volto/helpers/Loadable/Loadable');
+vi.mock('@plone/volto/helpers/Loadable/Loadable');
 beforeAll(
   async () =>
-    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
+    await (
+      await import('@plone/volto/helpers/Loadable/Loadable')
+    ).__setLoadables(),
 );
 
 describe('ADUserGroupSelectWidget', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders the widget component', async () => {
@@ -152,7 +154,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('clears selection when clear button is clicked', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const value = [
       {
         id: 'user1',
@@ -199,7 +201,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('component accepts onChange prop and calls it with complete objects', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { container } = renderWidget({ onChange });
 
     await waitFor(() => screen.getByText('User/Group field'));
@@ -488,7 +490,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('handles getSharing prop', async () => {
-    const customGetSharing = jest.fn(() => Promise.resolve({ entries: [] }));
+    const customGetSharing = vi.fn(() => Promise.resolve({ entries: [] }));
 
     renderWidget({ getSharing: customGetSharing });
     await waitFor(() => screen.getByText('User/Group field'));
@@ -941,7 +943,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues finds exact match by id', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -964,7 +966,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues finds match by login', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -987,7 +989,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues finds match by title', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1010,7 +1012,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues finds partial match in login', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1033,7 +1035,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues finds partial match in title', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1056,7 +1058,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues finds partial match in email', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1079,7 +1081,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues handles no exact match but entries exist', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1102,7 +1104,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues handles empty entries array', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [],
       }),
@@ -1138,7 +1140,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues handles object value with only id', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1161,7 +1163,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues handles object value with value field', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1221,7 +1223,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('opens dropdown menu and shows options when searching', async () => {
-    const mockGetSharingWithData = jest.fn(() =>
+    const mockGetSharingWithData = vi.fn(() =>
       Promise.resolve({
         entries: [
           {
@@ -1331,7 +1333,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('handleChange with option missing originalEntry uses label fallback', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const storeEntries = [
       {
         id: 'user1',
@@ -1391,13 +1393,11 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchAvailableChoices handles error gracefully', async () => {
-    const mockGetSharingWithError = jest.fn(() =>
+    const mockGetSharingWithError = vi.fn(() =>
       Promise.reject(new Error('Network error')),
     );
 
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const { container } = renderWidget({
       getSharing: mockGetSharingWithError,
@@ -1418,12 +1418,12 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('fetchSelectedValues handles API error gracefully', async () => {
-    const mockGetSharingWithError = jest.fn(() =>
+    const mockGetSharingWithError = vi.fn(() =>
       Promise.reject(new Error('API Error')),
     );
 
-    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const consoleErrorSpy = jest
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {});
 
@@ -1524,7 +1524,7 @@ describe('ADUserGroupSelectWidget', () => {
   });
 
   test('handleChange sets state with entries not having originalEntry', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const storeEntries = [
       {
         id: 'cacheuser',

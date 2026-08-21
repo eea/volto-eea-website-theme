@@ -7,7 +7,7 @@ import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 
-jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
+vi.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   return {
     __esModule: true,
     default: ({ params }) => {
@@ -16,11 +16,11 @@ jest.mock('@plone/volto/components/theme/Navigation/ContextNavigation', () => {
   };
 });
 
-jest.mock('@plone/volto/helpers/Extensions', () => ({
-  withBlockExtensions: jest.fn((Component) => Component),
+vi.mock('@plone/volto/helpers/Extensions', () => ({
+  withBlockExtensions: vi.fn((Component) => Component),
 }));
 
-jest.mock('@plone/volto/helpers/Url/Url', () => ({
+vi.mock('@plone/volto/helpers/Url/Url', () => ({
   __esModule: true,
   flattenToAppURL: () => '',
 }));

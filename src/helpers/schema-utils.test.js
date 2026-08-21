@@ -5,19 +5,26 @@ import {
   ALIGN_INFO_MAP,
 } from './schema-utils';
 
-jest.mock(
-  '@eeacms/volto-eea-website-theme/icons/image-narrow.svg',
-  () => 'image-narrow-svg',
-);
-jest.mock('@plone/volto/icons/image-fit.svg', () => 'image-fit-svg');
-jest.mock('@plone/volto/icons/image-wide.svg', () => 'image-wide-svg');
-jest.mock('@plone/volto/icons/image-full.svg', () => 'image-full-svg');
-jest.mock('@plone/volto/icons/move-up.svg', () => 'move-up-svg');
-jest.mock('@plone/volto/icons/row.svg', () => 'row-svg');
-jest.mock('@plone/volto/icons/move-down.svg', () => 'move-down-svg');
+vi.mock('@eeacms/volto-eea-website-theme/icons/image-narrow.svg', () => ({
+  default: 'image-narrow-svg',
+}));
+vi.mock('@plone/volto/icons/image-fit.svg', () => ({
+  default: 'image-fit-svg',
+}));
+vi.mock('@plone/volto/icons/image-wide.svg', () => ({
+  default: 'image-wide-svg',
+}));
+vi.mock('@plone/volto/icons/image-full.svg', () => ({
+  default: 'image-full-svg',
+}));
+vi.mock('@plone/volto/icons/move-up.svg', () => ({ default: 'move-up-svg' }));
+vi.mock('@plone/volto/icons/row.svg', () => ({ default: 'row-svg' }));
+vi.mock('@plone/volto/icons/move-down.svg', () => ({
+  default: 'move-down-svg',
+}));
 
-jest.mock('@plone/volto/helpers/Extensions', () => ({
-  addStyling: jest.fn((props) => ({
+vi.mock('@plone/volto/helpers/Extensions', () => ({
+  addStyling: vi.fn((props) => ({
     properties: {
       styles: {
         schema: {

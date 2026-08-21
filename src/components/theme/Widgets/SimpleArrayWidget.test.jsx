@@ -11,7 +11,7 @@ const mockStore = configureStore();
 
 describe('SimpleArrayWidget', () => {
   let store;
-  const mockOnChange = jest.fn();
+  const mockOnChange = vi.fn();
 
   beforeEach(() => {
     store = mockStore({

@@ -3,9 +3,9 @@ import '@testing-library/jest-dom';
 import ErrorBoundary from '@plone/volto/components/theme/Error/ErrorBoundary';
 import withErrorBoundary from './withErrorBoundary';
 
-jest.mock('@plone/volto/components/theme/Error/ErrorBoundary', () => ({
+vi.mock('@plone/volto/components/theme/Error/ErrorBoundary', () => ({
   __esModule: true,
-  default: jest.fn(({ children, fallback }) => children || fallback || null),
+  default: vi.fn(({ children, fallback }) => children || fallback || null),
 }));
 
 // Test components
@@ -20,7 +20,7 @@ const CustomFallback = () => <div>Custom error fallback</div>;
 
 describe('withErrorBoundary HOC', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Basic functionality', () => {
@@ -80,7 +80,7 @@ describe('withErrorBoundary HOC', () => {
     });
 
     it('should call onError callback when provided', () => {
-      const onErrorMock = jest.fn();
+      const onErrorMock = vi.fn();
       const WrappedComponent = withErrorBoundary(TestComponent, {
         onError: onErrorMock,
       });

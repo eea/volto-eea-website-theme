@@ -16,7 +16,7 @@ let mockConfig = {
 };
 
 // Mock the config with a getter so it always returns the current mockConfig
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   get default() {
     return mockConfig;

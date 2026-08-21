@@ -2,56 +2,59 @@ import applyConfig from './index';
 import * as eea from './config';
 import BaseTag from './components/theme/BaseTag';
 
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-design-system/ui/InpageNavigation/InpageNavigation',
-  () => 'MockedInpageNavigation',
+  () => ({ default: 'MockedInpageNavigation' }),
 );
-jest.mock('@eeacms/volto-eea-website-theme/helpers/schema-utils', () => ({
-  addStylingFieldsetSchemaEnhancer: jest.fn(),
+vi.mock('@eeacms/volto-eea-website-theme/helpers/schema-utils', () => ({
+  addStylingFieldsetSchemaEnhancer: vi.fn(),
+  addStylingFieldsetSchemaEnhancerImagePosition: vi.fn(),
 }));
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/CustomCSS/CustomCSS',
-  () => 'MockedCustomCSS',
+  () => ({ default: 'MockedCustomCSS' }),
 );
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/NotFound/NotFound',
-  () => 'MockedNotFound',
+  () => ({ default: 'MockedNotFound' }),
 );
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/DraftBackground/DraftBackground',
-  () => 'MockedDraftBackground',
+  () => ({ default: 'MockedDraftBackground' }),
 );
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/Widgets/TokenWidget',
   () => ({
     TokenWidget: 'MockedTokenWidget',
   }),
 );
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/Widgets/TopicsWidget',
   () => ({
     TopicsWidget: 'MockedThemesWidget',
   }),
 );
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/PrintLoader/PrintLoader',
-  () => 'MockedPrintLoader',
+  () => ({ default: 'MockedPrintLoader' }),
 );
-jest.mock('./components/theme/SubsiteClass', () => 'MockedSubsiteClass');
-jest.mock(
+vi.mock('./components/theme/SubsiteClass', () => ({
+  default: 'MockedSubsiteClass',
+}));
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageView',
-  () => 'MockedHomePageView',
+  () => ({ default: 'MockedHomePageView' }),
 );
-jest.mock(
+vi.mock(
   '@eeacms/volto-eea-website-theme/components/theme/Homepage/HomePageInverseView',
-  () => 'MockedHomePageInverseView',
+  () => ({ default: 'MockedHomePageInverseView' }),
 );
-jest.mock('@plone/volto/components', () => ({
+vi.mock('@plone/volto/components', () => ({
   Icon: 'MockedIcon',
 }));
-jest.mock('superagent', () => ({}));
+vi.mock('superagent', () => ({}));
 
-jest.mock('uuid', () => {
+vi.mock('uuid', () => {
   return {
     v4: () => 'mock-uuid-' + Math.random().toString(36).substr(2, 9),
   };
@@ -284,7 +287,7 @@ describe('applyConfig', () => {
     };
     const config = applyConfig(originalConfig);
 
-    expect(config.settings.eea).toEqual(eea);
+    expect(config.settings.eea).toEqual({ ...eea });
     expect(config.settings.contactForm).toBe('/contact');
     expect(
       config.settings.serverConfig.extractScripts.errorPages,

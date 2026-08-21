@@ -20,15 +20,17 @@ const item = {
   title: 'Test english article',
 };
 
-jest.mock('@plone/volto/helpers/Loadable/Loadable');
+vi.mock('@plone/volto/helpers/Loadable/Loadable');
 beforeAll(
   async () =>
-    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
+    await (
+      await import('@plone/volto/helpers/Loadable/Loadable')
+    ).__setLoadables(),
 );
 
-jest.mock('semantic-ui-react', () => {
-  const React = require('react');
-  const actual = jest.requireActual('semantic-ui-react');
+vi.mock('semantic-ui-react', async () => {
+  const React = (await vi.importActual('react')).default;
+  const actual = await vi.importActual('semantic-ui-react');
   const Dropdown = React.forwardRef(({ text, trigger, ...props }, ref) => {
     const resolvedTrigger =
       trigger || (typeof text === 'function' ? text() : text);
@@ -80,7 +82,15 @@ describe('Header', () => {
         </Router>
       </Provider>,
     );
-    expect(container).toMatchSnapshot();
+    expect(container.querySelector('header.eea.header')).toBeInTheDocument();
+    expect(container.querySelector('.main.bar')).toHaveClass('transparency');
+    expect(container.querySelector('img.eea-logo')).toHaveAttribute(
+      'src',
+      'eea-logo.svg',
+    );
+    expect(
+      container.querySelector('nav a[title="Test english article"]'),
+    ).toHaveAttribute('href', '/');
   });
 
   it('renders a header component with homepage_view layout and translations', async () => {

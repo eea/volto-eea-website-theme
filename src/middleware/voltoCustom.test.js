@@ -1,8 +1,8 @@
 import registervoltoCustomMiddleware from './voltoCustom';
 import { getBackendResourceWithAuth } from '@eeacms/volto-eea-website-theme/helpers';
 
-jest.mock('@eeacms/volto-eea-website-theme/helpers', () => ({
-  getBackendResourceWithAuth: jest.fn(),
+vi.mock('@eeacms/volto-eea-website-theme/helpers', () => ({
+  getBackendResourceWithAuth: vi.fn(),
 }));
 
 describe('voltoCustomMiddleware', () => {
@@ -14,26 +14,26 @@ describe('voltoCustomMiddleware', () => {
       headers: {},
     };
     res = {
-      set: jest.fn(),
-      status: jest.fn(),
-      send: jest.fn(),
+      set: vi.fn(),
+      status: vi.fn(),
+      send: vi.fn(),
     };
-    next = jest.fn();
+    next = vi.fn();
 
     express = {
-      Router: jest.fn(() => ({
-        all: jest.fn(),
+      Router: vi.fn(() => ({
+        all: vi.fn(),
         id: null,
       })),
     };
 
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('registervoltoCustomMiddleware', () => {
     it('should register middleware with correct route pattern', () => {
       const mockRouter = {
-        all: jest.fn(),
+        all: vi.fn(),
         id: null,
       };
       express.Router.mockReturnValue(mockRouter);
@@ -54,7 +54,7 @@ describe('voltoCustomMiddleware', () => {
 
     beforeEach(() => {
       const mockRouter = {
-        all: jest.fn((route, fn) => {
+        all: vi.fn((route, fn) => {
           middlewareFunction = fn;
         }),
         id: null,
@@ -66,7 +66,7 @@ describe('voltoCustomMiddleware', () => {
     describe('successful resource fetching', () => {
       it('should forward specified headers and send resource body', async () => {
         const mockResource = {
-          get: jest.fn((header) => {
+          get: vi.fn((header) => {
             const headers = {
               'Accept-Ranges': 'bytes',
               'Cache-Control': 'public, max-age=3600',
@@ -95,7 +95,7 @@ describe('voltoCustomMiddleware', () => {
 
       it('should only forward headers that exist in the resource', async () => {
         const mockResource = {
-          get: jest.fn((header) => {
+          get: vi.fn((header) => {
             return header === 'Content-Type' ? 'text/css' : null;
           }),
           statusCode: 200,
@@ -114,7 +114,7 @@ describe('voltoCustomMiddleware', () => {
 
       it('should handle different status codes', async () => {
         const mockResource = {
-          get: jest.fn(() => null),
+          get: vi.fn(() => null),
           statusCode: 404,
           body: 'Not Found',
         };
@@ -129,7 +129,7 @@ describe('voltoCustomMiddleware', () => {
 
       it('should handle all specified headers', async () => {
         const mockResource = {
-          get: jest.fn((header) => {
+          get: vi.fn((header) => {
             const headers = {
               'Accept-Ranges': 'bytes',
               'Cache-Control': 'public, max-age=3600',
@@ -172,15 +172,14 @@ describe('voltoCustomMiddleware', () => {
     });
 
     describe('error handling and fallback', () => {
-      it('should return default CSS when getBackendResourceWithAuth fails', (done) => {
+      it('should return default CSS when getBackendResourceWithAuth fails', async () => {
         getBackendResourceWithAuth.mockRejectedValue(
           new Error('Backend error'),
         );
 
         middlewareFunction(req, res, next);
 
-        // Use setTimeout to wait for the promise to resolve and catch block to execute
-        setTimeout(() => {
+        await vi.waitFor(() => {
           expect(res.set).toHaveBeenCalledWith(
             'Content-Type',
             'text/css; charset=utf-8',
@@ -189,16 +188,15 @@ describe('voltoCustomMiddleware', () => {
           expect(res.send).toHaveBeenCalledWith(
             '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
           );
-          done();
-        }, 0);
+        });
       });
 
-      it('should handle network timeout errors', (done) => {
+      it('should handle network timeout errors', async () => {
         getBackendResourceWithAuth.mockRejectedValue(new Error('ETIMEDOUT'));
 
         middlewareFunction(req, res, next);
 
-        setTimeout(() => {
+        await vi.waitFor(() => {
           expect(res.set).toHaveBeenCalledWith(
             'Content-Type',
             'text/css; charset=utf-8',
@@ -207,16 +205,15 @@ describe('voltoCustomMiddleware', () => {
           expect(res.send).toHaveBeenCalledWith(
             '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
           );
-          done();
-        }, 0);
+        });
       });
 
-      it('should handle authentication errors', (done) => {
+      it('should handle authentication errors', async () => {
         getBackendResourceWithAuth.mockRejectedValue(new Error('Unauthorized'));
 
         middlewareFunction(req, res, next);
 
-        setTimeout(() => {
+        await vi.waitFor(() => {
           expect(res.set).toHaveBeenCalledWith(
             'Content-Type',
             'text/css; charset=utf-8',
@@ -225,8 +222,7 @@ describe('voltoCustomMiddleware', () => {
           expect(res.send).toHaveBeenCalledWith(
             '/* Override this by adding a File called voltoCustom.css to backend at portal_skins/custom/manage_main */',
           );
-          done();
-        }, 0);
+        });
       });
     });
 
@@ -265,7 +261,7 @@ describe('voltoCustomMiddleware', () => {
 
       it('should handle empty response body', async () => {
         const mockResource = {
-          get: jest.fn(() => null),
+          get: vi.fn(() => null),
           statusCode: 200,
           body: '',
         };
