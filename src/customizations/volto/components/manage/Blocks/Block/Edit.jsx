@@ -15,7 +15,9 @@ import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrow
 import ViewDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultView';
 import EditDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultEdit';
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
-import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
+// Volto 17 requires this barrel export to avoid an InlineForm import cycle.
+// eslint-disable-next-line no-restricted-imports
+import { BlockSettingsSidebar } from '@plone/volto/components';
 import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
 // setUIState was introduced in Volto 18; provide a compatible action for Volto 17
 const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });

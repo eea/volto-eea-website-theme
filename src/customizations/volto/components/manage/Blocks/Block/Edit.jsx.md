@@ -35,6 +35,12 @@ onMouseDown={(event) => {
 
 The click handler now also forwards modified clicks on the active block. Ordinary clicks on the active block remain ignored. The containing selection handler can therefore promote the active block to multi-selection without changing ordinary editing behavior.
 
+## Volto 17 and 18 compatibility
+
+The override imports `BlockSettingsSidebar` from the public `@plone/volto/components` barrel shared by Volto 17 and 18. Importing Volto 18's deep `Block/Settings` module directly creates a circular initialization path in Volto 17 (`Settings` → `BlockDataForm` → the components barrel) and crashes the server while resolving `InlineForm` before Cypress can start. The other components retain Volto 18's preferred direct imports.
+
+Volto 17 also has no `setUIState` action or `form.ui` state. The local compatible action and `formUI` fallback preserve hover state on Volto 17 while continuing to use `form.ui` on Volto 18.
+
 ## Preserved behavior
 
 - Ordinary mouse clicks can still focus and select blocks.
