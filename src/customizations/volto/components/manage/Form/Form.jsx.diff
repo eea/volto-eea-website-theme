@@ -1,6 +1,15 @@
 --- @plone/volto@18.35.1/components/manage/Form/Form.jsx
 +++ src/customizations/volto/components/manage/Form/Form.jsx
-@@ -63,7 +63,7 @@
+@@ -1,7 +1,8 @@
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+ import Toast from '@plone/volto/components/manage/Toast/Toast';
+-import { Field, BlocksForm } from '@plone/volto/components/manage/Form';
++import Field from '@plone/volto/components/manage/Form/Field';
++import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
+ import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
+ import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
+ 
+@@ -63,7 +64,7 @@
   * @class Form
   * @extends Component
   */

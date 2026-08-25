@@ -5,7 +5,8 @@
 
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import Toast from '@plone/volto/components/manage/Toast/Toast';
-import { Field, BlocksForm } from '@plone/volto/components/manage/Form';
+import Field from '@plone/volto/components/manage/Form/Field';
+import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
 import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
 import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
 import { difference } from '@plone/volto/helpers/Utils/Utils';
