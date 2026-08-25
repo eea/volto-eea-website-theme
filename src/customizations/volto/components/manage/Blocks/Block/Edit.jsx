@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import { defineMessages, injectIntl } from 'react-intl';
 import cx from 'classnames';
 import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
-import { setUIState } from '@plone/volto/actions/form/form';
 import config from '@plone/volto/registry';
 import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrowser';
 import ViewDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultView';
@@ -18,6 +17,8 @@ import EditDefaultBlock from '@plone/volto/components/manage/Blocks/Block/Defaul
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
 import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
+// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
+const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
 
 const messages = defineMessages({
   unknownBlock: {
@@ -264,7 +265,7 @@ export default compose(
   withObjectBrowser,
   connect(
     (state, props) => ({
-      hovered: state.form?.ui.hovered || null,
+      hovered: state.form?.ui?.hovered ?? state.formUI?.hovered ?? null,
       sidebarTab: state.sidebar?.tab,
     }),
     { setSidebarTab, setUIState },

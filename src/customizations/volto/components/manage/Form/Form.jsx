@@ -54,9 +54,11 @@ import {
   resetMetadataFocus,
   setSidebarTab,
 } from '@plone/volto/actions/sidebar/sidebar';
-import { setFormData, setUIState } from '@plone/volto/actions/form/form';
+import { setFormData } from '@plone/volto/actions/form/form';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
+// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
+const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
 
 /**
  * Form container class.
@@ -1116,7 +1118,7 @@ export default compose(
     (state, props) => ({
       content: state.content.data,
       globalData: state.form?.global,
-      uiState: state.form?.ui,
+      uiState: state.form?.ui ?? state.formUI,
       metadataFieldsets: state.sidebar?.metadataFieldsets,
       metadataFieldFocus: state.sidebar?.metadataFieldFocus,
     }),
