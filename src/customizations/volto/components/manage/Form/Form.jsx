@@ -57,7 +57,6 @@ import {
 import { setFormData, setUIState } from '@plone/volto/actions/form/form';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
-import SlotRenderer from '@plone/volto/components/theme/SlotRenderer/SlotRenderer';
 
 /**
  * Form container class.
@@ -749,12 +748,6 @@ export class Form extends Component {
       // but draftJS don't like it much and the hydration gets messed up
       this.state.isClient && (
         <>
-          <SlotRenderer
-            name="aboveContent"
-            content={this.props.content}
-            navRoot={navRoot}
-          />
-
           <Container>
             <>
               <BlocksToolbar
@@ -895,12 +888,6 @@ export class Form extends Component {
                   </UiForm>,
                   document.getElementById('sidebar-metadata'),
                 )}
-
-              <SlotRenderer
-                name="belowContent"
-                content={this.props.content}
-                navRoot={navRoot}
-              />
             </>
           </Container>
         </>

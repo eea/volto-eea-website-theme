@@ -9,6 +9,8 @@
  import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
  import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
  
++// SlotRenderer import removed for Volto 17 compatibility (introduced in Volto 18)
++
 @@ -63,7 +64,7 @@
   * @class Form
   * @extends Component
