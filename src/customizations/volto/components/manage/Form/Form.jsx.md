@@ -15,7 +15,7 @@ now-null active selection on every subsequent click. This creates states such
 as:
 
 ```js
-multiSelected: ['block-a', 'block-b', null, 'block-c', null]
+multiSelected: ['block-a', 'block-b', null, 'block-c', null];
 ```
 
 The null entries can leave clipboard controls visible when no block is visibly
