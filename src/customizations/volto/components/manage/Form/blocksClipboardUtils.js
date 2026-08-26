@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { load } from 'redux-localstorage-simple';
 import {
+  getBlocks,
   getBlocksFieldname,
   getBlocksLayoutFieldname,
   hasBlocksData,
@@ -17,10 +18,9 @@ export function cloneBlocks(blocksData) {
     const blocksFieldname = getBlocksFieldname(blocksData);
     const blocksLayoutFieldname = getBlocksLayoutFieldname(blocksData);
 
-    const cloneWithIds = Object.keys(blocksData.blocks)
-      .map((key) => {
-        const block = blocksData.blocks[key];
-        const blockConfig = config.blocks.blocksConfig[blocksData['@type']];
+    const cloneWithIds = getBlocks(blocksData)
+      .map(([, block]) => {
+        const blockConfig = config.blocks.blocksConfig[block['@type']];
         return blockConfig?.cloneData
           ? blockConfig.cloneData(block)
           : [uuid(), cloneBlocks(block)];
