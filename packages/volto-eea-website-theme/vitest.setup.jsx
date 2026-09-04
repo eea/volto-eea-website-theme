@@ -4,6 +4,8 @@ import thunk from 'redux-thunk';
 import { blocksConfig } from '@plone/volto/config/Blocks';
 import installSlate from '@plone/volto-slate/index';
 
+global.jest = vi;
+
 // React Testing Library still checks the Jest-compatible timer API when
 // Vitest fake timers are active.
 global.jest = {
