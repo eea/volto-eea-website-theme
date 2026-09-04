@@ -254,7 +254,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
               <a
                 href="https://europa.eu/european-union/contact/institutions-bodies_en"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 onKeyDown={(evt) => evt.stopPropagation()}
               >
                 See all EU institutions and bodies
@@ -278,7 +278,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
                       href={item.href}
                       className="site"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       onKeyDown={(evt) => evt.stopPropagation()}
                     >
                       {item.title}

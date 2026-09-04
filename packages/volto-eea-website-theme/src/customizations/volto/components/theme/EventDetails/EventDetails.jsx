@@ -131,7 +131,11 @@ const EventDetails = ({ content, display_as = 'aside' }) => {
             {intl.formatMessage(messages.website)}
           </Header>
           <p>
-            <a href={content.event_url} target="_blank" rel="noopener">
+            <a
+              href={content.event_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {intl.formatMessage(messages.visitWebsite)}
             </a>
           </p>
@@ -143,7 +147,7 @@ const EventDetails = ({ content, display_as = 'aside' }) => {
           className="ics-download"
           target="_blank"
           href={`${expandToBackendURL(content['@id'])}/ics_view`}
-          rel="noopener"
+          rel="noopener noreferrer"
         >
           {intl.formatMessage(messages.downloadEvent)}
         </a>
