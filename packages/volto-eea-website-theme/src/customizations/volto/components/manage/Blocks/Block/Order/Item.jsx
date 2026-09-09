@@ -5,11 +5,12 @@ import includes from 'lodash/includes';
 import isBoolean from 'lodash/isBoolean';
 import cx from 'classnames';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import { setUIState } from '@plone/volto/actions/form/form';
 import config from '@plone/volto/registry';
 
 import deleteSVG from '@plone/volto/icons/delete.svg';
 import dragSVG from '@plone/volto/icons/drag.svg';
+// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
+const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
 
 // TEMPORARY PATCH (Volto issue #6481):
 // Remove this customization once the upstream fixes are released and adopted.
