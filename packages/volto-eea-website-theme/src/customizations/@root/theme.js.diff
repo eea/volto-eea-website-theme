@@ -1,0 +1,5 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/@root/theme.js
+@@ -0,0 +1,2 @@
++import '@eeacms/volto-eea-design-system/semantic.less';
++import './theme-extras.less';

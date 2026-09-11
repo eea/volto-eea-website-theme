@@ -1,0 +1,170 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Breadcrumbs > renders a breadcrumbs component 1`] = `
+[
+  <div
+    id="page-header"
+  />,
+  <div
+    className="ui vertical attached segment breadcrumbs"
+  >
+    <div
+      className="ui container"
+    >
+      <nav
+        aria-label="Breadcrumbs"
+        className="ui tiny breadcrumb"
+      >
+        <ol
+          aria-label="Breadcrumbs navigation"
+        >
+          <li
+            className="breadcrumbs-home-item"
+          >
+            <a
+              className="section"
+              href="/"
+              onClick={[Function]}
+              title="Home"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-home-2-line breadcrumbs-home-icon"
+                onClick={[Function]}
+              />
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <a
+              className="section"
+              href="/blog"
+              onClick={[Function]}
+            >
+              Blog
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <div
+              className="active section"
+              onClick={[Function]}
+            >
+              My first blog
+            </div>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>,
+]
+`;
+
+exports[`Breadcrumbs > renders breadcrumbs with contentTypesAsBreadcrumbSection 1`] = `
+[
+  <div
+    id="page-header"
+  />,
+  <div
+    className="ui vertical attached segment breadcrumbs"
+  >
+    <div
+      className="ui container"
+    >
+      <nav
+        aria-label="Breadcrumbs"
+        className="ui tiny breadcrumb"
+      >
+        <ol
+          aria-label="Breadcrumbs navigation"
+        >
+          <li
+            className="breadcrumbs-home-item"
+          >
+            <a
+              className="section"
+              href="/"
+              onClick={[Function]}
+              title="Home"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-home-2-line breadcrumbs-home-icon"
+                onClick={[Function]}
+              />
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <a
+              className="section"
+              href="/"
+              onClick={[Function]}
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <div
+              className="section"
+              onClick={[Function]}
+            >
+              News
+            </div>
+          </li>
+          <li>
+            <div
+              className="divider"
+            >
+              <i
+                aria-hidden="true"
+                className="icon ri-arrow-right-s-line"
+                onClick={[Function]}
+              />
+            </div>
+            <div
+              className="active section"
+              onClick={[Function]}
+            >
+              Latest Update
+            </div>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>,
+]
+`;

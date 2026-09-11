@@ -1,0 +1,177 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Workflow/Workflow.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Workflow/Workflow.jsx
+@@ -1,19 +1,19 @@
+-import { useEffect } from 'react';
++import React, { useEffect } from 'react';
+ import PropTypes from 'prop-types';
+ import { compose } from 'redux';
+ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+ import uniqBy from 'lodash/uniqBy';
+ import { toast } from 'react-toastify';
+ import { defineMessages, useIntl } from 'react-intl';
+-
++import { useHistory } from 'react-router-dom';
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+ import Toast from '@plone/volto/components/manage/Toast/Toast';
+-import { FormFieldWrapper } from '@plone/volto/components/manage/Widgets';
++import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
+ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+ import {
+   getWorkflowOptions,
+   getCurrentStateMapping,
+-} from '@plone/volto/helpers/Workflows/Workflows';
++} from '@plone/volto/helpers//Workflows/Workflows';
+ import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
+ 
+ import { getContent } from '@plone/volto/actions/content/content';
+@@ -34,6 +34,10 @@
+     id: 'No workflow',
+     defaultMessage: 'No workflow',
+   },
++  notAllowedToUpdateWorkflow: {
++    id: 'notAllowedToUpdateWorkflow',
++    defaultMessage: 'Please fill out all the required fields',
++  },
+   state: {
+     id: 'State',
+     defaultMessage: 'State',
+@@ -167,20 +171,59 @@
+     (state) => state.workflow.transitions,
+     shallowEqual,
+   );
++  const editingProgressSteps = useSelector((state) =>
++    state?.editingProgress?.editing?.loaded === true
++      ? state?.editingProgress?.result?.steps
++      : [],
++  );
++  const workflowLoaded = useSelector((state) => state.workflow.get?.loaded);
+   const loaded = useSelector((state) => state.workflow.transition.loaded);
+   const currentStateValue = useSelector(
+     (state) => getCurrentStateMapping(state.workflow.currentState),
+     shallowEqual,
+   );
+ 
+-  return { loaded, history, transitions, currentStateValue };
++  return {
++    loaded,
++    history,
++    transitions,
++    currentStateValue,
++    workflowLoaded,
++    editingProgressSteps,
++  };
+ }
+ 
++const filter_remaining_steps = (values, key) => {
++  return values.filter((value) => {
++    const is_not_ready = !value.is_ready;
++
++    if (!is_not_ready) {
++      return false;
++    }
++
++    const states = value.states;
++    const required_for_all = states?.indexOf('all') !== -1;
++
++    return (
++      (is_not_ready && required_for_all) ||
++      (is_not_ready && states?.indexOf(key) !== -1)
++    );
++  });
++};
++
+ const Workflow = (props) => {
+   const intl = useIntl();
++  const history = useHistory();
+   const dispatch = useDispatch();
+-  const { loaded, transitions, currentStateValue } = useWorkflow();
++  const {
++    loaded,
++    currentStateValue,
++    transitions,
++    workflowLoaded,
++    editingProgressSteps,
++  } = useWorkflow();
+   const content = useSelector((state) => state.content?.data, shallowEqual);
++  const [selectedOption, setSelectedOption] = React.useState(currentStateValue);
+   const { pathname } = props;
+ 
+   useEffect(() => {
+@@ -189,19 +232,55 @@
+   }, [dispatch, pathname, loaded]);
+ 
+   const transition = (selectedOption) => {
+-    dispatch(transitionWorkflow(flattenToAppURL(selectedOption.url)));
+-    toast.success(
+-      <Toast
+-        success
+-        title={intl.formatMessage(messages.messageUpdated)}
+-        content=""
+-      />,
+-    );
++    if (
++      filter_remaining_steps(
++        editingProgressSteps,
++        props?.content?.review_state || '',
++      ).length === 0
++    ) {
++      dispatch(transitionWorkflow(flattenToAppURL(selectedOption.url)));
++      setSelectedOption(selectedOption);
++      toast.success(
++        <Toast
++          success
++          title={intl.formatMessage(messages.messageUpdated)}
++          content=""
++        />,
++      );
++    } else {
++      toast.error(
++        <Toast
++          error
++          title={intl.formatMessage(messages.notAllowedToUpdateWorkflow)}
++          content=""
++        />,
++      );
++    }
+   };
+ 
++  useEffect(() => {
++    if (
++      selectedOption?.value === 'createNewVersion' &&
++      workflowLoaded &&
++      loaded
++    ) {
++      history.push(`${pathname}.1`);
++    }
++  }, [history, pathname, selectedOption?.value, workflowLoaded, loaded]);
++
+   const { Placeholder } = props.reactSelect.components;
+   const Select = props.reactSelect.default;
+ 
++  const filterd_transitions = transitions.filter((transition) => {
++    if (
++      transition?.['@id']?.endsWith('markForDeletion') &&
++      props.content?.review_state === 'published'
++    ) {
++      return false;
++    }
++    return true;
++  });
++
+   return (
+     <FormFieldWrapper
+       id="state-select"
+@@ -213,9 +292,11 @@
+         name="state-select"
+         className="react-select-container"
+         classNamePrefix="react-select"
+-        isDisabled={!content.review_state || transitions.length === 0}
++        isDisabled={!content.review_state || filterd_transitions.length === 0}
+         options={uniqBy(
+-          transitions.map((transition) => getWorkflowOptions(transition)),
++          filterd_transitions.map((transition) =>
++            getWorkflowOptions(transition),
++          ),
+           'label',
+         ).concat(currentStateValue)}
+         styles={customSelectStyles}

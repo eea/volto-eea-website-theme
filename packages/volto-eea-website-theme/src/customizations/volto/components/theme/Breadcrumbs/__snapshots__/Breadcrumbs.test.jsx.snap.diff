@@ -1,0 +1,230 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
+@@ -1,66 +1,170 @@
+-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
++// Jest Snapshot v1, https://goo.gl/fbAQLP
+ 
+-exports[`Breadcrumbs > renders a breadcrumbs component 1`] = `
+-<div
+-  aria-label="Breadcrumbs"
+-  className="ui secondary vertical segment breadcrumbs"
+-  role="navigation"
+->
++exports[`Breadcrumbs renders a breadcrumbs component 1`] = `
++Array [
+   <div
+-    className="ui container"
++    id="page-header"
++  />,
++  <div
++    className="ui vertical attached segment breadcrumbs"
+   >
+     <div
+-      className="ui breadcrumb"
++      className="ui container"
+     >
+-      <a
+-        className="section"
+-        href="/"
+-        onClick={[Function]}
+-        title="Home"
++      <nav
++        aria-label="Breadcrumbs"
++        className="ui tiny breadcrumb"
+       >
+-        <svg
+-          className="icon"
+-          dangerouslySetInnerHTML={
+-            {
+-              "__html": "<g fill-rule="evenodd"><path d="M18 4.826 4.476 13.148 5.524 14.851 18 7.174 30.476 14.851 31.524 13.148zM25 27 21 27 21 19 15 19 15 27 11 27 11 15 9 15 9 29 17 29 17 21 19 21 19 29 27 29 27 15 25 15z"/></g>",
+-            }
+-          }
+-          onClick={null}
+-          style={
+-            {
+-              "fill": "currentColor",
+-              "height": "18px",
+-              "width": "auto",
+-            }
+-          }
+-          viewBox="0 0 36 36"
+-          xmlns="http://www.w3.org/2000/svg"
+-        />
+-      </a>
+-      <div
+-        className="divider"
++        <ol
++          aria-label="Breadcrumbs navigation"
++        >
++          <li
++            className="breadcrumbs-home-item"
++          >
++            <a
++              className="section"
++              href="/"
++              onClick={[Function]}
++              title="Home"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-home-2-line breadcrumbs-home-icon"
++                onClick={[Function]}
++              />
++            </a>
++          </li>
++          <li>
++            <div
++              className="divider"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-arrow-right-s-line"
++                onClick={[Function]}
++              />
++            </div>
++            <a
++              className="section"
++              href="/blog"
++              onClick={[Function]}
++            >
++              Blog
++            </a>
++          </li>
++          <li>
++            <div
++              className="divider"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-arrow-right-s-line"
++                onClick={[Function]}
++              />
++            </div>
++            <div
++              className="active section"
++              onClick={[Function]}
++            >
++              My first blog
++            </div>
++          </li>
++        </ol>
++      </nav>
++    </div>
++  </div>,
++]
++`;
++
++exports[`Breadcrumbs renders breadcrumbs with contentTypesAsBreadcrumbSection 1`] = `
++Array [
++  <div
++    id="page-header"
++  />,
++  <div
++    className="ui vertical attached segment breadcrumbs"
++  >
++    <div
++      className="ui container"
++    >
++      <nav
++        aria-label="Breadcrumbs"
++        className="ui tiny breadcrumb"
+       >
+-        /
+-      </div>
+-      <a
+-        className="section"
+-        href="/blog"
+-        onClick={[Function]}
+-      >
+-        Blog
+-      </a>
+-      <div
+-        className="divider"
+-      >
+-        /
+-      </div>
+-      <div
+-        className="active section"
+-        onClick={[Function]}
+-      >
+-        My first blog
+-      </div>
++        <ol
++          aria-label="Breadcrumbs navigation"
++        >
++          <li
++            className="breadcrumbs-home-item"
++          >
++            <a
++              className="section"
++              href="/"
++              onClick={[Function]}
++              title="Home"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-home-2-line breadcrumbs-home-icon"
++                onClick={[Function]}
++              />
++            </a>
++          </li>
++          <li>
++            <div
++              className="divider"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-arrow-right-s-line"
++                onClick={[Function]}
++              />
++            </div>
++            <a
++              className="section"
++              href="/"
++              onClick={[Function]}
++            >
++              Home
++            </a>
++          </li>
++          <li>
++            <div
++              className="divider"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-arrow-right-s-line"
++                onClick={[Function]}
++              />
++            </div>
++            <div
++              className="section"
++              onClick={[Function]}
++            >
++              News
++            </div>
++          </li>
++          <li>
++            <div
++              className="divider"
++            >
++              <i
++                aria-hidden="true"
++                className="icon ri-arrow-right-s-line"
++                onClick={[Function]}
++              />
++            </div>
++            <div
++              className="active section"
++              onClick={[Function]}
++            >
++              Latest Update
++            </div>
++          </li>
++        </ol>
++      </nav>
+     </div>
+-  </div>
+-</div>
++  </div>,
++]
+ `;

@@ -1,0 +1,9 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Widgets/README.md
+@@ -0,0 +1,6 @@
++### Customizations
++
++- Customized ObjectBrowserWidget to preserve anchor links in the manually pasted internal URL.
++
++- Customized NumberWidget to parse the number input and convert it to a number.
++  [ichim-david refs #280463]

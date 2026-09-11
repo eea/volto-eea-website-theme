@@ -1,0 +1,43 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/View/EventDatesInfo.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/View/EventDatesInfo.jsx
+@@ -1,11 +1,13 @@
++/* Original: https://github.com/plone/volto/blob/16.x.x/src/components/theme/View/EventDatesInfo.jsx */
++
+ import React from 'react';
+ import PropTypes from 'prop-types';
+ import { List } from 'semantic-ui-react';
+ import cx from 'classnames';
+-
+-import { toBackendLang } from '@plone/volto/helpers/Utils/Utils';
+ import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
+-import { useSelector } from 'react-redux';
++import config from '@plone/volto/registry';
++// import { toBackendLang } from '@plone/volto/helpers';
++// import { useSelector } from 'react-redux';
+ 
+ export const datesForDisplay = (start, end, moment) => {
+   const mStart = moment(start);
+@@ -26,16 +28,21 @@
+ };
+ 
+ const When_ = ({ start, end, whole_day, open_end, moment: momentlib }) => {
+-  const lang = useSelector((state) => state.intl.locale);
++  // Customization:
++  // Fix date format by using dateLocale instead of language from Redux
++  // const lang = useSelector((state) => state.intl.locale);
++  const dateLocale = config.settings.dateLocale || 'en-gb';
+ 
+   const moment = momentlib.default;
+-  moment.locale(toBackendLang(lang));
++  moment.locale(dateLocale);
++  // end customization
+ 
+   const datesInfo = datesForDisplay(start, end, moment);
+   if (!datesInfo) {
+     return;
+   }
+   // TODO I18N INTL
++
+   return (
+     <p
+       className={cx('event-when', {

@@ -1,0 +1,211 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Footer/Footer.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Footer/Footer.jsx
+@@ -4,129 +4,93 @@
+  */
+ 
+ import React from 'react';
+-import { Container, List, Segment } from 'semantic-ui-react';
+-import map from 'lodash/map';
+-import { FormattedMessage, defineMessages, injectIntl } from 'react-intl';
+ import { useSelector, shallowEqual } from 'react-redux';
+-import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
+-import { flattenToAppURL, addAppURL } from '@plone/volto/helpers/Url/Url';
++import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
++import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
++import config from '@plone/volto/registry';
++import isArray from 'lodash/isArray';
+ 
+-const messages = defineMessages({
+-  copyright: {
+-    id: 'Copyright',
+-    defaultMessage: 'Copyright',
+-  },
+-});
+-
+-/**
+- * Component to display the footer.
+- * @function Footer
+- * @param {Object} intl Intl object
+- * @returns {string} Markup of the component
+- */
+-const Footer = ({ intl }) => {
+-  const { siteActions = [] } = useSelector(
++const Footer = () => {
++  const { eea } = config.settings;
++  const {
++    footerActions,
++    copyrightActions,
++    socialActions,
++    contactActions,
++    contactExtraActions,
++  } = useSelector(
+     (state) => ({
+-      siteActions: state.actions?.actions?.site_actions,
++      footerActions: state.actions?.actions?.footer_actions,
++      copyrightActions: state.actions?.actions?.copyright_actions,
++      socialActions: state.actions?.actions?.social_actions,
++      contactActions: state.actions?.actions?.contact_actions,
++      contactExtraActions: state.actions?.actions?.contact_extra_actions,
+     }),
+     shallowEqual,
+   );
++  // ZMI > portal_actions > footer_actions
++  const actions = isArray(footerActions)
++    ? footerActions.map((action) => ({
++        title: action.title,
++        url: flattenToAppURL(action.url),
++      }))
++    : eea.footerOpts.actions;
+ 
++  // ZMI > portal_actions > copyright_actions
++  const copyright = isArray(copyrightActions)
++    ? copyrightActions.map((action) => ({
++        title: action.title,
++        site: action.title,
++        url: flattenToAppURL(action.url),
++      }))
++    : eea.footerOpts.copyright;
++
++  // ZMI > portal_actions > social_actions
++  const social = isArray(socialActions)
++    ? socialActions.map((action) => ({
++        name: action.id,
++        icon: action.icon,
++        url: action.url,
++      }))
++    : eea.footerOpts.social;
++
++  // ZMI > portal_actions > contact_actions
++  const contacts = isArray(contactActions)
++    ? contactActions.map((action, idx) => ({
++        text: action.title,
++        icon: action.icon,
++        url: flattenToAppURL(action.url),
++        children:
++          idx === 0
++            ? (contactExtraActions || []).map((child) => ({
++                text: child.title,
++                icon: child.icon,
++                url: flattenToAppURL(child.url),
++              }))
++            : [],
++      }))
++    : eea.footerOpts.contacts;
++
++  // Update options with actions from backend
++  const options = {
++    ...eea.footerOpts,
++    social,
++    contacts,
++  };
++
+   return (
+-    <Segment
+-      role="contentinfo"
+-      vertical
+-      padded
+-      inverted
+-      color="grey"
+-      textAlign="center"
+-      id="footer"
+-      aria-label="Footer"
+-      tabIndex="-1"
+-    >
+-      <Container>
+-        <Segment basic inverted color="grey" className="discreet">
+-          <FormattedMessage
+-            id="The {plonecms} is {copyright} 2000-{current_year} by the {plonefoundation} and friends."
+-            defaultMessage="The {plonecms} is {copyright} 2000-{current_year} by the {plonefoundation} and friends."
+-            values={{
+-              plonecms: (
+-                <FormattedMessage
+-                  id="Plone{reg} Open Source CMS/WCM"
+-                  defaultMessage="Plone{reg} Open Source CMS/WCM"
+-                  values={{ reg: <sup>®</sup> }}
+-                />
+-              ),
+-              copyright: (
+-                <abbr title={intl.formatMessage(messages.copyright)}>©</abbr>
+-              ),
+-              current_year: new Date().getFullYear(),
+-              plonefoundation: (
+-                <a className="item" href="http://plone.org/foundation">
+-                  <FormattedMessage
+-                    id="Plone Foundation"
+-                    defaultMessage="Plone Foundation"
+-                  />
+-                </a>
+-              ),
+-            }}
+-          />{' '}
+-          <FormattedMessage
+-            id="Distributed under the {license}."
+-            defaultMessage="Distributed under the {license}."
+-            values={{
+-              license: (
+-                <a
+-                  className="item"
+-                  href="http://creativecommons.org/licenses/GPL/2.0/"
+-                >
+-                  <FormattedMessage
+-                    id="GNU GPL license"
+-                    defaultMessage="GNU GPL license"
+-                  />
+-                </a>
+-              ),
+-            }}
+-          />
+-        </Segment>
+-        <List horizontal inverted>
+-          {siteActions?.length
+-            ? map(siteActions, (item) => (
+-                <div role="listitem" className="item" key={item.id}>
+-                  <UniversalLink
+-                    className="item"
+-                    href={
+-                      item.url ? flattenToAppURL(item.url) : addAppURL(item.id)
+-                    }
+-                  >
+-                    {item?.title}
+-                  </UniversalLink>
+-                </div>
+-              ))
+-            : null}
+-          <div role="listitem" className="item">
+-            <a className="item" href="https://plone.org">
+-              <FormattedMessage
+-                id="Powered by Plone & Python"
+-                defaultMessage="Powered by Plone & Python"
+-              />
+-            </a>
+-          </div>
+-        </List>
+-      </Container>
+-    </Segment>
++    <EEAFooter>
++      <EEAFooter.Header>{eea.footerOpts.logosHeader}</EEAFooter.Header>
++      <EEAFooter.SubFooter {...options} />
++      <EEAFooter.Header>{eea.footerOpts.header}</EEAFooter.Header>
++      <EEAFooter.SitesButton
++        buttonName={eea.footerOpts.buttonName}
++        hrefButton={eea.footerOpts.hrefButton}
++      />
++      <EEAFooter.Social {...options} />
++      <EEAFooter.Actions actions={actions} copyright={copyright} />
++    </EEAFooter>
+   );
+ };
+ 
+-/**
+- * Property types.
+- * @property {Object} propTypes Property types.
+- * @static
+- */
+-Footer.propTypes = {
+-  /**
+-   * i18n object
+-   */
+-};
+-
+-export default injectIntl(Footer);
++export default Footer;

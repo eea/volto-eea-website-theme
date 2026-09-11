@@ -1,0 +1,131 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/View/EventView.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/View/EventView.jsx
+@@ -7,42 +7,34 @@
+ import PropTypes from 'prop-types';
+ import { hasBlocksData } from '@plone/volto/helpers/Blocks/Blocks';
+ import { flattenHTMLToAppURL } from '@plone/volto/helpers/Url/Url';
+-import { Grid } from 'semantic-ui-react';
++import { Image } from 'semantic-ui-react';
+ import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
+ import EventDetails from '@plone/volto/components/theme/EventDetails/EventDetails';
+-import { Container as SemanticContainer } from 'semantic-ui-react';
+-import config from '@plone/volto/registry';
++import './style.less';
+ 
+-const EventTextfieldView = ({ content }) => {
+-  const Image = config.getComponent({ name: 'Image' }).component;
++const EventTextfieldView = ({ content }) => (
++  <React.Fragment>
++    {content.title && <h1 className="documentFirstHeading">{content.title}</h1>}
++    {content.description && (
++      <p className="documentDescription">{content.description}</p>
++    )}
++    {content.image && (
++      <Image
++        className="document-image"
++        src={content.image.scales.thumb.download}
++        floated="right"
++      />
++    )}
++    {content.text && (
++      <div
++        dangerouslySetInnerHTML={{
++          __html: flattenHTMLToAppURL(content.text.data),
++        }}
++      />
++    )}
++  </React.Fragment>
++);
+ 
+-  return (
+-    <React.Fragment>
+-      {content.title && (
+-        <h1 className="documentFirstHeading">{content.title}</h1>
+-      )}
+-      {content.description && (
+-        <p className="documentDescription">{content.description}</p>
+-      )}
+-      {content.image && (
+-        <Image
+-          className="document-image ui right floated image"
+-          item={content}
+-          imageField="image"
+-          alt=""
+-        />
+-      )}
+-      {content.text && (
+-        <div
+-          dangerouslySetInnerHTML={{
+-            __html: flattenHTMLToAppURL(content.text.data),
+-          }}
+-        />
+-      )}
+-    </React.Fragment>
+-  );
+-};
+-
+ /**
+  * EventView view component class.
+  * @function EventView
+@@ -51,51 +43,18 @@
+  */
+ const EventView = (props) => {
+   const { content } = props;
+-  const Container =
+-    config.getComponent({ name: 'Container' }).component || SemanticContainer;
+ 
+   return (
+-    <Container id="page-document" className="view-wrapper event-view">
+-      <Grid>
+-        <Grid.Column width={7} className="mobile hidden">
+-          {hasBlocksData(content) ? (
+-            <RenderBlocks {...props} />
+-          ) : (
+-            <EventTextfieldView {...props} />
+-          )}
+-        </Grid.Column>
+-        <Grid.Column width={5} className="mobile hidden">
+-          <EventDetails content={content} />
+-        </Grid.Column>
+-        <Grid.Column width={12} only="mobile">
+-          {hasBlocksData(content) ? (
+-            <>
+-              <RenderBlocks
+-                {...props}
+-                content={{
+-                  ...content,
+-                  blocks_layout: {
+-                    items: props.content.blocks_layout.items.slice(0, 1),
+-                  },
+-                }}
+-              />
+-              <EventDetails content={content} display_as="div" />
+-              <RenderBlocks
+-                {...props}
+-                content={{
+-                  ...content,
+-                  blocks_layout: {
+-                    items: props.content.blocks_layout.items.slice(1),
+-                  },
+-                }}
+-              />
+-            </>
+-          ) : (
+-            <EventTextfieldView {...props} />
+-          )}
+-        </Grid.Column>
+-      </Grid>
+-    </Container>
++    <div id="page-document" className="ui container viewwrapper event-view">
++      <div className="event-view-box">
++        <EventDetails content={content} />
++      </div>
++      {hasBlocksData(content) ? (
++        <RenderBlocks {...props} />
++      ) : (
++        <EventTextfieldView {...props} />
++      )}
++    </div>
+   );
+ };
+ 

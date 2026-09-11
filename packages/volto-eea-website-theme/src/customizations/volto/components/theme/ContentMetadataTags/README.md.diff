@@ -1,0 +1,4 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/volto/components/theme/ContentMetadataTags/README.md
+@@ -0,0 +1 @@
++- Customize component to enhance title generation, see 292656 for detail

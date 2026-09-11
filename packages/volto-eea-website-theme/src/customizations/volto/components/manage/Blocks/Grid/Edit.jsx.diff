@@ -1,0 +1,64 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Blocks/Grid/Edit.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Grid/Edit.jsx
+@@ -1,17 +1,37 @@
+ import PropTypes from 'prop-types';
+ import cx from 'classnames';
+-import ContainerEdit from '../Container/Edit';
+-import { useDispatch, useSelector } from 'react-redux';
+-import { setUIState } from '@plone/volto/actions/form/form';
++import { useState } from 'react';
++import ContainerEdit from '@plone/volto/components/manage/Blocks/Container/Edit';
+ 
++const convertTeaserToGridIfNecessary = (data) => {
++  if (data?.['@type'] === 'teaserGrid')
++    return {
++      ...data,
++      '@type': 'gridBlock',
++      blocks_layout: { items: data?.columns.map((c) => c.id) },
++      blocks: data?.columns?.reduce((acc, current) => {
++        return {
++          ...acc,
++          [current?.id]: current,
++        };
++      }, {}),
++    };
++  return data;
++};
++
+ const GridBlockEdit = (props) => {
+   const { data } = props;
+ 
+-  const columnsLength = data?.blocks_layout?.items?.length || 0;
++  const columnsLength =
++    data?.blocks_layout?.items?.length || data?.columns?.length || 0;
+ 
+-  const selectedBlock = useSelector((state) => state.form.ui.gridSelected);
+-  const dispatch = useDispatch();
++  const [selectedBlock, setSelectedBlock] = useState(null);
+ 
++  //convert to gridBlock if necessary
++  if (data?.['@type'] === 'teaserGrid') {
++    props.onChangeBlock(props.block, convertTeaserToGridIfNecessary(data));
++  }
++
+   return (
+     <div
+       className={cx({
+@@ -24,14 +44,15 @@
+       // This is required to enabling a small "in-between" clickable area
+       // for bringing the Grid sidebar alive once you have selected an inner block
+       onClick={(e) => {
+-        if (!e.block) dispatch(setUIState({ gridSelected: null }));
++        if (!e.block) setSelectedBlock(null);
+       }}
+       role="presentation"
+     >
+       <ContainerEdit
+         {...props}
++        data={data}
+         selectedBlock={selectedBlock}
+-        setSelectedBlock={(id) => dispatch(setUIState({ gridSelected: id }))}
++        setSelectedBlock={setSelectedBlock}
+         direction="horizontal"
+       />
+     </div>

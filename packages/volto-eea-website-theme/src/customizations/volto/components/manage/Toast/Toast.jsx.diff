@@ -1,0 +1,100 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Toast/Toast.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.jsx
+@@ -1,71 +1,45 @@
+ import React from 'react';
+ import PropTypes from 'prop-types';
+-import { defineMessages, useIntl } from 'react-intl';
+-import Icon from '@plone/volto/components/theme/Icon/Icon';
++import cx from 'classnames';
++import { Icon, Message } from 'semantic-ui-react';
+ 
+-import successSVG from '@plone/volto/icons/ready.svg';
+-import infoSVG from '@plone/volto/icons/info.svg';
+-import errorSVG from '@plone/volto/icons/error.svg';
+-import warningSVG from '@plone/volto/icons/warning.svg';
+-
+-const messages = defineMessages({
+-  success: {
+-    id: 'toast_type_success',
+-    defaultMessage: 'Success',
+-  },
+-  error: {
+-    id: 'toast_type_error',
+-    defaultMessage: 'Error',
+-  },
+-  warning: {
+-    id: 'toast_type_warning',
+-    defaultMessage: 'Warning',
+-  },
+-  info: {
+-    id: 'toast_type_info',
+-    defaultMessage: 'Information',
+-  },
+-});
+-
+ const Toast = (props) => {
+-  const intl = useIntl();
+-
+-  function getIcon(props) {
++  function getStatus(props) {
+     if (props.info) {
+-      return infoSVG;
++      return 'info';
+     } else if (props.success) {
+-      return successSVG;
++      return 'success';
+     } else if (props.error) {
+-      return errorSVG;
++      return 'error';
+     } else if (props.warning) {
+-      return warningSVG;
++      return 'warning';
+     } else {
+-      return successSVG;
++      return 'success';
+     }
+   }
+ 
+-  function getTypeLabel(props) {
+-    if (props.error) return intl.formatMessage(messages.error);
+-    if (props.warning) return intl.formatMessage(messages.warning);
+-    if (props.info) return intl.formatMessage(messages.info);
+-    if (props.success) return intl.formatMessage(messages.success);
+-    return null;
+-  }
+-
+   const { title, content } = props;
+-  const typeLabel = getTypeLabel(props);
++  const status = getStatus(props);
++  const statusProps = {
++    info: status === 'info',
++    success: status === 'success',
++    error: status === 'error',
++    warning: status === 'warning',
++  };
+ 
+   return (
+-    <>
+-      <Icon name={getIcon(props)} size="18px" ariaHidden={true} />
+-      <div className="toast-inner-content">
+-        {typeLabel && (
+-          <span className="visually-hidden-volto">{typeLabel}</span>
+-        )}
+-        {title && <h4>{title}</h4>}
++    <Message
++      icon
++      size="large"
++      className={cx('eea-toast', `eea-toast--${status}`)}
++      {...statusProps}
++    >
++      <Icon name="exclamation circle" />
++      <Message.Content className="toast-inner-content">
++        {title && <Message.Header>{title}</Message.Header>}
+         <div>{content}</div>
+-      </div>
+-    </>
++      </Message.Content>
++    </Message>
+   );
+ };
+ 
