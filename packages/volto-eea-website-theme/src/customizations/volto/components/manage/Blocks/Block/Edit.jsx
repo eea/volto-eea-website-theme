@@ -15,9 +15,15 @@ import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrow
 import ViewDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultView';
 import EditDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultEdit';
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
-// Volto 17 requires this barrel export to avoid an InlineForm import cycle.
-// eslint-disable-next-line no-restricted-imports
-import { BlockSettingsSidebar } from '@plone/volto/components';
+// Import directly, NOT from the '@plone/volto/components' barrel: the barrel
+// re-exports EditBlock from this very file (line 218) and, with the Volto 19
+// react-refresh runtime enabled in dev, the barrel's end-of-module export
+// registration reads this module's still-uninitialized default export while
+// it is mid-evaluation (circular import) -> "Cannot access
+// '__WEBPACK_DEFAULT_EXPORT__' before initialization". In Volto 19 the
+// InlineForm import cycle that forced the barrel import in Volto 17 is gone,
+// since components/manage/Form/index.tsx uses lazy loadable() exports.
+import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
 import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
 // setUIState was introduced in Volto 18; provide a compatible action for Volto 17
 const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
