@@ -63,7 +63,7 @@ export const EditSchema = ({ availableTypes }) => {
       bottomLevel: {
         title: 'Navigation tree depth',
         description:
-          'How many folders should be included before the navigation tree stops. 0 means no limit. 1 only includes the root folder.',
+          'How many folders should be included before the navigation tree stops. 0 means no limit — it is bounded by the backend site setting "Maximum side navigation depth" (plone.side_nav_depth, default 4). 1 only includes the root folder.',
         type: 'number',
         default: 0,
       },
