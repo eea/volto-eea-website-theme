@@ -30,6 +30,7 @@ const messages = defineMessages({
  * @param {string} props.alt - The logo alt text.
  * @param {number} props.width - The logo width.
  * @param {number} props.height - The logo height.
+ * @param {string} props.url - Optional link target override.
  */
 const EEALogo = ({
   src = LogoImage,
@@ -39,6 +40,7 @@ const EEALogo = ({
   alt,
   width,
   height,
+  url: urlOverride,
 }) => {
   const intl = useIntl();
   const pathname =
@@ -52,11 +54,13 @@ const EEALogo = ({
     return config.settings.defaultLanguage || 'en';
   }, [pathname]);
 
-  const url = config.settings.eea?.logoTargetUrl
-    ? config.settings.eea.logoTargetUrl
-    : config.settings.isMultilingual
-      ? `/${lang}`
-      : '/';
+  const url =
+    urlOverride ||
+    (config.settings.eea?.logoTargetUrl
+      ? config.settings.eea.logoTargetUrl
+      : config.settings.isMultilingual
+        ? `/${lang}`
+        : '/');
 
   // Only pass inverted=true if we have an invertedSrc, otherwise the design system
   // Logo will try to use undefined invertedSrc instead of falling back to src
