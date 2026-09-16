@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { useState } from 'react';
-import ContainerEdit from '@plone/volto/components/manage/Blocks/Container/Edit';
+import ContainerEdit from '../Container/Edit';
 
 const convertTeaserToGridIfNecessary = (data) => {
   if (data?.['@type'] === 'teaserGrid')
