@@ -12,9 +12,8 @@ import { compose } from 'redux';
 import { Dropdown, Image } from 'semantic-ui-react';
 
 import { getNavigation } from '@plone/volto/actions/navigation/navigation';
-import { getContent } from '@plone/volto/actions/content/content';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
 import config from '@plone/volto/registry';
 
@@ -22,12 +21,10 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
-import { getSubsiteLogo } from '@eeacms/volto-eea-website-theme/helpers/subsiteLogo';
 import './Header.less';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 const EMPTY_NAVIGATION_SETTINGS = {};
-const SUBSITE_REQUEST_PREFIX = 'eea-subsite-main-logo';
 
 function removeTrailingSlash(path) {
   return path.replace(/\/+$/, '');
@@ -92,27 +89,14 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   // Redux state
   const dispatch = useDispatch();
   const width = useSelector((state) => state.screen?.width);
-  const content = useSelector((state) => state.content?.data);
-  const subsiteUrl = subsite?.['@id'];
-  const subsiteRequestKey = subsiteUrl
-    ? `${SUBSITE_REQUEST_PREFIX}:${subsiteUrl}`
-    : null;
-  const subsiteRequest = useSelector((state) =>
-    subsiteRequestKey
-      ? state.content?.subrequests?.[subsiteRequestKey]
-      : undefined,
-  );
-  const currentSubsite =
-    content?.['@type'] === 'Subsite' && content?.['@id'] === subsiteUrl
-      ? content
-      : null;
-  const resolvedSubsite =
-    subsite?.subsite_logo_main !== undefined
-      ? subsite
-      : currentSubsite || subsiteRequest?.data || subsite;
-  const subsiteLogo = getSubsiteLogo(resolvedSubsite);
-  const mainSubsiteLogo = resolvedSubsite?.subsite_logo_main
-    ? subsiteLogo
+  const subsiteLogo = subsite?.subsite_logo;
+  const mainSubsiteLogo = subsite?.subsite_logo_main && subsiteLogo;
+  const mainSubsiteLogoScale = mainSubsiteLogo
+    ? mainSubsiteLogo.scales?.preview ||
+      mainSubsiteLogo.scales?.teaser ||
+      mainSubsiteLogo.scales?.large ||
+      mainSubsiteLogo.scales?.mini ||
+      mainSubsiteLogo
     : null;
 
   const router_pathname = useSelector(
@@ -128,32 +112,6 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
     EMPTY_NAVIGATION_SETTINGS;
 
   const updateRequest = useSelector((state) => state.content.update);
-
-  // The Subsite expander only exposes its built-in fields. Fetch the complete
-  // ancestor Subsite when an external behavior field is not in the expansion.
-  useEffect(() => {
-    if (
-      subsiteUrl &&
-      subsite?.subsite_logo_main === undefined &&
-      !currentSubsite &&
-      !subsiteRequest?.loaded &&
-      !subsiteRequest?.loading &&
-      !subsiteRequest?.error
-    ) {
-      dispatch(
-        getContent(flattenToAppURL(subsiteUrl), null, subsiteRequestKey),
-      );
-    }
-  }, [
-    currentSubsite,
-    dispatch,
-    subsite?.subsite_logo_main,
-    subsiteRequest?.error,
-    subsiteRequest?.loaded,
-    subsiteRequest?.loading,
-    subsiteRequestKey,
-    subsiteUrl,
-  ]);
 
   const isHomePageInverse = useSelector((state) => {
     const layout = state.content?.data?.layout;
@@ -362,38 +320,50 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
                 ? { className: 'logo-wrapper' }
                 : {})}
           >
-            <EEALogo
-              src={mainSubsiteLogo?.src || logo}
-              invertedSrc={mainSubsiteLogo?.src || logoWhite}
-              inverted={isHomePageInverse}
-              title={mainSubsiteLogo?.alt || eea.websiteTitle}
-              alt={mainSubsiteLogo?.alt || eea.organisationName}
-              height={mainSubsiteLogo?.height || headerOpts.logoHeight}
-              width={mainSubsiteLogo?.width || headerOpts.logoWidth}
-              url={mainSubsiteLogo?.url}
-            />
-
-            {!!subsite && !mainSubsiteLogo && subsite.title && (
-              <UniversalLink item={subsite} className="subsite-logo">
-                {subsite.subsite_logo ? (
-                  <Image
-                    src={subsite.subsite_logo.scales.mini.download}
-                    alt={subsite.title}
-                    width={subsite.subsite_logo.scales.mini.width || 80}
-                    height={subsite.subsite_logo.scales.mini.height || 80}
-                    style={
-                      (subsite.subsite_logo.scales.mini.width || 80) &&
-                      (subsite.subsite_logo.scales.mini.height || 80)
-                        ? {
-                            aspectRatio: `${subsite.subsite_logo.scales.mini.width || 80} / ${subsite.subsite_logo.scales.mini.height || 80}`,
-                          }
-                        : undefined
-                    }
-                  />
-                ) : (
-                  subsite.title
-                )}
+            {mainSubsiteLogoScale?.download ? (
+              <UniversalLink item={subsite} className="subsite-main-logo">
+                <Image
+                  src={mainSubsiteLogoScale.download}
+                  alt={subsite.title}
+                  width={mainSubsiteLogoScale.width}
+                  height={mainSubsiteLogoScale.height}
+                />
               </UniversalLink>
+            ) : (
+              <>
+                <EEALogo
+                  src={logo}
+                  invertedSrc={logoWhite}
+                  inverted={isHomePageInverse}
+                  title={eea.websiteTitle}
+                  alt={eea.organisationName}
+                  height={headerOpts.logoHeight}
+                  width={headerOpts.logoWidth}
+                />
+
+                {!!subsite && subsite.title && (
+                  <UniversalLink item={subsite} className="subsite-logo">
+                    {subsite.subsite_logo ? (
+                      <Image
+                        src={subsite.subsite_logo.scales.mini.download}
+                        alt={subsite.title}
+                        width={subsite.subsite_logo.scales.mini.width || 80}
+                        height={subsite.subsite_logo.scales.mini.height || 80}
+                        style={
+                          (subsite.subsite_logo.scales.mini.width || 80) &&
+                          (subsite.subsite_logo.scales.mini.height || 80)
+                            ? {
+                                aspectRatio: `${subsite.subsite_logo.scales.mini.width || 80} / ${subsite.subsite_logo.scales.mini.height || 80}`,
+                              }
+                            : undefined
+                        }
+                      />
+                    ) : (
+                      subsite.title
+                    )}
+                  </UniversalLink>
+                )}
+              </>
             )}
           </div>
         }

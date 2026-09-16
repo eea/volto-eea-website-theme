@@ -148,36 +148,6 @@ describe('EEALogo Component', () => {
     expect(link.getAttribute('href')).toBe('/custom');
   });
 
-  it('uses an explicit URL override before the configured target', () => {
-    mockConfig.settings.eea = {
-      logoTargetUrl: '/configured',
-    };
-
-    const store = mockStore({
-      intl: {
-        locale: 'en',
-        messages: {},
-      },
-      router: {
-        location: {
-          pathname: '/en/subsite',
-        },
-      },
-    });
-
-    const { container } = render(
-      <Provider store={store}>
-        <Router history={history}>
-          <EEALogo url="/en/subsite" />
-        </Router>
-      </Provider>,
-    );
-
-    expect(container.querySelector('a').getAttribute('href')).toBe(
-      '/en/subsite',
-    );
-  });
-
   it('uses root path as fallback in non-multilingual site without logoTargetUrl', () => {
     mockConfig.settings.isMultilingual = false;
     mockConfig.settings.eea = {};

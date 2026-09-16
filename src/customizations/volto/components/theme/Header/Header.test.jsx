@@ -224,13 +224,14 @@ describe('Header', () => {
       </Provider>,
     );
 
-    expect(container.querySelector('.eea-logo').getAttribute('src')).toBe(
-      '/subsite_logo/@@images/image/mini',
-    );
+    expect(
+      container.querySelector('.subsite-main-logo img').getAttribute('src'),
+    ).toBe('http://localhost:8080/Plone/subsite_logo/@@images/image/mini');
+    expect(container.querySelector('.eea-logo')).toBeNull();
     expect(container.querySelector('.subsite-brand-logo')).toBeTruthy();
-    expect(container.querySelector('.logo').getAttribute('href')).toBe(
-      '/subsite',
-    );
+    expect(
+      container.querySelector('.subsite-main-logo').getAttribute('href'),
+    ).toBe('/subsite');
     expect(container.querySelector('.subsite-logo')).toBeNull();
 
     fireEvent.click(container.querySelector('.content'));
@@ -316,82 +317,6 @@ describe('Header', () => {
     expect(
       container.querySelector('.subsite-logo img').getAttribute('src'),
     ).toBe('http://localhost:8080/Plone/subsite_logo/@@images/image/mini');
-  });
-
-  it('uses the complete Subsite response for external behavior fields', () => {
-    const subsiteUrl = 'http://localhost:8080/Plone/subsite';
-    const store = mockStore({
-      userSession: { token: null },
-      intl: { locale: 'en', messages: {} },
-      navigation: { items: [item] },
-      content: {
-        data: {
-          layout: 'homepage_view',
-          '@components': {
-            subsite: {
-              '@type': 'Subsite',
-              '@id': subsiteUrl,
-              title: 'Home Page',
-              subsite_logo: {
-                scales: {
-                  mini: {
-                    download: `${subsiteUrl}/@@images/subsite_logo/mini`,
-                    width: 80,
-                    height: 80,
-                  },
-                },
-              },
-            },
-          },
-        },
-        subrequests: {
-          [`eea-subsite-main-logo:${subsiteUrl}`]: {
-            loaded: true,
-            loading: false,
-            data: {
-              '@type': 'Subsite',
-              '@id': subsiteUrl,
-              title: 'Home Page',
-              subsite_logo_main: true,
-              subsite_logo: {
-                scales: {
-                  mini: {
-                    download: `${subsiteUrl}/@@images/subsite_logo/mini`,
-                    width: 80,
-                    height: 80,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      router: { location: { pathname: '/home/' } },
-    });
-
-    config.settings = {
-      ...config.settings,
-      eea: {
-        ...config.settings.eea,
-        headerOpts: {
-          ...config.settings.eea.headerOpts,
-          logo: 'eea-logo.svg',
-        },
-      },
-    };
-
-    const { container } = render(
-      <Provider store={store}>
-        <Router history={history}>
-          <Header pathname="/blog" />
-        </Router>
-      </Provider>,
-    );
-
-    expect(container.querySelector('.subsite-brand-logo')).toBeTruthy();
-    expect(container.querySelector('.eea-logo').getAttribute('src')).toBe(
-      '/subsite/@@images/subsite_logo/mini',
-    );
   });
 
   it('renders a header component with a subsite and two children', async () => {
