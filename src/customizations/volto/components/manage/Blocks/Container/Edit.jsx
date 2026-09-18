@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import pickBy from 'lodash/pickBy';
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
-import { BlocksForm } from '@plone/volto/components/manage/Form';
+import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
 import PropTypes from 'prop-types';
 import ContainerData from '@plone/volto/components/manage/Blocks/Container/Data';
 import DefaultEditBlockWrapper from './EditBlockWrapper';
