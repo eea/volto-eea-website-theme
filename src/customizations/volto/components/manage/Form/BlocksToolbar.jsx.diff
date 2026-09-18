@@ -1,3 +1,7 @@
+11c11
+< import { Plug } from '@plone/volto/components/manage/Pluggable';
+---
+> import Plug from './BlocksToolbarPlug';
 13d12
 < import { load } from 'redux-localstorage-simple';
 28c27,30
@@ -31,3 +35,27 @@
 >     }
 48a64
 >     this.loadFromStorage();
+53c69
+<     window.removeEventListener('storage', this.loadFromStorage);
+---
+>     window.removeEventListener('storage', this.loadFromStorage, true);
+90c106
+<       .filter(([blockId]) => !!blockId); // Removes null blocks
+---
+>       .filter(([blockId, blockData]) => blockId && blockData?.['@type']);
+100c116
+<       .filter(([blockId, blockData]) => blockId && !!blockData['@type']) // Removes null blocks
+---
+>       .filter(([blockId, blockData]) => blockId && !!blockData?.['@type']) // Removes null blocks
+104c120
+<           ? blockConfig.cloneData
+---
+>           ? blockConfig?.cloneData
+133d148
+<     if (!(e.ctrlKey || e.metaKey)) this.props.resetBlocksClipboard();
+134a150
+>     if (!(e.ctrlKey || e.metaKey)) this.props.resetBlocksClipboard();
+189c205
+<             dependencies={[selectedBlock]}
+---
+>             dependencies={[selectedBlock, blocksClipboard]}

@@ -89,4 +89,18 @@ The upstream code only loads clipboard data when a `storage` event fires (typica
 
 ## What did NOT change
 
-All other methods — `deleteBlocks`, `copyBlocksToClipboard`, `cutBlocksToClipboard`, `setBlocksClipboard`, `pasteBlocks`, `render()`, and the `connect`/`compose` wrapper — are **identical** to the Volto 18 upstream.
+## Nested Columns clipboard fixes
+
+`BlocksToolbarPlug.jsx` retains a stack of toolbar action registrations per
+Pluggables provider. Columns and the page use the same action IDs; removing a
+column toolbar now restores the page action instead of removing it. Registrations
+remain isolated between editors. Paste also refreshes its displayed block count
+when the clipboard changes.
+
+Copy filters missing block data, and paste skips null entries left in a persisted
+clipboard. The clipboard is cleared only after applying the updated blocks, so a
+failed update leaves the copied content available. The storage listener is removed
+with the same capture flag used when registering it.
+
+`BlocksToolbar.test.jsx` covers pasting into a column and then outside it, copying
+inside and outside Columns, invalid clipboard entries, and failed updates.
