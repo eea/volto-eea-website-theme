@@ -84,6 +84,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   const { logo, logoWhite } = headerOpts;
 
   const isSubsite = subsite?.['@type'] === 'Subsite';
+  const isSubsiteLogoMain = subsite?.subsite_logo_main;
 
   // Redux state
   const dispatch = useDispatch();
@@ -124,8 +125,14 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
     headerSettings?.searchBox || eea.headerSearchBox || [];
   const subsiteLogoScale =
     subsite?.subsite_logo?.scales?.[
-      subsite.subsite_logo_main ? 'preview' : 'mini'
+      isSubsiteLogoMain ? 'preview' : 'mini'
     ] || subsite?.subsite_logo?.scales?.mini;
+  const subsiteLogoWidth = isSubsiteLogoMain
+    ? headerOpts.logoWidth
+    : subsiteLogoScale?.width || 80;
+  const subsiteLogoHeight = isSubsiteLogoMain
+    ? headerOpts.logoHeight
+    : subsiteLogoScale?.height || 80;
 
   const enhancedLayouts = buildEnhancedLayouts(items, navigationSettings);
 
@@ -307,41 +314,34 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <div
-            className={
-              isSubsite
-                ? subsite.subsite_logo_main
-                  ? 'subsite-main-logo'
-                  : 'logo-wrapper'
-                : undefined
-            }
-          >
-            <EEALogo
-              src={logo}
-              invertedSrc={logoWhite}
-              inverted={isHomePageInverse}
-              title={eea.websiteTitle}
-              alt={eea.organisationName}
-              height={headerOpts.logoHeight}
-              width={headerOpts.logoWidth}
-            />
+          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
+            {!isSubsiteLogoMain && (
+              <EEALogo
+                src={logo}
+                invertedSrc={logoWhite}
+                inverted={isHomePageInverse}
+                title={eea.websiteTitle}
+                alt={eea.organisationName}
+                height={headerOpts.logoHeight}
+                width={headerOpts.logoWidth}
+              />
+            )}
 
             {!!subsite && subsite.title && (
-              <UniversalLink item={subsite} className="subsite-logo">
+              <UniversalLink
+                item={subsite}
+                className={isSubsiteLogoMain ? 'logo' : 'subsite-logo'}
+              >
                 {subsite.subsite_logo ? (
                   <Image
                     src={subsiteLogoScale.download}
                     alt={subsite.title}
-                    width={subsiteLogoScale.width || 80}
-                    height={subsiteLogoScale.height || 80}
-                    style={
-                      (subsiteLogoScale.width || 80) &&
-                      (subsiteLogoScale.height || 80)
-                        ? {
-                            aspectRatio: `${subsiteLogoScale.width || 80} / ${subsiteLogoScale.height || 80}`,
-                          }
-                        : undefined
-                    }
+                    className={isSubsiteLogoMain ? 'eea-logo' : undefined}
+                    width={subsiteLogoWidth}
+                    height={subsiteLogoHeight}
+                    style={{
+                      aspectRatio: `${subsiteLogoWidth} / ${subsiteLogoHeight}`,
+                    }}
                   />
                 ) : (
                   subsite.title
