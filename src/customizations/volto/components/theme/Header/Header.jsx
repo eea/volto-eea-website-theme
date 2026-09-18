@@ -319,9 +319,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
             {!!subsite && subsite.title && (
               <UniversalLink
                 item={subsite}
-                className={
-                  subsite.subsite_logo_main ? 'logo' : 'subsite-logo'
-                }
+                className={subsite.subsite_logo_main ? 'logo' : 'subsite-logo'}
               >
                 {subsite.subsite_logo ? (
                   <Image
