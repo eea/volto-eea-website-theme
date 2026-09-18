@@ -124,8 +124,14 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   const headerSearchBox =
     headerSettings?.searchBox || eea.headerSearchBox || [];
   const subsiteLogoScale =
+<<<<<<< Updated upstream
     subsite?.subsite_logo?.scales?.[isSubsiteLogoMain ? 'preview' : 'mini'] ||
     subsite?.subsite_logo?.scales?.mini;
+=======
+    subsite?.subsite_logo?.scales?.[
+      isSubsiteLogoMain ? 'preview' : 'mini'
+    ];
+>>>>>>> Stashed changes
   const subsiteLogoWidth = isSubsiteLogoMain
     ? headerOpts.logoWidth
     : subsiteLogoScale?.width || 80;
