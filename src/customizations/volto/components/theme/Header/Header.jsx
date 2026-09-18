@@ -303,23 +303,33 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
-            <EEALogo
-              src={logo}
-              invertedSrc={logoWhite}
-              inverted={isHomePageInverse}
-              title={eea.websiteTitle}
-              alt={eea.organisationName}
-              height={headerOpts.logoHeight}
-              width={headerOpts.logoWidth}
-            />
+          <div className={isSubsite ? 'logo-wrapper' : undefined}>
+            {!subsite?.subsite_logo_main && (
+              <EEALogo
+                src={logo}
+                invertedSrc={logoWhite}
+                inverted={isHomePageInverse}
+                title={eea.websiteTitle}
+                alt={eea.organisationName}
+                height={headerOpts.logoHeight}
+                width={headerOpts.logoWidth}
+              />
+            )}
 
             {!!subsite && subsite.title && (
-              <UniversalLink item={subsite} className="subsite-logo">
+              <UniversalLink
+                item={subsite}
+                className={
+                  subsite.subsite_logo_main ? 'logo' : 'subsite-logo'
+                }
+              >
                 {subsite.subsite_logo ? (
                   <Image
                     src={subsite.subsite_logo.scales.mini.download}
                     alt={subsite.title}
+                    className={
+                      subsite.subsite_logo_main ? 'eea-logo' : undefined
+                    }
                     width={subsite.subsite_logo.scales.mini.width || 80}
                     height={subsite.subsite_logo.scales.mini.height || 80}
                     style={
