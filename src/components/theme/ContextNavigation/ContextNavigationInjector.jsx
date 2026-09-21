@@ -87,8 +87,7 @@ const ContextNavigationInjector = ({ content, location }) => {
         includeTop: matchingNavigationPath.includeTop ?? true,
         bottomLevel: matchingNavigationPath.bottomLevel ?? 4,
         topLevel: matchingNavigationPath.topLevel ?? 0,
-        currentFolderOnly:
-          matchingNavigationPath.currentFolderOnly ?? false,
+        currentFolderOnly: matchingNavigationPath.currentFolderOnly ?? false,
         ...(matchingNavigationPath.portal_type && {
           portal_type: matchingNavigationPath.portal_type,
         }),

@@ -28,10 +28,7 @@ const NewsItemView = ({ content, location }) => {
       <Container id="page-document" className="view-wrapper newsitem-view">
         <RenderBlocks content={content} />
       </Container>
-      <ContextNavigationInjector
-        content={content}
-        location={location}
-      />
+      <ContextNavigationInjector content={content} location={location} />
     </>
   ) : (
     <Container className="view-wrapper">
