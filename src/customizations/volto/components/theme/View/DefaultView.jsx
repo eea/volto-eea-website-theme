@@ -19,10 +19,10 @@ import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
 
 import { hasBlocksData } from '@plone/volto/helpers/Blocks/Blocks';
 import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
-import { useDispatch, shallowEqual, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import isEqual from 'lodash/isEqual';
-import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
+import ContextNavigationInjector from '@eeacms/volto-eea-website-theme/components/theme/ContextNavigation/ContextNavigationInjector';
 
 /**
  * Component to display the default view.
@@ -32,37 +32,6 @@ import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/componen
  */
 const DefaultView = (props) => {
   const { content, location } = props;
-
-  const hasExistingSideMenu = React.useMemo(() => {
-    const hasSM = (node) => {
-      if (!node) return false;
-      if (
-        node['@type'] === 'contextNavigation' &&
-        node['variation'] === 'accordion'
-      ) {
-        return true;
-      }
-      if (node.blocks && node.blocks_layout?.items) {
-        return node.blocks_layout.items.some((id) => hasSM(node.blocks[id]));
-      }
-
-      if (node.data?.blocks && node.data?.blocks_layout?.items) {
-        return node.data.blocks_layout.items.some((id) =>
-          hasSM(node.data.blocks[id]),
-        );
-      }
-
-      return false;
-    };
-    return hasSM(content);
-  }, [content]);
-
-  const { contextNavigationActions } = useSelector(
-    (state) => ({
-      contextNavigationActions: state.actions?.actions?.context_navigation,
-    }),
-    shallowEqual,
-  );
 
   const path = getBaseUrl(location?.pathname || '');
   const dispatch = useDispatch();
@@ -97,31 +66,6 @@ const DefaultView = (props) => {
 
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
-
-  const content_type = content?.['@type'];
-
-  // choose the longest matching navigation path (most specific prefix)
-  const matchingNavigationPath = React.useMemo(() => {
-    const navigation_paths = contextNavigationActions || [];
-    if (!navigation_paths?.length) return null;
-
-    const normalize = (p) => (p?.endsWith('/') ? p : `${p}/`);
-    const basePath = normalize(path);
-
-    const candidates = navigation_paths.filter((np) =>
-      basePath.startsWith(normalize(np.url)),
-    );
-    if (!candidates.length) return null;
-
-    const candidate = candidates.reduce(
-      (best, np) => (!best || np.url.length > best.url.length ? np : best),
-      null,
-    );
-    const disabledTypes =
-      (candidate && candidate.disableContextNavigationFor) || [];
-    if (disabledTypes.includes(content_type)) return null;
-    return candidate;
-  }, [contextNavigationActions, content_type, path]);
 
   return contentLoaded ? (
     hasBlocksData(content) ? (
