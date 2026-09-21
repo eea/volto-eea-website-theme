@@ -73,22 +73,10 @@ const DefaultView = (props) => {
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        {matchingNavigationPath && !hasExistingSideMenu && (
-          <AccordionContextNavigation
-            insertBefore={matchingNavigationPath.insertBefore}
-            params={{
-              name: matchingNavigationPath.title,
-              no_thumbs: matchingNavigationPath.no_thumbs ?? true,
-              no_icons: matchingNavigationPath.no_icons ?? true,
-              root_path: matchingNavigationPath.url,
-              includeTop: matchingNavigationPath.includeTop ?? true,
-              bottomLevel: matchingNavigationPath.bottomLevel ?? 4,
-              topLevel: matchingNavigationPath.topLevel ?? 0,
-              currentFolderOnly:
-                matchingNavigationPath.currentFolderOnly ?? false,
-            }}
-          />
-        )}
+        <ContextNavigationInjector
+          content={content}
+          location={location}
+        />
       </>
     ) : (
       <Container id="page-document">
