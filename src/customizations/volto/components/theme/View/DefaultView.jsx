@@ -73,10 +73,7 @@ const DefaultView = (props) => {
         <Container id="page-document">
           <RenderBlocks {...props} path={path} />
         </Container>
-        <ContextNavigationInjector
-          content={content}
-          location={location}
-        />
+        <ContextNavigationInjector content={content} location={location} />
       </>
     ) : (
       <Container id="page-document">
