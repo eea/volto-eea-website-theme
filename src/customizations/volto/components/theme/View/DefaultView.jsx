@@ -142,6 +142,9 @@ const DefaultView = (props) => {
               topLevel: matchingNavigationPath.topLevel ?? 0,
               currentFolderOnly:
                 matchingNavigationPath.currentFolderOnly ?? false,
+              ...(matchingNavigationPath.portal_type && {
+                portal_type: matchingNavigationPath.portal_type,
+              }),
             }}
           />
         )}
