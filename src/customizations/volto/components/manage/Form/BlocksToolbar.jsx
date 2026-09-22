@@ -8,7 +8,7 @@ import {
   getBlocksLayoutFieldname,
 } from '@plone/volto/helpers/Blocks/Blocks';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import { Plug } from '@plone/volto/components/manage/Pluggable';
+import Plug from './BlocksToolbarPlug';
 import { v4 as uuid } from 'uuid';
 import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
@@ -66,7 +66,7 @@ export class BlocksToolbarComponent extends React.Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('storage', this.loadFromStorage);
+    window.removeEventListener('storage', this.loadFromStorage, true);
   }
 
   deleteBlocks() {
@@ -103,7 +103,7 @@ export class BlocksToolbarComponent extends React.Component {
     const blocks = formData[blocksFieldname];
     const blocksData = this.props.selectedBlocks
       .map((blockId) => [blockId, blocks[blockId]])
-      .filter(([blockId]) => !!blockId); // Removes null blocks
+      .filter(([blockId, blockData]) => blockId && blockData?.['@type']);
     this.props.setBlocksClipboard({ [actionType]: blocksData });
     this.props.onSetSelectedBlocks([]);
   }
@@ -113,11 +113,11 @@ export class BlocksToolbarComponent extends React.Component {
     const mode = Object.keys(blocksClipboard).includes('cut') ? 'cut' : 'copy';
     const blocksData = blocksClipboard[mode] || [];
     const cloneWithIds = blocksData
-      .filter(([blockId, blockData]) => blockId && !!blockData['@type']) // Removes null blocks
+      .filter(([blockId, blockData]) => blockId && !!blockData?.['@type']) // Removes null blocks
       .map(([blockId, blockData]) => {
         const blockConfig = config.blocks.blocksConfig[blockData['@type']];
         return mode === 'copy'
-          ? blockConfig.cloneData
+          ? blockConfig?.cloneData
             ? blockConfig.cloneData(blockData)
             : [uuid(), cloneBlocks(blockData)]
           : [blockId, blockData]; // if cut/pasting blocks, we don't clone
@@ -146,8 +146,8 @@ export class BlocksToolbarComponent extends React.Component {
       },
     };
 
-    if (!(e.ctrlKey || e.metaKey)) this.props.resetBlocksClipboard();
     this.props.onChangeBlocks(newBlockData);
+    if (!(e.ctrlKey || e.metaKey)) this.props.resetBlocksClipboard();
   }
 
   render() {
@@ -202,7 +202,7 @@ export class BlocksToolbarComponent extends React.Component {
           <Plug
             pluggable="main.toolbar.bottom"
             id="block-paste-btn"
-            dependencies={[selectedBlock]}
+            dependencies={[selectedBlock, blocksClipboard]}
           >
             <button
               aria-label={intl.formatMessage(messages.pasteBlocks)}

@@ -14,6 +14,7 @@ const FlexGroup = (props) => {
     pathname,
     selected,
     selectedBlock,
+    multiSelected = [],
     onSelectBlock,
     manage,
     childBlocksForm,
@@ -53,6 +54,7 @@ const FlexGroup = (props) => {
           isMainForm={false}
           stopPropagation={selectedBlock}
           selectedBlock={selected ? selectedBlock : null}
+          multiSelected={selected ? multiSelected : []}
           allowedBlocks={data.allowedBlocks}
           title={data.placeholder}
           description={instructions}
