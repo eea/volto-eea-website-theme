@@ -91,6 +91,12 @@ const ContextNavigationInjector = ({ content, location }) => {
         ...(matchingNavigationPath.portal_type && {
           portal_type: matchingNavigationPath.portal_type,
         }),
+        ...(matchingNavigationPath.sort_on && {
+          sort_on: matchingNavigationPath.sort_on,
+        }),
+        ...(matchingNavigationPath.sort_order && {
+          sort_order: matchingNavigationPath.sort_order,
+        }),
       }}
     />
   );
