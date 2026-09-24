@@ -35,6 +35,30 @@ onMouseDown={(event) => {
 
 The click handler now also forwards modified clicks on the active block. Ordinary clicks on the active block remain ignored. The containing selection handler can therefore promote the active block to multi-selection without changing ordinary editing behavior.
 
+## Nested container blocks
+
+Container blocks (Group, Columns, Grid, Tabs, Accordion) render their children in a nested `BlocksForm` (root element `.blocks-form`). React synthetic `mousedown`, `focus` (focusin) and `click` events from a child bubble through the container's own `.block` element, and the nested `BlocksForm` only stops propagation for keydown. Without a guard, every interaction with a child block also:
+
+- selected the container in the page-level form (focus/click bubbling, a pre-existing core behavior), and
+- with the modified-click forwarding above, added or removed the container from the page-level multi-selection, or started a page-level Shift range, whenever a child was Meta/Control/Shift-clicked.
+
+The override recognizes `mousedown`, `click`, and `focus` events whose target is inside a `.blocks-form` rendered by the block itself:
+
+```jsx
+isNestedFormEvent = (event) => {
+  const node = this.blockNode.current;
+  if (!node || !event?.target?.closest) {
+    return false;
+  }
+  const nestedForm = event.target.closest('.blocks-form');
+  return !!nestedForm && node.contains(nestedForm);
+};
+```
+
+The check is descendant-scoped: for non-container blocks the nearest `.blocks-form` is an ancestor of the block (the page form), so their own events are always handled. For a nested event, the container ignores mousedown focus suppression and never applies the child's modifier keys to page-level selection. If the container is not active, click/focus activates it as a single page-level selection because Group and Columns intentionally render child selection and their nested toolbar only while the parent container is active. The raw child event is not forwarded during that activation: Group and Columns recompute modifier state from the event instead of trusting the explicit selection argument, which would otherwise multi-select the ancestor. If the container is already active, the event does not change page-level selection. The nested form remains responsible for selecting or multi-selecting the child.
+
+Clicks and focus on the container's own chrome (header, drag handle, add-block area) continue through the ordinary handler, including active-block promotion.
+
 ## Volto 17 and 18 compatibility
 
 The override imports `BlockSettingsSidebar` from the public `@plone/volto/components` barrel shared by Volto 17 and 18. Importing Volto 18's deep `Block/Settings` module directly creates a circular initialization path in Volto 17 (`Settings` → `BlockDataForm` → the components barrel) and crashes the server while resolving `InlineForm` before Cypress can start. The other components retain Volto 18's preferred direct imports.
@@ -47,6 +71,9 @@ Volto 17 also has no `setUIState` action or `form.ui` state. The local compatibl
 - Keyboard focus still selects blocks for keyboard navigation.
 - Mousedown on the singly selected block (`selected === true`) is unchanged.
 - A modified click on the singly selected block promotes it to multi-selection.
+- Clicking a block inside a container keeps the container singly active at page level so the nested editor is available, while selection and modifier semantics apply to the child in the container-local form.
+- Nested child clicks never promote the container to page-level multi-selection or start a page-level Shift range.
+- The container's own chrome (outside the nested form) still selects the container, including modified clicks on the active container.
 - Existing Shift, Control, and Meta range/toggle logic remains owned by each `BlocksForm` consumer.
 - Order-sidebar behavior is intentionally unchanged.
 
