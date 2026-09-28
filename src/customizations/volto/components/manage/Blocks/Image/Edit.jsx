@@ -29,6 +29,8 @@ import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
 import { validateFileUploadSize } from '@plone/volto/helpers//FormValidation/FormValidation';
 import config from '@plone/volto/registry';
 
+import { pickAlt, stripAiMarkers } from './aiSummary';
+
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import navTreeSVG from '@plone/volto/icons/nav.svg';
@@ -123,7 +125,14 @@ class Edit extends Component {
         url: nextProps.content['@id'],
         image_field: 'image',
         image_scales: { image: [nextProps.content.image] },
-        alt: '',
+        // Fresh uploads: the create response already carries the
+        // auto-generated llm_summary (generated during the create
+        // request), so the alt chain needs no extra fetch.
+        alt: pickAlt(
+          '',
+          stripAiMarkers(nextProps.content && nextProps.content.llm_summary),
+          (nextProps.content && nextProps.content.title) || '',
+        ),
       });
     }
   }
@@ -182,6 +191,26 @@ class Edit extends Component {
   onChangeUrl = ({ target }) => {
     this.setState({
       url: target.value,
+    });
+  };
+
+  /**
+   * Object-browser selection handler.
+   * method onSelectItem
+   * @param {string} url URL
+   * @param {object} item Selected item
+   */
+  onSelectItem = (url, item) => {
+    const brainTitle = item.title || item.Title || '';
+    const existingAlt = this.props.data.alt || '';
+    this.props.onChangeBlock(this.props.block, {
+      ...this.props.data,
+      url,
+      image_field: item.image_field,
+      image_scales: item.image_scales,
+      // Alt chain: existing block alt -> AI summary (brain llm_summary,
+      // markers stripped) -> brain title.
+      alt: pickAlt(existingAlt, stripAiMarkers(item.llm_summary), brainTitle),
     });
   };
 
@@ -392,26 +421,12 @@ class Edit extends Component {
                               <Button
                                 basic
                                 icon
+                                data-testid="image-block-object-browser"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
                                   this.props.openObjectBrowser({
-                                    onSelectItem: (
-                                      url,
-                                      { title, image_field, image_scales },
-                                    ) => {
-                                      this.props.onChangeBlock(
-                                        this.props.block,
-                                        {
-                                          ...this.props.data,
-                                          url,
-                                          image_field,
-                                          image_scales,
-                                          alt:
-                                            this.props.data.alt || title || '',
-                                        },
-                                      );
-                                    },
+                                    onSelectItem: this.onSelectItem,
                                   });
                                 }}
                               >
