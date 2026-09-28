@@ -1,9 +1,17 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { toast } from 'react-toastify';
+
+import ImageAltWidget from './ImageAltWidget';
 
 const mockPost = jest.fn();
 const mockToApiPath = jest.fn();
@@ -46,8 +54,6 @@ jest.mock('../../../helpers/toApiPath', () => ({
 
 jest.mock('./imageAltWidget.less', () => ({}));
 
-import ImageAltWidget from './ImageAltWidget';
-
 const MARKED =
   '[AI Generated description] A cat on a sofa. [End of AI Generated description]';
 
@@ -63,9 +69,7 @@ const makeStore = (blocksData = {}) => {
 };
 
 const renderWidget = ({ blocksData, block, ...props } = {}) => {
-  const store = makeStore(
-    blocksData || { b1: { url: '/eea/en/two.jpeg' } },
-  );
+  const store = makeStore(blocksData || { b1: { url: '/eea/en/two.jpeg' } });
   const onChange = jest.fn();
   const utils = render(
     <Provider store={store}>
@@ -199,13 +203,13 @@ describe('ImageAltWidget', () => {
         </IntlProvider>
       </Provider>
     );
-    const utils = render(element(makeStore({ b1: { url: '/eea/en/two.jpeg' } })));
+    const utils = render(
+      element(makeStore({ b1: { url: '/eea/en/two.jpeg' } })),
+    );
 
     fireEvent.click(screen.getByText('Generate AI alt'));
     // the user links a different image while the request is in flight
-    utils.rerender(
-      element(makeStore({ b1: { url: '/eea/en/three.jpeg' } })),
-    );
+    utils.rerender(element(makeStore({ b1: { url: '/eea/en/three.jpeg' } })));
 
     await act(async () => {
       resolvePost({ llm_summary: MARKED });

@@ -1,3 +1,5 @@
+import { toApiPath } from './toApiPath';
+
 jest.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
@@ -8,8 +10,6 @@ jest.mock('@plone/volto/registry', () => ({
     },
   },
 }));
-
-import { toApiPath } from './toApiPath';
 
 describe('toApiPath', () => {
   it('passes path-form urls through unchanged', () => {
