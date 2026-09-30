@@ -97,6 +97,15 @@ const ContextNavigationInjector = ({ content, location }) => {
         ...(matchingNavigationPath.sort_order && {
           sort_order: matchingNavigationPath.sort_order,
         }),
+        ...(matchingNavigationPath.children_sort_type && {
+          children_sort_type: matchingNavigationPath.children_sort_type,
+        }),
+        ...(matchingNavigationPath.children_sort_on && {
+          children_sort_on: matchingNavigationPath.children_sort_on,
+        }),
+        ...(matchingNavigationPath.children_sort_order && {
+          children_sort_order: matchingNavigationPath.children_sort_order,
+        }),
       }}
     />
   );
