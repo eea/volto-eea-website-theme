@@ -28,6 +28,23 @@ const hasContextNavigationAccordion = (node) => {
   return false;
 };
 
+const FORWARDED_ACTION_PARAMS = [
+  'portal_type',
+  'sort_on',
+  'sort_order',
+  'children_sort_type',
+  'children_sort_on',
+  'children_sort_order',
+];
+
+const pickSetParams = (action) =>
+  Object.fromEntries(
+    FORWARDED_ACTION_PARAMS.filter((key) => action[key]).map((key) => [
+      key,
+      action[key],
+    ]),
+  );
+
 /**
  * Render the auto-injected accordion side menu for matching
  * context_navigation actions.
@@ -88,24 +105,7 @@ const ContextNavigationInjector = ({ content, location }) => {
         bottomLevel: matchingNavigationPath.bottomLevel ?? 4,
         topLevel: matchingNavigationPath.topLevel ?? 0,
         currentFolderOnly: matchingNavigationPath.currentFolderOnly ?? false,
-        ...(matchingNavigationPath.portal_type && {
-          portal_type: matchingNavigationPath.portal_type,
-        }),
-        ...(matchingNavigationPath.sort_on && {
-          sort_on: matchingNavigationPath.sort_on,
-        }),
-        ...(matchingNavigationPath.sort_order && {
-          sort_order: matchingNavigationPath.sort_order,
-        }),
-        ...(matchingNavigationPath.children_sort_type && {
-          children_sort_type: matchingNavigationPath.children_sort_type,
-        }),
-        ...(matchingNavigationPath.children_sort_on && {
-          children_sort_on: matchingNavigationPath.children_sort_on,
-        }),
-        ...(matchingNavigationPath.children_sort_order && {
-          children_sort_order: matchingNavigationPath.children_sort_order,
-        }),
+        ...pickSetParams(matchingNavigationPath),
       }}
     />
   );
