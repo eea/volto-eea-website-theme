@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
 
 /**
@@ -45,6 +45,8 @@ const pickSetParams = (action) =>
     ]),
   );
 
+const normalize = (path) => (path?.endsWith('/') ? path : `${path}/`);
+
 /**
  * Render the auto-injected accordion side menu for matching
  * context_navigation actions.
@@ -73,7 +75,6 @@ const ContextNavigationInjector = ({ content, location }) => {
     const navigation_paths = contextNavigationActions || [];
     if (!navigation_paths?.length) return null;
 
-    const normalize = (p) => (p?.endsWith('/') ? p : `${p}/`);
     const basePath = normalize(path);
 
     const candidates = navigation_paths.filter((np) =>
@@ -90,6 +91,16 @@ const ContextNavigationInjector = ({ content, location }) => {
     if (disabledTypes.includes(content_type)) return null;
     return candidate;
   }, [contextNavigationActions, content_type, path]);
+
+  // During client-side navigation the content object can briefly belong to
+  // the previous page.  Suppress until it catches up with the URL.
+  const contentPath = flattenToAppURL(content?.['@id']);
+  if (
+    contentPath?.startsWith('/') &&
+    normalize(path) !== normalize(contentPath)
+  ) {
+    return null;
+  }
 
   if (!matchingNavigationPath || hasExistingSideMenu) return null;
 

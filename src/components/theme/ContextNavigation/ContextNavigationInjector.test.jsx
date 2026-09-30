@@ -24,6 +24,7 @@ jest.mock('react-redux', () => ({
 
 jest.mock('@plone/volto/helpers/Url/Url', () => ({
   __esModule: true,
+  flattenToAppURL: (url) => url?.replace('http://localhost:3000', ''),
   getBaseUrl: (pathname) => pathname,
 }));
 
@@ -37,11 +38,13 @@ jest.mock(
   }),
 );
 
-const renderInjector = () =>
+const PAGE_PATH = '/en/epanet/reports-letters/plenary-meetings';
+
+const renderInjector = (content = { '@type': 'Document' }) =>
   render(
     <ContextNavigationInjector
-      content={{ '@type': 'Document' }}
-      location={{ pathname: '/en/epanet/reports-letters/plenary-meetings' }}
+      content={content}
+      location={{ pathname: PAGE_PATH }}
     />,
   );
 
@@ -70,5 +73,53 @@ describe('ContextNavigationInjector children sort', () => {
     expect(result).not.toHaveProperty('children_sort_type');
     expect(result).not.toHaveProperty('children_sort_on');
     expect(result).not.toHaveProperty('children_sort_order');
+  });
+});
+
+describe('ContextNavigationInjector content guard', () => {
+  beforeEach(() => {
+    global.__navActions = ACTIONS;
+  });
+
+  it('renders while the content has no @id yet', () => {
+    const { queryByTestId } = renderInjector({ '@type': 'Document' });
+
+    expect(queryByTestId('nav')).toBeInTheDocument();
+  });
+
+  it('renders when the content matches the current page', () => {
+    const { queryByTestId } = renderInjector({
+      '@type': 'Document',
+      '@id': `http://localhost:3000${PAGE_PATH}`,
+    });
+
+    expect(queryByTestId('nav')).toBeInTheDocument();
+  });
+
+  it('tolerates a trailing slash difference', () => {
+    const { queryByTestId } = renderInjector({
+      '@type': 'Document',
+      '@id': `http://localhost:3000${PAGE_PATH}/`,
+    });
+
+    expect(queryByTestId('nav')).toBeInTheDocument();
+  });
+
+  it('suppresses while the content still belongs to the previous page', () => {
+    const { queryByTestId } = renderInjector({
+      '@type': 'Document',
+      '@id': 'http://localhost:3000/en/epanet/our-group',
+    });
+
+    expect(queryByTestId('nav')).not.toBeInTheDocument();
+  });
+
+  it('does not suppress when the @id is not an app path', () => {
+    const { queryByTestId } = renderInjector({
+      '@type': 'Document',
+      '@id': 'http://backend:8080/Plone/en/epanet/our-group',
+    });
+
+    expect(queryByTestId('nav')).toBeInTheDocument();
   });
 });
