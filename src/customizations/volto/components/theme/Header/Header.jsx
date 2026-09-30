@@ -13,8 +13,7 @@ import { Dropdown, Image } from 'semantic-ui-react';
 
 import { getNavigation } from '@plone/volto/actions/navigation/navigation';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import Helmet from '@plone/volto/helpers/Helmet/Helmet';
-import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
 import config from '@plone/volto/registry';
 
@@ -22,7 +21,8 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
-import { isSubsiteLogoMain as getIsSubsiteLogoMain } from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
+import SubsiteMainLogo from '@eeacms/volto-eea-website-theme/components/theme/SubsiteMainLogo';
+import { shouldUseSubsiteMainLogo } from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 const EMPTY_NAVIGATION_SETTINGS = {};
@@ -86,18 +86,9 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   const { logo, logoWhite } = headerOpts;
 
   const isSubsite = subsite?.['@type'] === 'Subsite';
-  // Hardcoded exception (see config.settings.eea.subsiteMainLogoPaths): the
+  // Hardcoded exception (config.settings.eea.subsiteMainLogoPaths): the
   // uploaded subsite logo replaces the EEA logo.
-  const isSubsiteLogoMain = getIsSubsiteLogoMain(subsite);
-  const mainLogo = isSubsiteLogoMain
-    ? subsite.subsite_logo.scales.preview ||
-      subsite.subsite_logo.scales.large ||
-      subsite.subsite_logo
-    : null;
-  const mainLogoSrc = mainLogo && flattenToAppURL(mainLogo.download);
-  // Use the EEA logo box; the subsite logo is fitted inside it (see style)
-  const mainLogoWidth = headerOpts.logoWidth || mainLogo?.width;
-  const mainLogoHeight = headerOpts.logoHeight || mainLogo?.height;
+  const isSubsiteMainLogo = shouldUseSubsiteMainLogo(subsite);
 
   // Redux state
   const dispatch = useDispatch();
@@ -236,17 +227,6 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
 
   return (
     <Header menuItems={items}>
-      {isSubsiteLogoMain && (
-        <Helmet>
-          {/* Preload the logo so its alt text is not shown during SSR */}
-          <link
-            rel="preload"
-            as="image"
-            href={mainLogoSrc}
-            fetchpriority="high"
-          />
-        </Helmet>
-      )}
       <Header.TopHeader>
         <Header.TopItem className="official-union">
           <Image
@@ -328,31 +308,18 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          isSubsiteLogoMain ? (
-            <UniversalLink
-              item={subsite}
-              title={subsite.title}
-              className="logo"
-            >
-              <Image
-                src={mainLogoSrc}
-                alt={subsite.title}
-                className="eea-logo"
-                width={mainLogoWidth}
-                height={mainLogoHeight}
-                fetchpriority="high"
-                style={{
-                  aspectRatio: `${mainLogoWidth} / ${mainLogoHeight}`,
-                  // fit inside the EEA logo box without changing the ratio
-                  objectFit: 'contain',
-                  objectPosition: 'left center',
-                  // hide the alt text while the image is loading
-                  color: 'transparent',
-                }}
+          <div
+            {...(isSubsite && !isSubsiteMainLogo
+              ? { className: 'logo-wrapper' }
+              : {})}
+          >
+            {isSubsiteMainLogo ? (
+              <SubsiteMainLogo
+                subsite={subsite}
+                height={headerOpts.logoHeight}
+                width={headerOpts.logoWidth}
               />
-            </UniversalLink>
-          ) : (
-            <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
+            ) : (
               <EEALogo
                 src={logo}
                 invertedSrc={logoWhite}
@@ -362,31 +329,31 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
                 height={headerOpts.logoHeight}
                 width={headerOpts.logoWidth}
               />
+            )}
 
-              {!!subsite && subsite.title && (
-                <UniversalLink item={subsite} className="subsite-logo">
-                  {subsite.subsite_logo ? (
-                    <Image
-                      src={subsite.subsite_logo.scales.mini.download}
-                      alt={subsite.title}
-                      width={subsite.subsite_logo.scales.mini.width || 80}
-                      height={subsite.subsite_logo.scales.mini.height || 80}
-                      style={
-                        (subsite.subsite_logo.scales.mini.width || 80) &&
-                        (subsite.subsite_logo.scales.mini.height || 80)
-                          ? {
-                              aspectRatio: `${subsite.subsite_logo.scales.mini.width || 80} / ${subsite.subsite_logo.scales.mini.height || 80}`,
-                            }
-                          : undefined
-                      }
-                    />
-                  ) : (
-                    subsite.title
-                  )}
-                </UniversalLink>
-              )}
-            </div>
-          )
+            {!isSubsiteMainLogo && !!subsite && subsite.title && (
+              <UniversalLink item={subsite} className="subsite-logo">
+                {subsite.subsite_logo ? (
+                  <Image
+                    src={subsite.subsite_logo.scales.mini.download}
+                    alt={subsite.title}
+                    width={subsite.subsite_logo.scales.mini.width || 80}
+                    height={subsite.subsite_logo.scales.mini.height || 80}
+                    style={
+                      (subsite.subsite_logo.scales.mini.width || 80) &&
+                      (subsite.subsite_logo.scales.mini.height || 80)
+                        ? {
+                            aspectRatio: `${subsite.subsite_logo.scales.mini.width || 80} / ${subsite.subsite_logo.scales.mini.height || 80}`,
+                          }
+                        : undefined
+                    }
+                  />
+                ) : (
+                  subsite.title
+                )}
+              </UniversalLink>
+            )}
+          </div>
         }
         menuItems={items}
         menuItemsLayouts={enhancedLayouts}

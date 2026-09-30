@@ -9,7 +9,10 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
 import config from '@plone/volto/registry';
 import isArray from 'lodash/isArray';
-import { isSubsiteFooterHidden } from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
+import {
+  getSubsitePath,
+  shouldHideSubsiteFooter,
+} from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
 
 const isPrivacyAction = (action) =>
   action.id === 'privacy' || /\/privacy\/?$/.test(action.url || '');
@@ -43,20 +46,6 @@ const Footer = () => {
       }))
     : eea.footerOpts.actions;
 
-  // Hardcoded exception (see config.settings.eea.subsiteHideFooterPaths):
-  // only the bottom links are shown and Privacy points to the subsite.
-  const hideFooterContent = isSubsiteFooterHidden(subsite);
-  const subsitePath = hideFooterContent
-    ? flattenToAppURL(subsite['@id']).replace(/\/+$/, '')
-    : '';
-  const footerActionsList = hideFooterContent
-    ? (actions || []).map((action) =>
-        isPrivacyAction(action)
-          ? { ...action, url: `${subsitePath}/privacy` }
-          : action,
-      )
-    : actions;
-
   // ZMI > portal_actions > copyright_actions
   const copyright = isArray(copyrightActions)
     ? copyrightActions.map((action) => ({
@@ -65,6 +54,21 @@ const Footer = () => {
         url: flattenToAppURL(action.url),
       }))
     : eea.footerOpts.copyright;
+
+  // Hardcoded exception (config.settings.eea.subsiteHideFooterPaths): only
+  // the bottom links are shown and Privacy points to the subsite.
+  if (shouldHideSubsiteFooter(subsite)) {
+    const privacyUrl = `${getSubsitePath(subsite)}/privacy`;
+    const subsiteActions = (actions || []).map((action) =>
+      isPrivacyAction(action) ? { ...action, url: privacyUrl } : action,
+    );
+
+    return (
+      <EEAFooter>
+        <EEAFooter.Actions actions={subsiteActions} copyright={copyright} />
+      </EEAFooter>
+    );
+  }
 
   // ZMI > portal_actions > social_actions
   const social = isArray(socialActions)
@@ -98,14 +102,6 @@ const Footer = () => {
     social,
     contacts,
   };
-
-  if (hideFooterContent) {
-    return (
-      <EEAFooter>
-        <EEAFooter.Actions actions={footerActionsList} copyright={copyright} />
-      </EEAFooter>
-    );
-  }
 
   return (
     <EEAFooter>
