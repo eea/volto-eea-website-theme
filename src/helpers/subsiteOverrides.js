@@ -16,7 +16,7 @@ export const getSubsitePath = (subsite) =>
  */
 const matchesSubsitePaths = (subsite, settingName) => {
   if (subsite?.['@type'] !== 'Subsite' || !subsite['@id']) return false;
-  const patterns = config.settings.eea?.[settingName] || [];
+  const patterns = config.settings.eea[settingName] || [];
   const path = getSubsitePath(subsite);
   return patterns.some((pattern) => pattern.test(path));
 };

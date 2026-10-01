@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image } from 'semantic-ui-react';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import Helmet from '@plone/volto/helpers/Helmet/Helmet';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 
 /**
@@ -18,29 +17,23 @@ const SubsiteMainLogo = ({ subsite, width, height }) => {
   );
 
   return (
-    <>
-      <Helmet>
-        {/* Preload the logo so its alt text is not shown during SSR */}
-        <link rel="preload" as="image" href={src} fetchpriority="high" />
-      </Helmet>
-      <UniversalLink item={subsite} title={subsite.title} className="logo">
-        <Image
-          src={src}
-          alt={subsite.title}
-          className="eea-logo"
-          width={width}
-          height={height}
-          fetchpriority="high"
-          style={{
-            aspectRatio: width && height ? `${width} / ${height}` : undefined,
-            objectFit: 'contain',
-            objectPosition: 'left center',
-            // hide the alt text while the image is loading
-            color: 'transparent',
-          }}
-        />
-      </UniversalLink>
-    </>
+    <UniversalLink item={subsite} title={subsite.title} className="logo">
+      <Image
+        src={src}
+        alt={subsite.title}
+        className="eea-logo"
+        width={width}
+        height={height}
+        fetchpriority="high"
+        style={{
+          aspectRatio: width && height ? `${width} / ${height}` : undefined,
+          objectFit: 'contain',
+          objectPosition: 'left center',
+          // hide the alt text while the image is loading
+          color: 'transparent',
+        }}
+      />
+    </UniversalLink>
   );
 };
 
