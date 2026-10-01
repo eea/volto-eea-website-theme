@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import AccordionContextNavigation from '@eeacms/volto-eea-website-theme/components/manage/Blocks/ContextNavigation/variations/Accordion';
 
 /**
@@ -27,6 +27,25 @@ const hasContextNavigationAccordion = (node) => {
   }
   return false;
 };
+
+const FORWARDED_ACTION_PARAMS = [
+  'portal_type',
+  'sort_on',
+  'sort_order',
+  'children_sort_type',
+  'children_sort_on',
+  'children_sort_order',
+];
+
+const pickSetParams = (action) =>
+  Object.fromEntries(
+    FORWARDED_ACTION_PARAMS.filter((key) => action[key]).map((key) => [
+      key,
+      action[key],
+    ]),
+  );
+
+const normalize = (path) => (path?.endsWith('/') ? path : `${path}/`);
 
 /**
  * Render the auto-injected accordion side menu for matching
@@ -56,7 +75,6 @@ const ContextNavigationInjector = ({ content, location }) => {
     const navigation_paths = contextNavigationActions || [];
     if (!navigation_paths?.length) return null;
 
-    const normalize = (p) => (p?.endsWith('/') ? p : `${p}/`);
     const basePath = normalize(path);
 
     const candidates = navigation_paths.filter((np) =>
@@ -74,6 +92,16 @@ const ContextNavigationInjector = ({ content, location }) => {
     return candidate;
   }, [contextNavigationActions, content_type, path]);
 
+  // During client-side navigation the content object can briefly belong to
+  // the previous page.  Suppress until it catches up with the URL.
+  const contentPath = flattenToAppURL(content?.['@id']);
+  if (
+    contentPath?.startsWith('/') &&
+    normalize(path) !== normalize(contentPath)
+  ) {
+    return null;
+  }
+
   if (!matchingNavigationPath || hasExistingSideMenu) return null;
 
   return (
@@ -88,15 +116,7 @@ const ContextNavigationInjector = ({ content, location }) => {
         bottomLevel: matchingNavigationPath.bottomLevel ?? 4,
         topLevel: matchingNavigationPath.topLevel ?? 0,
         currentFolderOnly: matchingNavigationPath.currentFolderOnly ?? false,
-        ...(matchingNavigationPath.portal_type && {
-          portal_type: matchingNavigationPath.portal_type,
-        }),
-        ...(matchingNavigationPath.sort_on && {
-          sort_on: matchingNavigationPath.sort_on,
-        }),
-        ...(matchingNavigationPath.sort_order && {
-          sort_order: matchingNavigationPath.sort_order,
-        }),
+        ...pickSetParams(matchingNavigationPath),
       }}
     />
   );
