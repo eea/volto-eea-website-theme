@@ -9,6 +9,13 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
 import config from '@plone/volto/registry';
 import isArray from 'lodash/isArray';
+import {
+  getSubsitePath,
+  shouldHideSubsiteFooter,
+} from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
+
+const isPrivacyAction = (action) =>
+  action.id === 'privacy' || /\/privacy\/?$/.test(action.url || '');
 
 const Footer = () => {
   const { eea } = config.settings;
@@ -18,6 +25,7 @@ const Footer = () => {
     socialActions,
     contactActions,
     contactExtraActions,
+    subsite,
   } = useSelector(
     (state) => ({
       footerActions: state.actions?.actions?.footer_actions,
@@ -25,12 +33,14 @@ const Footer = () => {
       socialActions: state.actions?.actions?.social_actions,
       contactActions: state.actions?.actions?.contact_actions,
       contactExtraActions: state.actions?.actions?.contact_extra_actions,
+      subsite: state.content?.data?.['@components']?.subsite,
     }),
     shallowEqual,
   );
   // ZMI > portal_actions > footer_actions
   const actions = isArray(footerActions)
     ? footerActions.map((action) => ({
+        id: action.id,
         title: action.title,
         url: flattenToAppURL(action.url),
       }))
@@ -44,6 +54,21 @@ const Footer = () => {
         url: flattenToAppURL(action.url),
       }))
     : eea.footerOpts.copyright;
+
+  // Hardcoded exception (config.settings.eea.subsiteHideFooterPaths): only
+  // the bottom links are shown and Privacy points to the subsite.
+  if (shouldHideSubsiteFooter(subsite)) {
+    const privacyUrl = `${getSubsitePath(subsite)}/privacy`;
+    const subsiteActions = (actions || []).map((action) =>
+      isPrivacyAction(action) ? { ...action, url: privacyUrl } : action,
+    );
+
+    return (
+      <EEAFooter>
+        <EEAFooter.Actions actions={subsiteActions} copyright={copyright} />
+      </EEAFooter>
+    );
+  }
 
   // ZMI > portal_actions > social_actions
   const social = isArray(socialActions)

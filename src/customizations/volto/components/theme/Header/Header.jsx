@@ -21,6 +21,8 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
+import SubsiteMainLogo from '@eeacms/volto-eea-website-theme/components/theme/SubsiteMainLogo';
+import { shouldUseSubsiteMainLogo } from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 const EMPTY_NAVIGATION_SETTINGS = {};
@@ -84,7 +86,9 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   const { logo, logoWhite } = headerOpts;
 
   const isSubsite = subsite?.['@type'] === 'Subsite';
-  const isSubsiteLogoMain = subsite?.subsite_logo_main;
+  // Hardcoded exception (config.settings.eea.subsiteMainLogoPaths): the
+  // uploaded subsite logo replaces the EEA logo.
+  const isSubsiteMainLogo = shouldUseSubsiteMainLogo(subsite);
 
   // Redux state
   const dispatch = useDispatch();
@@ -123,14 +127,6 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   // Derived / memoized values
   const headerSearchBox =
     headerSettings?.searchBox || eea.headerSearchBox || [];
-  const subsiteLogoScale =
-    subsite?.subsite_logo?.scales?.[isSubsiteLogoMain ? 'preview' : 'mini'];
-  const subsiteLogoWidth = isSubsiteLogoMain
-    ? headerOpts.logoWidth
-    : subsiteLogoScale?.width || 80;
-  const subsiteLogoHeight = isSubsiteLogoMain
-    ? headerOpts.logoHeight
-    : subsiteLogoScale?.height || 80;
 
   const enhancedLayouts = buildEnhancedLayouts(items, navigationSettings);
 
@@ -312,8 +308,18 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
-            {!isSubsiteLogoMain && (
+          <div
+            {...(isSubsite && !isSubsiteMainLogo
+              ? { className: 'logo-wrapper' }
+              : {})}
+          >
+            {isSubsiteMainLogo ? (
+              <SubsiteMainLogo
+                subsite={subsite}
+                height={headerOpts.logoHeight}
+                width={headerOpts.logoWidth}
+              />
+            ) : (
               <EEALogo
                 src={logo}
                 invertedSrc={logoWhite}
@@ -325,21 +331,22 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
               />
             )}
 
-            {!!subsite && subsite.title && (
-              <UniversalLink
-                item={subsite}
-                className={isSubsiteLogoMain ? 'logo' : 'subsite-logo'}
-              >
+            {!isSubsiteMainLogo && !!subsite && subsite.title && (
+              <UniversalLink item={subsite} className="subsite-logo">
                 {subsite.subsite_logo ? (
                   <Image
-                    src={subsiteLogoScale.download}
+                    src={subsite.subsite_logo.scales.mini.download}
                     alt={subsite.title}
-                    className={isSubsiteLogoMain ? 'eea-logo' : undefined}
-                    width={subsiteLogoWidth}
-                    height={subsiteLogoHeight}
-                    style={{
-                      aspectRatio: `${subsiteLogoWidth} / ${subsiteLogoHeight}`,
-                    }}
+                    width={subsite.subsite_logo.scales.mini.width || 80}
+                    height={subsite.subsite_logo.scales.mini.height || 80}
+                    style={
+                      (subsite.subsite_logo.scales.mini.width || 80) &&
+                      (subsite.subsite_logo.scales.mini.height || 80)
+                        ? {
+                            aspectRatio: `${subsite.subsite_logo.scales.mini.width || 80} / ${subsite.subsite_logo.scales.mini.height || 80}`,
+                          }
+                        : undefined
+                    }
                   />
                 ) : (
                   subsite.title
