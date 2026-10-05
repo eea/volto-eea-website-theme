@@ -17,6 +17,9 @@ import {
 const isPrivacyAction = (action) =>
   action.id === 'privacy' || /\/privacy\/?$/.test(action.url || '');
 
+const isSitemapAction = (action) =>
+  action.id === 'sitemap' || /\/sitemap\/?$/.test(action.url || '');
+
 const Footer = () => {
   const { eea } = config.settings;
   const {
@@ -49,6 +52,7 @@ const Footer = () => {
   // ZMI > portal_actions > copyright_actions
   const copyright = isArray(copyrightActions)
     ? copyrightActions.map((action) => ({
+        id: action.id,
         title: action.title,
         site: action.title,
         url: flattenToAppURL(action.url),
@@ -56,16 +60,25 @@ const Footer = () => {
     : eea.footerOpts.copyright;
 
   // Hardcoded exception (config.settings.eea.subsiteHideFooterPaths): only
-  // the bottom links are shown and Privacy points to the subsite.
+  // the bottom links are shown, Privacy points to the subsite and the EEA
+  // Sitemap is hidden.
   if (shouldHideSubsiteFooter(subsite)) {
     const privacyUrl = `${getSubsitePath(subsite)}/privacy`;
-    const subsiteActions = (actions || []).map((action) =>
-      isPrivacyAction(action) ? { ...action, url: privacyUrl } : action,
+    const subsiteActions = actions
+      .filter((action) => !isSitemapAction(action))
+      .map((action) =>
+        isPrivacyAction(action) ? { ...action, url: privacyUrl } : action,
+      );
+    const subsiteCopyright = copyright.filter(
+      (action) => !isSitemapAction(action),
     );
 
     return (
       <EEAFooter>
-        <EEAFooter.Actions actions={subsiteActions} copyright={copyright} />
+        <EEAFooter.Actions
+          actions={subsiteActions}
+          copyright={subsiteCopyright}
+        />
       </EEAFooter>
     );
   }

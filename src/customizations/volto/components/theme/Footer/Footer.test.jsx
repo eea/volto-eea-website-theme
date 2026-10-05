@@ -19,8 +19,12 @@ beforeAll(() => {
 
 const footerActions = [
   { id: 'privacy', title: 'Privacy', url: 'http://localhost:3000/en/privacy' },
-  { id: 'sitemap', title: 'Sitemap', url: 'http://localhost:3000/en/sitemap' },
   { id: 'login', title: 'CMS Login', url: 'http://localhost:3000/login' },
+];
+
+const copyrightActions = [
+  { id: 'sitemap', title: 'Sitemap', url: 'http://localhost:3000/en/sitemap' },
+  { id: 'copyright', title: '© EEA', url: '/copyright' },
 ];
 
 const renderFooter = (subsiteId) => {
@@ -29,9 +33,7 @@ const renderFooter = (subsiteId) => {
     actions: {
       actions: {
         footer_actions: footerActions,
-        copyright_actions: [
-          { id: 'copyright', title: '© EEA', url: '/copyright' },
-        ],
+        copyright_actions: copyrightActions,
       },
     },
     content: {
@@ -77,6 +79,7 @@ describe('Footer', () => {
       getByText('Explore our environmental information systems'),
     ).toBeInTheDocument();
     expect(getByText('Privacy').getAttribute('href')).toBe('/en/privacy');
+    expect(getByText('Sitemap').getAttribute('href')).toBe('/en/sitemap');
   });
 
   it('only keeps the bottom links on /en/epanet', () => {
@@ -89,7 +92,7 @@ describe('Footer', () => {
     expect(getByText('Privacy').getAttribute('href')).toBe(
       '/en/epanet/privacy',
     );
-    expect(getByText('Sitemap').getAttribute('href')).toBe('/en/sitemap');
+    expect(queryByText('Sitemap')).toBeNull();
     expect(getByText('CMS Login')).toBeInTheDocument();
     expect(getByText('© EEA')).toBeInTheDocument();
   });
