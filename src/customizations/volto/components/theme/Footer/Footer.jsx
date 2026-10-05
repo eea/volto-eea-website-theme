@@ -14,8 +14,18 @@ import {
   shouldHideSubsiteFooter,
 } from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
 
-const isPrivacyAction = (action) =>
-  action.id === 'privacy' || /\/privacy\/?$/.test(action.url || '');
+// Footer actions that point to the subsite's own page with that name.
+const SUBSITE_PAGES = [
+  { id: 'privacy', page: 'privacy' },
+  { id: 'accessibility', page: 'accessibility' },
+  { id: 'legal', page: 'legal-notice' },
+];
+
+const getSubsitePage = (action) =>
+  SUBSITE_PAGES.find(
+    ({ id, page }) =>
+      action.id === id || new RegExp(`/${page}/?$`).test(action.url || ''),
+  )?.page;
 
 const isSitemapAction = (action) =>
   action.id === 'sitemap' || /\/sitemap\/?$/.test(action.url || '');
@@ -60,15 +70,16 @@ const Footer = () => {
     : eea.footerOpts.copyright;
 
   // Hardcoded exception (config.settings.eea.subsiteHideFooterPaths): only
-  // the bottom links are shown, Privacy points to the subsite and the EEA
-  // Sitemap is hidden.
+  // the bottom links are shown, Privacy, Accessibility and Legal notice point
+  // to the subsite's own pages and the EEA Sitemap is hidden.
   if (shouldHideSubsiteFooter(subsite)) {
-    const privacyUrl = `${getSubsitePath(subsite)}/privacy`;
+    const subsitePath = getSubsitePath(subsite);
     const subsiteActions = actions
       .filter((action) => !isSitemapAction(action))
-      .map((action) =>
-        isPrivacyAction(action) ? { ...action, url: privacyUrl } : action,
-      );
+      .map((action) => {
+        const page = getSubsitePage(action);
+        return page ? { ...action, url: `${subsitePath}/${page}` } : action;
+      });
     const subsiteCopyright = copyright.filter(
       (action) => !isSitemapAction(action),
     );

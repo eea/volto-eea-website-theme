@@ -19,6 +19,16 @@ beforeAll(() => {
 
 const footerActions = [
   { id: 'privacy', title: 'Privacy', url: 'http://localhost:3000/en/privacy' },
+  {
+    id: 'accessibility',
+    title: 'Accessibility',
+    url: 'http://localhost:3000/en/accessibility',
+  },
+  {
+    id: 'legal',
+    title: 'Legal notice',
+    url: 'http://localhost:3000/en/legal-notice',
+  },
   { id: 'login', title: 'CMS Login', url: 'http://localhost:3000/login' },
 ];
 
@@ -79,6 +89,12 @@ describe('Footer', () => {
       getByText('Explore our environmental information systems'),
     ).toBeInTheDocument();
     expect(getByText('Privacy').getAttribute('href')).toBe('/en/privacy');
+    expect(getByText('Accessibility').getAttribute('href')).toBe(
+      '/en/accessibility',
+    );
+    expect(getByText('Legal notice').getAttribute('href')).toBe(
+      '/en/legal-notice',
+    );
     expect(getByText('Sitemap').getAttribute('href')).toBe('/en/sitemap');
   });
 
@@ -91,6 +107,12 @@ describe('Footer', () => {
     expect(queryByText('EEA footer header')).toBeNull();
     expect(getByText('Privacy').getAttribute('href')).toBe(
       '/en/epanet/privacy',
+    );
+    expect(getByText('Accessibility').getAttribute('href')).toBe(
+      '/en/epanet/accessibility',
+    );
+    expect(getByText('Legal notice').getAttribute('href')).toBe(
+      '/en/epanet/legal-notice',
     );
     expect(queryByText('Sitemap')).toBeNull();
     expect(getByText('CMS Login')).toBeInTheDocument();
