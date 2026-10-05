@@ -517,7 +517,7 @@ describe('Header', () => {
     expect(queryByText('Subjects')).toBeNull();
   });
 
-  describe('subsite main logo (hardcoded exception)', () => {
+  describe('EPANET subsite (hardcoded exceptions)', () => {
     const subsiteStore = (subsiteId) =>
       mockStore({
         userSession: { token: null },
@@ -555,6 +555,7 @@ describe('Header', () => {
           headerOpts: { logo: 'eea-logo.svg' },
           organisationName: 'European Environment Agency',
           subsiteMainLogoPaths: [/^\/[a-z]{2}\/epanet$/],
+          subsiteHideTopHeaderPaths: [/^\/[a-z]{2}\/epanet$/],
         },
       };
     });
@@ -577,6 +578,19 @@ describe('Header', () => {
       expect(container.querySelector('.subsite-logo')).toBeNull();
     });
 
+    it('hides the header top bar on /en/epanet', () => {
+      const { container } = render(
+        <Provider store={subsiteStore('/en/epanet')}>
+          <Router history={history}>
+            <Header pathname="/en/epanet/page" />
+          </Router>
+        </Provider>,
+      );
+
+      expect(container.querySelector('.top.bar')).toBeNull();
+      expect(container.querySelector('.main.bar')).not.toBeNull();
+    });
+
     it('keeps the EEA logo for other subsites', () => {
       const { container, queryByAltText } = render(
         <Provider store={subsiteStore('/en/other')}>
@@ -587,6 +601,7 @@ describe('Header', () => {
       );
 
       expect(queryByAltText('European Environment Agency')).not.toBeNull();
+      expect(container.querySelector('.top.bar')).not.toBeNull();
       expect(
         container.querySelector('.subsite-logo img').getAttribute('src'),
       ).toBe('/logo-mini.png');

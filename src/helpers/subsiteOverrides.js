@@ -33,3 +33,9 @@ export const shouldUseSubsiteMainLogo = (subsite) =>
  */
 export const shouldHideSubsiteFooter = (subsite) =>
   matchesSubsitePaths(subsite, 'subsiteHideFooterPaths');
+
+/**
+ * Hide the header top bar (EU notice, information systems, languages).
+ */
+export const shouldHideSubsiteTopHeader = (subsite) =>
+  matchesSubsitePaths(subsite, 'subsiteHideTopHeaderPaths');
