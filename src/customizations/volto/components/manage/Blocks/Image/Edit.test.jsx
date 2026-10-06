@@ -24,11 +24,40 @@
 
 import config from '@plone/volto/registry';
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
 import Edit, { getImageBlockSizes } from './Edit';
+
+// Resolve the lazy Dropzone in tests so the object-browser button is
+// rendered (loadable would otherwise stay on its null fallback).
+// Note: babel-preset-razzle compiles `loadable(() => import('x'))` into
+// `loadable({ resolved, importAsync, ... })` — handle both shapes.
+jest.mock('@loadable/component', () => {
+  const React = require('react');
+
+  return (loader) => {
+    const Lazy = (props) => {
+      const [Comp, setComp] = React.useState(null);
+      React.useEffect(() => {
+        let active = true;
+        const importAsync =
+          typeof loader === 'function' ? loader : loader.importAsync;
+        importAsync().then((m) => {
+          if (active) {
+            setComp((m && (m.default || m)) || null);
+          }
+        });
+        return () => {
+          active = false;
+        };
+      }, []);
+      return Comp ? React.createElement(Comp, props) : null;
+    };
+    return Lazy;
+  };
+});
 
 jest.mock('@plone/volto/components', () => {
   const React = require('react');
@@ -313,5 +342,124 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Object-browser selection — AI alt fallback chain (issue #305021)
+//   existing block alt -> AI summary (brain llm_summary, markers stripped)
+//   -> brain title -> ''
+// Zero runtime fetches: llm_summary is a portal_catalog metadata column
+// and the object browser requests metadata_fields=_all, so the selection
+// brain carries it natively.
+// ---------------------------------------------------------------------------
+
+describe('Edit object-browser selection (AI alt chain)', () => {
+  const TWO_URL = 'http://localhost:8080/Plone/en/two.jpeg';
+  const MARKED =
+    '[AI Generated description] A cat on a sofa. [End of AI Generated description]';
+
+  let browserCfg;
+  let mockChangeBlock;
+
+  /** Render the block (dropzone UI) and open the object browser. */
+  const openBrowser = async (data = {}) => {
+    renderEdit(
+      { url: undefined, ...data },
+      {
+        editable: true,
+        openObjectBrowser: (cfg) => {
+          browserCfg = cfg;
+        },
+        onChangeBlock: mockChangeBlock,
+      },
+    );
+    fireEvent.click(await screen.findByTestId('image-block-object-browser'));
+    return browserCfg;
+  };
+
+  beforeEach(() => {
+    browserCfg = null;
+    mockChangeBlock = jest.fn();
+  });
+
+  it('exposes an onSelectItem handler to the object browser', async () => {
+    const cfg = await openBrowser();
+    expect(cfg).toBeTruthy();
+    expect(typeof cfg.onSelectItem).toBe('function');
+  });
+
+  it('fills alt from the brain llm_summary (markers stripped)', async () => {
+    const cfg = await openBrowser();
+
+    cfg.onSelectItem(TWO_URL, {
+      Title: 'two.jpeg',
+      llm_summary: MARKED,
+      image_field: 'image',
+      image_scales: { image: [] },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        url: TWO_URL,
+        image_field: 'image',
+        image_scales: { image: [] },
+        // marker-stripped suggestion becomes the alt
+        alt: 'A cat on a sofa.',
+      }),
+    );
+  });
+
+  it('falls back to the brain title when the brain has no llm_summary', async () => {
+    const cfg = await openBrowser();
+
+    cfg.onSelectItem(TWO_URL, {
+      Title: 'two.jpeg',
+      image_field: 'image',
+      image_scales: { image: [] },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: 'two.jpeg',
+      }),
+    );
+  });
+
+  it('keeps an existing block alt', async () => {
+    const cfg = await openBrowser({ alt: 'editor written alt' });
+
+    cfg.onSelectItem(TWO_URL, {
+      Title: 'two.jpeg',
+      llm_summary: MARKED,
+      image_field: 'image',
+      image_scales: { image: [] },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: 'editor written alt',
+      }),
+    );
+  });
+
+  it('uses the brain title for selections without object data', async () => {
+    const cfg = await openBrowser();
+
+    cfg.onSelectItem('https://example.com/cat.png', {
+      title: 'external',
+      image_field: undefined,
+      image_scales: undefined,
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: 'external',
+      }),
+    );
   });
 });

@@ -23,6 +23,7 @@ import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/UserSelectWidget';
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
+import ImageAltWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageAltWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
 import ADUserGroupSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ADUserGroupSelectWidget';
@@ -486,6 +487,7 @@ const applyConfig = (config) => {
   config.widgets.views.widget.creators = CreatorsViewWidget;
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.widget.simple_array = SimpleArrayWidget;
+  config.widgets.widget.image_alt = ImageAltWidget;
   config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
   config.widgets.widget.ad_user_group_select = ADUserGroupSelectWidget;

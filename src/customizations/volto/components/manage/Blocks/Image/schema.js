@@ -78,6 +78,7 @@ export function ImageSchema({ formData, intl }) {
       },
       alt: {
         title: intl.formatMessage(messages.AltText),
+        widget: 'image_alt',
         description: (
           <>
             <a
