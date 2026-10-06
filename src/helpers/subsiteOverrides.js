@@ -25,3 +25,10 @@ export const shouldUseSubsiteMainLogo = (subsite) =>
  */
 export const shouldHideSubsiteTopHeader = (subsite) =>
   matchesSubsitePaths(subsite, 'subsiteHideTopHeaderPaths');
+
+/**
+ * Hide the EEA branding from the footer (EEA and Eionet logos, information
+ * systems button). These come from the theme config, not from Plone.
+ */
+export const shouldHideSubsiteFooterBranding = (subsite) =>
+  matchesSubsitePaths(subsite, 'subsiteHideFooterBrandingPaths');

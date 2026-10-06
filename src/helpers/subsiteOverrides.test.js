@@ -1,5 +1,6 @@
 import config from '@plone/volto/registry';
 import {
+  shouldHideSubsiteFooterBranding,
   shouldHideSubsiteTopHeader,
   shouldUseSubsiteMainLogo,
 } from './subsiteOverrides';
@@ -18,6 +19,7 @@ describe('subsiteOverrides', () => {
       ...config.settings.eea,
       subsiteMainLogoPaths: [/^\/[a-z]{2}\/epanet$/],
       subsiteHideTopHeaderPaths: [/^\/[a-z]{2}\/epanet$/],
+      subsiteHideFooterBrandingPaths: [/^\/[a-z]{2}\/epanet$/],
     };
   });
 
@@ -50,6 +52,11 @@ describe('subsiteOverrides', () => {
   it('hides the header top bar only on the hardcoded subsite', () => {
     expect(shouldHideSubsiteTopHeader(subsite('/en/epanet'))).toBe(true);
     expect(shouldHideSubsiteTopHeader(subsite('/en/other'))).toBe(false);
+  });
+
+  it('hides the footer EEA branding only on the hardcoded subsite', () => {
+    expect(shouldHideSubsiteFooterBranding(subsite('/en/epanet'))).toBe(true);
+    expect(shouldHideSubsiteFooterBranding(subsite('/en/other'))).toBe(false);
   });
 
   it('ignores missing or non-subsite data', () => {
