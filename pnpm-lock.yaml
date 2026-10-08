@@ -120,6 +120,9 @@ importers:
         specifier: workspace:*
         version: link:core/packages/volto
     devDependencies:
+      lint-staged:
+        specifier: ^14.0.1
+        version: 14.0.1(enquirer@2.4.1)
       mrs-developer:
         specifier: ^2.2.0
         version: 2.3.2
@@ -1420,8 +1423,8 @@ importers:
         specifier: 5.16.1
         version: 5.16.1(@babel/core@7.29.7)
       '@plone/babel-preset-razzle':
-        specifier: 1.0.1
-        version: 1.0.1
+        specifier: workspace:*
+        version: link:../../core/packages/volto-babel-preset-razzle
       '@plone/registry':
         specifier: workspace:*
         version: link:../../core/packages/registry

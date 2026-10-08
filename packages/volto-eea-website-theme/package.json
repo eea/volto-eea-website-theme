@@ -58,7 +58,7 @@
     "@babel/plugin-syntax-export-namespace-from": "7.8.3",
     "@cypress/code-coverage": "^3.10.0",
     "@loadable/babel-plugin": "5.16.1",
-    "@plone/babel-preset-razzle": "1.0.1",
+    "@plone/babel-preset-razzle": "workspace:*",
     "@plone/scripts": "workspace:*",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "^16.3.2",
