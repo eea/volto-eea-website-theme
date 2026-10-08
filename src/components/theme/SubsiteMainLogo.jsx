@@ -29,7 +29,6 @@ const SubsiteMainLogo = ({ subsite, width, height }) => {
           aspectRatio: width && height ? `${width} / ${height}` : undefined,
           objectFit: 'contain',
           objectPosition: 'left center',
-          // hide the alt text while the image is loading
           color: 'transparent',
         }}
       />
