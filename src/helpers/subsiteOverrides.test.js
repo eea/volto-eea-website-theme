@@ -1,7 +1,7 @@
 import config from '@plone/volto/registry';
 import {
-  getSubsitePath,
-  shouldHideSubsiteFooter,
+  shouldHideSubsiteFooterBranding,
+  shouldHideSubsiteTopHeader,
   shouldUseSubsiteMainLogo,
 } from './subsiteOverrides';
 
@@ -18,13 +18,9 @@ describe('subsiteOverrides', () => {
     config.settings.eea = {
       ...config.settings.eea,
       subsiteMainLogoPaths: [/^\/[a-z]{2}\/epanet$/],
-      subsiteHideFooterPaths: [/^\/[a-z]{2}\/epanet$/],
+      subsiteHideTopHeaderPaths: [/^\/[a-z]{2}\/epanet$/],
+      subsiteHideFooterBrandingPaths: [/^\/[a-z]{2}\/epanet$/],
     };
-  });
-
-  it('returns the subsite app path without trailing slash', () => {
-    expect(getSubsitePath(subsite('/en/epanet'))).toBe('/en/epanet');
-    expect(getSubsitePath(subsite('/en/epanet/'))).toBe('/en/epanet');
   });
 
   it('uses the subsite logo as main logo only on the hardcoded subsite', () => {
@@ -53,16 +49,21 @@ describe('subsiteOverrides', () => {
     expect(shouldUseSubsiteMainLogo(subsite('/en/epanet'))).toBe(false);
   });
 
-  it('hides the footer content only on the hardcoded subsite', () => {
-    expect(shouldHideSubsiteFooter(subsite('/en/epanet'))).toBe(true);
-    expect(shouldHideSubsiteFooter(subsite('/en/other'))).toBe(false);
+  it('hides the header top bar only on the hardcoded subsite', () => {
+    expect(shouldHideSubsiteTopHeader(subsite('/en/epanet'))).toBe(true);
+    expect(shouldHideSubsiteTopHeader(subsite('/en/other'))).toBe(false);
+  });
+
+  it('hides the footer EEA branding only on the hardcoded subsite', () => {
+    expect(shouldHideSubsiteFooterBranding(subsite('/en/epanet'))).toBe(true);
+    expect(shouldHideSubsiteFooterBranding(subsite('/en/other'))).toBe(false);
   });
 
   it('ignores missing or non-subsite data', () => {
-    expect(shouldHideSubsiteFooter(undefined)).toBe(false);
-    expect(shouldHideSubsiteFooter({})).toBe(false);
+    expect(shouldHideSubsiteTopHeader(undefined)).toBe(false);
+    expect(shouldHideSubsiteTopHeader({})).toBe(false);
     expect(
-      shouldHideSubsiteFooter({ '@type': 'Document', '@id': '/en/epanet' }),
+      shouldHideSubsiteTopHeader({ '@type': 'Document', '@id': '/en/epanet' }),
     ).toBe(false);
   });
 });

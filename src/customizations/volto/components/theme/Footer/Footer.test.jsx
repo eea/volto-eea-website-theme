@@ -17,34 +17,24 @@ beforeAll(() => {
   };
 });
 
-const footerActions = [
-  { id: 'privacy', title: 'Privacy', url: 'http://localhost:3000/en/privacy' },
-  { id: 'sitemap', title: 'Sitemap', url: 'http://localhost:3000/en/sitemap' },
-  { id: 'login', title: 'CMS Login', url: 'http://localhost:3000/login' },
-];
-
-const renderFooter = (subsiteId) => {
+const renderFooter = (subsitePath) => {
   const store = mockStore({
     intl: { locale: 'en', messages: {} },
     actions: {
       actions: {
-        footer_actions: footerActions,
-        copyright_actions: [
-          { id: 'copyright', title: '© EEA', url: '/copyright' },
+        footer_actions: [
+          { id: 'privacy', title: 'Privacy', url: '/en/privacy' },
         ],
       },
     },
     content: {
       data: {
-        '@components': subsiteId
-          ? {
-              subsite: {
-                '@type': 'Subsite',
-                '@id': `http://localhost:3000${subsiteId}`,
-                title: 'Subsite',
-              },
-            }
-          : {},
+        '@components': {
+          subsite: {
+            '@type': 'Subsite',
+            '@id': `http://localhost:3000${subsitePath}`,
+          },
+        },
       },
     },
   });
@@ -64,33 +54,37 @@ describe('Footer', () => {
       footerOpts: {
         buttonName: 'Explore our environmental information systems',
         hrefButton: 'https://www.eea.europa.eu/en/information-systems#',
-        header: 'EEA footer header',
+        managedBy: [
+          {
+            url: 'https://www.eea.europa.eu/',
+            src: 'eea.svg',
+            alt: 'EEA Logo',
+            columnSize: { mobile: 6, tablet: 12, computer: 4 },
+          },
+        ],
       },
-      subsiteHideFooterPaths: [/^\/[a-z]{2}\/epanet$/],
+      subsiteHideFooterBrandingPaths: [/^\/[a-z]{2}\/epanet$/],
     };
   });
 
-  it('renders the full EEA footer outside the hardcoded subsite', () => {
-    const { getByText } = renderFooter('/en/other');
+  it('shows the EEA branding outside the hardcoded subsite', () => {
+    const { getByAltText, getByText } = renderFooter('/en/other');
 
+    expect(getByAltText('EEA Logo')).toBeInTheDocument();
     expect(
       getByText('Explore our environmental information systems'),
     ).toBeInTheDocument();
-    expect(getByText('Privacy').getAttribute('href')).toBe('/en/privacy');
+    expect(getByText('Privacy')).toBeInTheDocument();
   });
 
-  it('only keeps the bottom links on /en/epanet', () => {
-    const { getByText, queryByText } = renderFooter('/en/epanet');
+  it('hides the EEA branding on /en/epanet', () => {
+    const { queryByAltText, queryByText, getByText } =
+      renderFooter('/en/epanet');
 
+    expect(queryByAltText('EEA Logo')).toBeNull();
     expect(
       queryByText('Explore our environmental information systems'),
     ).toBeNull();
-    expect(queryByText('EEA footer header')).toBeNull();
-    expect(getByText('Privacy').getAttribute('href')).toBe(
-      '/en/epanet/privacy',
-    );
-    expect(getByText('Sitemap').getAttribute('href')).toBe('/en/sitemap');
-    expect(getByText('CMS Login')).toBeInTheDocument();
-    expect(getByText('© EEA')).toBeInTheDocument();
+    expect(getByText('Privacy')).toBeInTheDocument();
   });
 });

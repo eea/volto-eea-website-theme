@@ -2,14 +2,6 @@ import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import config from '@plone/volto/registry';
 
 /**
- * Get the app path of a subsite, without trailing slash (e.g. /en/epanet).
- * @param {Object} subsite The @components.subsite expansion data
- * @returns {string}
- */
-export const getSubsitePath = (subsite) =>
-  flattenToAppURL(subsite['@id']).replace(/\/+$/, '');
-
-/**
  * Check if the subsite path matches one of the patterns hardcoded in
  * config.settings.eea[settingName]. These are code-only governance
  * exceptions and can not be changed from the CMS.
@@ -17,7 +9,7 @@ export const getSubsitePath = (subsite) =>
 const matchesSubsitePaths = (subsite, settingName) => {
   if (subsite?.['@type'] !== 'Subsite' || !subsite['@id']) return false;
   const patterns = config.settings.eea[settingName] || [];
-  const path = getSubsitePath(subsite);
+  const path = flattenToAppURL(subsite['@id']).replace(/\/+$/, '');
   return patterns.some((pattern) => pattern.test(path));
 };
 
@@ -29,7 +21,14 @@ export const shouldUseSubsiteMainLogo = (subsite) =>
   matchesSubsitePaths(subsite, 'subsiteMainLogoPaths');
 
 /**
- * Hide all footer content except the bottom links (privacy, legal, etc.).
+ * Hide the header top bar (EU notice, information systems, languages).
  */
-export const shouldHideSubsiteFooter = (subsite) =>
-  matchesSubsitePaths(subsite, 'subsiteHideFooterPaths');
+export const shouldHideSubsiteTopHeader = (subsite) =>
+  matchesSubsitePaths(subsite, 'subsiteHideTopHeaderPaths');
+
+/**
+ * Hide the EEA branding from the footer (EEA and Eionet logos, information
+ * systems button). These come from the theme config, not from Plone.
+ */
+export const shouldHideSubsiteFooterBranding = (subsite) =>
+  matchesSubsitePaths(subsite, 'subsiteHideFooterBrandingPaths');
