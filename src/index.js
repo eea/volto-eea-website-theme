@@ -24,6 +24,7 @@ import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/th
 import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/UserSelectWidget';
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
 import ImageAltWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageAltWidget';
+import ImageAddFileWidget from '@eeacms/volto-eea-website-theme/components/manage/ImageAI/ImageAddFileWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
 import ADUserGroupSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ADUserGroupSelectWidget';
@@ -52,6 +53,7 @@ import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
 import { print, navigationSettings, formUI } from './reducers';
 import { headerSettingsExtender } from './helpers/headerSettingsExtender';
+import { genAISettingsExtender } from './helpers/genAISettingsExtender';
 
 import * as eea from './config';
 
@@ -488,6 +490,7 @@ const applyConfig = (config) => {
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.widget.simple_array = SimpleArrayWidget;
   config.widgets.widget.image_alt = ImageAltWidget;
+  config.widgets.id.image = ImageAddFileWidget;
   config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
   config.widgets.widget.ad_user_group_select = ADUserGroupSelectWidget;
@@ -681,6 +684,7 @@ const applyConfig = (config) => {
   config.settings.asyncPropsExtenders = [
     ...(config.settings.asyncPropsExtenders || []),
     headerSettingsExtender,
+    genAISettingsExtender,
   ];
 
   // Mega menu object

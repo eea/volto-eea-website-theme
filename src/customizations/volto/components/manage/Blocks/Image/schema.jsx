@@ -31,7 +31,7 @@ const messages = defineMessages({
   },
   AltTextHint: {
     id: 'Alt text hint',
-    defaultMessage: 'Leave empty if the image is purely decorative.',
+    defaultMessage: 'Clear custom text to use the linked Image title.',
   },
   AltTextHintLinkText: {
     id: 'Alt text hint link text',
@@ -79,19 +79,12 @@ export function ImageSchema({ formData, intl }) {
       alt: {
         title: intl.formatMessage(messages.AltText),
         widget: 'image_alt',
-        description: (
-          <>
-            <a
-              href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
-              title={intl.formatMessage(messages.openLinkInNewTab)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {intl.formatMessage(messages.AltTextHintLinkText)}
-            </a>{' '}
-            {intl.formatMessage(messages.AltTextHint)}
-          </>
-        ),
+        description: `${intl.formatMessage(
+          messages.AltTextHintLinkText,
+        )} ${intl.formatMessage(messages.AltTextHint)}`,
+      },
+      alt_source: {
+        type: 'string',
       },
       align: {
         title: intl.formatMessage(messages.Align),

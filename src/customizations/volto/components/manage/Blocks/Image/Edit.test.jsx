@@ -24,11 +24,50 @@
 
 import config from '@plone/volto/registry';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
 import Edit, { getImageBlockSizes } from './Edit';
+
+const mockPost = jest.fn();
+const mockReadAsDataURL = jest.fn();
+
+jest.mock('@plone/volto/helpers/Api/Api', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({ post: mockPost })),
+}));
+
+jest.mock('promise-file-reader', () => ({
+  readAsDataURL: (...args) => mockReadAsDataURL(...args),
+}));
+
+jest.mock('react-dropzone', () => {
+  const React = require('react');
+  const MockDropzone = React.memo((props) =>
+    React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'button',
+        {
+          type: 'button',
+          'data-testid': 'drop-image',
+          onClick: () =>
+            props.onDrop([
+              new File(['png'], 'wetland.png', { type: 'image/png' }),
+            ]),
+        },
+        'Drop PNG',
+      ),
+      props.children({
+        getRootProps: () => ({}),
+        getInputProps: (options = {}) => options,
+      }),
+    ),
+  );
+  return { __esModule: true, default: MockDropzone };
+});
 
 // Resolve the lazy Dropzone in tests so the object-browser button is
 // rendered (loadable would otherwise stay on its null fallback).
@@ -90,33 +129,37 @@ jest.mock('@plone/volto/components', () => {
   };
 });
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
-  const React = require('react');
+jest.mock(
+  '@eeacms/volto-eea-design-system/ui/Copyright/Copyright',
+  () => {
+    const React = require('react');
 
-  const Copyright = (props) =>
-    React.createElement(
-      'div',
-      { 'data-testid': 'eea-copyright' },
-      props.children,
-    );
-  Copyright.Icon = (props) =>
-    React.createElement(
-      'span',
-      { 'data-testid': 'eea-copyright-icon' },
-      props.children,
-    );
-  Copyright.Text = (props) =>
-    React.createElement(
-      'span',
-      { 'data-testid': 'eea-copyright-text' },
-      props.children,
-    );
+    const Copyright = (props) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'eea-copyright' },
+        props.children,
+      );
+    Copyright.Icon = (props) =>
+      React.createElement(
+        'span',
+        { 'data-testid': 'eea-copyright-icon' },
+        props.children,
+      );
+    Copyright.Text = (props) =>
+      React.createElement(
+        'span',
+        { 'data-testid': 'eea-copyright-text' },
+        props.children,
+      );
 
-  return {
-    __esModule: true,
-    default: Copyright,
-  };
-});
+    return {
+      __esModule: true,
+      default: Copyright,
+    };
+  },
+  { virtual: true },
+);
 
 // Register our mock Image component so config.getComponent({ name: 'Image' })
 // returns something renderable during tests.
@@ -151,7 +194,13 @@ const blockId = '1234';
 /**
  * Helper: render Edit wrapped in Redux + intl Provider.
  */
+const enabledSettings = {
+  enabled: true,
+  features: { image: { enabled: true } },
+};
+
 const renderEdit = (data, extraProps = {}) => {
+  const { genAISettings = enabledSettings, ...props } = extraProps;
   settings.internalApiPath = 'http://localhost:8080/Plone';
   const store = mockStore({
     content: {
@@ -160,9 +209,10 @@ const renderEdit = (data, extraProps = {}) => {
       subrequests: { [blockId]: {} },
     },
     intl: { locale: 'en', messages: {} },
+    reduxAsyncConnect: { genAISettings },
   });
 
-  return render(
+  const utils = render(
     <Provider store={store}>
       <Edit
         data={{ '@type': 'image', ...data }}
@@ -180,10 +230,11 @@ const renderEdit = (data, extraProps = {}) => {
         handleKeyDown={() => {}}
         index={1}
         openObjectBrowser={() => {}}
-        {...extraProps}
+        {...props}
       />
     </Provider>,
   );
+  return { ...utils, store };
 };
 
 // ---------------------------------------------------------------------------
@@ -300,6 +351,60 @@ describe('Edit', () => {
     ).not.toBeInTheDocument();
   });
 
+  it.each([
+    null,
+    { enabled: false, features: { image: { enabled: true } } },
+    { enabled: true, features: { image: { enabled: false } } },
+  ])(
+    'uploads directly without AI consent when SSR settings are missing or disabled',
+    async (genAISettings) => {
+      mockPost.mockClear();
+      mockReadAsDataURL.mockResolvedValueOnce('data:image/png;base64,cG5n');
+      const { store } = renderEdit(
+        { url: undefined },
+        { editable: true, selected: true, genAISettings },
+      );
+      fireEvent.click(await screen.findByTestId('drop-image'));
+      await waitFor(() =>
+        expect(store.getActions()).toContainEqual(
+          expect.objectContaining({
+            type: 'CREATE_CONTENT',
+            request: expect.objectContaining({
+              op: 'post',
+              data: expect.objectContaining({
+                '@type': 'Image',
+                title: 'wetland.png',
+                description: '',
+              }),
+            }),
+          }),
+        ),
+      );
+      expect(screen.queryByText('Generate with AI')).not.toBeInTheDocument();
+      expect(mockPost).not.toHaveBeenCalled();
+    },
+  );
+
+  it('aborts image analysis when its metadata modal is closed', async () => {
+    const abort = jest.fn();
+    const pendingRequest = new Promise(() => {});
+    pendingRequest.request = { abort };
+    mockPost.mockReturnValueOnce(pendingRequest);
+    mockReadAsDataURL.mockResolvedValueOnce('data:image/png;base64,cG5n');
+    renderEdit({ url: undefined }, { editable: true, selected: true });
+
+    fireEvent.click(await screen.findByTestId('drop-image'));
+    fireEvent.click(await screen.findByText('Generate with AI'));
+    expect(screen.getByText('Analyzing image…')).toBeVisible();
+
+    fireEvent.click(document.querySelector('.image-ai-consent-modal .close'));
+
+    expect(abort).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(screen.queryByText('Analyzing image…')).not.toBeInTheDocument(),
+    );
+  });
+
   it('applies align class to both the outer block and the EEA container', () => {
     const { container } = renderEdit({
       url: 'http://localhost:8080/Plone/image',
@@ -346,23 +451,15 @@ describe('Edit', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Object-browser selection — AI alt fallback chain (issue #305021)
-//   existing block alt -> AI summary (brain llm_summary, markers stripped)
-//   -> brain title -> ''
-// Zero runtime fetches: llm_summary is a portal_catalog metadata column
-// and the object browser requests metadata_fields=_all, so the selection
-// brain carries it natively.
+// Object-browser selection — explicit Image-title/custom provenance.
 // ---------------------------------------------------------------------------
 
-describe('Edit object-browser selection (AI alt chain)', () => {
+describe('Edit object-browser selection', () => {
   const TWO_URL = 'http://localhost:8080/Plone/en/two.jpeg';
-  const MARKED =
-    '[AI Generated description] A cat on a sofa. [End of AI Generated description]';
 
   let browserCfg;
   let mockChangeBlock;
 
-  /** Render the block (dropzone UI) and open the object browser. */
   const openBrowser = async (data = {}) => {
     renderEdit(
       { url: undefined, ...data },
@@ -389,12 +486,15 @@ describe('Edit object-browser selection (AI alt chain)', () => {
     expect(typeof cfg.onSelectItem).toBe('function');
   });
 
-  it('fills alt from the brain llm_summary (markers stripped)', async () => {
-    const cfg = await openBrowser();
+  it('uses the selected internal Image title as linked alt source', async () => {
+    const cfg = await openBrowser({
+      alt: 'stale custom alt',
+      alt_source: 'custom',
+      decorative: true,
+    });
 
     cfg.onSelectItem(TWO_URL, {
-      Title: 'two.jpeg',
-      llm_summary: MARKED,
+      Title: 'Wetland bird',
       image_field: 'image',
       image_scales: { image: [] },
     });
@@ -403,62 +503,28 @@ describe('Edit object-browser selection (AI alt chain)', () => {
       blockId,
       expect.objectContaining({
         url: TWO_URL,
-        image_field: 'image',
-        image_scales: { image: [] },
-        // marker-stripped suggestion becomes the alt
-        alt: 'A cat on a sofa.',
+        alt: '',
+        alt_source: 'image-title',
+        image_title: 'Wetland bird',
+        decorative: false,
       }),
     );
   });
 
-  it('falls back to the brain title when the brain has no llm_summary', async () => {
-    const cfg = await openBrowser();
-
-    cfg.onSelectItem(TWO_URL, {
-      Title: 'two.jpeg',
-      image_field: 'image',
-      image_scales: { image: [] },
-    });
-
-    expect(mockChangeBlock).toHaveBeenCalledWith(
-      blockId,
-      expect.objectContaining({
-        alt: 'two.jpeg',
-      }),
-    );
-  });
-
-  it('keeps an existing block alt', async () => {
-    const cfg = await openBrowser({ alt: 'editor written alt' });
-
-    cfg.onSelectItem(TWO_URL, {
-      Title: 'two.jpeg',
-      llm_summary: MARKED,
-      image_field: 'image',
-      image_scales: { image: [] },
-    });
-
-    expect(mockChangeBlock).toHaveBeenCalledWith(
-      blockId,
-      expect.objectContaining({
-        alt: 'editor written alt',
-      }),
-    );
-  });
-
-  it('uses the brain title for selections without object data', async () => {
+  it('switches an external selection to empty custom mode', async () => {
     const cfg = await openBrowser();
 
     cfg.onSelectItem('https://example.com/cat.png', {
-      title: 'external',
-      image_field: undefined,
-      image_scales: undefined,
+      title: 'External image',
     });
 
     expect(mockChangeBlock).toHaveBeenCalledWith(
       blockId,
       expect.objectContaining({
-        alt: 'external',
+        alt: '',
+        alt_source: 'custom',
+        decorative: false,
+        image_title: undefined,
       }),
     );
   });

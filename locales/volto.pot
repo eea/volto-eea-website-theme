@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2025-12-04T19:35:19.710Z\n"
+"POT-Creation-Date: 2026-10-14T10:17:24.409Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -13,9 +13,51 @@ msgstr ""
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
 
+#. Default: "AI alt generated"
+#: components/theme/Widgets/ImageAltWidget
+msgid "AI alt generated"
+msgstr ""
+
+#. Default: "AI alt generation failed."
+#: components/theme/Widgets/ImageAltWidget
+msgid "AI alt generation failed."
+msgstr ""
+
+#. Default: "AI alt generation is unavailable for this image format."
+#: components/theme/Widgets/ImageAltWidget
+msgid "AI alt generation is unavailable for this image format."
+msgstr ""
+
+#. Default: "AI generation will replace the current title and description. You can edit the generated values before saving."
+#: components/manage/ImageAI/ImageAddFileWidget
+msgid "AI generation will replace the current title and description. You can edit the generated values before saving."
+msgstr ""
+
+#. Default: "AI metadata is unavailable for this image format. You can still upload the image without AI."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "AI metadata is unavailable for this image format. You can still upload the image without AI."
+msgstr ""
+
 #. Default: "Add"
 #: components/theme/Widgets/SimpleArrayWidget
 msgid "Add"
+msgstr ""
+
+#. Default: "An Image cannot be added at this location."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "An Image cannot be added at this location."
+msgstr ""
+
+#. Default: "Analyzing image…"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Analyzing image…"
+msgstr ""
+
+#. Default: "Cancel"
+#: components/manage/ImageAI/ImageAddFileWidget
+#: components/manage/ImageAI/ImageMetadataConsentModal
+#: components/theme/Widgets/ImageAltWidget
+msgid "Cancel"
 msgstr ""
 
 #. Default: "Choices"
@@ -48,9 +90,44 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
+#. Default: "Error"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Error"
+msgstr ""
+
 #. Default: "European Environment Agency"
 #: components/theme/Logo
 msgid "European Environment Agency"
+msgstr ""
+
+#. Default: "Generate AI alt"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Generate AI alt"
+msgstr ""
+
+#. Default: "Generate Image metadata with AI?"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Generate Image metadata with AI?"
+msgstr ""
+
+#. Default: "Generate metadata with AI"
+#: components/manage/ImageAI/ImageAddFileWidget
+msgid "Generate metadata with AI"
+msgstr ""
+
+#. Default: "Generate with AI"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Generate with AI"
+msgstr ""
+
+#. Default: "Generating AI alt…"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Generating AI alt…"
+msgstr ""
+
+#. Default: "Generating metadata will replace the current title and description."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Generating metadata will replace the current title and description."
 msgstr ""
 
 #. Default: "Group"
@@ -61,6 +138,11 @@ msgstr ""
 #. Default: "Hide Children From Navigation"
 #: components/theme/Widgets/NavigationBehaviorWidget
 msgid "Hide Children From Navigation"
+msgstr ""
+
+#. Default: "Image analysis failed. No Image has been created."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Image analysis failed. No Image has been created."
 msgstr ""
 
 #. Default: "Invalid block - Will be removed on saving"
@@ -120,14 +202,44 @@ msgstr ""
 msgid "Published"
 msgstr ""
 
+#. Default: "Regenerate AI alt"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Regenerate AI alt"
+msgstr ""
+
+#. Default: "Regenerate AI alt?"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Regenerate AI alt?"
+msgstr ""
+
+#. Default: "Regenerate metadata with AI"
+#: components/manage/ImageAI/ImageAddFileWidget
+msgid "Regenerate metadata with AI"
+msgstr ""
+
 #. Default: "Remove"
 #: components/theme/Widgets/SimpleArrayWidget
 msgid "Remove"
 msgstr ""
 
+#. Default: "Replace Image metadata?"
+#: components/manage/ImageAI/ImageAddFileWidget
+msgid "Replace Image metadata?"
+msgstr ""
+
 #. Default: "Required"
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Required"
+msgstr ""
+
+#. Default: "Retry"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Retry"
+msgstr ""
+
+#. Default: "Retry upload"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Retry upload"
 msgstr ""
 
 #. Default: "Select…"
@@ -157,14 +269,59 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+#. Default: "Success"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Success"
+msgstr ""
+
+#. Default: "The AI service returned no valid alt text."
+#: components/theme/Widgets/ImageAltWidget
+msgid "The AI service returned no valid alt text."
+msgstr ""
+
+#. Default: "The Image could not be created. The generated metadata has been kept for retry."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "The Image could not be created. The generated metadata has been kept for retry."
+msgstr ""
+
+#. Default: "The configured AI service will analyse this image to generate its title and description. The title will also become the default alt text."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "The configured AI service will analyse this image to generate its title and description. The title will also become the default alt text."
+msgstr ""
+
+#. Default: "The image is too large for AI alt generation."
+#: components/theme/Widgets/ImageAltWidget
+msgid "The image is too large for AI alt generation."
+msgstr ""
+
+#. Default: "The selected image could not be analysed safely."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "The selected image could not be analysed safely."
+msgstr ""
+
+#. Default: "The selected image is too large for AI analysis."
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "The selected image is too large for AI analysis."
+msgstr ""
+
 #. Default: "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
 #: components/theme/NotFound/GoneView
 msgid "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
 msgstr ""
 
+#. Default: "This external image needs custom alt text."
+#: components/theme/Widgets/ImageAltWidget
+msgid "This external image needs custom alt text."
+msgstr ""
+
 #. Default: "This page has been retired"
 #: components/theme/NotFound/GoneView
 msgid "This page has been retired"
+msgstr ""
+
+#. Default: "This will overwrite the current custom alt text with a freshly generated one."
+#: components/theme/Widgets/ImageAltWidget
+msgid "This will overwrite the current custom alt text with a freshly generated one."
 msgstr ""
 
 #. Default: "Title"
@@ -193,6 +350,21 @@ msgstr ""
 msgid "Unknown Block"
 msgstr ""
 
+#. Default: "Upload without AI"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Upload without AI"
+msgstr ""
+
+#. Default: "Uploading image…"
+#: components/manage/ImageAI/ImageMetadataConsentModal
+msgid "Uploading image…"
+msgstr ""
+
+#. Default: "Use Image title"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Use Image title"
+msgstr ""
+
 #. Default: "Used for programmatic access to the fieldset."
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Used for programmatic access to the fieldset."
@@ -203,9 +375,19 @@ msgstr ""
 msgid "User"
 msgstr ""
 
+#. Default: "Using linked Image title"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Using linked Image title"
+msgstr ""
+
 #. Default: "View archived version"
 #: components/theme/NotFound/GoneView
 msgid "View archived version"
+msgstr ""
+
+#. Default: "Warning"
+#: components/theme/Widgets/ImageAltWidget
+msgid "Warning"
 msgstr ""
 
 #. Default: "Wayback Machine"
