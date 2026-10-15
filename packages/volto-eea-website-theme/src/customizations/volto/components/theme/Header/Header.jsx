@@ -21,6 +21,11 @@ import eeaFlag from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/
 import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
+import SubsiteMainLogo from '@eeacms/volto-eea-website-theme/components/theme/SubsiteMainLogo';
+import {
+  shouldHideSubsiteTopHeader,
+  shouldUseSubsiteMainLogo,
+} from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
 
 const LazyLanguageSwitcher = loadable(() => import('./LanguageSwitcher'));
 const EMPTY_NAVIGATION_SETTINGS = {};
@@ -84,6 +89,12 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   const { logo, logoWhite } = headerOpts;
 
   const isSubsite = subsite?.['@type'] === 'Subsite';
+  // Hardcoded exception (config.settings.eea.subsiteMainLogoPaths): the
+  // uploaded EPANET subsite logo replaces the EEA logo.
+  const isSubsiteMainLogo = shouldUseSubsiteMainLogo(subsite);
+  // Hardcoded exception (config.settings.eea.subsiteHideTopHeaderPaths): the
+  // EPANET subsite does not show the header top bar.
+  const isSubsiteTopHeaderHidden = shouldHideSubsiteTopHeader(subsite);
 
   // Redux state
   const dispatch = useDispatch();
@@ -222,80 +233,82 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
 
   return (
     <Header menuItems={items}>
-      <Header.TopHeader>
-        <Header.TopItem className="official-union">
-          <Image
-            src={eeaFlag}
-            alt="European Union flag"
-            width={34}
-            height={24}
-            style={{ aspectRatio: '34 / 24' }}
-          ></Image>
-          <Header.TopDropdownMenu
-            text="An official website of the European Union | How do you know?"
-            tabletText="EEA information systems"
-            mobileText="EEA information systems"
-            icon="chevron down"
-            aria-label="dropdown"
-            classNameHeader="mobile-sr-only"
-            viewportWidth={width}
-          >
-            <div
-              className="content"
-              onClick={(evt) => evt.stopPropagation()}
-              onKeyDown={(evt) => evt.stopPropagation()}
-              tabIndex={0}
-              role={'presentation'}
-            >
-              <p>
-                All official European Union website addresses are in the{' '}
-                <b>europa.eu</b> domain.
-              </p>
-              <a
-                href="https://europa.eu/european-union/contact/institutions-bodies_en"
-                target="_blank"
-                rel="noopener noreferrer"
-                onKeyDown={(evt) => evt.stopPropagation()}
-              >
-                See all EU institutions and bodies
-              </a>
-            </div>
-          </Header.TopDropdownMenu>
-        </Header.TopItem>
-
-        {!!headerOpts.partnerLinks && (
-          <Header.TopItem>
+      {!isSubsiteTopHeaderHidden && (
+        <Header.TopHeader>
+          <Header.TopItem className="official-union">
+            <Image
+              src={eeaFlag}
+              alt="European Union flag"
+              width={34}
+              height={24}
+              style={{ aspectRatio: '34 / 24' }}
+            ></Image>
             <Header.TopDropdownMenu
-              id="theme-sites"
-              text={headerOpts.partnerLinks.title}
-              aria-label={headerOpts.partnerLinks.title}
+              text="An official website of the European Union | How do you know?"
+              tabletText="EEA information systems"
+              mobileText="EEA information systems"
+              icon="chevron down"
+              aria-label="dropdown"
+              classNameHeader="mobile-sr-only"
               viewportWidth={width}
             >
-              <div className="wrapper" tabIndex={0} role={'presentation'}>
-                {headerOpts.partnerLinks.links.map((item, index) => (
-                  <Dropdown.Item key={index}>
-                    <a
-                      href={item.href}
-                      className="site"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onKeyDown={(evt) => evt.stopPropagation()}
-                    >
-                      {item.title}
-                    </a>
-                  </Dropdown.Item>
-                ))}
+              <div
+                className="content"
+                onClick={(evt) => evt.stopPropagation()}
+                onKeyDown={(evt) => evt.stopPropagation()}
+                tabIndex={0}
+                role={'presentation'}
+              >
+                <p>
+                  All official European Union website addresses are in the{' '}
+                  <b>europa.eu</b> domain.
+                </p>
+                <a
+                  href="https://europa.eu/european-union/contact/institutions-bodies_en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onKeyDown={(evt) => evt.stopPropagation()}
+                >
+                  See all EU institutions and bodies
+                </a>
               </div>
             </Header.TopDropdownMenu>
           </Header.TopItem>
-        )}
 
-        {config.settings.isMultilingual &&
-          config.settings.supportedLanguages.length > 1 &&
-          config.settings.hasLanguageDropdown && (
-            <LazyLanguageSwitcher width={width} history={history} />
+          {!!headerOpts.partnerLinks && (
+            <Header.TopItem>
+              <Header.TopDropdownMenu
+                id="theme-sites"
+                text={headerOpts.partnerLinks.title}
+                aria-label={headerOpts.partnerLinks.title}
+                viewportWidth={width}
+              >
+                <div className="wrapper" tabIndex={0} role={'presentation'}>
+                  {headerOpts.partnerLinks.links.map((item, index) => (
+                    <Dropdown.Item key={index}>
+                      <a
+                        href={item.href}
+                        className="site"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onKeyDown={(evt) => evt.stopPropagation()}
+                      >
+                        {item.title}
+                      </a>
+                    </Dropdown.Item>
+                  ))}
+                </div>
+              </Header.TopDropdownMenu>
+            </Header.TopItem>
           )}
-      </Header.TopHeader>
+
+          {config.settings.isMultilingual &&
+            config.settings.supportedLanguages.length > 1 &&
+            config.settings.hasLanguageDropdown && (
+              <LazyLanguageSwitcher width={width} history={history} />
+            )}
+        </Header.TopHeader>
+      )}
       <Header.Main
         pathname={normalizedPathname}
         isMultilingual={config.settings.isMultilingual}
@@ -303,18 +316,30 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}
         logo={
-          <div {...(isSubsite ? { className: 'logo-wrapper' } : {})}>
-            <EEALogo
-              src={logo}
-              invertedSrc={logoWhite}
-              inverted={isHomePageInverse}
-              title={eea.websiteTitle}
-              alt={eea.organisationName}
-              height={headerOpts.logoHeight}
-              width={headerOpts.logoWidth}
-            />
+          <div
+            {...(isSubsite && !isSubsiteMainLogo
+              ? { className: 'logo-wrapper' }
+              : {})}
+          >
+            {isSubsiteMainLogo ? (
+              <SubsiteMainLogo
+                subsite={subsite}
+                height={headerOpts.logoHeight}
+                width={headerOpts.logoWidth}
+              />
+            ) : (
+              <EEALogo
+                src={logo}
+                invertedSrc={logoWhite}
+                inverted={isHomePageInverse}
+                title={eea.websiteTitle}
+                alt={eea.organisationName}
+                height={headerOpts.logoHeight}
+                width={headerOpts.logoWidth}
+              />
+            )}
 
-            {!!subsite && subsite.title && (
+            {!isSubsiteMainLogo && !!subsite && subsite.title && (
               <UniversalLink item={subsite} className="subsite-logo">
                 {subsite.subsite_logo ? (
                   <Image

@@ -18,6 +18,15 @@ export const EditSchema = ({ availableTypes }) => {
           'no_thumbs',
         ],
       },
+      {
+        id: 'filters',
+        title: 'Filters',
+        fields: [
+          'children_sort_type',
+          'children_sort_on',
+          'children_sort_order',
+        ],
+      },
     ],
     required: [],
     properties: {
@@ -39,6 +48,26 @@ export const EditSchema = ({ availableTypes }) => {
         description: 'Only show child items of this content type',
         choices: availableTypes,
         isMulti: true,
+      },
+      children_sort_type: {
+        title: 'Sort children of type',
+        description:
+          'Only the children of these content types get the sorting below. Other children keep their folder order.',
+        choices: availableTypes,
+        isMulti: true,
+      },
+      children_sort_on: {
+        title: 'Sort children on',
+        description:
+          'Catalog index used to sort the children selected above, e.g. effective, created, modified, sortable_title.',
+      },
+      children_sort_order: {
+        title: 'Sort children order',
+        description: 'Sort order applied to the children selected above.',
+        choices: [
+          ['ascending', 'Ascending'],
+          ['descending', 'Descending'],
+        ],
       },
       includeTop: {
         title: 'Include top node',
@@ -63,7 +92,7 @@ export const EditSchema = ({ availableTypes }) => {
       bottomLevel: {
         title: 'Navigation tree depth',
         description:
-          'How many folders should be included before the navigation tree stops. 0 means no limit. 1 only includes the root folder.',
+          'How many folders should be included before the navigation tree stops. 0 means no limit — it is bounded by the backend site setting "Maximum side navigation depth" (plone.side_nav_depth, default 4). 1 only includes the root folder.',
         type: 'number',
         default: 0,
       },

@@ -1,0 +1,69 @@
+import config from '@plone/volto/registry';
+import {
+  shouldHideSubsiteFooterBranding,
+  shouldHideSubsiteTopHeader,
+  shouldUseSubsiteMainLogo,
+} from './subsiteOverrides';
+
+const subsite = (path, extra = {}) => ({
+  '@type': 'Subsite',
+  '@id': `http://localhost:3000${path}`,
+  ...extra,
+});
+
+const logo = { scales: { preview: { download: '/logo.png' } } };
+
+describe('subsiteOverrides', () => {
+  beforeEach(() => {
+    config.settings.eea = {
+      ...config.settings.eea,
+      subsiteMainLogoPaths: [/^\/[a-z]{2}\/epanet$/],
+      subsiteHideTopHeaderPaths: [/^\/[a-z]{2}\/epanet$/],
+      subsiteHideFooterBrandingPaths: [/^\/[a-z]{2}\/epanet$/],
+    };
+  });
+
+  it('uses the subsite logo as main logo only on the hardcoded subsite', () => {
+    expect(
+      shouldUseSubsiteMainLogo(subsite('/en/epanet', { subsite_logo: logo })),
+    ).toBe(true);
+    expect(
+      shouldUseSubsiteMainLogo(subsite('/en/epanet/', { subsite_logo: logo })),
+    ).toBe(true);
+    expect(
+      shouldUseSubsiteMainLogo(subsite('/en/other', { subsite_logo: logo })),
+    ).toBe(false);
+    expect(
+      shouldUseSubsiteMainLogo(
+        subsite('/en/epanet-archive', { subsite_logo: logo }),
+      ),
+    ).toBe(false);
+    expect(
+      shouldUseSubsiteMainLogo(
+        subsite('/en/about/epanet', { subsite_logo: logo }),
+      ),
+    ).toBe(false);
+  });
+
+  it('keeps the EEA logo when no subsite logo is uploaded', () => {
+    expect(shouldUseSubsiteMainLogo(subsite('/en/epanet'))).toBe(false);
+  });
+
+  it('hides the header top bar only on the hardcoded subsite', () => {
+    expect(shouldHideSubsiteTopHeader(subsite('/en/epanet'))).toBe(true);
+    expect(shouldHideSubsiteTopHeader(subsite('/en/other'))).toBe(false);
+  });
+
+  it('hides the footer EEA branding only on the hardcoded subsite', () => {
+    expect(shouldHideSubsiteFooterBranding(subsite('/en/epanet'))).toBe(true);
+    expect(shouldHideSubsiteFooterBranding(subsite('/en/other'))).toBe(false);
+  });
+
+  it('ignores missing or non-subsite data', () => {
+    expect(shouldHideSubsiteTopHeader(undefined)).toBe(false);
+    expect(shouldHideSubsiteTopHeader({})).toBe(false);
+    expect(
+      shouldHideSubsiteTopHeader({ '@type': 'Document', '@id': '/en/epanet' }),
+    ).toBe(false);
+  });
+});
