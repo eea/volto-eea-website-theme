@@ -20,6 +20,14 @@ module.exports = {
   extends: `${coreLocation}/packages/volto/.eslintrc`,
   rules: {
     'import/no-unresolved': 1,
+    // Kept from the pre-migration config: UniversalLink opens external links with
+    // target="_blank" and rel="noopener", which the rule flags without this option.
+    'react/jsx-no-target-blank': [
+      'error',
+      {
+        allowReferrer: true,
+      },
+    ],
   },
   settings: {
     'import/resolver': {
