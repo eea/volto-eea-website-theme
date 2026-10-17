@@ -13,6 +13,13 @@ global.jest = {
   advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
 };
 
+// Mock the lazy-loading helper globally so core components loaded below (and
+// the add-on components that import them) use the @plone/volto
+// __mocks__/Loadable implementation. The real implementation dispatches
+// thunks into redux-mock-store instances, which never update their state, so
+// lazy-wrapped components would render null and leak unhandled rejections.
+vi.mock('@plone/volto/helpers/Loadable/Loadable');
+
 var mockSemanticComponents = await vi.importActual('semantic-ui-react');
 var mockComponents = await vi.importActual('@plone/volto/components');
 var mockRegistry = await vi.importActual('@plone/volto/registry');
@@ -74,3 +81,5 @@ global.store = mockStore({
     },
   },
 });
+
+await (await import('@plone/volto/helpers/Loadable/Loadable')).__setLoadables();
