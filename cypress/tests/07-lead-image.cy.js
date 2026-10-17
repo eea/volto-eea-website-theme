@@ -32,7 +32,11 @@ const setPageLeadImageBehavior = (enabled) => {
     enabled ? 'be.checked' : 'not.be.checked',
   );
 
+  // Wait for the control panel PATCH before navigating away: the edit page
+  // reads the behaviour from the registry this save writes.
+  cy.intercept('PATCH', '**/@controlpanels/**').as('saveLeadImageBehavior');
   cy.get('#toolbar-save').click();
+  cy.wait('@saveLeadImageBehavior');
 };
 
 describe('LeadImage block shadow', () => {
