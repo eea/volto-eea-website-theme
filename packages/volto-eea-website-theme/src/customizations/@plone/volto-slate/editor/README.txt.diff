@@ -1,0 +1,5 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/README.txt
+@@ -0,0 +1,2 @@
++This is customized because of stupid logic implemented in the attributes
++calculation. This should be moved to volto proper. The difference is in Element

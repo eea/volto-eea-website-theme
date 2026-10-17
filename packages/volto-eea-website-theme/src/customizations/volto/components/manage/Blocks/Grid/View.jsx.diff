@@ -1,0 +1,74 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Blocks/Grid/View.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Grid/View.jsx
+@@ -1,22 +1,49 @@
+ import { Grid } from 'semantic-ui-react';
+ import cx from 'classnames';
+ import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
+-import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
++import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
+ import config from '@plone/volto/registry';
+ 
++const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
++  if (data?.['@type'] === 'teaserGrid')
++    return {
++      ...data,
++      '@type': 'gridBlock',
++      blocks_layout: { items: data?.columns.map((c) => c.id) },
++      blocks: data?.columns?.reduce((acc, current) => {
++        return {
++          ...acc,
++          [current?.id]: { ...current, '@type': current['@type'] || 'slate' },
++        };
++      }, {}),
++    };
++  if (data.blocks)
++    return {
++      ...data,
++      blocks: Object.keys(data.blocks).reduce((acc, current) => {
++        return {
++          ...acc,
++          [current]: {
++            ...data.blocks[current],
++            '@type': data.blocks[current]?.['@type'] || 'slate',
++          },
++        };
++      }, {}),
++    };
++  else return data;
++};
++
+ const GridBlockView = (props) => {
+   const { data, path, className, style } = props;
+   const metadata = props.metadata || props.properties;
+-  if (data.blocks_layout === undefined) {
+-    return null;
+-  }
+-  const columns = data.blocks_layout.items;
++  const columns = data?.blocks_layout?.items || data?.columns;
+   const blocksConfig =
+     config.blocks.blocksConfig[data['@type']].blocksConfig ||
+     props.blocksConfig;
+   const location = {
+     pathname: path,
+   };
++
+   return (
+     <div
+       className={cx('block', data['@type'], className, {
+@@ -29,12 +56,14 @@
+     >
+       {data.headline && <h2 className="headline">{data.headline}</h2>}
+ 
+-      <Grid stackable stretched columns={columns.length}>
++      <Grid stackable stretched columns={columns?.length}>
+         <RenderBlocks
+           {...props}
+           blockWrapperTag={Grid.Column}
+           metadata={metadata}
+-          content={data}
++          content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
++            data,
++          )}
+           location={location}
+           blocksConfig={blocksConfig}
+           isContainer

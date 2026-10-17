@@ -1,0 +1,4 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Display/Readme.md
+@@ -0,0 +1 @@
++Added customization to condition the display of the layout options based on the user's roles.

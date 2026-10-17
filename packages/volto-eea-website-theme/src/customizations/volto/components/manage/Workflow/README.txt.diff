@@ -1,0 +1,4 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Workflow/README.txt
+@@ -0,0 +1 @@
++Workflow.jsx - copied from @plone/volto 16.22.2 - refs #256563

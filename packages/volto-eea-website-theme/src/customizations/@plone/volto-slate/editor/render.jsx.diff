@@ -1,0 +1,119 @@
+--- volto-18.35.1-74d82edef/packages/volto-slate/src/editor/render.jsx
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/render.jsx
+@@ -7,16 +7,17 @@
+ import { Node, Text } from 'slate';
+ import cx from 'classnames';
+ import isEmpty from 'lodash/isEmpty';
++import isEqual from 'lodash/isEqual';
+ import omit from 'lodash/omit';
+ import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
+ import Toast from '@plone/volto/components/manage/Toast/Toast';
+-import { messages } from '@plone/volto/helpers/MessageLabels/MessageLabels';
++import { messages } from '@plone/volto/helpers//MessageLabels/MessageLabels';
+ import { addAppURL } from '@plone/volto/helpers/Url/Url';
+ import useClipboard from '@plone/volto/hooks/clipboard/useClipboard';
+ import config from '@plone/volto/registry';
+ import linkSVG from '@plone/volto/icons/link.svg';
+ 
+-import './less/slate.less';
++import '@plone/volto-slate/editor/less/slate.less';
+ 
+ const OMITTED = ['editor', 'path'];
+ 
+@@ -27,12 +28,22 @@
+   const { elements } = slate;
+   const El = elements[element.type] || elements['default'];
+ 
+-  const attrs = Object.assign(
++  // CUSTOMIZATION Code fix
++  const attrs = Object.keys(attributes || {}).reduce(
++    (acc, k) => {
++      if (!isEmpty(attributes[k])) {
++        if (k === 'className') {
++          acc.className = cx(attributes.className, acc.className);
++        } else {
++          acc[k] = attributes[k];
++        }
++      }
++      return acc;
++    },
+     element.styleName ? { className: element.styleName } : {},
+-    ...Object.keys(attributes || {}).map((k) =>
+-      !isEmpty(attributes[k]) ? { [k]: attributes[k] } : {},
+-    ),
+   );
++  // END CUSTOMIZATION
++
+   attrs.ref = attributes?.ref; // never remove the ref
+ 
+   return (
+@@ -73,10 +84,11 @@
+     typeof children === 'string' ? (
+       children.split('\n').map((t, i) => {
+         // Softbreak support. Should do a plugin?
++        const hasSoftBreak =
++          children.indexOf('\n') > -1 && children.split('\n').length - 1 > i;
+         return (
+           <React.Fragment key={`${i}`}>
+-            {children.indexOf('\n') > -1 &&
+-            children.split('\n').length - 1 > i ? (
++            {hasSoftBreak ? (
+               <>
+                 {klass ? <span className={klass}>{t}</span> : t}
+                 <br />
+@@ -107,7 +119,20 @@
+   const editor = { children: nodes || [] };
+ 
+   const _serializeNodes = (nodes) => {
+-    return (nodes || []).map(([node, path], i) => {
++    return (nodes || []).map(([node, path]) => {
++      let _serialized;
++      const isTextNode = Text.isText(node);
++      try {
++        if (!isTextNode) {
++          _serialized = _serializeNodes(
++            Array.from(Node.children(editor, path)),
++          );
++        }
++      } catch {
++        // eslint-disable-next-line no-console
++        console.error('Error in serializing nodes', editor, path);
++      }
++
+       return Text.isText(node) ? (
+         <Leaf path={path} leaf={node} text={node} mode="view" key={path}>
+           {node.text}
+@@ -119,10 +144,16 @@
+           mode="view"
+           key={path}
+           data-slate-data={node.data ? serializeData(node) : null}
+-          attributes={getAttributes ? getAttributes(node, path) : null}
++          attributes={
++            isEqual(path, [0])
++              ? getAttributes
++                ? getAttributes(node, path)
++                : null
++              : null
++          }
+           extras={extras}
+         >
+-          {_serializeNodes(Array.from(Node.children(editor, path)))}
++          {_serialized}
+         </Element>
+       );
+     });
+@@ -196,10 +227,10 @@
+             <style>
+               {/* Prettify the unstyled flash of the link icon on development */}
+               {`
+-              a.anchor svg {
+-                height: var(--anchor-svg-height, 24px);
+-              }
+-              `}
++                a.anchor svg {
++                  height: var(--anchor-svg-height, 24px);
++                }
++                `}
+             </style>
+             <svg
+               {...linkSVG.attributes}

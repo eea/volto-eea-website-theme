@@ -1,0 +1,12 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/volto-blocks.js.md
+@@ -0,0 +1,9 @@
++Shadow patch for #8347: Fix cursor position after mergeSlateWithBlockBackward
++when merging two same-type blocks. Slate normalization merges adjacent text
++nodes, making the original cursor path invalid. See:
++
++- https://github.com/plone/volto/issues/8347
++- https://github.com/plone/volto/pull/8355
++
++Remove this shadow once a @plone/volto-slate release containing the fix
++is published and the dependency is bumped in frontend/package.json.

@@ -1,0 +1,13 @@
+--- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/@root/theme-extras.less
+@@ -0,0 +1,10 @@
++// Keep the focus variables and Volto's extras in the same Less scope.
++// Volto 19 uses these variables; defining them here is harmless in Volto 18.
++@import (reference)
++  '@eeacms/volto-eea-design-system/../theme/themes/eea/tokens/colors.less';
++
++@innerFocusShadow: @grey-0;
++@outerFocusOutline: @grey-6;
++
++@import '@plone/volto/../theme/themes/pastanaga/extras/extras.less';
++@import './toast.less';
