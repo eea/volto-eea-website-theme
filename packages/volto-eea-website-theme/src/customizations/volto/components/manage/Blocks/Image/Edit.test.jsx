@@ -300,7 +300,7 @@ describe('Edit', () => {
 
     const inner = container.querySelector('.image-block-container');
     expect(inner).toHaveClass('large');
-    const img = container.querySelector('[data-testid="volto-image"]');
+    const img = container.querySelector('.image-block-container img');
     expect(img).toHaveClass('large');
   });
 
