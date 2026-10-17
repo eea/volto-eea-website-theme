@@ -1,7 +1,7 @@
 import {
   isSelectableObjectBrowserItem,
   shouldCloseAfterObjectBrowserSelection,
-} from '../../src/customizations/volto/components/manage/Sidebar/objectBrowserSelection';
+} from '../../packages/volto-eea-website-theme/src/customizations/volto/components/manage/Sidebar/objectBrowserSelection';
 
 describe('ObjectBrowser maximumSelectionSize logic', () => {
   it('keeps already selected items selectable when the limit is reached', () => {

@@ -54,25 +54,63 @@ describe('Blocks Tests', () => {
       .should('not.be.disabled')
       .click({ force: true });
 
-    // Test all 4 alignment buttons: left, center, right, full
-    cy.get('.field-wrapper-align [aria-label="Left"]').click({ force: true });
-    cy.get('.field-wrapper-align [aria-label="Center"]').click({ force: true });
-    cy.get('.field-wrapper-align [aria-label="Right"]').click({ force: true });
-    cy.get('.field-wrapper-align [aria-label="Full"]').click({ force: true });
+    // Test all 4 alignment buttons: left, center, right, full.
+    // Volto 19 renders them as sidebar field widgets (.field-wrapper-align);
+    // the Volto 18 build still renders the inline .align-buttons group.
+    cy.get('body').then(($body) => {
+      if ($body.find('.field-wrapper-align').length) {
+        cy.get('.field-wrapper-align [aria-label="Left"]').click({
+          force: true,
+        });
+        cy.get('.field-wrapper-align [aria-label="Center"]').click({
+          force: true,
+        });
+        cy.get('.field-wrapper-align [aria-label="Right"]').click({
+          force: true,
+        });
+        cy.get('.field-wrapper-align [aria-label="Full"]').click({
+          force: true,
+        });
 
-    // Set to left alignment to enable size buttons
-    cy.get('.field-wrapper-align [aria-label="Left"]').click({ force: true });
+        // Set to left alignment to enable size buttons
+        cy.get('.field-wrapper-align [aria-label="Left"]').click({
+          force: true,
+        });
+      } else {
+        cy.get('.align-buttons .ui.basic.icon.button').first().click(); // left
+        cy.get('.align-buttons .ui.basic.icon.button').eq(1).click(); // center
+        cy.get('.align-buttons .ui.basic.icon.button').eq(2).click(); // right
+        cy.get('.align-buttons .ui.basic.icon.button').last().click(); // full
+
+        // Set to left alignment to enable size buttons
+        cy.get('.align-buttons .ui.basic.icon.button').first().click();
+      }
+    });
 
     // Test all size buttons: S, M, L
     cy.get('.field-image_size button[aria-label="Small"]').click(); // S (small)
     cy.get('.field-image_size button[aria-label="Medium"]').click(); // M (medium)
     cy.get('.field-image_size button[aria-label="Large"]').click(); // L (large)
 
-    // Set the image position in the styling fieldset
-    cy.get('#blockform-fieldset-styling').click();
-    cy.get('#field-objectPosition-0-styles')
-      .clear()
-      .type('has--object-position--top');
+    // Image position: Volto 19 exposes it as a text field in the styling
+    // fieldset; Volto 18 renders inline position buttons.
+    cy.get('body').then(($body) => {
+      if ($body.find('#blockform-fieldset-styling').length) {
+        // Set the image position in the styling fieldset
+        cy.get('#blockform-fieldset-styling').click();
+        cy.get('#field-objectPosition-0-styles')
+          .clear()
+          .type('has--object-position--top');
+      } else {
+        // Test all 4 image position buttons: top, center, bottom, none
+        cy.get('.align-buttons .ui.buttons button').first().click(); // top
+        cy.get('.align-buttons .ui.buttons button').eq(1).click(); // center
+        cy.get('.align-buttons .ui.buttons button').eq(2).click(); // bottom
+        cy.get('.align-buttons .ui.buttons button').last().click(); // none
+        // Set back to top position
+        cy.get('.align-buttons .ui.buttons button').first().click();
+      }
+    });
 
     // Save
     cy.get('#toolbar-save').click();

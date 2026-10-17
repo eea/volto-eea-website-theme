@@ -3,6 +3,12 @@ const { defineConfig } = require('cypress');
 module.exports = defineConfig({
   viewportWidth: 1280,
   viewportHeight: 1280,
+  // EEA settings kept from the pre-migration config: the Volto 18 app is
+  // considerably heavier, so give commands more room, disable video and relax
+  // web security for the cross-origin backend requests made from the browser.
+  defaultCommandTimeout: 8888,
+  chromeWebSecurity: false,
+  video: false,
   retries: {
     runMode: 3,
   },
