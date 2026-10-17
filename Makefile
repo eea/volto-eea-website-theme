@@ -138,7 +138,7 @@ ci-fix:			## Fix code style (used by CI)
 .PHONY: test-ci
 test-ci:		## Run unit tests in CI
 	VOLTOCONFIG=$(CURRENT_DIR)/volto.config.js pnpm --filter @plone/volto i18n
-	CI=1 pnpm run test --passWithNoTests --coverage --coverage.reporter=lcov --coverage.reporter=text --reporter=junit --outputFile=junit.xml
+	CI=1 pnpm run test --passWithNoTests --coverage --coverage.reporter=lcov --coverage.reporter=text --reporter=default --reporter=junit --outputFile.junit=junit.xml
 
 .PHONY: start-ci
 start-ci:		## Start frontend in production mode (used by CI)
