@@ -54,11 +54,10 @@ import {
   resetMetadataFocus,
   setSidebarTab,
 } from '@plone/volto/actions/sidebar/sidebar';
-import { setFormData } from '@plone/volto/actions/form/form';
+import { setFormData, setUIState } from '@plone/volto/actions/form/form';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
-// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
-const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
+import SlotRenderer from '@plone/volto/components/theme/SlotRenderer/SlotRenderer';
 
 /**
  * Form container class.
@@ -468,6 +467,8 @@ export class Form extends Component {
         window.getSelection().empty();
       }
 
+      // EEA: keep the ctrl/meta selection logic free of null/undefined
+      // "ghost" entries in multiSelected (still present in Volto 18 and 19).
       if ((event.ctrlKey || event.metaKey) && !event.shiftKey) {
         const activeBlock = this.props.uiState.selected;
         multiSelected = this.props.uiState.multiSelected || [];
@@ -750,6 +751,12 @@ export class Form extends Component {
       // but draftJS don't like it much and the hydration gets messed up
       this.state.isClient && (
         <>
+          <SlotRenderer
+            name="aboveContent"
+            content={this.props.content}
+            navRoot={navRoot}
+          />
+
           <Container>
             <>
               <BlocksToolbar
@@ -890,6 +897,12 @@ export class Form extends Component {
                   </UiForm>,
                   document.getElementById('sidebar-metadata'),
                 )}
+
+              <SlotRenderer
+                name="belowContent"
+                content={this.props.content}
+                navRoot={navRoot}
+              />
             </>
           </Container>
         </>
@@ -1118,7 +1131,7 @@ export default compose(
     (state, props) => ({
       content: state.content.data,
       globalData: state.form?.global,
-      uiState: state.form?.ui ?? state.formUI,
+      uiState: state.form?.ui,
       metadataFieldsets: state.sidebar?.metadataFieldsets,
       metadataFieldFocus: state.sidebar?.metadataFieldFocus,
     }),
