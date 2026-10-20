@@ -7,27 +7,23 @@
 >   cloneBlocks,
 >   loadBlocksClipboardFromStorage,
 > } from './blocksClipboardUtils';
-42,44c44,58
+42,45c44,57
 <   loadFromStorage() {
 <     const clipboard = load({ states: ['blocksClipboard'] })?.blocksClipboard;
 <     if (!isEqual(clipboard, this.props.blocksClipboard))
+<       this.props.setBlocksClipboard(clipboard || {});
 ---
+>   // Syncs the clipboard from other browser tabs. The store already
+>   // rehydrates it from localStorage on creation and, within the same tab,
+>   // Redux is always fresher than localStorage (saved with a debounce), so
+>   // the clipboard is never reloaded on mount: doing so overwrote a recent
+>   // cut/copy with stale data and made the paste button disappear.
 >   loadFromStorage(event) {
 >     if (event?.key && !event.key.includes('blocksClipboard')) {
 >       return;
 >     }
->
->     const clipboard = loadBlocksClipboardFromStorage();
->     const currentClipboard = this.props.blocksClipboard || {};
->     const currentClipboardHasBlocks =
->       currentClipboard?.cut || currentClipboard?.copy;
->
->     if (!event && !clipboard && currentClipboardHasBlocks) {
->       return;
+> 
+>     const clipboard = loadBlocksClipboardFromStorage() || {};
+>     if (!isEqual(clipboard, this.props.blocksClipboard || {})) {
+>       this.props.setBlocksClipboard(clipboard);
 >     }
->
->     if (!isEqual(clipboard || {}, currentClipboard)) {
-45a60
->     }
-48a64
->     this.loadFromStorage();
