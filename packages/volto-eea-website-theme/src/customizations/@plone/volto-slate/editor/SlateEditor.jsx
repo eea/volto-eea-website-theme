@@ -8,16 +8,15 @@ import React, { Component } from 'react'; // , useState
 import { v4 as uuid } from 'uuid';
 
 import config from '@plone/volto/registry';
+import { isIMEComposing } from '@plone/volto/helpers/Utils/Utils';
 
-import { Element, Leaf } from './render';
+import { Element, Leaf } from '@plone/volto-slate/editor/render';
 
 import withTestingFeatures from '@plone/volto-slate/editor/extensions/withTestingFeatures';
-import {
-  makeEditor,
-  toggleInlineFormat,
-  toggleMark,
-  parseDefaultSelection,
-} from '@plone/volto-slate/utils';
+import { makeEditor } from '@plone/volto-slate/utils/editor';
+import { toggleInlineFormat } from '@plone/volto-slate/utils/blocks';
+import { toggleMark } from '@plone/volto-slate/utils/marks';
+import { parseDefaultSelection } from '@plone/volto-slate/utils/selection';
 import { InlineToolbar } from '@plone/volto-slate/editor/ui';
 import EditorContext from '@plone/volto-slate/editor/EditorContext';
 
@@ -80,9 +79,9 @@ class SlateEditor extends Component {
     this.createEditor = this.createEditor.bind(this);
     this.multiDecorator = this.multiDecorator.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handlePointerDown = this.handlePointerDown.bind(this);
     this.getSavedSelection = this.getSavedSelection.bind(this);
     this.setSavedSelection = this.setSavedSelection.bind(this);
-    this.getEditorValue = this.getEditorValue.bind(this);
     this.scheduleFocus = this.scheduleFocus.bind(this);
 
     this.savedSelection = null;
@@ -101,6 +100,31 @@ class SlateEditor extends Component {
 
     this.editor = null;
     this.selectionTimeout = null;
+    this.pendingPointerSelection = null;
+  }
+
+  handlePointerDown(event) {
+    if (this.props.selected) return;
+
+    const nativeEvent = event.nativeEvent || event;
+    const domPoint = document.caretPositionFromPoint?.(
+      nativeEvent.clientX,
+      nativeEvent.clientY,
+    );
+    if (!domPoint) return;
+
+    try {
+      const point = ReactEditor.toSlatePoint(
+        this.state.editor,
+        [domPoint.offsetNode, domPoint.offset],
+        { exactMatch: false, suppressThrow: true },
+      );
+      if (point) {
+        this.pendingPointerSelection = { anchor: point, focus: point };
+      }
+    } catch {
+      this.pendingPointerSelection = null;
+    }
   }
 
   getEditorValue(value = this.props.value) {
@@ -214,7 +238,14 @@ class SlateEditor extends Component {
         this.scheduleFocus(editor);
         Transforms.select(editor, selection);
       } else {
-        Transforms.select(editor, Editor.end(editor, []));
+        try {
+          Transforms.select(editor, Editor.end(editor, []));
+        } catch (error) {
+          // Weird error only happening in Cypress
+          // Adding a try/catch
+          // eslint-disable-next-line no-console
+          console.log(error);
+        }
       }
       return;
     }
@@ -223,13 +254,18 @@ class SlateEditor extends Component {
 
     if (!prevProps.selected && this.props.selected) {
       // if the SlateEditor becomes selected from unselected
-      if (window.getSelection().type === 'None') {
+
+      if (this.pendingPointerSelection) {
+        Transforms.select(this.state.editor, this.pendingPointerSelection);
+        this.pendingPointerSelection = null;
+      } else if (window.getSelection().type === 'None') {
         // TODO: why is this condition checked?
         Transforms.select(
           this.state.editor,
           Editor.range(this.state.editor, Editor.start(this.state.editor, [])),
         );
       }
+
       this.scheduleFocus(this.state.editor);
     }
 
@@ -362,9 +398,8 @@ class SlateEditor extends Component {
                 this.props.onBlur && this.props.onBlur();
                 return null;
               }}
-              onClick={(e) => {
-                return this.props.onClick && this.props.onClick(e);
-              }}
+              onClick={this.props.onClick}
+              onPointerDown={this.handlePointerDown}
               onSelect={(e) => {
                 if (!selected && this.props.onFocus) {
                   // we can't overwrite the onFocus of Editable, as the onFocus
@@ -393,12 +428,15 @@ class SlateEditor extends Component {
                 }, 200);
               }}
               onKeyDown={(event) => {
+                // Ignore keys while an IME composition is active (e.g. CJK
+                // conversion); slate-react handles composition itself.
+                if (isIMEComposing(event)) return;
                 const handled = handleHotKeys(editor, event, slateSettings);
                 if (handled) return;
                 onKeyDown && onKeyDown({ editor, event });
               }}
-              aria-labelledby={id ? `field-${id}` : undefined}
               {...editableProps}
+              aria-labelledby={`field-${id}`}
             />
             {selected &&
               slateSettings.persistentHelpers.map((Helper, i) => {
@@ -408,13 +446,14 @@ class SlateEditor extends Component {
               <ul>
                 <li>{selected ? 'selected' : 'no-selected'}</li>
                 <li>
-                  {ReactEditor.isFocused(editor) ? 'focused' : 'unfocused'}
-                </li>
-                <li>
                   savedSelection: {JSON.stringify(editor.getSavedSelection())}
                 </li>
                 <li>live selection: {JSON.stringify(editor.selection)}</li>
                 <li>children: {JSON.stringify(editor.children)}</li>
+                <li> {selected ? 'selected' : 'notselected'}</li>
+                <li>
+                  {ReactEditor.isFocused(editor) ? 'focused' : 'unfocused'}
+                </li>
               </ul>
             ) : (
               ''

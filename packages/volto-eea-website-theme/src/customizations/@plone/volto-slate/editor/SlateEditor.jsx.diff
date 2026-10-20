@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto-slate/src/editor/SlateEditor.jsx
+--- volto-19.5.0/packages/volto-slate/src/editor/SlateEditor.jsx
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/SlateEditor.jsx
 @@ -1,7 +1,8 @@
  import ReactDOM from 'react-dom';
@@ -10,24 +10,21 @@
  import { Slate, Editable, ReactEditor } from 'slate-react';
  import React, { Component } from 'react'; // , useState
  import { v4 as uuid } from 'uuid';
-@@ -10,19 +11,21 @@
+@@ -9,21 +10,21 @@
+ import config from '@plone/volto/registry';
+ import { isIMEComposing } from '@plone/volto/helpers/Utils/Utils';
  
- import { Element, Leaf } from './render';
+-import { Element, Leaf } from './render';
++import { Element, Leaf } from '@plone/volto-slate/editor/render';
  
 -import withTestingFeatures from './extensions/withTestingFeatures';
--import { makeEditor } from '@plone/volto-slate/utils/editor';
--import { toggleInlineFormat } from '@plone/volto-slate/utils/blocks';
--import { toggleMark } from '@plone/volto-slate/utils/marks';
--import { parseDefaultSelection } from '@plone/volto-slate/utils/selection';
++import withTestingFeatures from '@plone/volto-slate/editor/extensions/withTestingFeatures';
+ import { makeEditor } from '@plone/volto-slate/utils/editor';
+ import { toggleInlineFormat } from '@plone/volto-slate/utils/blocks';
+ import { toggleMark } from '@plone/volto-slate/utils/marks';
+ import { parseDefaultSelection } from '@plone/volto-slate/utils/selection';
 -import { InlineToolbar } from './ui';
 -import EditorContext from './EditorContext';
-+import withTestingFeatures from '@plone/volto-slate/editor/extensions/withTestingFeatures';
-+import {
-+  makeEditor,
-+  toggleInlineFormat,
-+  toggleMark,
-+  parseDefaultSelection,
-+} from '@plone/volto-slate/utils';
 +import { InlineToolbar } from '@plone/volto-slate/editor/ui';
 +import EditorContext from '@plone/volto-slate/editor/EditorContext';
  
@@ -41,7 +38,7 @@
  
  const handleHotKeys = (editor, event, config) => {
    let wasHotkey = false;
-@@ -46,6 +49,29 @@
+@@ -47,6 +48,29 @@
    return wasHotkey;
  };
  
@@ -71,14 +68,7 @@
  // TODO: implement onFocus
  class SlateEditor extends Component {
    constructor(props) {
-@@ -56,22 +82,39 @@
-     this.handleChange = this.handleChange.bind(this);
-     this.getSavedSelection = this.getSavedSelection.bind(this);
-     this.setSavedSelection = this.setSavedSelection.bind(this);
-+    this.getEditorValue = this.getEditorValue.bind(this);
- 
-     this.savedSelection = null;
- 
+@@ -65,11 +89,12 @@
      const uid = uuid(); // used to namespace the editor's plugins
  
      this.slateSettings = props.slateSettings || config.settings.slate;
@@ -92,10 +82,10 @@
        uid,
      };
  
-     this.editor = null;
-     this.selectionTimeout = null;
-+  }
-+
+@@ -102,6 +127,21 @@
+     }
+   }
+ 
 +  getEditorValue(value = this.props.value) {
 +    if (Array.isArray(value) && value.length > 0) {
 +      return cloneDeep(value);
@@ -109,10 +99,12 @@
 +        },
 +      ]
 +    );
-   }
- 
++  }
++
    getSavedSelection() {
-@@ -102,9 +145,10 @@
+     return this.savedSelection;
+   }
+@@ -130,9 +170,10 @@
  
    handleChange(value) {
      ReactDOM.unstable_batchedUpdates(() => {
@@ -126,7 +118,7 @@
        }
      });
    }
-@@ -153,8 +197,14 @@
+@@ -181,8 +222,14 @@
        !isEqual(this.props.value, this.state.internalValue)
      ) {
        const { editor } = this.state;
@@ -142,19 +134,9 @@
        if (this.props.defaultSelection) {
          const selection = parseDefaultSelection(
            editor,
-@@ -164,19 +214,8 @@
-         ReactEditor.focus(editor);
-         Transforms.select(editor, selection);
-       } else {
--        try {
--          Transforms.select(editor, Editor.end(editor, []));
--        } catch (error) {
--          // Weird error only happening in Cypress
--          // Adding a try/catch
--          // eslint-disable-next-line no-console
--          console.log(error);
--        }
-+        Transforms.select(editor, Editor.end(editor, []));
+@@ -200,10 +247,6 @@
+           console.log(error);
+         }
        }
 -
 -      this.setState({
@@ -163,23 +145,7 @@
        return;
      }
  
-@@ -184,7 +223,6 @@
- 
-     if (!prevProps.selected && this.props.selected) {
-       // if the SlateEditor becomes selected from unselected
--
-       if (window.getSelection().type === 'None') {
-         // TODO: why is this condition checked?
-         Transforms.select(
-@@ -192,7 +230,6 @@
-           Editor.range(this.state.editor, Editor.start(this.state.editor, [])),
-         );
-       }
--
-       ReactEditor.focus(this.state.editor);
-     }
- 
-@@ -265,7 +302,7 @@
+@@ -313,7 +356,7 @@
          <EditorContext.Provider value={editor}>
            <Slate
              editor={editor}
@@ -188,7 +154,7 @@
              onChange={this.handleChange}
            >
              {selected ? (
-@@ -299,7 +336,7 @@
+@@ -347,7 +390,7 @@
                renderElement={(props) => <Element {...props} />}
                renderLeaf={(props) => <Leaf {...props} />}
                decorate={this.multiDecorator}
@@ -197,42 +163,3 @@
                scrollSelectionIntoView={
                  slateSettings.scrollIntoView ? undefined : () => null
                }
-@@ -307,7 +344,9 @@
-                 this.props.onBlur && this.props.onBlur();
-                 return null;
-               }}
--              onClick={this.props.onClick}
-+              onClick={(e) => {
-+                return this.props.onClick && this.props.onClick(e);
-+              }}
-               onSelect={(e) => {
-                 if (!selected && this.props.onFocus) {
-                   // we can't overwrite the onFocus of Editable, as the onFocus
-@@ -340,8 +379,8 @@
-                 if (handled) return;
-                 onKeyDown && onKeyDown({ editor, event });
-               }}
-+              aria-labelledby={id ? `field-${id}` : undefined}
-               {...editableProps}
--              aria-labelledby={`field-${id}`}
-             />
-             {selected &&
-               slateSettings.persistentHelpers.map((Helper, i) => {
-@@ -351,14 +390,13 @@
-               <ul>
-                 <li>{selected ? 'selected' : 'no-selected'}</li>
-                 <li>
-+                  {ReactEditor.isFocused(editor) ? 'focused' : 'unfocused'}
-+                </li>
-+                <li>
-                   savedSelection: {JSON.stringify(editor.getSavedSelection())}
-                 </li>
-                 <li>live selection: {JSON.stringify(editor.selection)}</li>
-                 <li>children: {JSON.stringify(editor.children)}</li>
--                <li> {selected ? 'selected' : 'notselected'}</li>
--                <li>
--                  {ReactEditor.isFocused(editor) ? 'focused' : 'unfocused'}
--                </li>
-               </ul>
-             ) : (
-               ''
