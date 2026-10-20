@@ -261,6 +261,7 @@ export class Form extends Component {
     };
     this.onChangeField = this.onChangeField.bind(this);
     this.onSelectBlock = this.onSelectBlock.bind(this);
+    this.onUndoRedo = this.onUndoRedo.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onTabChange = this.onTabChange.bind(this);
@@ -431,6 +432,58 @@ export class Form extends Component {
         inFocus: { [id]: true },
       };
     });
+  }
+
+  /**
+   * State tracked by the undo manager. Volto block helpers (e.g. deleteBlock)
+   * mutate formData in place, which also altered the snapshots kept in the
+   * undo history, so undoing a delete or cut restored nothing. The history
+   * gets its own copy, made only when formData changes.
+   * @method getUndoState
+   * @returns {Object} Undo state.
+   */
+  getUndoState() {
+    const { formData } = this.state;
+    const { selected, multiSelected } = this.props.uiState;
+    const cache = this.undoStateCache;
+    if (
+      cache?.source === formData &&
+      cache.state.selected === selected &&
+      cache.state.multiSelected === multiSelected
+    ) {
+      return cache.state;
+    }
+    this.undoStateCache = {
+      source: formData,
+      state: {
+        formData:
+          cache?.source === formData
+            ? cache.state.formData
+            : cloneDeep(formData),
+        selected,
+        multiSelected,
+      },
+    };
+    return this.undoStateCache.state;
+  }
+
+  /**
+   * Undo/redo handler, restores a copy of the snapshot so later edits
+   * can't alter the history
+   * @method onUndoRedo
+   * @param {Object} undoState Undo state.
+   * @returns {undefined}
+   */
+  onUndoRedo({ state }) {
+    const formData = cloneDeep(state.formData);
+    if (this.props.global) {
+      this.props.setFormData(formData);
+    }
+    this.props.setUIState({
+      selected: state.selected,
+      multiSelected: state.multiSelected,
+    });
+    this.setState({ formData });
   }
 
   /**
@@ -774,18 +827,9 @@ export class Form extends Component {
                 onSelectBlock={this.onSelectBlock}
               />
               <UndoToolbar
-                state={{
-                  formData,
-                  selected: this.props.uiState.selected,
-                  multiSelected: this.props.uiState.multiSelected,
-                }}
+                state={this.getUndoState()}
                 enableHotKeys
-                onUndoRedo={({ state }) => {
-                  if (this.props.global) {
-                    this.props.setFormData(state.formData);
-                  }
-                  return this.setState(state);
-                }}
+                onUndoRedo={this.onUndoRedo}
               />
               <BlocksForm
                 onChangeFormData={(newData) => {
