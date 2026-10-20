@@ -57,12 +57,10 @@ const getBlocksClipboardStates = () => {
     : fallbackBlocksClipboardStates;
 };
 
+// Only read the keys the store persists: a leftover key from another layout
+// (e.g. the Volto 17 `blocksClipboard` one) is never updated and holds stale data
 export const loadBlocksClipboardFromStorage = () =>
   load({
     states: getBlocksClipboardStates(),
-    disableWarnings: true,
-  })?.blocksClipboard ||
-  load({
-    states: ['blocksClipboard'],
     disableWarnings: true,
   })?.blocksClipboard;

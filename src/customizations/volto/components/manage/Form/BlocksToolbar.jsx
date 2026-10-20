@@ -41,27 +41,23 @@ export class BlocksToolbarComponent extends React.Component {
     this.setBlocksClipboard = this.setBlocksClipboard.bind(this);
   }
 
+  // Syncs the clipboard from other browser tabs. The store already
+  // rehydrates it from localStorage on creation and, within the same tab,
+  // Redux is always fresher than localStorage (saved with a debounce), so
+  // the clipboard is never reloaded on mount: doing so overwrote a recent
+  // cut/copy with stale data and made the paste button disappear.
   loadFromStorage(event) {
     if (event?.key && !event.key.includes('blocksClipboard')) {
       return;
     }
 
-    const clipboard = loadBlocksClipboardFromStorage();
-    const currentClipboard = this.props.blocksClipboard || {};
-    const currentClipboardHasBlocks =
-      currentClipboard?.cut || currentClipboard?.copy;
-
-    if (!event && !clipboard && currentClipboardHasBlocks) {
-      return;
-    }
-
-    if (!isEqual(clipboard || {}, currentClipboard)) {
-      this.props.setBlocksClipboard(clipboard || {});
+    const clipboard = loadBlocksClipboardFromStorage() || {};
+    if (!isEqual(clipboard, this.props.blocksClipboard || {})) {
+      this.props.setBlocksClipboard(clipboard);
     }
   }
 
   componentDidMount() {
-    this.loadFromStorage();
     window.addEventListener('storage', this.loadFromStorage, true);
   }
 

@@ -23,7 +23,7 @@ The upstream `loadFromStorage()` only queries for `states: ['blocksClipboard']` 
 
 Both `load` and `cloneBlocks` are now provided by the local `blocksClipboardUtils.js` module instead of being imported directly from Volto.
 
-### 2. `loadFromStorage(event)` — the core bug fix
+### 2. `loadFromStorage(event)` — cross-tab sync only
 
 **Upstream:**
 
@@ -43,50 +43,26 @@ loadFromStorage(event) {
     return;
   }
 
-  const clipboard = loadBlocksClipboardFromStorage();
-  const currentClipboard = this.props.blocksClipboard || {};
-  const currentClipboardHasBlocks =
-    currentClipboard?.cut || currentClipboard?.copy;
-
-  if (!event && !clipboard && currentClipboardHasBlocks) {
-    return;
-  }
-
-  if (!isEqual(clipboard || {}, currentClipboard)) {
-    this.props.setBlocksClipboard(clipboard || {});
+  const clipboard = loadBlocksClipboardFromStorage() || {};
+  if (!isEqual(clipboard, this.props.blocksClipboard || {})) {
+    this.props.setBlocksClipboard(clipboard);
   }
 }
 ```
 
-Three improvements:
+1. **Event guard** — returns early when the changed `storage` key is unrelated to `blocksClipboard`.
 
-1. **Event guard** — If called from a `storage` event, returns early when the changed key is unrelated to `blocksClipboard`. Avoids unnecessary work on unrelated localStorage mutations.
+2. **Volto 18 key resolution** — delegates to `loadBlocksClipboardFromStorage()`, which reads only the keys listed in `config.settings.persistentReducers` (`blocksClipboard.cut`/`blocksClipboard.copy` in Volto 18, `blocksClipboard` in Volto 17). A leftover Volto 17 `blocksClipboard` key is never updated by Volto 18, so it is ignored instead of being used as a fallback.
 
-2. **Volto 18 key resolution** — Delegates to `loadBlocksClipboardFromStorage()`, which tries the split-key format (`blocksClipboard.cut`/`blocksClipboard.copy`) first, then falls back to the monolithic key.
+### 3. `componentDidMount()` — no reload on mount
 
-3. **Mount guard** — When called on mount (`!event`), if localStorage is empty but Redux still has clipboard data in memory, the old code would wipe Redux to `{}`. The new guard prevents losing an in-memory clipboard on remount.
+`componentDidMount()` is identical to upstream: it only registers the `storage` listener. The clipboard must **not** be reloaded from localStorage on mount:
 
-### 3. `componentDidMount()` — eager rehydration
+- the store already rehydrates the clipboard from localStorage when it is created;
+- `redux-localstorage-simple` saves with a 500ms debounce that restarts on every Redux action (hovering blocks dispatches `setUIState`), so right after a cut/copy localStorage can still hold an older clipboard.
 
-**Upstream:**
-
-```js
-componentDidMount() {
-  window.addEventListener('storage', this.loadFromStorage, true);
-}
-```
-
-**Override:**
-
-```js
-componentDidMount() {
-  this.loadFromStorage();
-  window.addEventListener('storage', this.loadFromStorage, true);
-}
-```
-
-The upstream code only loads clipboard data when a `storage` event fires (typically from another browser tab). It never loads on initial mount, so the paste button is invisible until some other tab triggers a storage event. The override calls `loadFromStorage()` immediately on mount.
+Reloading on mount (e.g. when a container block's nested `BlocksToolbar` mounts on selection) used to overwrite the fresh cut/copy with that stale value, which made the paste button disappear.
 
 ## What did NOT change
 
-All other methods — `deleteBlocks`, `copyBlocksToClipboard`, `cutBlocksToClipboard`, `setBlocksClipboard`, `pasteBlocks`, `render()`, and the `connect`/`compose` wrapper — are **identical** to the Volto 18 upstream.
+All other methods — `componentDidMount`, `deleteBlocks`, `copyBlocksToClipboard`, `cutBlocksToClipboard`, `setBlocksClipboard`, `pasteBlocks`, `render()`, and the `connect`/`compose` wrapper — are **identical** to the Volto 18 upstream.
