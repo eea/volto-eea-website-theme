@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Diff/DiffField.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Diff/DiffField.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Diff/DiffField.jsx
 @@ -12,7 +12,7 @@
  import { Provider } from 'react-intl-redux';
@@ -9,7 +9,7 @@
  import config from '@plone/volto/registry';
  import Api from '@plone/volto/helpers/Api/Api';
  import configureStore from '@plone/volto/store';
-@@ -136,6 +136,17 @@
+@@ -140,6 +140,17 @@
    }
  };
  
@@ -27,15 +27,15 @@
  /**
   * Diff field component.
   * @function DiffField
-@@ -154,6 +165,7 @@
-   schema,
+@@ -159,6 +170,7 @@
+   showTitle = true,
    diffLib,
  }) => {
 +  const reduxStore = useStore();
    const language = useSelector((state) => state.intl.locale);
    const readable_date_format = {
      dateStyle: 'full',
-@@ -165,8 +177,11 @@
+@@ -170,8 +182,11 @@
        splitWords(String(twoStr)),
      );
    };
@@ -48,7 +48,7 @@
    if (schema.widget) {
      switch (schema.widget) {
        case 'richtext':
-@@ -185,7 +200,8 @@
+@@ -190,7 +205,8 @@
        case 'json': {
          const api = new Api();
          const history = createBrowserHistory();
@@ -58,7 +58,7 @@
          parts = diffWords(
            ReactDOMServer.renderToStaticMarkup(
              <Provider store={store}>
-@@ -207,7 +223,8 @@
+@@ -212,7 +228,8 @@
        case 'slate': {
          const api = new Api();
          const history = createBrowserHistory();
@@ -68,7 +68,7 @@
          parts = diffWords(
            ReactDOMServer.renderToStaticMarkup(
              <Provider store={store}>
-@@ -233,7 +250,8 @@
+@@ -238,7 +255,8 @@
          if (Widget) {
            const api = new Api();
            const history = createBrowserHistory();
@@ -78,7 +78,7 @@
            parts = diffWords(
              ReactDOMServer.renderToStaticMarkup(
                <Provider store={store}>
-@@ -273,33 +291,51 @@
+@@ -280,33 +298,51 @@
        {view === 'split' && (
          <Grid.Row>
            <Grid.Column width={6} verticalAlign="top">
@@ -154,7 +154,7 @@
              />
            </Grid.Column>
          </Grid.Row>
-@@ -307,18 +343,28 @@
+@@ -314,18 +350,28 @@
        {view === 'unified' && (
          <Grid.Row>
            <Grid.Column width={16} verticalAlign="top">

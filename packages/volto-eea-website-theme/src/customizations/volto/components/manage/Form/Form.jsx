@@ -10,6 +10,7 @@ import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
 import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
 import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
 import { difference } from '@plone/volto/helpers/Utils/Utils';
+import withSaveAsDraft from '@plone/volto/helpers/Utils/withSaveAsDraft';
 import FormValidation from '@plone/volto/helpers/FormValidation/FormValidation';
 import {
   getBlocksFieldname,
@@ -58,6 +59,8 @@ import { setFormData, setUIState } from '@plone/volto/actions/form/form';
 import { compose } from 'redux';
 import config from '@plone/volto/registry';
 import SlotRenderer from '@plone/volto/components/theme/SlotRenderer/SlotRenderer';
+
+const noop = () => {};
 
 /**
  * Form container class.
@@ -117,6 +120,9 @@ export class Form extends Component {
     allowedBlocks: PropTypes.arrayOf(PropTypes.string),
     showRestricted: PropTypes.bool,
     global: PropTypes.bool,
+    checkSavedDraft: PropTypes.func,
+    onSaveDraft: PropTypes.func,
+    onCancelDraft: PropTypes.func,
   };
 
   /**
@@ -153,6 +159,9 @@ export class Form extends Component {
     requestError: null,
     allowedBlocks: null,
     global: false,
+    checkSavedDraft: noop,
+    onSaveDraft: noop,
+    onCancelDraft: noop,
   };
 
   /**
@@ -191,8 +200,8 @@ export class Form extends Component {
     // Adding fallback in case the fields are empty, so we are sure that the edit form
     // shows at least the default blocks
     if (
-      formData.hasOwnProperty(blocksFieldname) &&
-      formData.hasOwnProperty(blocksLayoutFieldname)
+      formData?.hasOwnProperty(blocksFieldname) &&
+      formData?.hasOwnProperty(blocksLayoutFieldname)
     ) {
       if (
         !formData[blocksLayoutFieldname] ||
@@ -216,7 +225,7 @@ export class Form extends Component {
 
     let selectedBlock = null;
     if (
-      formData.hasOwnProperty(blocksLayoutFieldname) &&
+      formData?.hasOwnProperty(blocksLayoutFieldname) &&
       formData[blocksLayoutFieldname].items.length > 0
     ) {
       if (config.blocks?.initialBlocksFocus === null) {
@@ -266,6 +275,18 @@ export class Form extends Component {
     this.onBlurField = this.onBlurField.bind(this);
     this.onClickInput = this.onClickInput.bind(this);
     this.onToggleMetadataFieldset = this.onToggleMetadataFieldset.bind(this);
+    this.updateFormDataWithSaved = this.updateFormDataWithSaved.bind(this);
+  }
+
+  /**
+   * Function sent as callback to saveAsDraft when user
+   * choses to load local data
+   * @param {Object} savedFormData
+   */
+  updateFormDataWithSaved(savedFormData) {
+    if (savedFormData) {
+      this.setState({ formData: savedFormData });
+    }
   }
 
   /**
@@ -279,6 +300,12 @@ export class Form extends Component {
     let errors = {};
     let activeIndex = 0;
 
+    if (!prevProps.schema && this.props.schema) {
+      this.props.checkSavedDraft(
+        this.state.formData,
+        this.updateFormDataWithSaved,
+      );
+    }
     if (!this.props.isFormSelected && prevProps.isFormSelected) {
       this.props.setUIState({
         selected: null,
@@ -303,6 +330,10 @@ export class Form extends Component {
       if (!isEqual(prevState?.formData, this.state.formData)) {
         this.props.onChangeFormData(this.state.formData);
       }
+    }
+    // on each formData update it will save the form to the localStorage
+    if (!isEqual(prevState?.formData, this.state.formData)) {
+      this.props.onSaveDraft(this.state.formData);
     }
     if (
       this.props.global &&
@@ -396,6 +427,13 @@ export class Form extends Component {
    */
   componentDidMount() {
     this.setState({ isClient: true });
+    if (this.props.schema) {
+      this.props.checkSavedDraft(
+        this.state.formData,
+        this.updateFormDataWithSaved,
+      );
+      return;
+    }
   }
 
   /**
@@ -657,6 +695,7 @@ export class Form extends Component {
           this.props.setFormData(this.props.formData);
         }
       }
+      this.props.onCancelDraft();
     }
   }
 
@@ -1145,4 +1184,5 @@ export default compose(
     null,
     { forwardRef: true },
   ),
+  withSaveAsDraft({ forwardRef: true }),
 )(FormIntl);

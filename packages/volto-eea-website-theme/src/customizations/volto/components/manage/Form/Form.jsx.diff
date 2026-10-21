@@ -1,6 +1,7 @@
---- @plone/volto@18.35.1/components/manage/Form/Form.jsx
-+++ src/customizations/volto/components/manage/Form/Form.jsx
-@@ -1,7 +1,8 @@
+--- volto-19.5.0/packages/volto/src/components/manage/Form/Form.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Form/Form.jsx
+@@ -5,7 +5,8 @@
+ 
  import Icon from '@plone/volto/components/theme/Icon/Icon';
  import Toast from '@plone/volto/components/manage/Toast/Toast';
 -import { Field, BlocksForm } from '@plone/volto/components/manage/Form';
@@ -8,10 +9,8 @@
 +import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
  import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
  import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
- 
-+// SlotRenderer import removed for Volto 17 compatibility (introduced in Volto 18)
-+
-@@ -63,7 +64,7 @@
+ import { difference } from '@plone/volto/helpers/Utils/Utils';
+@@ -66,7 +67,7 @@
   * @class Form
   * @extends Component
   */
@@ -20,9 +19,12 @@
    /**
     * Property types.
     * @property {Object} propTypes Property types.
-@@ -467,15 +467,16 @@
+@@ -504,16 +505,19 @@
+         window.getSelection().empty();
        }
  
++      // EEA: keep the ctrl/meta selection logic free of null/undefined
++      // "ghost" entries in multiSelected (still present in Volto 18 and 19).
        if ((event.ctrlKey || event.metaKey) && !event.shiftKey) {
 +        const activeBlock = this.props.uiState.selected;
          multiSelected = this.props.uiState.multiSelected || [];

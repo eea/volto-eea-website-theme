@@ -1,40 +1,45 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Blocks/Grid/View.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Blocks/Grid/View.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Grid/View.jsx
-@@ -1,22 +1,49 @@
- import { Grid } from 'semantic-ui-react';
- import cx from 'classnames';
- import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
--import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
-+import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
+@@ -5,13 +5,48 @@
  import config from '@plone/volto/registry';
+ import { GridContext } from '@plone/volto/components/manage/Blocks/Grid/context';
  
 +const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
-+  if (data?.['@type'] === 'teaserGrid')
++  if (data?.['@type'] === 'teaserGrid') {
 +    return {
 +      ...data,
 +      '@type': 'gridBlock',
-+      blocks_layout: { items: data?.columns.map((c) => c.id) },
-+      blocks: data?.columns?.reduce((acc, current) => {
-+        return {
-+          ...acc,
-+          [current?.id]: { ...current, '@type': current['@type'] || 'slate' },
-+        };
-+      }, {}),
++      blocks_layout: { items: data?.columns.map((column) => column.id) },
++      blocks: data?.columns?.reduce(
++        (blocks, column) => ({
++          ...blocks,
++          [column?.id]: {
++            ...column,
++            '@type': column['@type'] || 'slate',
++          },
++        }),
++        {},
++      ),
 +    };
-+  if (data.blocks)
++  }
++
++  if (data.blocks) {
 +    return {
 +      ...data,
-+      blocks: Object.keys(data.blocks).reduce((acc, current) => {
-+        return {
-+          ...acc,
-+          [current]: {
-+            ...data.blocks[current],
-+            '@type': data.blocks[current]?.['@type'] || 'slate',
++      blocks: Object.keys(data.blocks).reduce(
++        (blocks, blockId) => ({
++          ...blocks,
++          [blockId]: {
++            ...data.blocks[blockId],
++            '@type': data.blocks[blockId]?.['@type'] || 'slate',
 +          },
-+        };
-+      }, {}),
++        }),
++        {},
++      ),
 +    };
-+  else return data;
++  }
++
++  return data;
 +};
 +
  const GridBlockView = (props) => {
@@ -48,27 +53,22 @@
    const blocksConfig =
      config.blocks.blocksConfig[data['@type']].blocksConfig ||
      props.blocksConfig;
-   const location = {
-     pathname: path,
-   };
-+
-   return (
-     <div
-       className={cx('block', data['@type'], className, {
-@@ -29,12 +56,14 @@
+@@ -30,13 +65,15 @@
      >
        {data.headline && <h2 className="headline">{data.headline}</h2>}
  
--      <Grid stackable stretched columns={columns.length}>
-+      <Grid stackable stretched columns={columns?.length}>
-         <RenderBlocks
-           {...props}
-           blockWrapperTag={Grid.Column}
-           metadata={metadata}
--          content={data}
-+          content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
-+            data,
-+          )}
-           location={location}
-           blocksConfig={blocksConfig}
-           isContainer
+-      <GridContext.Provider value={columns.length}>
+-        <Grid stackable stretched columns={columns.length}>
++      <GridContext.Provider value={columns?.length}>
++        <Grid stackable stretched columns={columns?.length}>
+           <RenderBlocks
+             {...props}
+             blockWrapperTag={Grid.Column}
+             metadata={metadata}
+-            content={data}
++            content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
++              data,
++            )}
+             location={location}
+             blocksConfig={blocksConfig}
+             isContainer

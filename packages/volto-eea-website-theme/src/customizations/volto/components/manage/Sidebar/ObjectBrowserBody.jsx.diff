@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Sidebar/ObjectBrowserBody.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Sidebar/ObjectBrowserBody.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Sidebar/ObjectBrowserBody.jsx
 @@ -1,3 +1,5 @@
 +/* this customization is used to put default alt as the rights field
@@ -6,15 +6,7 @@
  import React, { Component } from 'react';
  import PropTypes from 'prop-types';
  import { compose } from 'redux';
-@@ -5,7 +7,6 @@
- import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
- import { Input, Segment, Breadcrumb } from 'semantic-ui-react';
- 
--import debounce from 'lodash/debounce';
- import join from 'lodash/join';
- 
- // These absolute imports (without using the corresponding centralized index.js) are required
-@@ -22,10 +23,13 @@
+@@ -22,10 +24,13 @@
  import searchSVG from '@plone/volto/icons/zoom.svg';
  import linkSVG from '@plone/volto/icons/link.svg';
  import homeSVG from '@plone/volto/icons/home.svg';
@@ -30,7 +22,7 @@
  
  const messages = defineMessages({
    SearchInputPlaceholder: {
-@@ -44,18 +48,6 @@
+@@ -44,18 +49,6 @@
      id: 'Search SVG',
      defaultMessage: 'Search SVG',
    },
@@ -49,78 +41,15 @@
    of: { id: 'Selected items - x of y', defaultMessage: 'of' },
  });
  
-@@ -85,7 +77,6 @@
-     onSelectItem: PropTypes.func,
-     dataName: PropTypes.string,
-     maximumSelectionSize: PropTypes.number,
--    initialPath: PropTypes.string,
-     contextURL: PropTypes.string,
-     searchableTypes: PropTypes.arrayOf(PropTypes.string),
-     onlyFolderishSelectable: PropTypes.bool,
-@@ -115,21 +106,18 @@
-    */
-   constructor(props) {
-     super(props);
--    const defaultMultiplePath = props.initialPath || '/';
-     this.state = {
-       currentFolder:
--        this.props.mode === 'multiple'
--          ? defaultMultiplePath
--          : this.props.contextURL || '/',
-+        this.props.mode === 'multiple' ? '/' : this.props.contextURL || '/',
-       currentImageFolder:
-         this.props.mode === 'multiple'
--          ? defaultMultiplePath
-+          ? '/'
-           : this.props.mode === 'image' && this.props.data?.url
-             ? getParentURL(this.props.data.url)
-             : '/',
-       currentLinkFolder:
-         this.props.mode === 'multiple'
--          ? defaultMultiplePath
-+          ? '/'
-           : this.props.mode === 'link' && this.props.data?.href
-             ? getParentURL(this.props.data.href)
-             : '/',
-@@ -149,36 +137,15 @@
-       showSearchInput: false,
-       // In image mode, the searchable types default to the image types which
-       // can be overridden with the property if specified.
--      // If selectableTypes are passed, the searchableTypes are the selectableTypes
-       searchableTypes:
-         this.props.mode === 'image'
-           ? this.props.searchableTypes || config.settings.imageObjects
--          : [
--              ...(this.props.searchableTypes ?? []),
--              ...(this.props.selectableTypes ?? []),
--            ],
+@@ -157,7 +150,6 @@
+               ...(this.props.searchableTypes ?? []),
+               ...(this.props.selectableTypes ?? []),
+             ],
 -      view: this.props.mode === 'image' ? 'icons' : 'list',
-+          : this.props.searchableTypes,
      };
      this.searchInputRef = React.createRef();
--    // Debounce the live-search dispatch so rapid keystrokes do not produce a
--    // burst of overlapping requests whose responses may resolve out of order
--    // (an older, less-filtered response arriving after the latest one would
--    // visually "reset" the list to look unfiltered).
--    this.debouncedSearch = debounce(this.doSearch, 300);
-   }
- 
-   /**
--   * Component will unmount
--   * @method componentWillUnmount
--   * @returns {undefined}
--   */
--  componentWillUnmount() {
--    if (this.debouncedSearch) {
--      this.debouncedSearch.cancel();
--    }
--  }
--
--  /**
-    * Component did mount
-    * @method componentDidMount
-    * @returns {undefined}
-@@ -243,29 +210,12 @@
+     // Debounce the live-search dispatch so rapid keystrokes do not produce a
+@@ -243,28 +235,10 @@
          showSearchInput: !prevState.showSearchInput,
        }),
        () => {
@@ -147,25 +76,10 @@
 -      view: prevState.view === 'icons' ? 'list' : 'icons',
 -    }));
 -
--  doSearch = (text) => {
-+  onSearch = (e) => {
-+    const text = flattenToAppURL(e.target.value);
+   doSearch = (text) => {
      if (text.startsWith('/')) {
        this.setState({ currentFolder: text });
-       this.props.searchContent(
-@@ -302,11 +252,6 @@
-     }
-   };
- 
--  onSearch = (e) => {
--    const text = flattenToAppURL(e.target.value);
--    this.debouncedSearch(text);
--  };
--
-   onSelectItem = (item) => {
-     const url = item['@id'];
-     const { block, data, mode, dataName, onChangeBlock } = this.props;
-@@ -341,7 +286,8 @@
+@@ -341,7 +315,8 @@
        onChangeBlock(block, {
          ...data,
          url: flattenToAppURL(item.getURL),
@@ -175,7 +89,7 @@
        });
      } else if (mode === 'link') {
        onChangeBlock(block, {
-@@ -360,32 +306,15 @@
+@@ -360,32 +335,15 @@
    };
  
    isSelectable = (item) => {
@@ -217,7 +131,7 @@
    };
  
    handleClickOnItem = (item) => {
-@@ -404,22 +333,22 @@
+@@ -404,22 +362,22 @@
            !this.props.data ||
            this.props.data.length <= this.props.maximumSelectionSize
          ) {
@@ -255,7 +169,7 @@
            if (stopSelecting) {
              this.props.closeObjectBrowser();
            }
-@@ -460,9 +389,25 @@
+@@ -460,9 +418,25 @@
     */
    render() {
      return (
@@ -282,7 +196,7 @@
            {this.state.showSearchInput ? (
              <Input
                className="search"
-@@ -472,40 +417,20 @@
+@@ -472,40 +446,20 @@
                  messages.SearchInputPlaceholder,
                )}
              />
@@ -336,7 +250,7 @@
            )}
  
            <button
-@@ -519,94 +444,40 @@
+@@ -519,94 +473,40 @@
            </button>
          </header>
          <Segment secondary className="breadcrumbs" vertical>
@@ -465,7 +379,7 @@
          </Segment>
          {this.props.mode === 'multiple' && (
            <Segment className="infos">
-@@ -642,7 +513,6 @@
+@@ -642,7 +542,6 @@
            handleClickOnItem={this.handleClickOnItem}
            handleDoubleClickOnItem={this.handleDoubleClickOnItem}
            mode={this.props.mode}
@@ -473,7 +387,7 @@
            navigateTo={this.navigateTo}
            isSelectable={this.isSelectable}
          />
-@@ -656,7 +526,6 @@
+@@ -656,7 +555,6 @@
    connect(
      (state) => ({
        searchSubrequests: state.search.subrequests,

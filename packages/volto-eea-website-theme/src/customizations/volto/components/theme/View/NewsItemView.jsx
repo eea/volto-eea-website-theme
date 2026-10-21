@@ -7,7 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Container as SemanticContainer } from 'semantic-ui-react';
 import { hasBlocksData } from '@plone/volto/helpers/Blocks/Blocks';
-import { flattenHTMLToAppURL } from '@plone/volto/helpers/Url/Url';
+import { flattenHTMLToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
 import config from '@plone/volto/registry';
 import ContextNavigationInjector from '@eeacms/volto-eea-website-theme/components/theme/ContextNavigation/ContextNavigationInjector';
@@ -18,7 +18,9 @@ import ContextNavigationInjector from '@eeacms/volto-eea-website-theme/component
  * @params {object} content Content object.
  * @returns {string} Markup of the component.
  */
-const NewsItemView = ({ content, location }) => {
+const NewsItemView = (props) => {
+  const { content, location } = props;
+  const path = getBaseUrl(location?.pathname || '');
   const Image = config.getComponent({ name: 'Image' }).component;
   const Container =
     config.getComponent({ name: 'Container' }).component || SemanticContainer;
@@ -26,7 +28,7 @@ const NewsItemView = ({ content, location }) => {
   return hasBlocksData(content) ? (
     <>
       <Container id="page-document" className="view-wrapper newsitem-view">
-        <RenderBlocks content={content} />
+        <RenderBlocks {...props} path={path} />
       </Container>
       <ContextNavigationInjector content={content} location={location} />
     </>

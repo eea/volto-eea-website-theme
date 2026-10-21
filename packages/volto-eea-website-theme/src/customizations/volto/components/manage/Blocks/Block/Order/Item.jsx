@@ -5,7 +5,9 @@ import includes from 'lodash/includes';
 import isBoolean from 'lodash/isBoolean';
 import cx from 'classnames';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
+import { formatMessageWithFallback } from '@plone/volto/helpers/I18n/I18n';
 import config from '@plone/volto/registry';
+import { useIntl } from 'react-intl';
 
 import deleteSVG from '@plone/volto/icons/delete.svg';
 import dragSVG from '@plone/volto/icons/drag.svg';
@@ -40,6 +42,7 @@ export const Item = forwardRef(
     },
     ref,
   ) => {
+    const intl = useIntl();
     const selected = useSelector((state) => state.form.ui.selected);
     const hovered = useSelector((state) => state.form.ui.hovered);
     const multiSelected = useSelector((state) => state.form.ui.multiSelected);
@@ -54,6 +57,11 @@ export const Item = forwardRef(
       ? data.required
       : includes(config.blocks.requiredBlocks, data?.['@type']);
     const fixed = !!data?.fixed;
+    const configTitle = config.blocks.blocksConfig[data?.['@type']]?.title;
+    const blockTitle =
+      data?.plaintext ||
+      formatMessageWithFallback(intl, configTitle) ||
+      data?.title;
 
     return (
       <li
@@ -127,9 +135,7 @@ export const Item = forwardRef(
                 style={{ verticalAlign: 'middle' }}
               />
             )}{' '}
-            {data?.plaintext ||
-              config.blocks.blocksConfig[data?.['@type']]?.title ||
-              data?.title}
+            {blockTitle}
           </span>
           {!clone && onRemove && !required && (
             <button

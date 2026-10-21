@@ -1,7 +1,7 @@
 # ContentsItem.jsx customization
 
 This customization shadows Volto core's
-`src/components/manage/Contents/ContentsItem.jsx` from `@plone/volto` 18.33.1.
+`src/components/manage/Contents/ContentsItem.jsx` from `@plone/volto` 19.5.0 (dnd-kit based).
 
 The functional changes are limited to the contents table item link:
 

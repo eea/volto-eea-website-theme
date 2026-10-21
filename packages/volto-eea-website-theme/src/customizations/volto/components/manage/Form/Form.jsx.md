@@ -1,6 +1,6 @@
 # Form.jsx — Customization explanation
 
-**Upstream:** `@plone/volto` 18.35.1, `components/manage/Form/Form.jsx`  
+**Upstream:** `@plone/volto` 19.5.0, `components/manage/Form/Form.jsx`  
 **Local override:** `src/customizations/volto/components/manage/Form/Form.jsx`
 
 ## Why this override exists
