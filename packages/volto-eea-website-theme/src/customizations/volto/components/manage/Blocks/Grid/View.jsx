@@ -3,7 +3,6 @@ import cx from 'classnames';
 import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
 import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
 import config from '@plone/volto/registry';
-import { GridContext } from '@plone/volto/components/manage/Blocks/Grid/context';
 
 const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
   if (data?.['@type'] === 'teaserGrid') {
@@ -65,21 +64,19 @@ const GridBlockView = (props) => {
     >
       {data.headline && <h2 className="headline">{data.headline}</h2>}
 
-      <GridContext.Provider value={columns?.length}>
-        <Grid stackable stretched columns={columns?.length}>
-          <RenderBlocks
-            {...props}
-            blockWrapperTag={Grid.Column}
-            metadata={metadata}
-            content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
-              data,
-            )}
-            location={location}
-            blocksConfig={blocksConfig}
-            isContainer
-          />
-        </Grid>
-      </GridContext.Provider>
+      <Grid stackable stretched columns={columns?.length}>
+        <RenderBlocks
+          {...props}
+          blockWrapperTag={Grid.Column}
+          metadata={metadata}
+          content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
+            data,
+          )}
+          location={location}
+          blocksConfig={blocksConfig}
+          isContainer
+        />
+      </Grid>
     </div>
   );
 };

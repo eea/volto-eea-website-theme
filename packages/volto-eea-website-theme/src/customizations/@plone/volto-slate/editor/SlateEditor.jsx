@@ -8,7 +8,7 @@ import React, { Component } from 'react'; // , useState
 import { v4 as uuid } from 'uuid';
 
 import config from '@plone/volto/registry';
-import { isIMEComposing } from '@plone/volto/helpers/Utils/Utils';
+import { isIMEComposing } from '@eeacms/volto-eea-website-theme/helpers/isIMEComposing';
 
 import { Element, Leaf } from '@plone/volto-slate/editor/render';
 

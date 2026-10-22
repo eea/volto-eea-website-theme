@@ -1,6 +1,16 @@
 --- volto-19.5.0/packages/volto/src/components/manage/Contents/ContentsItem.jsx
-+++ volto-eea-website-theme/src/customizations/volto/components/manage/Contents/ContentsItem.jsx
-@@ -97,6 +97,11 @@
++++ volto-eea-website-theme/src/components/manage/Contents/ContentsItemDndKit.jsx
+@@ -1,6 +1,7 @@
+ /**
+- * Contents item component.
+- * @module components/manage/Contents/ContentsItem
++ * Contents item component for Volto 19, where the contents view sorts rows
++ * with dnd-kit. Same EEA changes as ContentsItemReactDnd.
++ * @module components/manage/Contents/ContentsItemDndKit
+  */
+ 
+ import React from 'react';
+@@ -97,6 +98,11 @@
    const intl = useIntl();
    const { useSortable } = dndKitSortable;
    const { CSS } = dndKitUtilities;
@@ -12,7 +22,7 @@
    const {
      attributes,
      listeners,
-@@ -173,7 +178,10 @@
+@@ -173,7 +179,10 @@
            className="icon-align-name"
            to={`${item['@id']}${item.is_folderish ? '/contents' : ''}`}
          >
@@ -24,7 +34,7 @@
              <Icon
                name={getContentIcon(item['@type'], item.is_folderish)}
                size="20px"
-@@ -181,20 +189,29 @@
+@@ -181,20 +190,29 @@
                color="#878f93"
                title={item['Type'] || item['@type']}
              />{' '}

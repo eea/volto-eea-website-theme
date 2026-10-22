@@ -1,7 +1,18 @@
 # ContentsItem.jsx customization
 
 This customization shadows Volto core's
-`src/components/manage/Contents/ContentsItem.jsx` from `@plone/volto` 19.5.0 (dnd-kit based).
+`src/components/manage/Contents/ContentsItem.jsx`.
+
+Volto 19 replaced react-dnd with dnd-kit in the contents view, and each
+version's `Contents.jsx` only provides the drag-and-drop context of its own
+library. The shadow therefore only picks, from the Volto version, one of two
+copies of the core component with the same EEA changes:
+
+- `components/manage/Contents/ContentsItemDndKit.jsx`, based on `@plone/volto`
+  19.5.0 (dnd-kit). `ContentsItem.jsx.diff` shows its changes against core.
+- `components/manage/Contents/ContentsItemReactDnd.jsx`, based on
+  `@plone/volto` 18.36.0 (react-dnd). Drop it, and the version switch, once
+  Volto 18 is no longer supported.
 
 The functional changes are limited to the contents table item link:
 

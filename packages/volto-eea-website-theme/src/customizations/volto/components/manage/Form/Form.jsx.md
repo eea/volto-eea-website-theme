@@ -37,6 +37,14 @@ test. The connected default export is unchanged.
 Together with the `Block/Edit.jsx` customization, a modified click on the
 active block promotes it to a one-block multi-selection.
 
+## Volto 18 compatibility
+
+Volto 19 wraps the core form with `withSaveAsDraft` (the opt-in autosave
+behind `config.experimental.saveAsDraft`). That helper does not exist in
+Volto 18, so this shadow leaves the wrapper out to keep compiling on both;
+its `checkSavedDraft`, `onSaveDraft` and `onCancelDraft` props default to
+no-ops. Add the wrapper back once Volto 18 is no longer supported.
+
 ## Preserved behavior
 
 - Ordinary click selects one block and clears multi-selection.
