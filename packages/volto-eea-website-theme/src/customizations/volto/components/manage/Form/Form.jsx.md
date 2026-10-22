@@ -39,11 +39,12 @@ active block promotes it to a one-block multi-selection.
 
 ## Volto 18 compatibility
 
-Volto 19 wraps the core form with `withSaveAsDraft` (the opt-in autosave
-behind `config.experimental.saveAsDraft`). That helper does not exist in
-Volto 18, so this shadow leaves the wrapper out to keep compiling on both;
-its `checkSavedDraft`, `onSaveDraft` and `onCancelDraft` props default to
-no-ops. Add the wrapper back once Volto 18 is no longer supported.
+Volto 19 wraps the core form with `withSaveAsDraft`, the opt-in autosave
+behind `config.experimental.saveAsDraft`. That helper does not exist in
+Volto 18, so this shadow imports a copy of it from
+`@eeacms/volto-eea-website-theme/helpers/withSaveAsDraft`, which keeps the
+autosave off on Volto 18. Import the core helper again once Volto 18 is no
+longer supported.
 
 ## Preserved behavior
 

@@ -10,6 +10,7 @@ import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
 import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
 import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
 import { difference } from '@plone/volto/helpers/Utils/Utils';
+import withSaveAsDraft from '@eeacms/volto-eea-website-theme/helpers/withSaveAsDraft';
 import FormValidation from '@plone/volto/helpers/FormValidation/FormValidation';
 import {
   getBlocksFieldname,
@@ -1183,4 +1184,5 @@ export default compose(
     null,
     { forwardRef: true },
   ),
+  withSaveAsDraft({ forwardRef: true }),
 )(FormIntl);
