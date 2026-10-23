@@ -1,0 +1,90 @@
+--- volto-19.5.0/packages/volto/src/components/manage/Blocks/Grid/View.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Grid/View.jsx
+@@ -3,15 +3,49 @@
+ import RenderBlocks from '@plone/volto/components/theme/View/RenderBlocks';
+ import { withBlockExtensions } from '@plone/volto/helpers/Extensions';
+ import config from '@plone/volto/registry';
+-import { GridContext } from '@plone/volto/components/manage/Blocks/Grid/context';
+ 
++const convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate = (data) => {
++  if (data?.['@type'] === 'teaserGrid') {
++    return {
++      ...data,
++      '@type': 'gridBlock',
++      blocks_layout: { items: data?.columns.map((column) => column.id) },
++      blocks: data?.columns?.reduce(
++        (blocks, column) => ({
++          ...blocks,
++          [column?.id]: {
++            ...column,
++            '@type': column['@type'] || 'slate',
++          },
++        }),
++        {},
++      ),
++    };
++  }
++
++  if (data.blocks) {
++    return {
++      ...data,
++      blocks: Object.keys(data.blocks).reduce(
++        (blocks, blockId) => ({
++          ...blocks,
++          [blockId]: {
++            ...data.blocks[blockId],
++            '@type': data.blocks[blockId]?.['@type'] || 'slate',
++          },
++        }),
++        {},
++      ),
++    };
++  }
++
++  return data;
++};
++
+ const GridBlockView = (props) => {
+   const { data, path, className, style } = props;
+   const metadata = props.metadata || props.properties;
+-  if (data.blocks_layout === undefined) {
+-    return null;
+-  }
+-  const columns = data.blocks_layout.items;
++  const columns = data?.blocks_layout?.items || data?.columns;
+   const blocksConfig =
+     config.blocks.blocksConfig[data['@type']].blocksConfig ||
+     props.blocksConfig;
+@@ -30,19 +64,19 @@
+     >
+       {data.headline && <h2 className="headline">{data.headline}</h2>}
+ 
+-      <GridContext.Provider value={columns.length}>
+-        <Grid stackable stretched columns={columns.length}>
+-          <RenderBlocks
+-            {...props}
+-            blockWrapperTag={Grid.Column}
+-            metadata={metadata}
+-            content={data}
+-            location={location}
+-            blocksConfig={blocksConfig}
+-            isContainer
+-          />
+-        </Grid>
+-      </GridContext.Provider>
++      <Grid stackable stretched columns={columns?.length}>
++        <RenderBlocks
++          {...props}
++          blockWrapperTag={Grid.Column}
++          metadata={metadata}
++          content={convertTeaserToGridIfNecessaryAndTransformEmptyBlocksToSlate(
++            data,
++          )}
++          location={location}
++          blocksConfig={blocksConfig}
++          isContainer
++        />
++      </Grid>
+     </div>
+   );
+ };

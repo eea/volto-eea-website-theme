@@ -1,0 +1,14 @@
+--- volto-18.35.1-74d82edef/packages/volto-slate/src/blocks/Text/TextBlockView.jsx
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Text/TextBlockView.jsx
+@@ -17,9 +17,10 @@
+     const res = { ...styling };
+     if (node.type && isEqual(path, [0])) {
+       if (topLevelTargetElements.includes(node.type) || override_toc) {
+-        const text = serializeNodesToText(node?.children || []);
++        const text = serializeNodesToText([node] || []);
+         const slug = Slugger.slug(normalizeString(text));
+         res.id = slug || id;
++        res['data-block'] = id;
+       }
+     }
+     return res;

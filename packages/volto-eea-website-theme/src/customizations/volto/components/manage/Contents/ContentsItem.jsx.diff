@@ -1,0 +1,79 @@
+--- volto-19.5.0/packages/volto/src/components/manage/Contents/ContentsItem.jsx
++++ volto-eea-website-theme/src/components/manage/Contents/ContentsItemDndKit.jsx
+@@ -1,6 +1,7 @@
+ /**
+- * Contents item component.
+- * @module components/manage/Contents/ContentsItem
++ * Contents item component for Volto 19, where the contents view sorts rows
++ * with dnd-kit. Same EEA changes as ContentsItemReactDnd.
++ * @module components/manage/Contents/ContentsItemDndKit
+  */
+ 
+ import React from 'react';
+@@ -97,6 +98,11 @@
+   const intl = useIntl();
+   const { useSortable } = dndKitSortable;
+   const { CSS } = dndKitUtilities;
++  const now = Date.now();
++  const expirationTime = new Date(item.ExpirationDate).getTime();
++  const effectiveTime = new Date(item.EffectiveDate).getTime();
++  const isExpired = item.ExpirationDate !== 'None' && expirationTime < now;
++  const isScheduled = item.EffectiveDate !== 'None' && effectiveTime > now;
+   const {
+     attributes,
+     listeners,
+@@ -173,7 +179,10 @@
+           className="icon-align-name"
+           to={`${item['@id']}${item.is_folderish ? '/contents' : ''}`}
+         >
+-          <div className="expire-align">
++          <div
++            className="expire-align"
++            style={{ flex: '1 1 auto', minWidth: 0 }}
++          >
+             <Icon
+               name={getContentIcon(item['@type'], item.is_folderish)}
+               size="20px"
+@@ -181,20 +190,29 @@
+               color="#878f93"
+               title={item['Type'] || item['@type']}
+             />{' '}
+-            <span title={item.title}> {item.title}</span>
++            <span title={item.title} style={{ flex: '1 1 auto', minWidth: 0 }}>
++              {' '}
++              {item.title}
++            </span>
+           </div>
+-          {item.ExpirationDate !== 'None' &&
+-            new Date(item.ExpirationDate).getTime() < new Date().getTime() && (
+-              <Button className="button-margin expired-past" size="mini">
+-                <FormattedMessage id="Expired" defaultMessage="Expired" />
+-              </Button>
+-            )}
+-          {item.EffectiveDate !== 'None' &&
+-            new Date(item.EffectiveDate).getTime() > new Date().getTime() && (
+-              <Button className="button-margin effective-future" size="mini">
+-                <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
+-              </Button>
+-            )}
++          {isExpired && (
++            <Button
++              className="button-margin expired-past"
++              size="mini"
++              style={{ flexShrink: 0 }}
++            >
++              <FormattedMessage id="Expired" defaultMessage="Expired" />
++            </Button>
++          )}
++          {isScheduled && (
++            <Button
++              className="button-margin effective-future"
++              size="mini"
++              style={{ flexShrink: 0 }}
++            >
++              <FormattedMessage id="Scheduled" defaultMessage="Scheduled" />
++            </Button>
++          )}
+           {item.is_working_copy && (
+             <Button className="button-margin working-copy" size="mini">
+               <FormattedMessage

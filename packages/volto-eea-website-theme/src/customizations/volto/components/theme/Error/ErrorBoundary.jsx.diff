@@ -1,0 +1,53 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Error/ErrorBoundary.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Error/ErrorBoundary.jsx
+@@ -1,25 +1,43 @@
+ import React from 'react';
++import config from '@plone/volto/registry';
+ 
+ class ErrorBoundary extends React.Component {
+   constructor(props) {
+     super(props);
+-    this.state = { hasError: false };
++    this.state = { hasError: false, error: null };
+   }
+ 
+   static getDerivedStateFromError(error) {
+-    // Update state so the next render will show the fallback UI.
+-    return { hasError: true };
++    return { hasError: true, error };
+   }
+ 
+   componentDidCatch(error, errorInfo) {
+-    // eslint-disable-next-line
+-    console.error(error, errorInfo);
++    if (this.props.error) {
++      //pass error to error-reporting service
++      config.settings.errorHandlers?.forEach((handler) => {
++        if (typeof handler === 'function') {
++          handler(error);
++        }
++      });
++      if (this.props.onError) {
++        this.props.onError(error, errorInfo);
++      }
++    } else {
++      // eslint-disable-next-line
++      console.error(error, errorInfo);
++    }
+   }
+ 
+   render() {
++    const ErrorPage =
++      this.props.fallback || config.getComponent('ErrorBoundary')?.component;
+     if (this.state.hasError) {
+-      // You can render any custom fallback UI
+-      return <pre className="error">{`<error: ${this.props.name}>`}</pre>;
++      if (ErrorPage) {
++        // You can render any custom fallback UI
++        return <ErrorPage name={this.props.name} error={this.state.error} />;
++      } else {
++        return <pre className="error">{`<error: ${this.props.name}>`}</pre>;
++      }
+     }
+ 
+     return this.props.children;

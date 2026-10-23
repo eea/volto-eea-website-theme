@@ -1,0 +1,30 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/reducers/breadcrumbs/breadcrumbs.js
++++ volto-eea-website-theme/src/customizations/volto/reducers/breadcrumbs/breadcrumbs.js
+@@ -1,6 +1,7 @@
+ /**
+  * Breadcrumbs reducer.
+  * @module reducers/breadcrumbs/breadcrumbs
++ * Customized reducer as part of ticket 271001 in order to receive portal_type info
+  */
+ 
+ import map from 'lodash/map';
+@@ -49,7 +50,8 @@
+           items: map(
+             action.result['@components'].breadcrumbs.items,
+             (item) => ({
+-              title: item.title,
++              ...item,
++              portal_type: item.portal_type,
+               url: flattenToAppURL(item['@id']),
+             }),
+           ),
+@@ -69,7 +71,8 @@
+           ...state,
+           error: null,
+           items: map(action.result.items, (item) => ({
+-            title: item.title,
++            ...item,
++            portal_type: item.portal_type,
+             url: flattenToAppURL(item['@id']),
+           })),
+           root: flattenToAppURL(action.result.root),

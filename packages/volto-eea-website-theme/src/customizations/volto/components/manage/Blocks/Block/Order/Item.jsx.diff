@@ -1,0 +1,47 @@
+--- volto-19.5.0/packages/volto/src/components/manage/Blocks/Block/Order/Item.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Block/Order/Item.jsx
+@@ -2,16 +2,22 @@
+ import classNames from 'classnames';
+ import { useDispatch, useSelector } from 'react-redux';
+ import includes from 'lodash/includes';
++import isBoolean from 'lodash/isBoolean';
+ import cx from 'classnames';
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+-import { setUIState } from '@plone/volto/actions/form/form';
+ import { formatMessageWithFallback } from '@plone/volto/helpers/I18n/I18n';
+ import config from '@plone/volto/registry';
+ import { useIntl } from 'react-intl';
+ 
+ import deleteSVG from '@plone/volto/icons/delete.svg';
+ import dragSVG from '@plone/volto/icons/drag.svg';
++// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
++const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
+ 
++// TEMPORARY PATCH (Volto issue #6481):
++// Remove this customization once the upstream fixes are released and adopted.
++// Upstream PRs: https://github.com/plone/volto/pull/8124 and
++// https://github.com/plone/volto/pull/8125
+ export const Item = forwardRef(
+   (
+     {
+@@ -47,16 +53,16 @@
+       config.blocks.blocksConfig[data?.['@type']]?.icon ||
+       config.blocks.blocksConfig.title?.icon;
+ 
+-    const required =
+-      typeof data?.required === 'boolean'
+-        ? data.required
+-        : includes(config.blocks.requiredBlocks, data?.['@type']);
++    const required = isBoolean(data?.required)
++      ? data.required
++      : includes(config.blocks.requiredBlocks, data?.['@type']);
+     const fixed = !!data?.fixed;
+     const configTitle = config.blocks.blocksConfig[data?.['@type']]?.title;
+     const blockTitle =
+       data?.plaintext ||
+       formatMessageWithFallback(intl, configTitle) ||
+       data?.title;
++
+     return (
+       <li
+         className={classNames(

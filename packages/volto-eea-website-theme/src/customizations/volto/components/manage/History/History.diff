@@ -1,0 +1,178 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/manage/History/History.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/History/History.jsx
+@@ -1,6 +1,8 @@
+ /**
+  * History component.
+  * @module components/manage/History/History
++ * Customized to enable complex versioning
++ * https://taskman.eionet.europa.eu/issues/289335?issue_count=4&issue_position=1&next_issue_id=285635
+  */
+ 
+ import React, { Component } from 'react';
+@@ -13,6 +15,7 @@
+   Container as SemanticContainer,
+   Dropdown,
+   Icon,
++  Message,
+   Segment,
+   Table,
+ } from 'semantic-ui-react';
+@@ -39,6 +42,14 @@
+ 
+ import backSVG from '@plone/volto/icons/back.svg';
+ 
++const getPathname = (url) => {
++  try {
++    return new URL(url).pathname;
++  } catch {
++    return typeof url === 'string' && url.startsWith('/') ? url : null;
++  }
++};
++
+ const messages = defineMessages({
+   back: {
+     id: 'Back',
+@@ -48,6 +59,22 @@
+     id: 'History',
+     defaultMessage: 'History',
+   },
++  newerVersionAvailable: {
++    id: 'Newer version available',
++    defaultMessage: 'Newer version available',
++  },
++  thereIsNewerVersionAt: {
++    id: 'There is a newer version at {link}',
++    defaultMessage: 'There is a newer version at {link}',
++  },
++  olderVersionAvailable: {
++    id: 'Older version available',
++    defaultMessage: 'Older version available',
++  },
++  thereIsOlderVersionAt: {
++    id: 'There is an older version at {link}',
++    defaultMessage: 'There is an older version at {link}',
++  },
+ });
+ 
+ /**
+@@ -161,7 +188,6 @@
+ 
+     const Container =
+       config.getComponent({ name: 'Container' }).component || SemanticContainer;
+-
+     return !historyAction ? (
+       <>
+         {this.props.token ? (
+@@ -195,31 +221,65 @@
+               defaultMessage="You can view the history of your item below."
+             />
+           </Segment>
+-          <Table selectable compact singleLine attached>
++          {(() => {
++            const copiedToPath = getPathname(this.props.content?.copied_to);
++            return (
++              copiedToPath && (
++                <Message info icon attached="top">
++                  <Icon name="arrow right" />
++                  <Message.Content>
++                    <Message.Header>
++                      <FormattedMessage {...messages.newerVersionAvailable} />
++                    </Message.Header>
++                    <FormattedMessage
++                      {...messages.thereIsNewerVersionAt}
++                      values={{
++                        link: (
++                          <a href={`${copiedToPath}/historyview`}>
++                            {copiedToPath.split('/').pop() || 'newer version'}
++                          </a>
++                        ),
++                      }}
++                    />
++                  </Message.Content>
++                </Message>
++              )
++            );
++          })()}
++          <Table
++            selectable
++            compact
++            attached
++            style={{
++              tableLayout: 'fixed',
++              width: '100%',
++              wordWrap: 'break-word',
++            }}
++          >
+             <Table.Header>
+               <Table.Row>
+-                <Table.HeaderCell width={1}>
++                <Table.HeaderCell style={{ width: '5%' }}>
+                   <FormattedMessage
+                     id="History Version Number"
+                     defaultMessage="#"
+                   />
+                 </Table.HeaderCell>
+-                <Table.HeaderCell width={4}>
++                <Table.HeaderCell style={{ width: '25%' }}>
+                   <FormattedMessage id="What" defaultMessage="What" />
+                 </Table.HeaderCell>
+-                <Table.HeaderCell width={4}>
++                <Table.HeaderCell style={{ width: '15%' }}>
+                   <FormattedMessage id="Who" defaultMessage="Who" />
+                 </Table.HeaderCell>
+-                <Table.HeaderCell width={4}>
++                <Table.HeaderCell style={{ width: '15%' }}>
+                   <FormattedMessage id="When" defaultMessage="When" />
+                 </Table.HeaderCell>
+-                <Table.HeaderCell width={4}>
++                <Table.HeaderCell style={{ width: '25%' }}>
+                   <FormattedMessage
+                     id="Change Note"
+                     defaultMessage="Change Note"
+                   />
+                 </Table.HeaderCell>
+-                <Table.HeaderCell />
++                <Table.HeaderCell style={{ width: '15%' }} />
+               </Table.Row>
+             </Table.Header>
+             <Table.Body>
+@@ -318,6 +378,31 @@
+               ))}
+             </Table.Body>
+           </Table>
++          {(() => {
++            const copiedFromPath = getPathname(this.props.content?.copied_from);
++            return (
++              copiedFromPath && (
++                <Message warning icon attached="bottom">
++                  <Icon name="arrow left" />
++                  <Message.Content>
++                    <Message.Header>
++                      <FormattedMessage {...messages.olderVersionAvailable} />
++                    </Message.Header>
++                    <FormattedMessage
++                      {...messages.thereIsOlderVersionAt}
++                      values={{
++                        link: (
++                          <a href={`${copiedFromPath}/historyview`}>
++                            {copiedFromPath.split('/').pop() || 'older version'}
++                          </a>
++                        ),
++                      }}
++                    />
++                  </Message.Content>
++                </Message>
++              )
++            );
++          })()}
+         </Segment.Group>
+         {this.state.isClient &&
+           createPortal(
+@@ -363,6 +448,7 @@
+       entries: state.history.entries,
+       pathname: props.location.pathname,
+       title: state.content.data?.title,
++      content: state.content.data,
+       revertRequest: state.history.revert,
+     }),
+     { getHistory, revertHistory },

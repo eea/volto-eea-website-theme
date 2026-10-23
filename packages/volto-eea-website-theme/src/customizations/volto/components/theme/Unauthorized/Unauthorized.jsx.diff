@@ -1,0 +1,153 @@
+--- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Unauthorized/Unauthorized.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Unauthorized/Unauthorized.jsx
+@@ -1,76 +1,91 @@
++/**
++ * @module components/theme/Unauthorized/Unauthorized
++ */
++
++import React, { useEffect } from 'react';
++import { useLocation, Link, useHistory } from 'react-router-dom';
++import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
++import { Container, Button } from 'semantic-ui-react';
++
+ import { FormattedMessage } from 'react-intl';
+-import { Link } from 'react-router-dom';
+-import { Container } from 'semantic-ui-react';
+-import { useSelector } from 'react-redux';
+-import { useLocation } from 'react-router-dom';
++
+ import { withServerErrorCode } from '@plone/volto/helpers/Utils/Utils';
+-import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
+ 
++/**
++ * unauthorized function.
++ * @function Unauthorized
++ * @returns {string} Markup of the unauthorized page.
++ */
++
+ const Unauthorized = () => {
+-  const token = useSelector((state) => state.userSession.token);
+-  const error_message = useSelector((state) => state.apierror?.message);
+-  let location = useLocation();
++  const location = useLocation();
++  const pathname = location.pathname;
++  const base_pathname = getBaseUrl(pathname);
++  const login = `${base_pathname}/login`;
++  const history = useHistory();
++  const [countdown, setCountdown] = React.useState(5);
+ 
++  useEffect(() => {
++    const login_with_return = login + `?return_url=${pathname}`;
++    const timer = setTimeout(() => {
++      return history.push(login_with_return);
++    }, 5000);
++    return () => clearTimeout(timer);
++  }, [history, login, pathname]);
++
++  useEffect(() => {
++    const timer = setTimeout(() => {
++      if (countdown > 0) {
++        setCountdown(countdown - 1);
++      } else {
++        clearTimeout(timer);
++      }
++    }, 1000);
++    // Clear timeout if the component is unmounted
++    return () => clearTimeout(timer);
++  }, [countdown]);
++
+   return (
+     <Container className="view-wrapper">
+-      <BodyClass className="view-unauthorized" />
+       <h1>
+         <FormattedMessage id="Unauthorized" defaultMessage="Unauthorized" />
+       </h1>
+-      <h3>{error_message}</h3>
++      <h3>
++        <FormattedMessage
++          id="Forbidden, you will be redirected to the login screen in "
++          defaultMessage="Forbidden, you will be redirected to the login screen in "
++        />
++        <span id="redirect-countdown">{countdown}</span>.
++      </h3>
++
+       <p className="description">
+-        {token ? (
+-          <FormattedMessage
+-            id="You are trying to access a protected resource."
+-            defaultMessage="You are trying to access a protected resource."
+-          />
+-        ) : (
+-          <FormattedMessage
+-            id="You are trying to access a protected resource, please {login} first."
+-            defaultMessage="You are trying to access a protected resource, please {login} first."
+-            values={{
+-              login: (
+-                <Link
+-                  to={{
+-                    pathname: `${location.pathname.replace(/\/$/, '')}/login`,
+-                    state: {
+-                      // This is needed to cover the use case of being logged in in
+-                      // another backend (eg. in development), having a token for
+-                      // localhost and try to use it, the login route has to know that
+-                      // it's the same as it comes from a logout
+-                      isLogout: true,
+-                    },
+-                  }}
+-                >
+-                  <FormattedMessage id="log in" defaultMessage="log in" />
+-                </Link>
+-              ),
+-            }}
+-          />
+-        )}
+-      </p>
+-      <p>
++        <FormattedMessage id="Click" defaultMessage="Click" />{' '}
++        <Link
++          className={'ui mini compact button my-half unauthorized-buttons'}
++          to={login}
++        >
++          <FormattedMessage id="Log in" defaultMessage="Log in" />
++        </Link>
+         <FormattedMessage
+-          id="If you are certain you have the correct web address but are encountering an error, please contact the {site_admin}."
+-          defaultMessage="If you are certain you have the correct web address but are encountering an error, please contact the {site_admin}."
+-          values={{
+-            site_admin: (
+-              <Link to="/contact-form">
+-                <FormattedMessage
+-                  id="Site Administration"
+-                  defaultMessage="Site Administration"
+-                />
+-              </Link>
+-            ),
+-          }}
++          id="to get to login screen or click"
++          defaultMessage="to get to login screen or click"
++        />{' '}
++        <Button
++          size={'mini'}
++          compact
++          onClick={() => history.goBack()}
++          className={'my-half unauthorized-buttons'}
++        >
++          <FormattedMessage id="Get back" defaultMessage="Get back" />
++        </Button>
++        <FormattedMessage
++          id="to get to the previous location"
++          defaultMessage="to get to the previous location"
+         />
++        .
+       </p>
+-      <p>
+-        <FormattedMessage id="Thank you." defaultMessage="Thank you." />
+-      </p>
+     </Container>
+   );
+ };
+-const UnauthorizedWithCode = withServerErrorCode(401)(Unauthorized);
+-UnauthorizedWithCode.displayName = 'unauthorized';
+-export default UnauthorizedWithCode;
++
++export default withServerErrorCode(401)(Unauthorized);
