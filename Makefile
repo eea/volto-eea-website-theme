@@ -51,6 +51,13 @@ CURRENT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 RAZZLE_INTERNAL_API_PATH?=http://localhost:8080/Plone
 export RAZZLE_INTERNAL_API_PATH
 
+# Volto 18 pins Cypress 13, which cannot drive the recent Chromium of the CI
+# image (cypress-ci hangs on the first spec until Jenkins kills it). Run it in
+# the Electron bundled with Cypress instead; Volto 19 ships a Cypress that
+# supports that Chromium.
+VOLTO_MAJOR:=$(shell node -p "require('$(CURRENT_DIR)/core/packages/volto/package.json').version.split('.')[0]" 2>/dev/null)
+CYPRESS_BROWSER?=$(if $(filter 18,$(VOLTO_MAJOR)),electron,chromium)
+
 
 # Top-level targets
 .PHONY: all
@@ -156,7 +163,7 @@ check-ci:		## Wait for frontend to be ready
 
 .PHONY: cypress-ci
 cypress-ci:		## Run Cypress tests headless (used by CI)
-	pnpm --filter @plone/volto exec cypress run --project $(CURRENT_DIR) --config-file $(CURRENT_DIR)/cypress.config.js --config specPattern='$(CYPRESS_SPEC_PATTERN)' --env API_PATH="$(RAZZLE_INTERNAL_API_PATH)" --browser chromium
+	pnpm --filter @plone/volto exec cypress run --project $(CURRENT_DIR) --config-file $(CURRENT_DIR)/cypress.config.js --config specPattern='$(CYPRESS_SPEC_PATTERN)' --env API_PATH="$(RAZZLE_INTERNAL_API_PATH)" --browser $(CYPRESS_BROWSER)
 
 .PHONY: help
 help:			## Show this help.
