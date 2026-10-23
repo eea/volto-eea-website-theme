@@ -37,6 +37,10 @@ See [Storybook](https://eea.github.io/eea-storybook/).
 
 ## Volto customizations
 
+The shadows build on both Volto 18 and Volto 19; the code that keeps them
+compatible, and how to remove it, is described in
+[docs/volto18-volto19-compatibility.md](docs/volto18-volto19-compatibility.md).
+
 - `volto-slate/elementEditor/utils` -> https://github.com/plone/volto/pull/5926
 
 - `volto-slate/editor/SlateEditor` -> When two slates looks at the same prop changing one slate and updating the other should be handled properly. This change makes replacing the old value of slate work in sync with the other slates that watches the same prop [ref](https://taskman.eionet.europa.eu/issues/264239#note-11).
