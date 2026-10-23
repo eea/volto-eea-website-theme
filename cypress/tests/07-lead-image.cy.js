@@ -50,8 +50,18 @@ describe('LeadImage block shadow', () => {
     // The Lead Image block is only available when the content type has the
     // Lead Image behavior enabled.
     setPageLeadImageBehavior(true);
-    cy.visit('/cypress/my-page');
-    cy.navigate('/cypress/my-page/edit');
+
+    // Load the edit route directly instead of pushing it through the SPA
+    // history right after a cy.visit: that push can race with the client
+    // hydration, which then settles back on the view page, so the edit form
+    // and #field-image never mount (same fix as in slateBeforeEach). Then
+    // wait for the schema the edit form loads, so a schema still missing the
+    // Lead Image field fails here with a clear message.
+    cy.intercept('GET', '**/@types/Document').as('documentSchema');
+    cy.visit('/cypress/my-page/edit');
+    cy.wait('@documentSchema')
+      .its('response.body.properties')
+      .should('have.property', 'image');
     cy.get('#field-image').should('exist');
 
     // Add a Lead Image Field block using the slash command, which is stable
