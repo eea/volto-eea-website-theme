@@ -222,10 +222,11 @@ function setupServer(req, res, next) {
     res.locals.detectedHost = `${
       req.headers['x-forwarded-proto'] || req.protocol
     }://${req.headers.host}`;
-    config.settings.apiPath =
-      res.locals.detectedHost + config.settings.subpathPrefix;
-    config.settings.publicURL =
-      res.locals.detectedHost + config.settings.subpathPrefix;
+    // Volto 18 does not define `settings.subpathPrefix`; without the fallback
+    // the client gets an `...undefined` apiPath and every API request fails.
+    const subpathPrefix = config.settings.subpathPrefix || '';
+    config.settings.apiPath = res.locals.detectedHost + subpathPrefix;
+    config.settings.publicURL = res.locals.detectedHost + subpathPrefix;
   }
 
   res.locals = {

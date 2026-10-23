@@ -65,6 +65,17 @@ serve both versions because each `Contents.jsx` only provides the context of
 its own drag-and-drop library. `ContentsItem.jsx.diff` documents the Volto 19
 variant against core.
 
+## Volto 19 settings missing on Volto 18
+
+`customizations/volto/server.jsx` is based on Volto 19, which builds the
+detected `apiPath` and `publicURL` as `host + settings.subpathPrefix`. Volto 18
+does not define `settings.subpathPrefix`, so the shadow falls back to `''`.
+Without the fallback the client received `http://<host>undefined` as
+`apiPath`: every client API request failed with "Invalid URL", the
+`useUser` hook retried `GET_USER` in a tight loop, and the edit page froze
+(this is what hung the Volto 18 Cypress run on its first spec). Drop the
+fallback once Volto 18 is no longer supported.
+
 ## Volto 19 features left out of shadows
 
 These shadows stay on the Volto 18-compatible code, so they miss a Volto 19
@@ -92,9 +103,10 @@ improvement. The effect is limited to Volto 19 sites.
 6. `DefaultView.jsx`: render the fieldsets with `FieldsetView`, as Volto 19
    core does.
 7. Delete `src/helpers/voltoVersion.js` once nothing imports it.
-8. Regenerate the `.diff` files of the touched shadows against the new Volto
+8. `server.jsx`: the `subpathPrefix || ''` fallback can go.
+9. Regenerate the `.diff` files of the touched shadows against the new Volto
    version.
-9. In `volto-eea-website-policy`, the
+10. In `volto-eea-website-policy`, the
    `if (config.experimental?.saveAsDraft)` guard around the autosave flag can
    become a plain assignment.
 
