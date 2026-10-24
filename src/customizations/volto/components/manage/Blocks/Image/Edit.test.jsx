@@ -196,7 +196,7 @@ const blockId = '1234';
  */
 const enabledSettings = {
   enabled: true,
-  features: { image: { enabled: true } },
+  features: { image: { enabled: true, allowed_content_types: ['Image'] } },
 };
 
 const renderEdit = (data, extraProps = {}) => {
@@ -353,6 +353,10 @@ describe('Edit', () => {
 
   it.each([
     null,
+    {
+      enabled: true,
+      features: { image: { enabled: true, allowed_content_types: ['Chart'] } },
+    },
     { enabled: false, features: { image: { enabled: true } } },
     { enabled: true, features: { image: { enabled: false } } },
   ])(
@@ -504,8 +508,38 @@ describe('Edit object-browser selection', () => {
       expect.objectContaining({
         url: TWO_URL,
         alt: '',
-        alt_source: 'image-title',
+        alt_source: 'image-metadata',
         image_title: 'Wetland bird',
+        image_metadata: 'Wetland bird',
+        decorative: false,
+      }),
+    );
+  });
+
+  it('does not leak old image metadata when selecting a different image with empty description', async () => {
+    const cfg = await openBrowser({
+      image_title: 'Old image',
+      image_description: 'Old description',
+      image_metadata: 'Old image: Old description',
+      alt_source: 'image-metadata',
+    });
+
+    cfg.onSelectItem(TWO_URL, {
+      Title: 'New image',
+      Description: '',
+      image_field: 'image',
+      image_scales: { image: [] },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        url: TWO_URL,
+        alt: '',
+        alt_source: 'image-metadata',
+        image_title: 'New image',
+        image_description: '',
+        image_metadata: 'New image',
         decorative: false,
       }),
     );

@@ -1,6 +1,5 @@
 import Api from '@plone/volto/helpers/Api/Api';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
-import { toApiPath } from './toApiPath';
 
 export const IMAGE_AI_ERROR_CODES = [
   'invalid_request',
@@ -8,6 +7,9 @@ export const IMAGE_AI_ERROR_CODES = [
   'image_too_large',
   'invalid_image',
   'image_not_addable',
+  'image_ai_not_allowed',
+  'image_not_editable',
+  'metadata_changed',
   'generation_failed',
 ];
 
@@ -78,12 +80,20 @@ export function imageAIReducer(state, event) {
   }
 }
 
+export function isImageUpload(image) {
+  return image?.encoding === 'base64' && typeof image.data === 'string';
+}
+
 export function isSupportedImage(image) {
   return SUPPORTED_MEDIA_TYPES.has(image?.['content-type']);
 }
 
-export function buildImageMetadataPayload(image, language) {
-  return { image, language: language || 'en' };
+export function buildImageMetadataPayload(
+  image,
+  language,
+  portalType = 'Image',
+) {
+  return { image, language: language || 'en', portal_type: portalType };
 }
 
 export function readImageAIErrorCode(error) {
@@ -91,31 +101,74 @@ export function readImageAIErrorCode(error) {
     error?.response?.body?.error?.code ||
     error?.response?.body?.code ||
     error?.body?.error?.code;
-  return IMAGE_AI_ERROR_CODES.includes(code) ? code : 'generation_failed';
+  if (IMAGE_AI_ERROR_CODES.includes(code)) {
+    return code;
+  }
+  const status = error?.status ?? error?.response?.status;
+  const errorType =
+    error?.response?.body?.error?.type ||
+    error?.response?.body?.type ||
+    error?.body?.error?.type ||
+    error?.body?.type;
+  if (status === 401 || status === 403 || errorType === 'Unauthorized') {
+    return 'image_not_editable';
+  }
+  return 'generation_failed';
 }
 
 export function requestImageMetadata(
   containerUrl,
   image,
   language,
+  portalType = 'Image',
   api = new Api(),
 ) {
-  const path = toApiPath(containerUrl) || flattenToAppURL(containerUrl);
-  return api.post(`${path.replace(/\/$/, '')}/@image-metadata`, {
-    data: buildImageMetadataPayload(image, language),
+  return api.post(`${containerUrl.replace(/\/$/, '')}/@image-metadata`, {
+    data: buildImageMetadataPayload(image, language, portalType),
   });
+}
+
+export function requestImageMetadataRegeneration(
+  contentUrl,
+  field,
+  language,
+  image,
+  api = new Api(),
+) {
+  return api.post(
+    `${contentUrl.replace(/\/$/, '')}/@image-metadata-regenerate`,
+    {
+      data: {
+        field,
+        language: language || 'en',
+        ...(isImageUpload(image) ? { image } : {}),
+      },
+    },
+  );
 }
 
 export function abortImageAIRequest(request) {
   request?.request?.abort?.();
 }
 
-export async function requestImageAlt(imageUrl, language, api = new Api()) {
-  const path = toApiPath(imageUrl);
-  if (!path) throw new Error('Image is not an internal content item');
-  return api.post(`${path.replace(/\/$/, '')}/@image-alt`, {
-    data: { language: language || 'en' },
-  });
+export function isInternalImageURL(url) {
+  const path = typeof url === 'string' ? flattenToAppURL(url) : '';
+  return path.startsWith('/') && !path.startsWith('//');
+}
+
+export function requestImageAlt(imageUrl, language, api = undefined) {
+  try {
+    const client = api === undefined ? new Api() : api;
+    if (!isInternalImageURL(imageUrl)) {
+      throw new Error('Image is not an internal content item');
+    }
+    const path = flattenToAppURL(imageUrl);
+    return client.post(`${path.replace(/\/$/, '')}/@image-alt`, {
+      data: { language: language || 'en' },
+    });
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
 export function normalizeAltText(value) {
@@ -130,15 +183,81 @@ export function altMatchesImageTitle(alt, title) {
   );
 }
 
+export function composeImageMetadata(title, description) {
+  const t = typeof title === 'string' ? title.trim() : '';
+  const d = typeof description === 'string' ? description.trim() : '';
+  if (t && d) return `${t}: ${d}`;
+  return t || d || '';
+}
+
+export function getImageMetadata(data = {}) {
+  return (
+    data.image_metadata ||
+    composeImageMetadata(data.image_title, data.image_description)
+  );
+}
+
 export function effectiveImageAlt(data = {}) {
   if (data.decorative) return '';
   const customAlt =
     typeof data.alt === 'string' && data.alt.trim() ? data.alt : '';
   if (data.alt_source === 'custom' && customAlt) return customAlt;
-  if (data.alt_source === 'image-title' || data.alt_source === 'custom') {
-    return data.image_title || '';
+  const metadata = getImageMetadata(data);
+  if (data.alt_source === 'image-metadata' || data.alt_source === 'custom') {
+    return metadata;
   }
-  return customAlt || data.image_title || '';
+  return customAlt || metadata;
+}
+
+export function deriveAltDisplayState({ blockData = {}, value } = {}) {
+  const blockUrl = blockData.url;
+  const imageMetadata = getImageMetadata(blockData);
+  const normalizedValue = typeof value === 'string' ? value : '';
+  const hasCustomText = normalizedValue.trim() !== '';
+  const altSource =
+    blockData.alt_source || (hasCustomText ? 'custom' : 'image-metadata');
+  const target = isInternalImageURL(blockUrl)
+    ? flattenToAppURL(blockUrl)
+    : null;
+  const customHasValue = altSource === 'custom' && hasCustomText;
+  const effectiveSource =
+    altSource === 'custom' && !customHasValue && imageMetadata
+      ? 'image-metadata'
+      : altSource;
+  const displayedValue =
+    effectiveSource === 'image-metadata' ? imageMetadata : normalizedValue;
+  const showUseMetadata = Boolean(
+    target && imageMetadata && effectiveSource === 'custom',
+  );
+  const showExternalWarning = Boolean(blockUrl && !target && !hasCustomText);
+
+  return {
+    blockUrl,
+    target,
+    imageMetadata,
+    normalizedValue,
+    altSource,
+    customHasValue,
+    effectiveSource,
+    displayedValue,
+    showUseMetadata,
+    showExternalWarning,
+  };
+}
+
+export function applyAltChange({ id, nextAlt, imageMetadata, onChange }) {
+  if (!nextAlt || nextAlt.trim() === '') {
+    onChange(id, '');
+    onChange('alt_source', imageMetadata ? 'image-metadata' : 'custom');
+    return;
+  }
+  if (imageMetadata && altMatchesImageTitle(nextAlt, imageMetadata)) {
+    onChange(id, '');
+    onChange('alt_source', 'image-metadata');
+    return;
+  }
+  onChange(id, nextAlt);
+  onChange('alt_source', 'custom');
 }
 
 export function sameImageReference(left, right) {

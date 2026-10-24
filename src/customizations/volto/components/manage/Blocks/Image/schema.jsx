@@ -29,10 +29,6 @@ const messages = defineMessages({
     id: 'Open in a new tab',
     defaultMessage: 'Open in a new tab',
   },
-  AltTextHint: {
-    id: 'Alt text hint',
-    defaultMessage: 'Clear custom text to use the linked Image title.',
-  },
   AltTextHintLinkText: {
     id: 'Alt text hint link text',
     defaultMessage: 'Describe the purpose of the image.',
@@ -79,9 +75,7 @@ export function ImageSchema({ formData, intl }) {
       alt: {
         title: intl.formatMessage(messages.AltText),
         widget: 'image_alt',
-        description: `${intl.formatMessage(
-          messages.AltTextHintLinkText,
-        )} ${intl.formatMessage(messages.AltTextHint)}`,
+        description: intl.formatMessage(messages.AltTextHintLinkText),
       },
       alt_source: {
         type: 'string',

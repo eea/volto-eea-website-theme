@@ -29,10 +29,11 @@ import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
 import { validateFileUploadSize } from '@plone/volto/helpers//FormValidation/FormValidation';
 import config from '@plone/volto/registry';
 
-import ImageMetadataConsentModal from '@eeacms/volto-eea-website-theme/components/manage/ImageAI/ImageMetadataConsentModal';
-import { isImageAIEnabled } from '@eeacms/volto-eea-website-theme/helpers/genAISettings';
+import ImageMetadataConsentModal from '@eeacms/volto-eea-website-theme/components/manage/Widgets/ImageAI/ImageMetadataConsentModal';
+import { isImageAIAllowed } from '@eeacms/volto-eea-website-theme/helpers/genAISettings';
 import {
   abortImageAIRequest,
+  composeImageMetadata,
   createImageAIState,
   effectiveImageAlt,
   imageAIReducer,
@@ -161,15 +162,21 @@ class Edit extends Component {
         uploading: false,
         imageAI: createImageAIState(),
       });
+      const title = (nextProps.content && nextProps.content.title) || '';
+      const description =
+        (nextProps.content && nextProps.content.description) || '';
+      const metadata = composeImageMetadata(title, description);
       this.props.onChangeBlock(this.props.block, {
         ...this.props.data,
         url: nextProps.content['@id'],
         image_field: 'image',
         image_scales: { image: [nextProps.content.image] },
         alt: '',
-        alt_source: 'image-title',
+        alt_source: 'image-metadata',
         decorative: false,
-        image_title: (nextProps.content && nextProps.content.title) || '',
+        image_title: title,
+        image_description: description,
+        image_metadata: metadata,
       });
     } else if (
       this.props.request.loading &&
@@ -343,21 +350,31 @@ class Edit extends Component {
    */
   onSelectItem = (url, item) => {
     const brainTitle = item.title || item.Title || '';
+    const brainDescription = item.description || item.Description || '';
     const sameImage = sameImageReference(this.props.data.url, url);
     const internal = isInternalURL(url);
+    const title = internal
+      ? brainTitle || (sameImage ? this.props.data.image_title : '')
+      : undefined;
+    const description = internal
+      ? brainDescription || (sameImage ? this.props.data.image_description : '')
+      : undefined;
+    const metadata = internal
+      ? composeImageMetadata(title, description)
+      : undefined;
     this.props.onChangeBlock(this.props.block, {
       ...this.props.data,
       url,
       image_field: item.image_field,
       image_scales: item.image_scales,
-      image_title: internal
-        ? brainTitle || this.props.data.image_title
-        : undefined,
+      image_title: title,
+      image_description: description,
+      image_metadata: metadata,
       ...(sameImage
         ? {}
         : {
             alt: '',
-            alt_source: internal ? 'image-title' : 'custom',
+            alt_source: internal ? 'image-metadata' : 'custom',
             decorative: false,
           }),
     });
@@ -384,6 +401,8 @@ class Edit extends Component {
             alt_source: 'custom',
             decorative: false,
             image_title: undefined,
+            image_description: undefined,
+            image_metadata: undefined,
           }),
     });
   };
@@ -662,7 +681,7 @@ export default compose(
       request: state.content.subrequests[ownProps.block] || {},
       content: state.content.subrequests[ownProps.block]?.data,
       language: state.intl?.locale || 'en',
-      imageAIEnabled: isImageAIEnabled(state),
+      imageAIEnabled: isImageAIAllowed(state, 'Image'),
     }),
     { createContent },
   ),

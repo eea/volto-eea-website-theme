@@ -23,8 +23,8 @@ import { DatetimeWidget } from '@eeacms/volto-eea-website-theme/components/theme
 import CreatableSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatableSelectWidget';
 import UserSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/UserSelectWidget';
 import ImageViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageViewWidget';
-import ImageAltWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ImageAltWidget';
-import ImageAddFileWidget from '@eeacms/volto-eea-website-theme/components/manage/ImageAI/ImageAddFileWidget';
+import ImageAltWidget from '@eeacms/volto-eea-website-theme/components/manage/Widgets/ImageAltWidget/ImageAltWidget';
+import ImageAddFileWidget from '@eeacms/volto-eea-website-theme/components/manage/Widgets/ImageAI/ImageAddFileWidget';
 import CreatorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/CreatorsViewWidget';
 import ContributorsViewWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ContributorsViewWidget';
 import ADUserGroupSelectWidget from '@eeacms/volto-eea-website-theme/components/theme/Widgets/ADUserGroupSelectWidget';
@@ -491,6 +491,7 @@ const applyConfig = (config) => {
   config.widgets.widget.simple_array = SimpleArrayWidget;
   config.widgets.widget.image_alt = ImageAltWidget;
   config.widgets.id.image = ImageAddFileWidget;
+  config.widgets.id.preview_image = ImageAddFileWidget;
   config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
   config.widgets.widget.ad_user_group_select = ADUserGroupSelectWidget;

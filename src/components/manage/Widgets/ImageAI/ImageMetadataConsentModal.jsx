@@ -37,6 +37,20 @@ const messages = defineMessages({
     id: 'Image analysis failed. No Image has been created.',
     defaultMessage: 'Image analysis failed. No Image has been created.',
   },
+  editFailed: {
+    id: 'Image analysis failed. No changes have been saved.',
+    defaultMessage: 'Image analysis failed. No changes have been saved.',
+  },
+  metadataChanged: {
+    id: 'The title or description changed during analysis. Your edits were kept. Retry to generate again.',
+    defaultMessage:
+      'The title or description changed during analysis. Your edits were kept. Retry to generate again.',
+  },
+  notEditable: {
+    id: 'The image or metadata fields are not accessible for editing.',
+    defaultMessage:
+      'The image or metadata fields are not accessible for editing.',
+  },
   invalid: {
     id: 'The selected image could not be analysed safely.',
     defaultMessage: 'The selected image could not be analysed safely.',
@@ -46,8 +60,13 @@ const messages = defineMessages({
     defaultMessage: 'The selected image is too large for AI analysis.',
   },
   notAddable: {
-    id: 'An Image cannot be added at this location.',
-    defaultMessage: 'An Image cannot be added at this location.',
+    id: 'The requested content type cannot be added at this location.',
+    defaultMessage:
+      'The requested content type cannot be added at this location.',
+  },
+  notAllowed: {
+    id: 'Image AI is not allowed for this content type.',
+    defaultMessage: 'Image AI is not allowed for this content type.',
   },
   creationFailed: {
     id: 'The Image could not be created. The generated metadata has been kept for retry.',
@@ -75,6 +94,9 @@ const errorMessages = {
   invalid_image: messages.invalid,
   image_too_large: messages.tooLarge,
   image_not_addable: messages.notAddable,
+  image_ai_not_allowed: messages.notAllowed,
+  image_not_editable: messages.notEditable,
+  metadata_changed: messages.metadataChanged,
   unsupported_media_type: messages.unsupported,
   generation_failed: messages.failed,
 };
@@ -83,6 +105,8 @@ const ImageMetadataConsentModal = ({
   state,
   supported,
   willReplaceMetadata,
+  canUpload = true,
+  editing = false,
   onGenerate,
   onWithoutAI,
   onRetryCreation,
@@ -93,7 +117,7 @@ const ImageMetadataConsentModal = ({
   const analyzing = status === 'analyzing';
   const creating = status === 'creating';
   const open = status !== 'idle' && status !== 'ready';
-  // Analysis is cancellable because no content exists yet. Once creation has
+  // Analysis returns suggestions without saving anything. Once creation has
   // been dispatched, closing the modal cannot reliably prevent that upload.
   const canDismiss = !creating;
 
@@ -140,7 +164,9 @@ const ImageMetadataConsentModal = ({
           <Message
             negative
             content={intl.formatMessage(
-              errorMessages[errorCode] || messages.failed,
+              editing && (!errorCode || errorCode === 'generation_failed')
+                ? messages.editFailed
+                : errorMessages[errorCode] || messages.failed,
             )}
           />
         ) : null}
@@ -156,7 +182,9 @@ const ImageMetadataConsentModal = ({
           <Button type="button" onClick={onCancel}>
             {intl.formatMessage(messages.cancel)}
           </Button>
-          {!analyzing && (status === 'choice' || status === 'failed') ? (
+          {canUpload &&
+          !analyzing &&
+          (status === 'choice' || status === 'failed') ? (
             <Button type="button" onClick={onWithoutAI}>
               {intl.formatMessage(messages.withoutAI)}
             </Button>
@@ -188,6 +216,8 @@ ImageMetadataConsentModal.propTypes = {
   }).isRequired,
   supported: PropTypes.bool.isRequired,
   willReplaceMetadata: PropTypes.bool,
+  canUpload: PropTypes.bool,
+  editing: PropTypes.bool,
   onGenerate: PropTypes.func.isRequired,
   onWithoutAI: PropTypes.func.isRequired,
   onRetryCreation: PropTypes.func,
