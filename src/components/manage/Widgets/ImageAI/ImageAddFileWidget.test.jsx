@@ -1148,5 +1148,83 @@ describe('ImageAddFileWidget', () => {
       const gear = screen.getByRole('button', { name: 'GenAI settings' });
       expect(gear).toBeDisabled();
     });
+
+    it('disables the gear while metadata analysis is in progress', () => {
+      const pending = new Promise(() => {});
+      pending.request = { abort: jest.fn() };
+      mockPost.mockReturnValueOnce(pending);
+      renderWidget({ value: PNG });
+
+      fireEvent.click(screen.getByText('Generate with AI'));
+      const gear = screen.getByRole('button', { name: 'GenAI settings' });
+      expect(gear).toBeDisabled();
+    });
+  });
+
+  describe('morphing cancel button during generation', () => {
+    it('replaces the trigger with a cancel button and keeps no modal during loading', async () => {
+      let resolve;
+      const pending = new Promise((res) => {
+        resolve = res;
+      });
+      const abort = jest.fn();
+      pending.request = { abort };
+      mockPost.mockReturnValueOnce(pending);
+
+      const { onChange } = renderWidget({
+        route: '/folder/photo/edit',
+        value: { download: '/stored' },
+        content: { '@type': 'Image' },
+      });
+
+      fireEvent.click(screen.getByText('Regenerate with AI'));
+      expect(screen.queryByText('Analyzing image…')).not.toBeInTheDocument();
+      expect(document.querySelector('.image-ai-consent-modal')).toBeNull();
+
+      const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+      expect(cancelBtn).toBeVisible();
+      expect(cancelBtn).toHaveAttribute('aria-busy', 'true');
+      expect(cancelBtn.querySelector('.image-ai-spinner')).toBeInTheDocument();
+
+      await act(async () =>
+        resolve({
+          title: 'Resolved Title',
+          description: 'Resolved Description.',
+        }),
+      );
+
+      expect(onChange).toHaveBeenCalledWith('title', 'Resolved Title');
+      expect(onChange).toHaveBeenCalledWith(
+        'description',
+        'Resolved Description.',
+      );
+      expect(screen.getByText('Regenerate with AI')).toBeVisible();
+      expect(
+        screen.queryByRole('button', { name: 'Cancel' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('cancels analysis and reverts the button when cancel is clicked', () => {
+      const abort = jest.fn();
+      const pending = new Promise(() => {});
+      pending.request = { abort };
+      mockPost.mockReturnValueOnce(pending);
+
+      renderWidget({
+        route: '/folder/photo/edit',
+        value: { download: '/stored' },
+        content: { '@type': 'Image' },
+      });
+
+      fireEvent.click(screen.getByText('Regenerate with AI'));
+      const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+      fireEvent.click(cancelBtn);
+
+      expect(abort).toHaveBeenCalledTimes(1);
+      expect(screen.getByText('Regenerate with AI')).toBeVisible();
+      expect(
+        screen.queryByRole('button', { name: 'Cancel' }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

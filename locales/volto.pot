@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2026-10-24T20:58:46.172Z\n"
+"POT-Creation-Date: 2026-10-25T15:39:06.147Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -26,6 +26,11 @@ msgstr ""
 #. Default: "AI generation will replace the current title and description. You can edit the generated values before saving."
 #: components/manage/Widgets/ImageAI/ImageAddFileWidget
 msgid "AI generation will replace the current title and description. You can edit the generated values before saving."
+msgstr ""
+
+#. Default: "AI metadata is unavailable for this image format."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+msgid "AI metadata is unavailable for this image format."
 msgstr ""
 
 #. Default: "AI metadata is unavailable for this image format. You can still upload the image without AI."
@@ -169,16 +174,19 @@ msgid "Hide Children From Navigation"
 msgstr ""
 
 #. Default: "Image AI is not allowed for this content type."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "Image AI is not allowed for this content type."
 msgstr ""
 
 #. Default: "Image analysis failed. No Image has been created."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "Image analysis failed. No Image has been created."
 msgstr ""
 
 #. Default: "Image analysis failed. No changes have been saved."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "Image analysis failed. No changes have been saved."
 msgstr ""
@@ -272,6 +280,7 @@ msgid "Required"
 msgstr ""
 
 #. Default: "Retry"
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 #: components/manage/Widgets/ImageAltWidget/ImageAltWidget
 msgid "Retry"
@@ -340,26 +349,31 @@ msgid "The image is too large for AI alt generation."
 msgstr ""
 
 #. Default: "The image or metadata fields are not accessible for editing."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "The image or metadata fields are not accessible for editing."
 msgstr ""
 
 #. Default: "The requested content type cannot be added at this location."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "The requested content type cannot be added at this location."
 msgstr ""
 
 #. Default: "The selected image could not be analysed safely."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "The selected image could not be analysed safely."
 msgstr ""
 
 #. Default: "The selected image is too large for AI analysis."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "The selected image is too large for AI analysis."
 msgstr ""
 
 #. Default: "The title or description changed during analysis. Your edits were kept. Retry to generate again."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
 #: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
 msgid "The title or description changed during analysis. Your edits were kept. Retry to generate again."
 msgstr ""

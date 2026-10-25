@@ -46,7 +46,72 @@ const messages = defineMessages({
       'AI generation will replace the current title and description. You can edit the generated values before saving.',
   },
   cancel: { id: 'Cancel', defaultMessage: 'Cancel' },
+  retry: { id: 'Retry', defaultMessage: 'Retry' },
+  failed: {
+    id: 'Image analysis failed. No Image has been created.',
+    defaultMessage: 'Image analysis failed. No Image has been created.',
+  },
+  editFailed: {
+    id: 'Image analysis failed. No changes have been saved.',
+    defaultMessage: 'Image analysis failed. No changes have been saved.',
+  },
+  tooLarge: {
+    id: 'The selected image is too large for AI analysis.',
+    defaultMessage: 'The selected image is too large for AI analysis.',
+  },
+  unsupported: {
+    id: 'AI metadata is unavailable for this image format.',
+    defaultMessage: 'AI metadata is unavailable for this image format.',
+  },
+  notEditable: {
+    id: 'The image or metadata fields are not accessible for editing.',
+    defaultMessage:
+      'The image or metadata fields are not accessible for editing.',
+  },
+  notAddable: {
+    id: 'The requested content type cannot be added at this location.',
+    defaultMessage:
+      'The requested content type cannot be added at this location.',
+  },
+  notAllowed: {
+    id: 'Image AI is not allowed for this content type.',
+    defaultMessage: 'Image AI is not allowed for this content type.',
+  },
+  metadataChanged: {
+    id: 'The title or description changed during analysis. Your edits were kept. Retry to generate again.',
+    defaultMessage:
+      'The title or description changed during analysis. Your edits were kept. Retry to generate again.',
+  },
+  invalid: {
+    id: 'The selected image could not be analysed safely.',
+    defaultMessage: 'The selected image could not be analysed safely.',
+  },
 });
+
+const getGenerationErrorMessage = (code, isEditing, intl) => {
+  if (code === 'unsupported_media_type') {
+    return intl.formatMessage(messages.unsupported);
+  }
+  if (code === 'image_too_large') {
+    return intl.formatMessage(messages.tooLarge);
+  }
+  if (code === 'image_not_editable') {
+    return intl.formatMessage(messages.notEditable);
+  }
+  if (code === 'metadata_changed') {
+    return intl.formatMessage(messages.metadataChanged);
+  }
+  if (code === 'image_ai_not_allowed') {
+    return intl.formatMessage(messages.notAllowed);
+  }
+  if (code === 'image_not_addable') {
+    return intl.formatMessage(messages.notAddable);
+  }
+  if (code === 'invalid_request' || code === 'invalid_image') {
+    return intl.formatMessage(messages.invalid);
+  }
+  return intl.formatMessage(isEditing ? messages.editFailed : messages.failed);
+};
 
 const idleWorkflow = { status: 'idle', source: null, errorCode: null };
 
@@ -262,11 +327,13 @@ const ImageAddFileWidget = (props) => {
     }
   };
 
+  const isAnalyzing = workflow.status === 'analyzing';
   const generationMessage =
     !isAdd || metadataGenerated ? messages.regenerate : messages.generate;
+  const triggerTextMessage = isAnalyzing ? messages.cancel : generationMessage;
   const isUnsupportedValue =
     Boolean(value?.['content-type']) && !isSupportedImage(value);
-  const isActionDisabled = isReadOnly || isUnsupportedValue;
+  const isActionDisabled = isReadOnly || (!isAnalyzing && isUnsupportedValue);
   const scopeNoteId = `field-${id}-ai-scope`;
 
   return (
@@ -295,18 +362,45 @@ const ImageAddFileWidget = (props) => {
                   },
                 )}
                 disabled={isActionDisabled}
-                aria-busy={workflow.status === 'analyzing'}
+                aria-busy={isAnalyzing}
                 aria-describedby={scopeNoteId}
-                onClick={requestRegeneration}
+                onClick={isAnalyzing ? cancel : requestRegeneration}
               >
-                <Icon name={genaiSVG} size="14px" ariaHidden={true} />
-                <span>{intl.formatMessage(generationMessage)}</span>
+                {isAnalyzing ? (
+                  <span className="image-ai-spinner" aria-hidden="true" />
+                ) : (
+                  <Icon name={genaiSVG} size="14px" ariaHidden={true} />
+                )}
+                <span>{intl.formatMessage(triggerTextMessage)}</span>
               </button>
               <GenAISettings
-                isDisabled={isReadOnly || workflow.status === 'analyzing'}
+                isDisabled={isReadOnly || isAnalyzing}
                 className="image-ai-settings-button"
               />
             </div>
+            {workflow.status === 'failed' &&
+              workflow.source?.kind === 'currentValue' && (
+                <div
+                  className="image-ai-feedback image-ai-feedback-error"
+                  role="alert"
+                >
+                  <span className="image-ai-error-text">
+                    {getGenerationErrorMessage(
+                      workflow.errorCode,
+                      !isAdd,
+                      intl,
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    className="image-ai-link-button image-ai-retry-button"
+                    disabled={isReadOnly}
+                    onClick={() => startAnalysis(workflowRef.current.source)}
+                  >
+                    {intl.formatMessage(messages.retry)}
+                  </button>
+                </div>
+              )}
             <p id={scopeNoteId} className="image-ai-file-scope">
               {intl.formatMessage(messages.scopeNote)}
             </p>
@@ -314,7 +408,9 @@ const ImageAddFileWidget = (props) => {
         ) : null}
         <ImageMetadataConsentModal
           state={
-            isReadOnly || workflow.status === 'confirming'
+            isReadOnly ||
+            workflow.status === 'confirming' ||
+            workflow.source?.kind === 'currentValue'
               ? idleWorkflow
               : workflow
           }
