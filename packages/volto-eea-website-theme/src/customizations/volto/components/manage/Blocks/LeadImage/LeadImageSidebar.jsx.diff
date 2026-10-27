@@ -1,6 +1,6 @@
 --- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Blocks/LeadImage/LeadImageSidebar.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/LeadImage/LeadImageSidebar.jsx
-@@ -1,77 +1,31 @@
+@@ -1,77 +1,32 @@
 -import React, { useState } from 'react';
 +import React, { useEffect } from 'react';
  import PropTypes from 'prop-types';
@@ -10,7 +10,7 @@
 +import { Segment } from 'semantic-ui-react';
 +import { FormattedMessage, injectIntl } from 'react-intl';
  import Icon from '@plone/volto/components/theme/Icon/Icon';
--import Image from '@plone/volto/components/theme/Image/Image';
+ import Image from '@plone/volto/components/theme/Image/Image';
 -import {
 -  CheckboxWidget,
 -  TextWidget,
@@ -99,7 +99,7 @@
    return (
      <Segment.Group raised>
        <header className="header pulled">
-@@ -95,116 +49,29 @@
+@@ -95,116 +50,28 @@
          <>
            <Segment className="sidebar-metadata-container" secondary>
              {properties.image.filename}
@@ -137,8 +137,7 @@
 -              onChange={(name, value) => {
 -                onChangeField('image_caption', value);
 -              }}
-+            {/* eslint-disable-next-line no-restricted-syntax */}
-+            <img
++            <Image
 +              src={
 +                properties.image.data
 +                  ? `data:${properties.image['content-type']};base64,${properties.image.data}`

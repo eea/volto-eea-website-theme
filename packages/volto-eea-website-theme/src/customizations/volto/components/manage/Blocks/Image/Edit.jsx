@@ -385,8 +385,7 @@ class Edit extends Component {
                           </Dimmer>
                         )}
                         <div className="no-image-wrapper">
-                          {/* eslint-disable-next-line no-restricted-syntax */}
-                          <img src={imageBlockSVG} alt="" />
+                          <Image src={imageBlockSVG} alt="" />
                           <div className="toolbar-inner">
                             <Button.Group>
                               <Button

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Segment } from 'semantic-ui-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
+import Image from '@plone/volto/components/theme/Image/Image';
 import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
 import { LeadImageSchema } from './schema';
@@ -49,8 +50,7 @@ const LeadImageSidebar = ({ properties, data, block, onChangeBlock, intl }) => {
         <>
           <Segment className="sidebar-metadata-container" secondary>
             {properties.image.filename}
-            {/* eslint-disable-next-line no-restricted-syntax */}
-            <img
+            <Image
               src={
                 properties.image.data
                   ? `data:${properties.image['content-type']};base64,${properties.image.data}`

@@ -1,6 +1,6 @@
 --- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Header/LanguageSwitcher.jsx
-@@ -0,0 +1,97 @@
+@@ -0,0 +1,99 @@
 +import React from 'react';
 +import { useSelector } from 'react-redux';
 +import { Dropdown, Image } from 'semantic-ui-react';
@@ -9,6 +9,7 @@
 +import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 +import config from '@plone/volto/registry';
 +import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
++import { getDefaultLanguage } from '@eeacms/volto-eea-website-theme/helpers/multilingual';
 +
 +/**
 + * LanguageSwitcher component.
@@ -24,6 +25,7 @@
 +  const translations = useSelector(
 +    (state) => state.content.data?.['@components']?.translations?.items,
 +  );
++  const defaultLanguage = useSelector(getDefaultLanguage);
 +  const { eea } = config.settings;
 +
 +  // Extract language from pathname instead of state.intl.locale
@@ -38,8 +40,8 @@
 +        return langCode;
 +      }
 +    }
-+    return config.settings.defaultLanguage || 'en';
-+  }, [pathname, eea.languages]);
++    return defaultLanguage;
++  }, [pathname, eea.languages, defaultLanguage]);
 +
 +  const [language, setLanguage] = React.useState(langFromPath);
 +

@@ -308,7 +308,7 @@
        <div
          className={cx(
            'block image align',
-@@ -48,61 +286,215 @@
+@@ -48,61 +286,214 @@
            data.align,
          )}
        >
@@ -459,8 +459,7 @@
 +                          </Dimmer>
 +                        )}
 +                        <div className="no-image-wrapper">
-+                          {/* eslint-disable-next-line no-restricted-syntax */}
-+                          <img src={imageBlockSVG} alt="" />
++                          <Image src={imageBlockSVG} alt="" />
 +                          <div className="toolbar-inner">
 +                            <Button.Group>
 +                              <Button

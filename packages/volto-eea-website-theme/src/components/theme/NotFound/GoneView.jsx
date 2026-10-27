@@ -11,6 +11,7 @@ import { withServerErrorCode } from '@plone/volto/helpers/Utils/Utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNavigation } from '@plone/volto/actions/navigation/navigation';
 import config from '@plone/volto/registry';
+import { getIsMultilingual } from '@eeacms/volto-eea-website-theme/helpers/multilingual';
 
 /**
  * Gone view function.
@@ -34,15 +35,16 @@ const GoneView = () => {
   }, [location]);
 
   const lang = useSelector((state) => state.intl.locale);
+  const isMultilingual = useSelector(getIsMultilingual);
 
   useEffect(() => {
     dispatch(
       getNavigation(
-        config.settings.isMultilingual ? `/${toBackendLang(lang)}` : '/',
+        isMultilingual ? `/${toBackendLang(lang)}` : '/',
         config.settings.navDepth,
       ),
     );
-  }, [dispatch, lang]);
+  }, [dispatch, lang, isMultilingual]);
 
   return (
     <Container className="view-wrapper">

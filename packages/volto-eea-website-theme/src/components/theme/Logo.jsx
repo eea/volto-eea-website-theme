@@ -2,6 +2,10 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import config from '@plone/volto/registry';
+import {
+  getDefaultLanguage,
+  getIsMultilingual,
+} from '@eeacms/volto-eea-website-theme/helpers/multilingual';
 
 import Logo from '@eeacms/volto-eea-design-system/ui/Logo/Logo';
 import LogoImage from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/logo/eea-logo.svg';
@@ -43,18 +47,20 @@ const EEALogo = ({
   const intl = useIntl();
   const pathname =
     useSelector((state) => state.router?.location?.pathname) || '/';
+  const isMultilingual = useSelector(getIsMultilingual);
+  const defaultLanguage = useSelector(getDefaultLanguage);
   const lang = React.useMemo(() => {
     const pathParts = pathname.split('/').filter(Boolean);
     // First segment is language code in multilingual sites
     if (pathParts.length > 0 && pathParts[0].length === 2) {
       return pathParts[0];
     }
-    return config.settings.defaultLanguage || 'en';
-  }, [pathname]);
+    return defaultLanguage;
+  }, [pathname, defaultLanguage]);
 
   const url = config.settings.eea?.logoTargetUrl
     ? config.settings.eea.logoTargetUrl
-    : config.settings.isMultilingual
+    : isMultilingual
       ? `/${lang}`
       : '/';
 

@@ -50,6 +50,21 @@ const modify = (config, { target, dev }, webpack) => {
   );
   alias['redux-localstorage-simple$'] = conditionalLocalStoragePath;
 
+  // The shadows import modules that only exist in Volto 19. On Volto 18 point
+  // them to local fallbacks, ahead of the `@plone/volto` alias. Remove once
+  // Volto 18 is no longer supported.
+  const voltoVersion = require(
+    path.join(alias['@plone/volto'], '../package.json'),
+  ).version;
+  if (voltoVersion.startsWith('18.')) {
+    const volto18Path = path.resolve(__dirname, './src/components/volto18');
+    config.resolve.alias = {
+      '@plone/volto/components/manage/Blocks/Grid/context$': `${volto18Path}/GridContext`,
+      '@plone/volto/components/theme/FieldsetView/FieldsetView$': `${volto18Path}/FieldsetView`,
+      ...alias,
+    };
+  }
+
   return config;
 };
 

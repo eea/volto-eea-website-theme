@@ -6,6 +6,7 @@ import find from 'lodash/find';
 import globeIcon from '@eeacms/volto-eea-design-system/../theme/themes/eea/assets/images/Header/global-line.svg';
 import config from '@plone/volto/registry';
 import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
+import { getDefaultLanguage } from '@eeacms/volto-eea-website-theme/helpers/multilingual';
 
 /**
  * LanguageSwitcher component.
@@ -21,6 +22,7 @@ const LanguageSwitcher = ({ width, history }) => {
   const translations = useSelector(
     (state) => state.content.data?.['@components']?.translations?.items,
   );
+  const defaultLanguage = useSelector(getDefaultLanguage);
   const { eea } = config.settings;
 
   // Extract language from pathname instead of state.intl.locale
@@ -35,8 +37,8 @@ const LanguageSwitcher = ({ width, history }) => {
         return langCode;
       }
     }
-    return config.settings.defaultLanguage || 'en';
-  }, [pathname, eea.languages]);
+    return defaultLanguage;
+  }, [pathname, eea.languages, defaultLanguage]);
 
   const [language, setLanguage] = React.useState(langFromPath);
 

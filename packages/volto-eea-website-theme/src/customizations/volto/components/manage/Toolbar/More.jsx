@@ -21,6 +21,7 @@ import {
 import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { usePrevious } from '@plone/volto/helpers/Utils/usePrevious';
 import config from '@plone/volto/registry';
+import { getIsMultilingual } from '@eeacms/volto-eea-website-theme/helpers/multilingual';
 import rightArrowSVG from '@plone/volto/icons/right-key.svg';
 import userSVG from '@plone/volto/icons/user.svg';
 import applySVG from '@plone/volto/icons/ready.svg';
@@ -119,10 +120,7 @@ const More = (props) => {
 
   const content = useSelector((state) => state.content?.data, shallowEqual);
   const workingCopy = useSelector((state) => state.workingCopy, shallowEqual);
-  const isMultilingual = useSelector(
-    (state) =>
-      state.site.data.features?.multilingual ?? config.settings.isMultilingual,
-  );
+  const isMultilingual = useSelector(getIsMultilingual);
 
   const actions = useSelector((state) => state.actions.actions, shallowEqual);
 

@@ -51,6 +51,7 @@ import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
 import { print, navigationSettings, formUI } from './reducers';
 import { headerSettingsExtender } from './helpers/headerSettingsExtender';
+import { isVolto18 } from './helpers/voltoVersion';
 
 import * as eea from './config';
 
@@ -168,8 +169,11 @@ const applyConfig = (config) => {
     ...eea,
     ...(config.settings.eea || {}),
   };
-  config.settings.defaultLanguage =
-    config.settings.defaultLanguage || eea.defaultLanguage;
+  // Volto 19 reads the default language from the backend `@site` endpoint
+  if (isVolto18) {
+    config.settings.defaultLanguage =
+      config.settings.defaultLanguage || eea.defaultLanguage;
+  }
 
   //include site title in <title>
   if (!config.settings.siteTitleFormat) {

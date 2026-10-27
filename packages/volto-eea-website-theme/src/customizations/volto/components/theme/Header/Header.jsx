@@ -22,6 +22,7 @@ import Header from '@eeacms/volto-eea-design-system/ui/Header/Header';
 import { getNavigationSettings } from '@eeacms/volto-eea-website-theme/actions';
 import EEALogo from '@eeacms/volto-eea-website-theme/components/theme/Logo';
 import SubsiteMainLogo from '@eeacms/volto-eea-website-theme/components/theme/SubsiteMainLogo';
+import { getIsMultilingual } from '@eeacms/volto-eea-website-theme/helpers/multilingual';
 import {
   shouldHideSubsiteTopHeader,
   shouldUseSubsiteMainLogo,
@@ -99,6 +100,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
   // Redux state
   const dispatch = useDispatch();
   const width = useSelector((state) => state.screen?.width);
+  const isMultilingual = useSelector(getIsMultilingual);
 
   const router_pathname = useSelector(
     (state) => removeTrailingSlash(state.router?.location?.pathname) || '',
@@ -302,7 +304,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
             </Header.TopItem>
           )}
 
-          {config.settings.isMultilingual &&
+          {isMultilingual &&
             config.settings.supportedLanguages.length > 1 &&
             config.settings.hasLanguageDropdown && (
               <LazyLanguageSwitcher width={width} history={history} />
@@ -311,7 +313,7 @@ const EEAHeader = ({ pathname, token, items, history, navroot, subsite }) => {
       )}
       <Header.Main
         pathname={normalizedPathname}
-        isMultilingual={config.settings.isMultilingual}
+        isMultilingual={isMultilingual}
         headerSearchBox={headerSearchBox}
         inverted={isHomePageInverse ? true : false}
         transparency={isHomePageInverse ? true : false}

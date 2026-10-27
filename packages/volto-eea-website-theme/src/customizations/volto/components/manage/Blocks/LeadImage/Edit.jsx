@@ -111,16 +111,14 @@ class Edit extends Component {
           {!hasImage && (
             <Message>
               <center>
-                {/* eslint-disable-next-line no-restricted-syntax */}
-                <img src={imageBlockSVG} alt="" />
+                <Image src={imageBlockSVG} alt="" />
                 <div className="message-text">{placeholder}</div>
               </center>
             </Message>
           )}
           {hasImage && hasImageData && (
             <div className="image-block">
-              {/* eslint-disable-next-line no-restricted-syntax */}
-              <img
+              <Image
                 className={(className, data?.styles?.objectPosition)}
                 src={`data:${properties.image['content-type']};base64,${properties.image.data}`}
                 width={properties.image.width}
