@@ -1,6 +1,17 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-intl-redux';
+import configureStore from 'redux-mock-store';
 import ImageViewWidget from './ImageViewWidget';
+
+const mockStore = configureStore();
+const store = mockStore({
+  intl: {
+    locale: 'en',
+    messages: {},
+  },
+  site: { data: {} },
+});
 
 describe('ImageViewWidget', () => {
   it('renders img with correct src and alt', () => {
@@ -9,18 +20,24 @@ describe('ImageViewWidget', () => {
       filename: 'example.jpg',
     };
 
-    render(<ImageViewWidget value={mockValue} />);
+    render(
+      <Provider store={store}>
+        <ImageViewWidget value={mockValue} />
+      </Provider>,
+    );
 
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', mockValue.download);
     expect(img).toHaveAttribute('alt', mockValue.filename);
   });
 
-  it('does not render src or alt when value is null', () => {
-    render(<ImageViewWidget value={null} />);
+  it('renders nothing when value is null', () => {
+    const { container } = render(
+      <Provider store={store}>
+        <ImageViewWidget value={null} />
+      </Provider>,
+    );
 
-    const img = screen.getByRole('img');
-    expect(img).not.toHaveAttribute('src');
-    expect(img).not.toHaveAttribute('alt');
+    expect(container).toBeEmptyDOMElement();
   });
 });

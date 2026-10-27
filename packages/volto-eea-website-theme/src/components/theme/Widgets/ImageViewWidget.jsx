@@ -1,4 +1,11 @@
+import Image from '@plone/volto/components/theme/Image/Image';
+import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
+
 export default function ImageViewWidget({ value }) {
-  // eslint-disable-next-line no-restricted-syntax
-  return <img src={value?.download} alt={value?.filename} />;
+  return (
+    <Image
+      src={flattenToAppURL(value?.download || '')}
+      alt={value?.filename || ''}
+    />
+  );
 }
