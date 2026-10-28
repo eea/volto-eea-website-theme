@@ -1,0 +1,160 @@
+--- volto-19.5.0/packages/volto/src/server.jsx
++++ volto-eea-website-theme/src/customizations/volto/server.jsx
+@@ -16,6 +16,7 @@
+ import { CookiesProvider } from 'react-cookie';
+ import cookiesMiddleware from 'universal-cookie-express';
+ import debug from 'debug';
++import crypto from 'crypto';
+ 
+ import routes from '@plone/volto/routes';
+ import config from '@plone/volto/registry';
+@@ -45,6 +46,7 @@
+ } from '@plone/volto/helpers/AsyncConnect';
+ 
+ let locales = {};
++const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
+ 
+ // Load locales listed in supportedLanguages setting
+ if (config.settings) {
+@@ -68,6 +70,7 @@
+ 
+ const server = express()
+   .disable('x-powered-by')
++  .set('etag', false)
+   .head('/*', function (req, res) {
+     // Support for HEAD requests. Required by start-test utility in CI.
+     res.send('');
+@@ -102,12 +105,22 @@
+ server.use(function (err, req, res, next) {
+   if (err) {
+     const { store } = res.locals;
+-    const errorPage = (
++    const ErrorComponent =
++      config.getComponent('ErrorBoundary')?.component || null;
++    const errorPage = store ? (
+       <Provider store={store} onError={reactIntlErrorHandler}>
+         <StaticRouter context={{}} location={req.url}>
+-          <ErrorPage message={err.message} />
++          {ErrorComponent ? (
++            <ErrorComponent error={err} />
++          ) : (
++            <ErrorPage message={err.message} />
++          )}
+         </StaticRouter>
+       </Provider>
++    ) : (
++      <StaticRouter context={{}} location={req.url}>
++        <ErrorPage message={err.message} />
++      </StaticRouter>
+     );
+ 
+     res.set({
+@@ -118,7 +131,7 @@
+      * TODO:
+      * - get ignored codes from Plone error_log
+      */
+-    const ignoredErrors = [301, 302, 401, 404];
++    const ignoredErrors = [301, 302, 401, 404, 410];
+     if (!ignoredErrors.includes(err.status)) console.error(err);
+ 
+     res
+@@ -127,7 +140,25 @@
+   }
+ });
+ 
++function buildCSPHeader(options, nonce) {
++  if (typeof options === 'string') {
++    return options.replaceAll('{nonce}', `'nonce-${nonce}'`);
++  }
++
++  return Object.keys(options)
++    .sort()
++    .map(
++      (key) =>
++        `${key} ${options[key].replaceAll('{nonce}', `'nonce-${nonce}'`)}`,
++    )
++    .join('; ');
++}
++
+ function setupServer(req, res, next) {
++  if (isCSP) {
++    res.locals.nonce = crypto.randomBytes(16).toString('base64');
++  }
++
+   const api = new Api(req);
+ 
+   const lang = toReactIntlLang(
+@@ -157,10 +188,16 @@
+   const store = configureStore(initialState, history, api);
+ 
+   function errorHandler(error) {
++    const ErrorComponent =
++      config.getComponent('ErrorBoundary')?.component || null;
+     const errorPage = (
+       <Provider store={store} onError={reactIntlErrorHandler}>
+         <StaticRouter context={{}} location={req.url}>
+-          <ErrorPage message={error.message} />
++          {ErrorComponent ? (
++            <ErrorComponent error={error} />
++          ) : (
++            <ErrorPage message={error.message} />
++          )}
+         </StaticRouter>
+       </Provider>
+     );
+@@ -173,7 +210,7 @@
+      * TODO:
+      * - get ignored codes from Plone error_log
+      */
+-    const ignoredErrors = [301, 302, 401, 404];
++    const ignoredErrors = [301, 302, 401, 404, 410];
+     if (!ignoredErrors.includes(error.status)) console.error(error);
+ 
+     res
+@@ -185,10 +222,11 @@
+     res.locals.detectedHost = `${
+       req.headers['x-forwarded-proto'] || req.protocol
+     }://${req.headers.host}`;
+-    config.settings.apiPath =
+-      res.locals.detectedHost + config.settings.subpathPrefix;
+-    config.settings.publicURL =
+-      res.locals.detectedHost + config.settings.subpathPrefix;
++    // Volto 18 does not define `settings.subpathPrefix`; without the fallback
++    // the client gets an `...undefined` apiPath and every API request fails.
++    const subpathPrefix = config.settings.subpathPrefix || '';
++    config.settings.apiPath = res.locals.detectedHost + subpathPrefix;
++    config.settings.publicURL = res.locals.detectedHost + subpathPrefix;
+   }
+ 
+   res.locals = {
+@@ -202,8 +240,12 @@
+ }
+ 
+ server.get('/*', (req, res) => {
+-  const { errorHandler } = res.locals;
++  const { errorHandler, nonce } = res.locals;
+ 
++  if (isCSP) {
++    res.setHeader('Content-Security-Policy', buildCSPHeader(isCSP, nonce));
++  }
++
+   const api = new Api(req);
+ 
+   const browserdetect = detect(req.headers['user-agent']);
+@@ -217,7 +259,7 @@
+       .toString(),
+   );
+ 
+-  const authToken = req.universalCookies.get('auth_token'); // betterleaks:allow
++  const authToken = req.universalCookies.get('auth_token'); // betterleaks:allow
+   const initialState = {
+     userSession: { ...userSession(), token: authToken },
+     form: req.body,
+@@ -342,6 +384,7 @@
+         ${renderToString(
+           <Html
+             extractor={extractor}
++            nonce={nonce}
+             markup={markup}
+             store={store}
+             criticalCss={readCriticalCss(req)}

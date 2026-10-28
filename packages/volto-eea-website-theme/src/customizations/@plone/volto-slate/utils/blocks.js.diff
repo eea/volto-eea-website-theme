@@ -1,0 +1,103 @@
+--- volto-19.5.0/packages/volto-slate/src/utils/blocks.js
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/blocks.js
+@@ -6,12 +6,24 @@
+   getBlocksLayoutFieldname,
+ } from '@plone/volto/helpers/Blocks/Blocks';
+ import find from 'lodash/find';
++import first from 'lodash/first';
+ import includes from 'lodash/includes';
+ import some from 'lodash/some';
+-import first from 'lodash/first';
+-import { makeEditor } from './editor';
+-import { safeEditorNodes } from './safe.js';
++import { makeEditor } from '@plone/volto-slate/utils/editor';
+ 
++const safeEditorNodes = (editor, options) => {
++  try {
++    return Array.from(Editor.nodes(editor, options));
++  } catch (error) {
++    console.warn('safeEditorNodes: selection invalid or out of bounds:', {
++      options,
++      selection: editor.selection,
++      error,
++    });
++    return [];
++  }
++};
++
+ // case sensitive; first in an inner array is the default and preffered format
+ // in that array of formats
+ const formatAliases = [
+@@ -73,27 +85,20 @@
+ 
+ export const normalizeExternalData = (editor, nodes) => {
+   let fakeEditor = makeEditor({ extensions: editor._installedPlugins });
+-  fakeEditor.children = nodes;
+-  // put all the non-blocks (e.g. images which are inline Elements) inside p-s
+-  Editor.withoutNormalizing(fakeEditor, () => {
+-    //for htmlSlateWidget compatibility
+-    if (
+-      nodes &&
+-      (!Editor.isBlock(fakeEditor, nodes[0]) || Text.isText(nodes[0]))
+-    )
+-      Transforms.wrapNodes(
+-        fakeEditor,
+-        { type: 'p' },
+-        {
+-          at: [],
+-          match: (node, path) =>
+-            (!Editor.isEditor(node) && !Editor.isBlock(fakeEditor, node)) ||
+-            fakeEditor.isInline(node) ||
+-            Text.isText(node),
+-          mode: 'highest',
+-        },
+-      );
+-  });
++  // set the nodes to the fakeEditor
++  let currentIndex = 0;
++  fakeEditor.children = nodes.reduce((nodes, node) => {
++    if (Editor.isBlock(fakeEditor, node) && !!node.type) {
++      nodes.push(node);
++      currentIndex++;
++      return nodes;
++    }
++    if (!nodes[currentIndex]) {
++      nodes[currentIndex] = { type: 'p', children: [] };
++    }
++    nodes[currentIndex].children.push(node);
++    return nodes;
++  }, []);
+ 
+   Editor.normalize(fakeEditor, { force: true });
+ 
+@@ -268,7 +273,7 @@
+   } else if (!isListItem && !wantsList) {
+     toggleFormat(editor, format, allowedChildren);
+   } else if (isListItem && wantsList && isActive) {
+-    clearList(editor);
++    clearFormatting(editor);
+   } else {
+     console.warn('toggleBlock case not covered, please examine:', {
+       wantsList,
+@@ -302,21 +307,6 @@
+   Transforms.wrapNodes(editor, block);
+ };
+ 
+-/*
+- * Clear list by exploding the block
+- */
+-export const clearList = (editor) => {
+-  const { slate } = config.settings;
+-  Transforms.unwrapNodes(editor, {
+-    match: (n) => slate.listTypes.includes(n.type),
+-    split: true,
+-  });
+-  Transforms.setNodes(editor, {
+-    type: 'p',
+-  });
+-  Editor.normalize(editor);
+-};
+-
+ export const changeBlockToList = (editor, format) => {
+   const { slate } = config.settings;
+   const [match] = Editor.nodes(editor, {

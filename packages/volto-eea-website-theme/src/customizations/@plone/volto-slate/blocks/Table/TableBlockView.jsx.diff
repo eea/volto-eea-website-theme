@@ -1,0 +1,28 @@
+--- volto-19.5.0/packages/volto-slate/src/blocks/Table/TableBlockView.jsx
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Table/TableBlockView.jsx
+@@ -49,6 +49,7 @@
+               cell.value && Node.string({ children: cell.value }).length > 0
+                 ? serializeNodesToText(cell.value)
+                 : '\u00A0',
++            align: cell.value?.[0]?.align || 'left',
+           };
+         });
+       }
+@@ -105,7 +106,7 @@
+                   {headers.map((cell, index) => (
+                     <Table.HeaderCell
+                       key={cell.key}
+-                      textAlign="left"
++                      textAlign={cell.value?.[0]?.align || 'left'}
+                       verticalAlign="middle"
+                       tabIndex={data.table.sortable ? '0' : '-1'}
+                       sorted={state.column === index ? state.direction : null}
+@@ -139,7 +140,7 @@
+                   {map(rows[row], (cell) => (
+                     <Table.Cell
+                       key={cell.key}
+-                      textAlign="left"
++                      textAlign={cell.align}
+                       verticalAlign="middle"
+                     >
+                       {cell.value}

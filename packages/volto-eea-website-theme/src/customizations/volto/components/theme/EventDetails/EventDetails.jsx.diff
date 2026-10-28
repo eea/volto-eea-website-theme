@@ -1,0 +1,22 @@
+--- volto-19.5.0/packages/volto/src/components/theme/EventDetails/EventDetails.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/EventDetails/EventDetails.jsx
+@@ -6,7 +6,7 @@
+   Recurrence,
+ } from '@plone/volto/components/theme/View/EventDatesInfo';
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+-import { flattenToAppURL } from '@plone/volto/helpers/Url/Url';
++import { expandToBackendURL } from '@plone/volto/helpers/Url/Url';
+ 
+ import calendarSVG from '@plone/volto/icons/calendar.svg';
+ 
+@@ -146,8 +146,8 @@
+         <a
+           className="ics-download"
+           target="_blank"
+-          rel="noreferrer"
+-          href={`${flattenToAppURL(content['@id'])}/ics_view`}
++          href={`${expandToBackendURL(content['@id'])}/ics_view`}
++          rel="noopener noreferrer"
+         >
+           {intl.formatMessage(messages.downloadEvent)}
+         </a>

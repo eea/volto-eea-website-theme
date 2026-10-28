@@ -1,0 +1,30 @@
+# ContentsItem.jsx customization
+
+This customization shadows Volto core's
+`src/components/manage/Contents/ContentsItem.jsx`.
+
+Volto 19 replaced react-dnd with dnd-kit in the contents view, and each
+version's `Contents.jsx` only provides the drag-and-drop context of its own
+library. The shadow therefore only picks, from the Volto version, one of two
+copies of the core component with the same EEA changes:
+
+- `components/manage/Contents/ContentsItemDndKit.jsx`, based on `@plone/volto`
+  19.5.0 (dnd-kit). `ContentsItem.jsx.diff` shows its changes against core.
+- `components/manage/Contents/ContentsItemReactDnd.jsx`, based on
+  `@plone/volto` 18.36.0 (react-dnd). Drop it, and the version switch, once
+  Volto 18 is no longer supported.
+
+The functional changes are limited to the contents table item link:
+
+- The expired and scheduled date checks are computed once per render as
+  `isExpired` and `isScheduled`, then reused by the badge rendering.
+- The title wrapper and title text are allowed to shrink with flexbox
+  (`flex: '1 1 auto'` and `minWidth: 0`), while the status badges keep their
+  intrinsic width with `flexShrink: 0`.
+
+The goal is to avoid title text colliding with the `Expired` or `Scheduled`
+badges without hardcoding a pixel width for the title.
+
+When upgrading Volto, compare the new core component with this override and
+refresh `ContentsItem.jsx.diff` if upstream changed around the contents item
+title or badge rendering.

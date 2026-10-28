@@ -1,0 +1,37 @@
+--- volto-19.5.0/packages/volto/src/components/theme/View/DefaultView.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/View/DefaultView.jsx
+@@ -17,6 +17,7 @@
+ import { useDispatch, useSelector } from 'react-redux';
+ 
+ import isEqual from 'lodash/isEqual';
++import ContextNavigationInjector from '@eeacms/volto-eea-website-theme/components/theme/ContextNavigation/ContextNavigationInjector';
+ 
+ /**
+  * Component to display the default view.
+@@ -26,6 +27,7 @@
+  */
+ const DefaultView = (props) => {
+   const { content, location } = props;
++
+   const path = getBaseUrl(location?.pathname || '');
+   const dispatch = useDispatch();
+   const contentSchema = useSelector((state) => state.schema?.schema);
+@@ -59,12 +61,14 @@
+   const Container =
+     config.getComponent({ name: 'Container' }).component || SemanticContainer;
+ 
+-  // If the content is not yet loaded, then do not show anything
+   return contentLoaded ? (
+     hasBlocksData(content) ? (
+-      <Container id="page-document">
+-        <RenderBlocks {...props} path={path} />
+-      </Container>
++      <>
++        <Container id="page-document">
++          <RenderBlocks {...props} path={path} />
++        </Container>
++        <ContextNavigationInjector content={content} location={location} />
++      </>
+     ) : (
+       <Container id="page-document">
+         {fieldsets?.map((fs) => (

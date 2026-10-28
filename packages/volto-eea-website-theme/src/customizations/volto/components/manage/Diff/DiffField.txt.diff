@@ -1,0 +1,4 @@
+--- volto-19.5.0/NO_UPSTREAM_FILE
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Diff/DiffField.txt
+@@ -0,0 +1 @@
++Customize DiffField.jsx from @plone/volto 17.21.0. See https://taskman.eionet.europa.eu/issues/281229

@@ -1,0 +1,76 @@
+--- volto-19.5.0/packages/volto/src/components/manage/Toolbar/More.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Toolbar/More.jsx
+@@ -21,6 +21,7 @@
+ import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
+ import { usePrevious } from '@plone/volto/helpers/Utils/usePrevious';
+ import config from '@plone/volto/registry';
++import { getIsMultilingual } from '@eeacms/volto-eea-website-theme/helpers/multilingual';
+ import rightArrowSVG from '@plone/volto/icons/right-key.svg';
+ import userSVG from '@plone/volto/icons/user.svg';
+ import applySVG from '@plone/volto/icons/ready.svg';
+@@ -119,9 +120,7 @@
+ 
+   const content = useSelector((state) => state.content?.data, shallowEqual);
+   const workingCopy = useSelector((state) => state.workingCopy, shallowEqual);
+-  const isMultilingual = useSelector(
+-    (state) => state.site.data.features?.multilingual,
+-  );
++  const isMultilingual = useSelector(getIsMultilingual);
+ 
+   const actions = useSelector((state) => state.actions.actions, shallowEqual);
+ 
+@@ -340,7 +339,7 @@
+           </>
+         )}
+       </Pluggable>
+-      {workingCopyCheckoutAction && (
++      {workingCopyCheckoutAction && content['@type'] !== 'ims_indicator' && (
+         <Plug pluggable="toolbar-more-manage-content" id="workingcopy">
+           <li>
+             <button
+@@ -360,7 +359,7 @@
+           </li>
+         </Plug>
+       )}
+-      {workingCopyCheckinAction && (
++      {workingCopyCheckinAction && content['@type'] !== 'ims_indicator' && (
+         <Plug pluggable="toolbar-more-manage-content" id="workingcopy">
+           <li>
+             <button
+@@ -438,20 +437,22 @@
+           </li>
+         </Plug>
+       )}
+-      {content.working_copy && !content.working_copy_of && (
+-        <Plug pluggable="toolbar-more-manage-content" id="workingcopy">
+-          <li>
+-            <Link
+-              to={flattenToAppURL(content.working_copy['@id'])}
+-              onClick={() => props.closeMenu()}
+-            >
+-              {intl.formatMessage(messages.viewWorkingCopy)}
+-              <Icon name={rightArrowSVG} size="24px" />
+-            </Link>
+-          </li>
+-        </Plug>
+-      )}
+-      {editAction && isMultilingual && (
++      {content['@type'] !== 'ims_indicator' &&
++        content.working_copy &&
++        !content.working_copy_of && (
++          <Plug pluggable="toolbar-more-manage-content" id="workingcopy">
++            <li>
++              <Link
++                to={flattenToAppURL(content.working_copy['@id'])}
++                onClick={() => props.closeMenu()}
++              >
++                {intl.formatMessage(messages.viewWorkingCopy)}
++                <Icon name={rightArrowSVG} size="24px" />
++              </Link>
++            </li>
++          </Plug>
++        )}
++      {editAction && isMultilingual && content['@type'] !== 'ims_indicator' && (
+         <Plug pluggable="toolbar-more-manage-content" id="multilingual">
+           <li>
+             <Link to={`${path}/manage-translations`}>

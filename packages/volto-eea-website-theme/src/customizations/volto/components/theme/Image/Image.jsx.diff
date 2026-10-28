@@ -1,0 +1,83 @@
+--- volto-19.5.0/packages/volto/src/components/theme/Image/Image.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/Image/Image.jsx
+@@ -1,12 +1,16 @@
+ import PropTypes from 'prop-types';
+ import cx from 'classnames';
+ import { useSelector } from 'react-redux';
+-import {
+-  flattenToAppURL,
+-  flattenScales,
+-  addSubpathPrefix,
+-} from '@plone/volto/helpers/Url/Url';
++import { flattenToAppURL, flattenScales } from '@plone/volto/helpers/Url/Url';
++import { addSubpathPrefix } from '@eeacms/volto-eea-website-theme/helpers/addSubpathPrefix';
+ 
++const imageScaleName = (data) => {
++  if (!data || data.size === 'l') return 'large';
++  if (data.size === 'm') return 'preview';
++  if (data.size === 's') return 'mini';
++  return 'large';
++};
++
+ /**
+  * Image component
+  * @param {object} item - Context item that has the image field (can also be a catalog brain or summary)
+@@ -57,31 +61,40 @@
+     const basePath = addSubpathPrefix(
+       flattenToAppURL(image.base_path || item['@id']),
+     );
++    const selectedScale = imageScaleName(item.data);
+     attrs.src = `${basePath}/${image.download}`;
+ 
+     attrs.width = image.width;
+     attrs.height = image.height;
+ 
+     if (!isSvg && image.scales && Object.keys(image.scales).length > 0) {
+-      const sortedScales = Object.values({
+-        ...image.scales,
+-        ...(Object.keys(siteImageScales).length >
+-        Object.keys(image.scales).length
+-          ? {
+-              original: {
+-                download: `${image.download}`,
+-                width: image.width,
+-                height: image.height,
+-              },
+-            }
+-          : {}),
+-      }).sort((a, b) => {
+-        if (a.width > b.width) return 1;
+-        else if (a.width < b.width) return -1;
+-        else return 0;
+-      });
++      const defaults = ['large', 'preview', 'mini'];
++      const filteredScales = [
++        ...defaults,
++        item.data?.align === 'full' ? 'huge' : undefined,
++      ]
++        .map((key) => image.scales[key])
++        .filter(Boolean);
+ 
+-      attrs.srcSet = sortedScales
++      if (
++        filteredScales.length < defaults.length &&
++        Object.keys(siteImageScales).length > Object.keys(image.scales).length
++      ) {
++        filteredScales.push({
++          download: `${image.download}`,
++          width: image.width,
++          height: image.height,
++        });
++      }
++
++      const imageScale = image.scales[selectedScale];
++      if (imageScale) {
++        attrs.width = imageScale.width;
++        attrs.height = imageScale.height;
++        attrs.src = `${basePath}/${imageScale.download}`;
++      }
++
++      attrs.srcSet = filteredScales
+         .map((scale) => `${basePath}/${scale.download} ${scale.width}w`)
+         .join(', ');
+     }
