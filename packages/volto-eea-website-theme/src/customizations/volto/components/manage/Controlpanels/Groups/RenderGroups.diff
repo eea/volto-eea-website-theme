@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Controlpanels/Groups/RenderGroups.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Controlpanels/Groups/RenderGroups.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.jsx
-@@ -1,86 +1,125 @@
+@@ -1,86 +1,144 @@
 +/**
 + * Users controlpanel groups.
 + * @module components/manage/Controlpanels/UsersControlpanelGroups
@@ -19,6 +19,13 @@
 -  const onChange = (event, { value }) => {
 -    const [group, role] = value.split('.');
 -    props.updateGroups(group, role);
++// Inlined from @plone/volto/helpers/User/User to avoid depending on a
++// helper that isn't exported by every supported Volto core version.
++function canAssignRole(isUserManager, role) {
++  if (isUserManager) return true;
++  return role.id !== 'Manager';
++}
++
 +/**
 + * UsersControlpanelGroups class.
 + * @class UsersControlpanelGroups
@@ -83,7 +90,15 @@
 -  const canDeleteGroup = () => {
 -    if (props.isUserManager) return true;
 -    return !props.group.roles.includes('Manager');
--  };
++
++  /**
++   *@returns {Boolean}
++   *@memberof RenderGroups
++   */
++  canDeleteGroup = () => {
++    if (this.props.isUserManager) return true;
++    return !this.props.group.roles.includes('Manager');
+   };
 -  return (
 -    <Table.Row key={props.group.title}>
 -      <Table.Cell>{props.group.groupname}</Table.Cell>
@@ -109,7 +124,6 @@
 -              value={`${props.group.id}.${role.id}`}
 -              disabled={!canAssignRole(props.isUserManager, role)}
 -            />
--          )}
 +  /**
 +   * Render method.
 +   * @method render
@@ -120,10 +134,7 @@
 +      <Table.Row key={this.props.group.title}>
 +        <Table.Cell>
 +          {this.props.group.title || this.props.group.groupname}
-         </Table.Cell>
--      ))}
--      <Table.Cell textAlign="right">
--        {canDeleteGroup() && (
++        </Table.Cell>
 +        {this.props.roles.map((role) => (
 +          <Table.Cell key={role.id}>
 +            {this.props.inheritedRole &&
@@ -144,30 +155,45 @@
 +                }
 +                onChange={this.onChange}
 +                value={`${this.props.group.id}&role=${role.id}`}
++                disabled={!canAssignRole(this.props.isUserManager, role)}
 +              />
 +            )}
 +          </Table.Cell>
 +        ))}
 +        <Table.Cell textAlign="right">
-           <Dropdown icon="ellipsis horizontal">
-             <Dropdown.Menu className="left">
-               <Dropdown.Item
++          {this.canDeleteGroup() && (
++            <Dropdown icon="ellipsis horizontal">
++              <Dropdown.Menu className="left">
++                <Dropdown.Item
++                  onClick={this.props.onDelete}
++                  value={this.props.group['@id']}
++                >
++                  <Icon name={trashSVG} size="15px" />
++                  <FormattedMessage id="Delete" defaultMessage="Delete" />
++                </Dropdown.Item>
++              </Dropdown.Menu>
++            </Dropdown>
+           )}
+         </Table.Cell>
+-      ))}
+-      <Table.Cell textAlign="right">
+-        {canDeleteGroup() && (
+-          <Dropdown icon="ellipsis horizontal">
+-            <Dropdown.Menu className="left">
+-              <Dropdown.Item
 -                onClick={props.onDelete}
 -                value={props.group['@id']}
-+                onClick={this.props.onDelete}
-+                value={this.props.group['@id']}
-               >
-                 <Icon name={trashSVG} size="15px" />
-                 <FormattedMessage id="Delete" defaultMessage="Delete" />
-               </Dropdown.Item>
-             </Dropdown.Menu>
-           </Dropdown>
+-              >
+-                <Icon name={trashSVG} size="15px" />
+-                <FormattedMessage id="Delete" defaultMessage="Delete" />
+-              </Dropdown.Item>
+-            </Dropdown.Menu>
+-          </Dropdown>
 -        )}
 -      </Table.Cell>
 -    </Table.Row>
 -  );
 -};
-+        </Table.Cell>
 +      </Table.Row>
 +    );
 +  }

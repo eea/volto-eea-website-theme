@@ -1,26 +1,23 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/ContactForm/ContactForm.test.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/ContactForm/ContactForm.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/ContactForm/ContactForm.test.js
-@@ -1,21 +1,21 @@
+@@ -1,18 +1,21 @@
  import React from 'react';
 -import { render } from '@testing-library/react';
 +import renderer from 'react-test-renderer';
  import configureStore from 'redux-mock-store';
  import { Provider } from 'react-intl-redux';
  import { MemoryRouter } from 'react-router-dom';
+-import { CookiesProvider } from 'react-cookie';
  import ContactForm from './ContactForm';
  
 -vi.mock('../../manage/Toolbar/Toolbar', () => ({
 -  default: vi.fn(() => <div id="Portal" />),
-+jest.mock('react-portal', () => ({
-+  Portal: jest.fn(() => <div id="Portal" />),
++vi.mock('react-portal', () => ({
++  Portal: vi.fn(() => <div id="Portal" />),
  }));
  
--vi.mock('@plone/volto/components/manage/Form', async () => {
--  return await import(
--    '@plone/volto/components/manage/Form/__mocks__/index.vitest.tsx'
--  );
--});
-+jest.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
+-vi.mock('@plone/volto/components/manage/Form');
++vi.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
 +  __esModule: true,
 +  default: ({ href, children }) => <a href={href}>{children}</a>,
 +}));
@@ -30,18 +27,22 @@
  describe('Contact form', () => {
    it('renders a contact form', () => {
      const store = mockStore({
-@@ -31,16 +31,15 @@
+@@ -28,18 +31,15 @@
        userSession: {},
        content: {},
      });
 -    const { container } = render(
 +    const component = renderer.create(
        <Provider store={store}>
-         <MemoryRouter>
--          <ContactForm />
--          <div id="toolbar"></div>
+-        <CookiesProvider>
+-          <MemoryRouter>
+-            <ContactForm />
+-            <div id="toolbar"></div>
+-          </MemoryRouter>
+-        </CookiesProvider>
++        <MemoryRouter>
 +          <ContactForm location={{ pathname: '/blog' }} />
-         </MemoryRouter>
++        </MemoryRouter>
        </Provider>,
      );
 -
@@ -51,18 +52,22 @@
    });
  
    it('renders a contact form with error message', () => {
-@@ -59,15 +58,14 @@
+@@ -58,17 +58,14 @@
        userSession: {},
        content: {},
      });
 -    const { container } = render(
 +    const component = renderer.create(
        <Provider store={store}>
-         <MemoryRouter>
--          <ContactForm />
--          <div id="toolbar"></div>
+-        <CookiesProvider>
+-          <MemoryRouter>
+-            <ContactForm />
+-            <div id="toolbar"></div>
+-          </MemoryRouter>
+-        </CookiesProvider>
++        <MemoryRouter>
 +          <ContactForm location={{ pathname: '/' }} />
-         </MemoryRouter>
++        </MemoryRouter>
        </Provider>,
      );
 -

@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.5.0/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/helpers/Html/Readme.md
 @@ -0,0 +1,7 @@
 +Customized for CSP support: adds a `nonce` prop that is applied to both inline

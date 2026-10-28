@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Footer/Footer.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/Footer/Footer.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Footer/Footer.jsx
-@@ -4,129 +4,93 @@
+@@ -4,129 +4,104 @@
   */
  
  import React from 'react';
@@ -14,6 +14,7 @@
 +import EEAFooter from '@eeacms/volto-eea-design-system/ui/Footer/Footer';
 +import config from '@plone/volto/registry';
 +import isArray from 'lodash/isArray';
++import { shouldHideSubsiteFooterBranding } from '@eeacms/volto-eea-website-theme/helpers/subsiteOverrides';
  
 -const messages = defineMessages({
 -  copyright: {
@@ -38,6 +39,7 @@
 +    socialActions,
 +    contactActions,
 +    contactExtraActions,
++    subsite,
 +  } = useSelector(
      (state) => ({
 -      siteActions: state.actions?.actions?.site_actions,
@@ -46,6 +48,7 @@
 +      socialActions: state.actions?.actions?.social_actions,
 +      contactActions: state.actions?.actions?.contact_actions,
 +      contactExtraActions: state.actions?.actions?.contact_extra_actions,
++      subsite: state.content?.data?.['@components']?.subsite,
      }),
      shallowEqual,
    );
@@ -92,9 +95,15 @@
 +      }))
 +    : eea.footerOpts.contacts;
 +
++  // Hardcoded exception (config.settings.eea.subsiteHideFooterBrandingPaths):
++  // the EPANET subsite does not show the EEA and Eionet logos and the
++  // information systems button.
++  const hideBranding = shouldHideSubsiteFooterBranding(subsite);
++
 +  // Update options with actions from backend
 +  const options = {
 +    ...eea.footerOpts,
++    ...(hideBranding && { managedBy: [] }),
 +    social,
 +    contacts,
 +  };
@@ -186,10 +195,12 @@
 +      <EEAFooter.Header>{eea.footerOpts.logosHeader}</EEAFooter.Header>
 +      <EEAFooter.SubFooter {...options} />
 +      <EEAFooter.Header>{eea.footerOpts.header}</EEAFooter.Header>
-+      <EEAFooter.SitesButton
-+        buttonName={eea.footerOpts.buttonName}
-+        hrefButton={eea.footerOpts.hrefButton}
-+      />
++      {!hideBranding && (
++        <EEAFooter.SitesButton
++          buttonName={eea.footerOpts.buttonName}
++          hrefButton={eea.footerOpts.hrefButton}
++        />
++      )}
 +      <EEAFooter.Social {...options} />
 +      <EEAFooter.Actions actions={actions} copyright={copyright} />
 +    </EEAFooter>

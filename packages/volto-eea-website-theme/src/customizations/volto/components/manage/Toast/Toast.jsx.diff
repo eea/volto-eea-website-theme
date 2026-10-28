@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Toast/Toast.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Toast/Toast.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.jsx
-@@ -1,71 +1,45 @@
+@@ -1,69 +1,45 @@
  import React from 'react';
  import PropTypes from 'prop-types';
 -import { defineMessages, useIntl } from 'react-intl';
@@ -75,11 +75,9 @@
  
    return (
 -    <>
--      <Icon name={getIcon(props)} size="18px" ariaHidden={true} />
+-      <Icon name={getIcon(props)} size="18px" />
 -      <div className="toast-inner-content">
--        {typeLabel && (
--          <span className="visually-hidden-volto">{typeLabel}</span>
--        )}
+-        {typeLabel && <span className="visually-hidden">{typeLabel}</span>}
 -        {title && <h4>{title}</h4>}
 +    <Message
 +      icon

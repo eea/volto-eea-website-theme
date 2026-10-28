@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto-slate/src/utils/volto-blocks.js
+--- volto-19.5.0/packages/volto-slate/src/utils/volto-blocks.js
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/volto-blocks.js
 @@ -48,6 +48,15 @@
        ...currentValue.slice(1),

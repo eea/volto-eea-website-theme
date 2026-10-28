@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Widgets/NumberWidget.test.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Widgets/NumberWidget.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Widgets/NumberWidget.test.jsx
 @@ -1,31 +1,125 @@
  import React from 'react';
@@ -11,7 +11,7 @@
  
  import NumberWidget from './NumberWidget';
  
-+jest.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
++vi.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
 +  __esModule: true,
 +  default: ({ children }) => <>{children}</>,
 +}));
@@ -37,7 +37,7 @@
 +
 +describe('NumberWidget', () => {
 +  it('renders a number widget component', () => {
-+    const onChange = jest.fn();
++    const onChange = vi.fn();
 +    render(
 +      <Provider store={store}>
          <NumberWidget
@@ -60,7 +60,7 @@
 +
 +  describe('onChange behavior', () => {
 +    it('converts string value to number on change', () => {
-+      const onChange = jest.fn();
++      const onChange = vi.fn();
 +      render(
 +        <Provider store={store}>
 +          <NumberWidget id="my-field" title="My field" onChange={onChange} />
@@ -74,7 +74,7 @@
 +    });
 +
 +    it('handles empty value correctly', () => {
-+      const onChange = jest.fn();
++      const onChange = vi.fn();
 +      render(
 +        <Provider store={store}>
 +          <NumberWidget
@@ -95,7 +95,7 @@
 +
 +  describe('onBlur behavior', () => {
 +    it('calls onBlur with the current value', () => {
-+      const onBlur = jest.fn();
++      const onBlur = vi.fn();
 +      render(
 +        <Provider store={store}>
 +          <NumberWidget

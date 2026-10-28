@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Form/BlocksToolbar.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Form/BlocksToolbar.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Form/BlocksToolbar.jsx
 @@ -10,7 +10,6 @@
  import Icon from '@plone/volto/components/theme/Icon/Icon';

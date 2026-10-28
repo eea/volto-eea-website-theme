@@ -1,6 +1,6 @@
---- @plone/volto@18.35.1/components/manage/Blocks/Block/Edit.jsx
-+++ src/customizations/volto/components/manage/Blocks/Block/Edit.jsx
-@@ -10,14 +10,17 @@
+--- volto-19.5.0/packages/volto/src/components/manage/Blocks/Block/Edit.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Block/Edit.jsx
+@@ -10,14 +10,23 @@
  import { defineMessages, injectIntl } from 'react-intl';
  import cx from 'classnames';
  import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
@@ -10,17 +10,22 @@
  import ViewDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultView';
  import EditDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultEdit';
  import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
--import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
-+// Volto 17 requires this barrel export to avoid an InlineForm import cycle.
-+// eslint-disable-next-line no-restricted-imports
-+import { BlockSettingsSidebar } from '@plone/volto/components';
++// Import directly, NOT from the '@plone/volto/components' barrel: the barrel
++// re-exports EditBlock from this very file (line 218) and, with the Volto 19
++// react-refresh runtime enabled in dev, the barrel's end-of-module export
++// registration reads this module's still-uninitialized default export while
++// it is mid-evaluation (circular import) -> "Cannot access
++// '__WEBPACK_DEFAULT_EXPORT__' before initialization". In Volto 19 the
++// InlineForm import cycle that forced the barrel import in Volto 17 is gone,
++// since components/manage/Form/index.tsx uses lazy loadable() exports.
+ import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
  import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
 +// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
 +const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
  
  const messages = defineMessages({
    unknownBlock: {
-@@ -116,6 +119,23 @@
+@@ -116,6 +125,23 @@
    blockNode = React.createRef();
  
    /**
@@ -44,7 +49,7 @@
     * Render method.
     * @method render
     * @returns {string} Markup for the component.
-@@ -154,16 +174,31 @@
+@@ -154,25 +180,31 @@
                e.stopPropagation();
                this.props.setUIState({ hovered: null });
              }}
@@ -73,6 +78,15 @@
 +              (!this.props.selected || isMultipleSelection) &&
 +                this.props.onSelectBlock(this.props.id, isMultipleSelection, e);
              }}
+-            // onFocus={(e) => {
+-            //   // TODO: This `onFocus` steals somehow the focus from the slate block
+-            //   // we have to investigate why this is happening
+-            //   // Apparently, I can't see any difference in the behavior
+-            //   // If any, we can fix it in successive iterations
+-            //   // if (this.props.hovered !== this.props.id) {
+-            //   //   this.props.setUIState({ hovered: this.props.id });
+-            //   // }
+-            // }}
              onFocus={(e) => {
 +              if (this.isNestedFormEvent(e)) {
 +                !this.props.selected &&
@@ -82,7 +96,15 @@
                const isMultipleSelection = e.shiftKey || e.ctrlKey || e.metaKey;
                !this.props.selected &&
                  this.props.onSelectBlock(
-@@ -262,7 +297,7 @@
+@@ -227,7 +259,6 @@
+               e.stopPropagation();
+               this.props.setUIState({ hovered: this.props.id });
+             }}
+-            // Mantenha apenas este onFocus ou remova se não for necessário
+             onFocus={(e) => {
+               e.preventDefault();
+               e.stopPropagation();
+@@ -272,7 +303,7 @@
    withObjectBrowser,
    connect(
      (state, props) => ({

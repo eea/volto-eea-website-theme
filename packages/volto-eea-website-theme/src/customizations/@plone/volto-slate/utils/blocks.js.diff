@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto-slate/src/utils/blocks.js
+--- volto-19.5.0/packages/volto-slate/src/utils/blocks.js
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/blocks.js
-@@ -6,10 +6,10 @@
+@@ -6,12 +6,24 @@
    getBlocksLayoutFieldname,
  } from '@plone/volto/helpers/Blocks/Blocks';
  import find from 'lodash/find';
@@ -9,11 +9,26 @@
  import some from 'lodash/some';
 -import first from 'lodash/first';
 -import { makeEditor } from './editor';
+-import { safeEditorNodes } from './safe.js';
 +import { makeEditor } from '@plone/volto-slate/utils/editor';
  
++const safeEditorNodes = (editor, options) => {
++  try {
++    return Array.from(Editor.nodes(editor, options));
++  } catch (error) {
++    console.warn('safeEditorNodes: selection invalid or out of bounds:', {
++      options,
++      selection: editor.selection,
++      error,
++    });
++    return [];
++  }
++};
++
  // case sensitive; first in an inner array is the default and preffered format
  // in that array of formats
-@@ -72,27 +72,20 @@
+ const formatAliases = [
+@@ -73,27 +85,20 @@
  
  export const normalizeExternalData = (editor, nodes) => {
    let fakeEditor = makeEditor({ extensions: editor._installedPlugins });
@@ -55,7 +70,7 @@
  
    Editor.normalize(fakeEditor, { force: true });
  
-@@ -267,7 +260,7 @@
+@@ -268,7 +273,7 @@
    } else if (!isListItem && !wantsList) {
      toggleFormat(editor, format, allowedChildren);
    } else if (isListItem && wantsList && isActive) {
@@ -64,7 +79,7 @@
    } else {
      console.warn('toggleBlock case not covered, please examine:', {
        wantsList,
-@@ -301,21 +294,6 @@
+@@ -302,21 +307,6 @@
    Transforms.wrapNodes(editor, block);
  };
  

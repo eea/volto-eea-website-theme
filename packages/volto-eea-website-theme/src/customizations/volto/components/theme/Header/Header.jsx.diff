@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Header/Header.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/Header/Header.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Header/Header.jsx
 @@ -1,52 +1,414 @@
 -import { Container, Segment } from 'semantic-ui-react';

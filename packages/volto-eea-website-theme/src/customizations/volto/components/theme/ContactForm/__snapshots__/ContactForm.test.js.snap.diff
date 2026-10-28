@@ -1,9 +1,9 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.5.0/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/ContactForm/__snapshots__/ContactForm.test.js.snap
 @@ -0,0 +1,35 @@
-+// Jest Snapshot v1, https://goo.gl/fbAQLP
++// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 +
-+exports[`Contact form renders a contact form 1`] = `
++exports[`Contact form > renders a contact form 1`] = `
 +<div
 +  className="ui container"
 +  id="page-document"
@@ -20,7 +20,7 @@
 +</div>
 +`;
 +
-+exports[`Contact form renders a contact form with error message 1`] = `
++exports[`Contact form > renders a contact form with error message 1`] = `
 +<div
 +  className="ui container"
 +  id="page-document"

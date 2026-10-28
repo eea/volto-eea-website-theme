@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Widgets/NumberWidget.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Widgets/NumberWidget.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Widgets/NumberWidget.jsx
 @@ -34,7 +34,6 @@
      placeholder,
@@ -8,22 +8,16 @@
    return (
      <FormFieldWrapper {...props}>
        <Input
-@@ -48,10 +47,16 @@
+@@ -48,10 +47,10 @@
          value={value ?? ''}
          placeholder={placeholder}
          onChange={({ target }) =>
 -          onChange(id, target.value === '' ? undefined : target.value)
-+          onChange(
-+            id,
-+            target.value === '' ? undefined : window.parseInt(target.value),
-+          )
++          onChange(id, target.value === '' ? undefined : Number(target.value))
          }
          onBlur={({ target }) =>
 -          onBlur(id, target.value === '' ? undefined : target.value)
-+          onBlur(
-+            id,
-+            target.value === '' ? undefined : window.parseInt(target.value),
-+          )
++          onBlur(id, target.value === '' ? undefined : Number(target.value))
          }
          onClick={() => onClick()}
        />

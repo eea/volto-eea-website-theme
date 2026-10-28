@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
 @@ -3,6 +3,7 @@
  import configureStore from 'redux-mock-store';

@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Controlpanels/Groups/RenderGroups.test.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Controlpanels/Groups/RenderGroups.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.test.jsx
 @@ -1,79 +1,124 @@
 +/**
@@ -30,7 +30,7 @@
  
  import RenderGroups from './RenderGroups';
  
-+jest.mock('@plone/volto/components', () => ({
++vi.mock('@plone/volto/components', () => ({
 +  // RenderGroups.jsx uses only Icon from the barrel
 +  Icon: () => null,
 +}));

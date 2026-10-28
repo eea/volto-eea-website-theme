@@ -1,6 +1,15 @@
---- volto-18.35.1-74d82edef/packages/volto/src/helpers/Html/Html.jsx
+--- volto-19.5.0/packages/volto/src/helpers/Html/Html.jsx
 +++ volto-eea-website-theme/src/customizations/volto/helpers/Html/Html.jsx
-@@ -79,6 +79,7 @@
+@@ -9,7 +9,7 @@
+ import serialize from 'serialize-javascript';
+ import join from 'lodash/join';
+ import BodyClass from '@plone/volto/helpers/BodyClass/BodyClass';
+-import { addSubpathPrefix } from '@plone/volto/helpers/Url/Url';
++import { addSubpathPrefix } from '@eeacms/volto-eea-website-theme/helpers/addSubpathPrefix';
+ import { runtimeConfig } from '@plone/volto/runtime_config';
+ import config from '@plone/volto/registry';
+ 
+@@ -80,6 +80,7 @@
      store: PropTypes.shape({
        getState: PropTypes.func,
      }).isRequired,
@@ -8,7 +17,7 @@
    };
  
    /**
-@@ -87,7 +88,7 @@
+@@ -88,7 +89,7 @@
     * @returns {string} Markup for the component.
     */
    render() {
@@ -17,7 +26,7 @@
        this.props;
      const head = Helmet.rewind();
      const bodyClass = join(BodyClass.rewind(), ' ');
-@@ -110,24 +111,28 @@
+@@ -111,21 +112,25 @@
  
            {head.style.toComponent()}
  
@@ -32,9 +41,6 @@
 -                }),
 -                ...(publicURL && {
 -                  publicURL,
--                }),
--                ...(process.env.SITE_DEFAULT_LANGUAGE && {
--                  defaultLanguage: process.env.SITE_DEFAULT_LANGUAGE,
 -                }),
 -              })};`,
 -            }}
@@ -53,18 +59,15 @@
 +                  ...(publicURL && {
 +                    publicURL,
 +                  }),
-+                  ...(process.env.SITE_DEFAULT_LANGUAGE && {
-+                    defaultLanguage: process.env.SITE_DEFAULT_LANGUAGE,
-+                  }),
 +                },
 +                { space: 2 },
 +              )};`,
 +            },
 +          })}
  
-           <link rel="icon" href="/favicon.ico" sizes="any" />
-           <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-@@ -163,13 +168,13 @@
+           <link
+             rel="icon"
+@@ -169,13 +174,13 @@
              criticalCss ? (
                <>
                  <script
@@ -81,7 +84,7 @@
                      {React.cloneElement(elem, {
                        rel: 'stylesheet',
                        crossOrigin:
-@@ -189,17 +194,20 @@
+@@ -195,17 +200,20 @@
            <div role="navigation" aria-label="Toolbar" id="toolbar" />
            <div id="main" dangerouslySetInnerHTML={{ __html: markup }} />
            <div role="complementary" aria-label="Sidebar" id="sidebar" />

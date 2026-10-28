@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Workflow/Workflow.test.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Workflow/Workflow.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Workflow/Workflow.test.jsx
-@@ -1,30 +1,21 @@
+@@ -1,20 +1,22 @@
  import React from 'react';
  import configureStore from 'redux-mock-store';
  import { Provider } from 'react-intl-redux';
@@ -14,33 +14,24 @@
  
  const mockStore = configureStore();
  
--vi.mock('@plone/volto/components/manage/Widgets', async () => {
--  return await import(
--    '@plone/volto/components/manage/Widgets/__mocks__/index.vitest.tsx'
--  );
--});
--vi.mock('@plone/volto/helpers/Loadable/Loadable', async () => {
--  return await import(
--    '@plone/volto/helpers/Loadable/__mocks__/Loadable.vitest.jsx'
--  );
--});
-+jest.mock('@plone/volto/helpers/Loadable/Loadable');
-+beforeAll(
-+  async () =>
-+    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
-+);
- 
+-vi.mock('@plone/volto/components/manage/Widgets');
+ vi.mock('@plone/volto/helpers/Loadable/Loadable');
 -beforeAll(async () => {
 -  const { __setLoadables } = await import(
 -    '@plone/volto/helpers/Loadable/Loadable'
 -  );
 -  await __setLoadables();
 -});
--
++beforeAll(
++  async () =>
++    await (
++      await import('@plone/volto/helpers/Loadable/Loadable')
++    ).__setLoadables(),
++);
+ 
  beforeEach(() => {
    config.settings.workflowMapping = {
-     published: { value: 'published', color: '#007bc1' },
-@@ -54,10 +45,21 @@
+@@ -45,10 +47,21 @@
      });
      const { container } = render(
        <Provider store={store}>
@@ -64,7 +55,7 @@
    });
  
    it('renders a workflow component', async () => {
-@@ -77,9 +79,20 @@
+@@ -68,9 +81,20 @@
  
      const { container } = render(
        <Provider store={store}>

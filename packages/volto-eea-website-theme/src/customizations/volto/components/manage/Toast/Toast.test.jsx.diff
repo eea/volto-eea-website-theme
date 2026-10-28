@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Toast/Toast.test.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Toast/Toast.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.test.jsx
-@@ -1,18 +1,41 @@
+@@ -1,19 +1,41 @@
  import React from 'react';
 -import renderer from 'react-test-renderer';
 -import { IntlProvider } from 'react-intl';
@@ -17,6 +17,7 @@
 -        title="I'm a title"
 -        content="This is the content, lorem ipsum"
 -      />
+-      ,
 -    </IntlProvider>,
 -  );
 -  const json = component.toJSON();

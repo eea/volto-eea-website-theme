@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.5.0/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Header/LanguageSwitcher.jsx
 @@ -0,0 +1,99 @@
 +import React from 'react';

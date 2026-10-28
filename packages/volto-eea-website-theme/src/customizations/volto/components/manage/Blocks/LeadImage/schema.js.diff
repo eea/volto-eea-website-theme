@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.5.0/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/LeadImage/schema.js
 @@ -0,0 +1,116 @@
 +import { defineMessages } from 'react-intl';
@@ -98,7 +98,7 @@
 +            Ex. ri-copyright-line. See{' '}
 +            <a
 +              target="_blank"
-+              rel="noopener"
++              rel="noopener noreferrer"
 +              href="https://eea.github.io/volto-eea-design-system/docs/webdev/Guidelines/iconography/#icon-set"
 +            >
 +              Remix Icon set

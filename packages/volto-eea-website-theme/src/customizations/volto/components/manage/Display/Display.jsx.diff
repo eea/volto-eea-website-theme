@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Display/Display.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Display/Display.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Display/Display.jsx
 @@ -1,19 +1,20 @@
 -import React, { useState, useEffect } from 'react';

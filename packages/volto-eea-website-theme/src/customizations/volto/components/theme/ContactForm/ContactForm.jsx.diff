@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/ContactForm/ContactForm.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/ContactForm/ContactForm.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/ContactForm/ContactForm.jsx
 @@ -1,182 +1,27 @@
 -import { useCallback, useEffect } from 'react';

@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto-slate/src/editor/render.jsx
+--- volto-19.5.0/packages/volto-slate/src/editor/render.jsx
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/render.jsx
 @@ -7,16 +7,17 @@
  import { Node, Text } from 'slate';

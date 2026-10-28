@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto-slate/src/editor/plugins/Table/less/public.less
+--- volto-19.5.0/packages/volto-slate/src/editor/plugins/Table/less/public.less
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/plugins/Table/less/public.less
-@@ -20,10 +20,24 @@
+@@ -20,11 +20,25 @@
    }
  }
  
@@ -29,3 +29,4 @@
 +    }
    }
  }
+ 

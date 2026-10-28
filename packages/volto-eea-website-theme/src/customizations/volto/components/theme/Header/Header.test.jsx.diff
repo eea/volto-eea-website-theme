@@ -1,6 +1,6 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Header/Header.test.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/Header/Header.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Header/Header.test.jsx
-@@ -1,66 +1,519 @@
+@@ -1,66 +1,620 @@
  import React from 'react';
 -import renderer from 'react-test-renderer';
 +import { render, fireEvent, getByText } from '@testing-library/react';
@@ -31,18 +31,20 @@
 -vi.mock('../SearchWidget/SearchWidget', () => ({
 -  default: vi.fn(() => <div id="searchwidget" />),
 -}));
-+jest.mock('@plone/volto/helpers/Loadable/Loadable');
++vi.mock('@plone/volto/helpers/Loadable/Loadable');
 +beforeAll(
 +  async () =>
-+    await require('@plone/volto/helpers/Loadable/Loadable').__setLoadables(),
++    await (
++      await import('@plone/volto/helpers/Loadable/Loadable')
++    ).__setLoadables(),
 +);
  
 -vi.mock('../Anontools/Anontools', () => ({
 -  default: vi.fn(() => <div id="anontools" />),
 -}));
-+jest.mock('semantic-ui-react', () => {
-+  const React = require('react');
-+  const actual = jest.requireActual('semantic-ui-react');
++vi.mock('semantic-ui-react', async () => {
++  const React = (await vi.importActual('react')).default;
++  const actual = await vi.importActual('semantic-ui-react');
 +  const Dropdown = React.forwardRef(({ text, trigger, ...props }, ref) => {
 +    const resolvedTrigger =
 +      trigger || (typeof text === 'function' ? text() : text);
@@ -102,7 +104,15 @@
 +        </Router>
 +      </Provider>,
 +    );
-+    expect(container).toMatchSnapshot();
++    expect(container.querySelector('header.eea.header')).toBeInTheDocument();
++    expect(container.querySelector('.main.bar')).toHaveClass('transparency');
++    expect(container.querySelector('img.eea-logo')).toHaveAttribute(
++      'src',
++      'eea-logo.svg',
++    );
++    expect(
++      container.querySelector('nav a[title="Test english article"]'),
++    ).toHaveAttribute('href', '/');
 +  });
 +
 +  it('renders a header component with homepage_view layout and translations', async () => {
@@ -276,7 +286,7 @@
 +        </Router>
 +      </Provider>,
 +    );
-   });
++  });
 +
 +  it('renders a header component with a subsite and two children', async () => {
 +    const store = mockStore({
@@ -360,7 +370,7 @@
 +        </Router>
 +      </Provider>,
 +    );
-+  });
+   });
 +
 +  it('uses navigationLanguage setting to fetch navigation from specific language', () => {
 +    const store = mockStore({
@@ -547,5 +557,96 @@
 +
 +    // Ensure obvious English navigation text is NOT present
 +    expect(queryByText('Subjects')).toBeNull();
++  });
++
++  describe('EPANET subsite (hardcoded exceptions)', () => {
++    const subsiteStore = (subsiteId) =>
++      mockStore({
++        userSession: { token: null },
++        intl: { locale: 'en', messages: {} },
++        navigation: { items: [item] },
++        content: {
++          data: {
++            '@components': {
++              subsite: {
++                '@type': 'Subsite',
++                '@id': `http://localhost:3000${subsiteId}`,
++                title: 'EPANET',
++                subsite_logo: {
++                  scales: {
++                    mini: { download: '/logo-mini.png', width: 80, height: 40 },
++                    preview: {
++                      download: '/logo-preview.png',
++                      width: 400,
++                      height: 150,
++                    },
++                  },
++                },
++              },
++            },
++          },
++        },
++        router: { location: { pathname: `${subsiteId}/page` } },
++      });
++
++    beforeEach(() => {
++      config.settings = {
++        ...config.settings,
++        eea: {
++          ...config.settings.eea,
++          headerOpts: { logo: 'eea-logo.svg' },
++          organisationName: 'European Environment Agency',
++          subsiteMainLogoPaths: [/^\/[a-z]{2}\/epanet$/],
++          subsiteHideTopHeaderPaths: [/^\/[a-z]{2}\/epanet$/],
++        },
++      };
++    });
++
++    it('replaces the EEA logo with the subsite logo on /en/epanet', () => {
++      const { container, queryByAltText } = render(
++        <Provider store={subsiteStore('/en/epanet')}>
++          <Router history={history}>
++            <Header pathname="/en/epanet/page" />
++          </Router>
++        </Provider>,
++      );
++
++      expect(queryByAltText('European Environment Agency')).toBeNull();
++      const logo = queryByAltText('EPANET');
++      expect(logo).not.toBeNull();
++      expect(logo.getAttribute('src')).toBe('/logo-preview.png');
++      expect(logo.getAttribute('fetchpriority')).toBe('high');
++      expect(logo.closest('a').getAttribute('href')).toBe('/en/epanet');
++      expect(container.querySelector('.subsite-logo')).toBeNull();
++    });
++
++    it('hides the header top bar on /en/epanet', () => {
++      const { container } = render(
++        <Provider store={subsiteStore('/en/epanet')}>
++          <Router history={history}>
++            <Header pathname="/en/epanet/page" />
++          </Router>
++        </Provider>,
++      );
++
++      expect(container.querySelector('.top.bar')).toBeNull();
++      expect(container.querySelector('.main.bar')).not.toBeNull();
++    });
++
++    it('keeps the EEA logo for other subsites', () => {
++      const { container, queryByAltText } = render(
++        <Provider store={subsiteStore('/en/other')}>
++          <Router history={history}>
++            <Header pathname="/en/other/page" />
++          </Router>
++        </Provider>,
++      );
++
++      expect(queryByAltText('European Environment Agency')).not.toBeNull();
++      expect(container.querySelector('.top.bar')).not.toBeNull();
++      expect(
++        container.querySelector('.subsite-logo img').getAttribute('src'),
++      ).toBe('/logo-mini.png');
++    });
 +  });
  });

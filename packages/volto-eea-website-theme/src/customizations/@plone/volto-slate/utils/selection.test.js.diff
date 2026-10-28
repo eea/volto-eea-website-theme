@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto-slate/src/utils/selection.test.js
+--- volto-19.5.0/packages/volto-slate/src/utils/selection.test.js
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/selection.test.js
 @@ -1,4 +1,3 @@
 -import { describe, it, expect } from 'vitest';

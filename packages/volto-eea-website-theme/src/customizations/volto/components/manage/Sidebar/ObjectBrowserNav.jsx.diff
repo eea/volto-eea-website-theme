@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/manage/Sidebar/ObjectBrowserNav.jsx
+--- volto-19.5.0/packages/volto/src/components/manage/Sidebar/ObjectBrowserNav.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Sidebar/ObjectBrowserNav.jsx
 @@ -3,9 +3,9 @@
  import { useIntl, defineMessages } from 'react-intl';
@@ -11,7 +11,7 @@
  import config from '@plone/volto/registry';
  
  import rightArrowSVG from '@plone/volto/icons/right-key.svg';
-@@ -28,14 +28,13 @@
+@@ -28,7 +28,6 @@
    handleClickOnItem,
    handleDoubleClickOnItem,
    mode,
@@ -19,14 +19,6 @@
    navigateTo,
    isSelectable,
  }) => {
-   const intl = useIntl();
-   const isSelected = (item) => {
-     let ret = false;
--    if (selected && Array.isArray(selected)) {
-+    if (selected) {
-       selected
-         .filter((item) => item != null)
-         .forEach((_item) => {
 @@ -50,140 +49,105 @@
    return (
      <Segment as="ul" className="object-listing">

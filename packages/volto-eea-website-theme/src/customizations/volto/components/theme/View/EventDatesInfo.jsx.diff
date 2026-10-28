@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/View/EventDatesInfo.jsx
+--- volto-19.5.0/packages/volto/src/components/theme/View/EventDatesInfo.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/View/EventDatesInfo.jsx
 @@ -1,11 +1,13 @@
 +/* Original: https://github.com/plone/volto/blob/16.x.x/src/components/theme/View/EventDatesInfo.jsx */

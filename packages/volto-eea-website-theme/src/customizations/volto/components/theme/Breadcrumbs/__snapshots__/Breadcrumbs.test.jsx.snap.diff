@@ -1,17 +1,15 @@
---- volto-18.35.1-74d82edef/packages/volto/src/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
+--- volto-19.5.0/packages/volto/src/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
 @@ -1,66 +1,170 @@
--// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-+// Jest Snapshot v1, https://goo.gl/fbAQLP
+ // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
  
--exports[`Breadcrumbs > renders a breadcrumbs component 1`] = `
+ exports[`Breadcrumbs > renders a breadcrumbs component 1`] = `
 -<div
 -  aria-label="Breadcrumbs"
 -  className="ui secondary vertical segment breadcrumbs"
 -  role="navigation"
 ->
-+exports[`Breadcrumbs renders a breadcrumbs component 1`] = `
-+Array [
++[
    <div
 -    className="ui container"
 +    id="page-header"
@@ -43,7 +41,7 @@
 -          style={
 -            {
 -              "fill": "currentColor",
--              "height": "18px",
+-              "height": "24px",
 -              "width": "auto",
 -            }
 -          }
@@ -114,8 +112,8 @@
 +]
 +`;
 +
-+exports[`Breadcrumbs renders breadcrumbs with contentTypesAsBreadcrumbSection 1`] = `
-+Array [
++exports[`Breadcrumbs > renders breadcrumbs with contentTypesAsBreadcrumbSection 1`] = `
++[
 +  <div
 +    id="page-header"
 +  />,
