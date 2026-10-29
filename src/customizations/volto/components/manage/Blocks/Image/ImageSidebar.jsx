@@ -5,7 +5,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
 import Icon from '@plone/volto/components/theme/Icon/Icon';
 import Image from '@plone/volto/components/theme/Image/Image';
-import { BlockDataForm } from '@plone/volto/components/manage/Form';
+import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 import imageSVG from '@plone/volto/icons/image.svg';
 import trashSVG from '@plone/volto/icons/delete.svg';
 

@@ -161,6 +161,8 @@ jest.mock(
   { virtual: true },
 );
 
+jest.mock('./ImageSidebar', () => () => null);
+
 // Register our mock Image component so config.getComponent({ name: 'Image' })
 // returns something renderable during tests.
 const MockImage = jest.requireMock('@plone/volto/components').Image;

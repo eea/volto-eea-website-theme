@@ -5,31 +5,29 @@ import '@testing-library/jest-dom';
 
 import ImageSidebar from './ImageSidebar';
 
-jest.mock('@plone/volto/components/manage/Form', () => {
+jest.mock('@plone/volto/components/manage/Form/BlockDataForm', () => {
   const React = require('react');
-  return {
-    BlockDataForm: (props) =>
+  return (props) =>
+    React.createElement(
+      React.Fragment,
+      null,
       React.createElement(
-        React.Fragment,
-        null,
-        React.createElement(
-          'button',
-          {
-            type: 'button',
-            onClick: () => {
-              props.onChangeField('alt', 'A generated bird description.');
-              props.onChangeField('alt_source', 'custom');
-            },
+        'button',
+        {
+          type: 'button',
+          onClick: () => {
+            props.onChangeField('alt', 'A generated bird description.');
+            props.onChangeField('alt_source', 'custom');
           },
-          'Apply generated alt',
-        ),
-        React.createElement(
-          'output',
-          { 'aria-label': 'block data' },
-          JSON.stringify(props.formData),
-        ),
+        },
+        'Apply generated alt',
       ),
-  };
+      React.createElement(
+        'output',
+        { 'aria-label': 'block data' },
+        JSON.stringify(props.formData),
+      ),
+    );
 });
 
 jest.mock('@plone/volto/components/theme/Icon/Icon', () => () => null);
