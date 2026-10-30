@@ -37,6 +37,24 @@ test. The connected default export is unchanged.
 Together with the `Block/Edit.jsx` customization, a modified click on the
 active block promotes it to a one-block multi-selection.
 
+## Undo history isolation
+
+Volto block helpers such as `deleteBlock` (used by the block delete button,
+`BlocksForm` and the slate Backspace join) mutate `formData` in place: the
+`blocks_layout` / nested containers they change are shared with the previous
+`formData`. Upstream passes `formData` by reference to `UndoToolbar`, so those
+mutations also changed the snapshots already stored in the undo history and
+undoing a delete or cut restored nothing.
+
+- `getUndoState()` gives the undo manager a deep copy of `formData`, made only
+  when the `formData` reference changes, and returns the same object while
+  nothing changed (the upstream inline object re-ran the undo save on every
+  render).
+- `onUndoRedo()` restores a copy of the snapshot, so later edits cannot alter
+  the history, and restores the selection through `setUIState` (upstream wrote
+  `selected`/`multiSelected` into component state, which the Volto 18 form no
+  longer reads, so the redo history was dropped after each undo).
+
 ## Preserved behavior
 
 - Ordinary click selects one block and clears multi-selection.

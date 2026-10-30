@@ -14,7 +14,7 @@ import cx from 'classnames';
 import isEqual from 'lodash/isEqual';
 
 import Icon from '@plone/volto/components/theme/Icon/Icon';
-import ImageSidebar from '@plone/volto/components/manage/Blocks/Image/ImageSidebar';
+import ImageSidebar from './ImageSidebar';
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 import { Icon as IconSemantic } from 'semantic-ui-react';
 import { createContent } from '@plone/volto/actions/content/content';
@@ -28,6 +28,20 @@ import {
 import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
 import { validateFileUploadSize } from '@plone/volto/helpers//FormValidation/FormValidation';
 import config from '@plone/volto/registry';
+
+import ImageMetadataConsentModal from '@eeacms/volto-eea-website-theme/components/manage/Widgets/ImageAI/ImageMetadataConsentModal';
+import { isImageAIAllowed } from '@eeacms/volto-eea-website-theme/helpers/genAISettings';
+import {
+  abortImageAIRequest,
+  composeImageMetadata,
+  createImageAIState,
+  effectiveImageAlt,
+  imageAIReducer,
+  isSupportedImage,
+  readImageAIErrorCode,
+  requestImageMetadata,
+  sameImageReference,
+} from '@eeacms/volto-eea-website-theme/helpers/imageAI';
 
 import imageBlockSVG from '@plone/volto/components/manage/Blocks/Image/block-image.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
@@ -69,7 +83,7 @@ const messages = defineMessages({
  * @class Edit
  * @extends Component
  */
-class Edit extends Component {
+export class EditComponent extends Component {
   /**
    * Property types.
    * @property {Object} propTypes Property types.
@@ -86,6 +100,8 @@ class Edit extends Component {
       loaded: PropTypes.bool,
     }).isRequired,
     pathname: PropTypes.string.isRequired,
+    language: PropTypes.string,
+    imageAIEnabled: PropTypes.bool,
     onChangeBlock: PropTypes.func.isRequired,
     onSelectBlock: PropTypes.func.isRequired,
     onDeleteBlock: PropTypes.func.isRequired,
@@ -100,7 +116,34 @@ class Edit extends Component {
     uploading: false,
     url: '',
     dragging: false,
+    imageAI: createImageAIState(),
   };
+
+  analysisSequence = 0;
+
+  analysisRequest = null;
+
+  componentWillUnmount() {
+    this.analysisSequence += 1;
+    const request = this.analysisRequest;
+    this.analysisRequest = null;
+    abortImageAIRequest(request);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.imageAIEnabled &&
+      !this.props.imageAIEnabled &&
+      this.state.imageAI.pendingFile &&
+      !this.state.uploading
+    ) {
+      this.analysisSequence += 1;
+      const request = this.analysisRequest;
+      this.analysisRequest = null;
+      abortImageAIRequest(request);
+      this.createPendingImage(null);
+    }
+  }
 
   /**
    * Component will receive props
@@ -115,16 +158,45 @@ class Edit extends Component {
       nextProps.request.loaded &&
       this.state.uploading
     ) {
+      const generatedMetadata = this.state.imageAI?.metadata;
+      const hasAIMetadata = Boolean(
+        generatedMetadata &&
+          (generatedMetadata.title || generatedMetadata.description),
+      );
       this.setState({
         uploading: false,
+        imageAI: createImageAIState(),
       });
+      const title = (nextProps.content && nextProps.content.title) || '';
+      const description =
+        (nextProps.content && nextProps.content.description) || '';
+      const metadata = hasAIMetadata
+        ? composeImageMetadata(title, description)
+        : '';
       this.props.onChangeBlock(this.props.block, {
         ...this.props.data,
         url: nextProps.content['@id'],
         image_field: 'image',
         image_scales: { image: [nextProps.content.image] },
         alt: '',
+        alt_source: hasAIMetadata ? 'image-metadata' : 'custom',
+        decorative: false,
+        image_title: hasAIMetadata ? title : undefined,
+        image_description: hasAIMetadata ? description : undefined,
+        image_metadata: hasAIMetadata ? metadata : undefined,
       });
+    } else if (
+      this.props.request.loading &&
+      nextProps.request.error &&
+      this.state.uploading
+    ) {
+      this.setState((state) => ({
+        uploading: false,
+        imageAI: imageAIReducer(state.imageAI, {
+          type: 'creationFailed',
+          errorCode: 'generation_failed',
+        }),
+      }));
     }
   }
 
@@ -133,10 +205,12 @@ class Edit extends Component {
    * @returns {boolean}
    * @memberof Edit
    */
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.selected ||
       nextProps.selected ||
+      this.props.imageAIEnabled !== nextProps.imageAIEnabled ||
+      !isEqual(this.state, nextState) ||
       !isEqual(this.props.data, nextProps.data)
     );
   }
@@ -150,27 +224,117 @@ class Edit extends Component {
   onUploadImage = (e) => {
     e.stopPropagation();
     const file = e.target.files[0];
+    if (!file) return;
+    this.queueImageForUpload(file);
+    e.target.value = '';
+  };
+
+  queueImageForUpload = (file) => {
     if (!validateFileUploadSize(file, this.props.intl.formatMessage)) return;
-    this.setState({
-      uploading: true,
-    });
     readAsDataURL(file).then((data) => {
       const fields = data.match(/^data:(.*);(.*),(.*)$/);
-      this.props.createContent(
-        getBaseUrl(this.props.pathname),
-        {
-          '@type': 'Image',
-          title: file.name,
-          image: {
-            data: fields[3],
-            encoding: fields[2],
-            'content-type': fields[1],
-            filename: file.name,
-          },
+      if (!fields) return;
+      const image = {
+        data: fields[3],
+        encoding: fields[2],
+        'content-type': fields[1],
+        filename: file.name,
+      };
+      this.setState(
+        (state) => ({
+          dragging: false,
+          imageAI: imageAIReducer(state.imageAI, {
+            type: 'select',
+            file: image,
+          }),
+        }),
+        () => {
+          if (!this.props.imageAIEnabled) this.createPendingImage(null);
         },
-        this.props.block,
       );
     });
+  };
+
+  analyzePendingImage = async () => {
+    const image = this.state.imageAI.pendingFile;
+    if (!this.props.imageAIEnabled || !image || !isSupportedImage(image))
+      return;
+    const requestId = `image-analysis-${++this.analysisSequence}`;
+    this.setState((state) => ({
+      imageAI: imageAIReducer(state.imageAI, {
+        type: 'generate',
+        requestId,
+      }),
+    }));
+    const request = requestImageMetadata(
+      getBaseUrl(this.props.pathname),
+      image,
+      this.props.language,
+    );
+    this.analysisRequest = request;
+    try {
+      const metadata = await request;
+      if (
+        !this.props.imageAIEnabled ||
+        this.analysisRequest !== request ||
+        this.state.imageAI.requestId !== requestId
+      )
+        return;
+      this.setState(
+        (state) => ({
+          imageAI: imageAIReducer(state.imageAI, {
+            type: 'analysisSucceeded',
+            requestId,
+            metadata,
+          }),
+        }),
+        () => this.createPendingImage(metadata),
+      );
+    } catch (error) {
+      if (!this.props.imageAIEnabled || this.analysisRequest !== request)
+        return;
+      this.setState((state) => ({
+        imageAI: imageAIReducer(state.imageAI, {
+          type: 'analysisFailed',
+          requestId,
+          errorCode: readImageAIErrorCode(error),
+        }),
+      }));
+    } finally {
+      if (this.analysisRequest === request) this.analysisRequest = null;
+    }
+  };
+
+  createPendingImage = (metadata = this.state.imageAI.metadata) => {
+    const image = this.state.imageAI.pendingFile;
+    if (!image) return;
+    this.setState((state) => ({
+      uploading: true,
+      imageAI: imageAIReducer(
+        { ...state.imageAI, metadata },
+        { type: 'creating' },
+      ),
+    }));
+    this.props.createContent(
+      getBaseUrl(this.props.pathname),
+      {
+        '@type': 'Image',
+        title: metadata?.title || image.filename,
+        description: metadata?.description || '',
+        image,
+      },
+      this.props.block,
+    );
+  };
+
+  uploadPendingImageWithoutAI = () => this.createPendingImage(null);
+
+  cancelPendingImage = () => {
+    this.analysisSequence += 1;
+    const request = this.analysisRequest;
+    this.analysisRequest = null;
+    abortImageAIRequest(request);
+    this.setState({ imageAI: createImageAIState(), uploading: false });
   };
 
   /**
@@ -186,17 +350,67 @@ class Edit extends Component {
   };
 
   /**
+   * Object-browser selection handler.
+   * method onSelectItem
+   * @param {string} url URL
+   * @param {object} item Selected item
+   */
+  onSelectItem = (url, item) => {
+    const brainTitle = item.title || item.Title || '';
+    const brainDescription = item.description || item.Description || '';
+    const sameImage = sameImageReference(this.props.data.url, url);
+    const internal = isInternalURL(url);
+    const title = internal
+      ? brainTitle || (sameImage ? this.props.data.image_title : '')
+      : undefined;
+    const description = internal
+      ? brainDescription || (sameImage ? this.props.data.image_description : '')
+      : undefined;
+    const metadata = internal
+      ? composeImageMetadata(title, description)
+      : undefined;
+    this.props.onChangeBlock(this.props.block, {
+      ...this.props.data,
+      url,
+      image_field: item.image_field,
+      image_scales: item.image_scales,
+      image_title: title,
+      image_description: description,
+      image_metadata: metadata,
+      ...(sameImage
+        ? {}
+        : {
+            alt: '',
+            alt_source: internal ? 'image-metadata' : 'custom',
+            decorative: false,
+          }),
+    });
+  };
+
+  /**
    * Submit url handler
    * @method onSubmitUrl
    * @param {object} e Event
    * @returns {undefined}
    */
   onSubmitUrl = () => {
+    const url = flattenToAppURL(this.state.url);
+    const sameImage = sameImageReference(this.props.data.url, url);
     this.props.onChangeBlock(this.props.block, {
       ...this.props.data,
-      url: flattenToAppURL(this.state.url),
+      url,
       image_field: undefined,
       image_scales: undefined,
+      ...(sameImage
+        ? {}
+        : {
+            alt: '',
+            alt_source: 'custom',
+            decorative: false,
+            image_title: undefined,
+            image_description: undefined,
+            image_metadata: undefined,
+          }),
     });
   };
 
@@ -207,29 +421,7 @@ class Edit extends Component {
    * @returns {undefined}
    */
   onDrop = (files) => {
-    if (!validateFileUploadSize(files[0], this.props.intl.formatMessage)) {
-      this.setState({ dragging: false });
-      return;
-    }
-    this.setState({ uploading: true });
-
-    readAsDataURL(files[0]).then((data) => {
-      const fields = data.match(/^data:(.*);(.*),(.*)$/);
-      this.props.createContent(
-        getBaseUrl(this.props.pathname),
-        {
-          '@type': 'Image',
-          title: files[0].name,
-          image: {
-            data: fields[3],
-            encoding: fields[2],
-            'content-type': fields[1],
-            filename: files[0].name,
-          },
-        },
-        this.props.block,
-      );
-    });
+    if (files[0]) this.queueImageForUpload(files[0]);
   };
 
   /**
@@ -344,7 +536,7 @@ class Edit extends Component {
                       : data.url
                 }
                 sizes={config.blocks.blocksConfig.image.getSizes(data)}
-                alt={data.alt || ''}
+                alt={effectiveImageAlt(data)}
                 loading="lazy"
                 responsive={true}
               />
@@ -392,26 +584,12 @@ class Edit extends Component {
                               <Button
                                 basic
                                 icon
+                                data-testid="image-block-object-browser"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
                                   this.props.openObjectBrowser({
-                                    onSelectItem: (
-                                      url,
-                                      { title, image_field, image_scales },
-                                    ) => {
-                                      this.props.onChangeBlock(
-                                        this.props.block,
-                                        {
-                                          ...this.props.data,
-                                          url,
-                                          image_field,
-                                          image_scales,
-                                          alt:
-                                            this.props.data.alt || title || '',
-                                        },
-                                      );
-                                    },
+                                    onSelectItem: this.onSelectItem,
                                   });
                                 }}
                               >
@@ -479,6 +657,21 @@ class Edit extends Component {
             </div>
           )}
         </div>
+        <ImageMetadataConsentModal
+          state={
+            this.props.imageAIEnabled ||
+            this.state.imageAI.status === 'creationFailed'
+              ? this.state.imageAI
+              : createImageAIState()
+          }
+          supported={isSupportedImage(this.state.imageAI.pendingFile)}
+          onGenerate={this.analyzePendingImage}
+          onWithoutAI={this.uploadPendingImageWithoutAI}
+          onRetryCreation={() =>
+            this.createPendingImage(this.state.imageAI.metadata)
+          }
+          onCancel={this.cancelPendingImage}
+        />
         <SidebarPortal selected={this.props.selected}>
           <ImageSidebar {...this.props} />
         </SidebarPortal>
@@ -494,7 +687,9 @@ export default compose(
     (state, ownProps) => ({
       request: state.content.subrequests[ownProps.block] || {},
       content: state.content.subrequests[ownProps.block]?.data,
+      language: state.intl?.locale || 'en',
+      imageAIEnabled: isImageAIAllowed(state, 'Image'),
     }),
     { createContent },
   ),
-)(Edit);
+)(EditComponent);

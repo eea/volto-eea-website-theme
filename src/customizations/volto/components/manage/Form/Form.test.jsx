@@ -1,3 +1,5 @@
+import Undoo from 'undoo';
+import { deleteBlock } from '@plone/volto/helpers/Blocks/Blocks';
 import { Form } from './Form';
 
 jest.mock('uuid', () => ({ v4: jest.fn(() => 'generated-uuid') }), {
@@ -91,5 +93,71 @@ describe('Form top-level block selection', () => {
     ).toEqual(['b', 'c', 'd']);
 
     getSelection.mockRestore();
+  });
+});
+
+describe('Form undo history', () => {
+  const createForm = (uiState = { selected: 'b', multiSelected: [] }) => {
+    const form = Object.create(Form.prototype);
+    form.state = {
+      formData: {
+        blocks: Object.fromEntries(
+          layout.map((blockId) => [blockId, { '@type': 'slate' }]),
+        ),
+        blocks_layout: { items: [...layout] },
+      },
+    };
+    form.props = {
+      uiState,
+      setUIState: jest.fn((ui) => {
+        form.props.uiState = { ...form.props.uiState, ...ui };
+      }),
+    };
+    form.setState = (state) => {
+      form.state = { ...form.state, ...state };
+    };
+    return form;
+  };
+
+  it('undoes a block deleted by the mutating deleteBlock helper', () => {
+    const form = createForm();
+    const manager = new Undoo({ maxLength: 10 });
+    manager.save({ state: form.getUndoState() });
+
+    // deleteBlock mutates the blocks_layout shared with the previous formData
+    form.setState({ formData: deleteBlock(form.state.formData, 'b') });
+    form.props.uiState = { selected: null, multiSelected: [] };
+    manager.save({ state: form.getUndoState() });
+
+    manager.undo(({ state }) => form.onUndoRedo({ state }));
+
+    expect(form.state.formData.blocks_layout.items).toEqual(layout);
+    expect(form.state.formData.blocks.b).toEqual({ '@type': 'slate' });
+    expect(form.props.setUIState).toHaveBeenLastCalledWith({
+      selected: 'b',
+      multiSelected: [],
+    });
+  });
+
+  it('keeps the history intact when the restored formData is mutated', () => {
+    const form = createForm();
+    const snapshot = form.getUndoState();
+
+    form.onUndoRedo({ state: snapshot });
+    deleteBlock(form.state.formData, 'a');
+
+    expect(snapshot.formData.blocks_layout.items).toEqual(layout);
+  });
+
+  it('reuses the snapshot while formData and selection are unchanged', () => {
+    const form = createForm();
+    const snapshot = form.getUndoState();
+
+    expect(form.getUndoState()).toBe(snapshot);
+
+    form.props.uiState = { selected: 'c', multiSelected: [] };
+    const nextSnapshot = form.getUndoState();
+    expect(nextSnapshot).not.toBe(snapshot);
+    expect(nextSnapshot.formData).toBe(snapshot.formData);
   });
 });

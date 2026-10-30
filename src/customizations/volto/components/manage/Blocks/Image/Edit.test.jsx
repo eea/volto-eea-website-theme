@@ -24,11 +24,81 @@
 
 import config from '@plone/volto/registry';
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
-import Edit, { getImageBlockSizes } from './Edit';
+import Edit, { EditComponent, getImageBlockSizes } from './Edit';
+
+const mockPost = jest.fn();
+const mockReadAsDataURL = jest.fn();
+
+jest.mock('@plone/volto/helpers/Api/Api', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({ post: mockPost })),
+}));
+
+jest.mock('promise-file-reader', () => ({
+  readAsDataURL: (...args) => mockReadAsDataURL(...args),
+}));
+
+jest.mock('react-dropzone', () => {
+  const React = require('react');
+  const MockDropzone = React.memo((props) =>
+    React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'button',
+        {
+          type: 'button',
+          'data-testid': 'drop-image',
+          onClick: () =>
+            props.onDrop([
+              new (global.File || Blob)(['png'], 'wetland.png', {
+                type: 'image/png',
+              }),
+            ]),
+        },
+        'Drop PNG',
+      ),
+      props.children({
+        getRootProps: () => ({}),
+        getInputProps: (options = {}) => options,
+      }),
+    ),
+  );
+  return { __esModule: true, default: MockDropzone };
+});
+
+// Resolve the lazy Dropzone in tests so the object-browser button is
+// rendered (loadable would otherwise stay on its null fallback).
+// Note: babel-preset-razzle compiles `loadable(() => import('x'))` into
+// `loadable({ resolved, importAsync, ... })` — handle both shapes.
+jest.mock('@loadable/component', () => {
+  const React = require('react');
+
+  return (loader) => {
+    const Lazy = (props) => {
+      const [Comp, setComp] = React.useState(null);
+      React.useEffect(() => {
+        let active = true;
+        const importAsync =
+          typeof loader === 'function' ? loader : loader.importAsync;
+        importAsync().then((m) => {
+          if (active) {
+            setComp((m && (m.default || m)) || null);
+          }
+        });
+        return () => {
+          active = false;
+        };
+      }, []);
+      return Comp ? React.createElement(Comp, props) : null;
+    };
+    return Lazy;
+  };
+});
 
 jest.mock('@plone/volto/components', () => {
   const React = require('react');
@@ -61,33 +131,39 @@ jest.mock('@plone/volto/components', () => {
   };
 });
 
-jest.mock('@eeacms/volto-eea-design-system/ui/Copyright/Copyright', () => {
-  const React = require('react');
+jest.mock(
+  '@eeacms/volto-eea-design-system/ui/Copyright/Copyright',
+  () => {
+    const React = require('react');
 
-  const Copyright = (props) =>
-    React.createElement(
-      'div',
-      { 'data-testid': 'eea-copyright' },
-      props.children,
-    );
-  Copyright.Icon = (props) =>
-    React.createElement(
-      'span',
-      { 'data-testid': 'eea-copyright-icon' },
-      props.children,
-    );
-  Copyright.Text = (props) =>
-    React.createElement(
-      'span',
-      { 'data-testid': 'eea-copyright-text' },
-      props.children,
-    );
+    const Copyright = (props) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'eea-copyright' },
+        props.children,
+      );
+    Copyright.Icon = (props) =>
+      React.createElement(
+        'span',
+        { 'data-testid': 'eea-copyright-icon' },
+        props.children,
+      );
+    Copyright.Text = (props) =>
+      React.createElement(
+        'span',
+        { 'data-testid': 'eea-copyright-text' },
+        props.children,
+      );
 
-  return {
-    __esModule: true,
-    default: Copyright,
-  };
-});
+    return {
+      __esModule: true,
+      default: Copyright,
+    };
+  },
+  { virtual: true },
+);
+
+jest.mock('./ImageSidebar', () => () => null);
 
 // Register our mock Image component so config.getComponent({ name: 'Image' })
 // returns something renderable during tests.
@@ -122,7 +198,13 @@ const blockId = '1234';
 /**
  * Helper: render Edit wrapped in Redux + intl Provider.
  */
+const enabledSettings = {
+  enabled: true,
+  features: { image: { enabled: true, allowed_content_types: ['Image'] } },
+};
+
 const renderEdit = (data, extraProps = {}) => {
+  const { genAISettings = enabledSettings, ...props } = extraProps;
   settings.internalApiPath = 'http://localhost:8080/Plone';
   const store = mockStore({
     content: {
@@ -131,9 +213,10 @@ const renderEdit = (data, extraProps = {}) => {
       subrequests: { [blockId]: {} },
     },
     intl: { locale: 'en', messages: {} },
+    reduxAsyncConnect: { genAISettings },
   });
 
-  return render(
+  const utils = render(
     <Provider store={store}>
       <Edit
         data={{ '@type': 'image', ...data }}
@@ -151,10 +234,11 @@ const renderEdit = (data, extraProps = {}) => {
         handleKeyDown={() => {}}
         index={1}
         openObjectBrowser={() => {}}
-        {...extraProps}
+        {...props}
       />
     </Provider>,
   );
+  return { ...utils, store };
 };
 
 // ---------------------------------------------------------------------------
@@ -271,6 +355,141 @@ describe('Edit', () => {
     ).not.toBeInTheDocument();
   });
 
+  it.each([
+    null,
+    {
+      enabled: true,
+      features: { image: { enabled: true, allowed_content_types: ['Chart'] } },
+    },
+    { enabled: false, features: { image: { enabled: true } } },
+    { enabled: true, features: { image: { enabled: false } } },
+  ])(
+    'uploads directly without AI consent when SSR settings are missing or disabled',
+    async (genAISettings) => {
+      mockPost.mockClear();
+      mockReadAsDataURL.mockResolvedValueOnce('data:image/png;base64,cG5n');
+      const { store } = renderEdit(
+        { url: undefined },
+        { editable: true, selected: true, genAISettings },
+      );
+      fireEvent.click(await screen.findByTestId('drop-image'));
+      await waitFor(() =>
+        expect(store.getActions()).toContainEqual(
+          expect.objectContaining({
+            type: 'CREATE_CONTENT',
+            request: expect.objectContaining({
+              op: 'post',
+              data: expect.objectContaining({
+                '@type': 'Image',
+                title: 'wetland.png',
+                description: '',
+              }),
+            }),
+          }),
+        ),
+      );
+      expect(screen.queryByText('Generate with AI')).not.toBeInTheDocument();
+      expect(mockPost).not.toHaveBeenCalled();
+    },
+  );
+
+  it('sets alt_source custom and alt empty when upload completes without AI', () => {
+    const mockChangeBlock = jest.fn();
+    const edit = new EditComponent({
+      block: blockId,
+      data: { '@type': 'image' },
+      request: { loading: true, loaded: false },
+      onChangeBlock: mockChangeBlock,
+      intl: { formatMessage: ({ defaultMessage }) => defaultMessage },
+    });
+    edit.setState = jest.fn();
+    edit.state = {
+      uploading: true,
+      imageAI: { metadata: null },
+    };
+
+    edit.UNSAFE_componentWillReceiveProps({
+      request: { loading: false, loaded: true },
+      content: {
+        '@id': '/en/image.png',
+        title: 'wetland.png',
+        description: '',
+        image: {},
+      },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: '',
+        alt_source: 'custom',
+        image_metadata: undefined,
+      }),
+    );
+  });
+
+  it('sets alt_source image-metadata when upload completes with AI metadata', () => {
+    const mockChangeBlock = jest.fn();
+    const edit = new EditComponent({
+      block: blockId,
+      data: { '@type': 'image' },
+      request: { loading: true, loaded: false },
+      onChangeBlock: mockChangeBlock,
+      intl: { formatMessage: ({ defaultMessage }) => defaultMessage },
+    });
+    edit.setState = jest.fn();
+    edit.state = {
+      uploading: true,
+      imageAI: {
+        metadata: {
+          title: 'Wetland bird',
+          description: 'A beautiful wetland bird in nature',
+        },
+      },
+    };
+
+    edit.UNSAFE_componentWillReceiveProps({
+      request: { loading: false, loaded: true },
+      content: {
+        '@id': '/en/image.png',
+        title: 'Wetland bird',
+        description: 'A beautiful wetland bird in nature',
+        image: {},
+      },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: '',
+        alt_source: 'image-metadata',
+        image_title: 'Wetland bird',
+        image_description: 'A beautiful wetland bird in nature',
+        image_metadata: 'Wetland bird: A beautiful wetland bird in nature',
+      }),
+    );
+  });
+
+  it('aborts image analysis when its metadata modal is closed', async () => {
+    const abort = jest.fn();
+    const pendingRequest = new Promise(() => {});
+    pendingRequest.request = { abort };
+    mockPost.mockReturnValueOnce(pendingRequest);
+    mockReadAsDataURL.mockResolvedValueOnce('data:image/png;base64,cG5n');
+    renderEdit({ url: undefined }, { editable: true, selected: true });
+
+    fireEvent.click(await screen.findByTestId('drop-image'));
+    fireEvent.click(await screen.findByText('Generate with AI'));
+    expect(screen.getByText('Analyzing image…')).toBeVisible();
+
+    fireEvent.click(document.querySelector('.image-ai-consent-modal .close'));
+
+    expect(abort).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(screen.queryByText('Analyzing image…')).not.toBeInTheDocument(),
+    );
+  });
+
   it('applies align class to both the outer block and the EEA container', () => {
     const { container } = renderEdit({
       url: 'http://localhost:8080/Plone/image',
@@ -313,5 +532,115 @@ describe('Edit', () => {
     expect(
       container.querySelector('.image-block-container'),
     ).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Object-browser selection — explicit Image-title/custom provenance.
+// ---------------------------------------------------------------------------
+
+describe('Edit object-browser selection', () => {
+  const TWO_URL = 'http://localhost:8080/Plone/en/two.jpeg';
+
+  let browserCfg;
+  let mockChangeBlock;
+
+  const openBrowser = async (data = {}) => {
+    renderEdit(
+      { url: undefined, ...data },
+      {
+        editable: true,
+        openObjectBrowser: (cfg) => {
+          browserCfg = cfg;
+        },
+        onChangeBlock: mockChangeBlock,
+      },
+    );
+    fireEvent.click(await screen.findByTestId('image-block-object-browser'));
+    return browserCfg;
+  };
+
+  beforeEach(() => {
+    browserCfg = null;
+    mockChangeBlock = jest.fn();
+  });
+
+  it('exposes an onSelectItem handler to the object browser', async () => {
+    const cfg = await openBrowser();
+    expect(cfg).toBeTruthy();
+    expect(typeof cfg.onSelectItem).toBe('function');
+  });
+
+  it('uses the selected internal Image title as linked alt source', async () => {
+    const cfg = await openBrowser({
+      alt: 'stale custom alt',
+      alt_source: 'custom',
+      decorative: true,
+    });
+
+    cfg.onSelectItem(TWO_URL, {
+      Title: 'Wetland bird',
+      image_field: 'image',
+      image_scales: { image: [] },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        url: TWO_URL,
+        alt: '',
+        alt_source: 'image-metadata',
+        image_title: 'Wetland bird',
+        image_metadata: 'Wetland bird',
+        decorative: false,
+      }),
+    );
+  });
+
+  it('does not leak old image metadata when selecting a different image with empty description', async () => {
+    const cfg = await openBrowser({
+      image_title: 'Old image',
+      image_description: 'Old description',
+      image_metadata: 'Old image: Old description',
+      alt_source: 'image-metadata',
+    });
+
+    cfg.onSelectItem(TWO_URL, {
+      Title: 'New image',
+      Description: '',
+      image_field: 'image',
+      image_scales: { image: [] },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        url: TWO_URL,
+        alt: '',
+        alt_source: 'image-metadata',
+        image_title: 'New image',
+        image_description: '',
+        image_metadata: 'New image',
+        decorative: false,
+      }),
+    );
+  });
+
+  it('switches an external selection to empty custom mode', async () => {
+    const cfg = await openBrowser();
+
+    cfg.onSelectItem('https://example.com/cat.png', {
+      title: 'External image',
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: '',
+        alt_source: 'custom',
+        decorative: false,
+        image_title: undefined,
+      }),
+    );
   });
 });
