@@ -20,6 +20,23 @@ import {
 
 jest.mock('@plone/volto/helpers/Api/Api', () => jest.fn());
 
+const testRegistrySettings = {
+  apiPath: 'https://api.example.com/Plone',
+  internalApiPath: 'http://backend:8080/Plone',
+  publicURL: 'https://www.example.com',
+};
+
+let actualRegistry;
+try {
+  actualRegistry = jest.requireActual('@plone/volto/registry');
+} catch (e) {
+  actualRegistry = null;
+}
+const realConfig = actualRegistry?.default || actualRegistry;
+if (realConfig?.settings) {
+  Object.assign(realConfig.settings, testRegistrySettings);
+}
+
 jest.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
@@ -168,6 +185,12 @@ describe('requestImageAlt setup', () => {
 });
 
 describe('internal image URLs', () => {
+  beforeEach(() => {
+    if (realConfig?.settings) {
+      Object.assign(realConfig.settings, testRegistrySettings);
+    }
+  });
+
   it.each([
     '/en/photo',
     'https://api.example.com/Plone/en/photo',

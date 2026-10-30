@@ -55,7 +55,9 @@ jest.mock('react-dropzone', () => {
           'data-testid': 'drop-image',
           onClick: () =>
             props.onDrop([
-              new File(['png'], 'wetland.png', { type: 'image/png' }),
+              new (global.File || Blob)(['png'], 'wetland.png', {
+                type: 'image/png',
+              }),
             ]),
         },
         'Drop PNG',

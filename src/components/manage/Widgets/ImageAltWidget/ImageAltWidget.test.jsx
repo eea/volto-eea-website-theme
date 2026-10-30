@@ -69,6 +69,23 @@ jest.mock('@plone/volto/components/manage/Form/Field', () => {
   };
 });
 
+const testRegistrySettings = {
+  apiPath: 'https://api.example.com/Plone',
+  internalApiPath: 'http://backend:8080/Plone',
+  publicURL: 'https://www.example.com',
+};
+
+let actualRegistry;
+try {
+  actualRegistry = jest.requireActual('@plone/volto/registry');
+} catch (e) {
+  actualRegistry = null;
+}
+const realConfig = actualRegistry?.default || actualRegistry;
+if (realConfig?.settings) {
+  Object.assign(realConfig.settings, testRegistrySettings);
+}
+
 jest.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
@@ -277,6 +294,9 @@ describe('ImageAltWidget', () => {
     mockPost.mockReset();
     mockGet.mockReset();
     mockPatch.mockReset();
+    if (realConfig?.settings) {
+      Object.assign(realConfig.settings, testRegistrySettings);
+    }
   });
 
   describe('FormFieldWrapper and TextareaWidget composition', () => {
