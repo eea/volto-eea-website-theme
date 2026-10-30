@@ -1,6 +1,14 @@
 import React from 'react';
 import { IntlProvider } from 'react-intl';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import GenAISettings from './GenAISettings';
@@ -257,5 +265,90 @@ describe('GenAISettings', () => {
     expect(
       screen.queryByText('GenAI image length settings'),
     ).not.toBeInTheDocument();
+  });
+
+  it('does not render when canManageSettings is false', () => {
+    const { container } = renderComponent({ canManageSettings: false });
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders when Redux user actions include plone_setup', () => {
+    const store = createStore(() => ({
+      actions: {
+        actions: {
+          user: [{ id: 'plone_setup' }, { id: 'logout' }],
+        },
+      },
+    }));
+    render(
+      <Provider store={store}>
+        <IntlProvider locale="en" messages={{}}>
+          <GenAISettings />
+        </IntlProvider>
+      </Provider>,
+    );
+    expect(
+      screen.getByRole('button', { name: 'GenAI settings' }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not render when Redux user actions lack plone_setup', () => {
+    const store = createStore(() => ({
+      actions: {
+        actions: {
+          user: [{ id: 'preferences' }, { id: 'logout' }],
+        },
+      },
+    }));
+    const { container } = render(
+      <Provider store={store}>
+        <IntlProvider locale="en" messages={{}}>
+          <GenAISettings />
+        </IntlProvider>
+      </Provider>,
+    );
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('reacts to asynchronous Redux store action updates', () => {
+    let currentState = {
+      actions: {
+        actions: {
+          user: [{ id: 'preferences' }],
+        },
+      },
+    };
+    const store = createStore(
+      (state = currentState, action) => action.payload || state,
+    );
+
+    render(
+      <Provider store={store}>
+        <IntlProvider locale="en" messages={{}}>
+          <GenAISettings />
+        </IntlProvider>
+      </Provider>,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'GenAI settings' }),
+    ).not.toBeInTheDocument();
+
+    act(() => {
+      store.dispatch({
+        type: 'UPDATE',
+        payload: {
+          actions: {
+            actions: {
+              user: [{ id: 'plone_setup' }],
+            },
+          },
+        },
+      });
+    });
+
+    expect(
+      screen.getByRole('button', { name: 'GenAI settings' }),
+    ).toBeInTheDocument();
   });
 });

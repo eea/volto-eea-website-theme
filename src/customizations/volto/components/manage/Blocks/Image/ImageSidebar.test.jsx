@@ -73,4 +73,47 @@ describe('ImageSidebar', () => {
       '"alt_source":"custom"',
     );
   });
+
+  it('clears linked alt and image metadata when clearing the image', () => {
+    let currentData = {
+      '@type': 'image',
+      url: '/en/image.jpg',
+      alt: 'Linked metadata',
+      alt_source: 'image-metadata',
+      image_title: 'Original Image title',
+      image_description: 'Original Image description',
+      image_metadata: 'Original Image title: Original Image description',
+    };
+
+    const Harness = () => {
+      const [data, setData] = useState(currentData);
+      return (
+        <ImageSidebar
+          data={data}
+          block="image-block"
+          blocksConfig={{}}
+          onChangeBlock={(block, nextData) => {
+            currentData = nextData;
+            setData(nextData);
+          }}
+        />
+      );
+    };
+
+    render(
+      <IntlProvider locale="en" messages={{}}>
+        <Harness />
+      </IntlProvider>,
+    );
+
+    const clearButton = screen.getByTitle('Clear image');
+    fireEvent.click(clearButton);
+
+    expect(currentData.url).toBeUndefined();
+    expect(currentData.alt).toBeUndefined();
+    expect(currentData.alt_source).toBeUndefined();
+    expect(currentData.image_title).toBeUndefined();
+    expect(currentData.image_description).toBeUndefined();
+    expect(currentData.image_metadata).toBeUndefined();
+  });
 });

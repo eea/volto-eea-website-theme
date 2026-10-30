@@ -28,7 +28,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-intl-redux';
 import configureMockStore from 'redux-mock-store';
-import Edit, { getImageBlockSizes } from './Edit';
+import Edit, { EditComponent, getImageBlockSizes } from './Edit';
 
 const mockPost = jest.fn();
 const mockReadAsDataURL = jest.fn();
@@ -390,6 +390,83 @@ describe('Edit', () => {
       expect(mockPost).not.toHaveBeenCalled();
     },
   );
+
+  it('sets alt_source custom and alt empty when upload completes without AI', () => {
+    const mockChangeBlock = jest.fn();
+    const edit = new EditComponent({
+      block: blockId,
+      data: { '@type': 'image' },
+      request: { loading: true, loaded: false },
+      onChangeBlock: mockChangeBlock,
+      intl: { formatMessage: ({ defaultMessage }) => defaultMessage },
+    });
+    edit.setState = jest.fn();
+    edit.state = {
+      uploading: true,
+      imageAI: { metadata: null },
+    };
+
+    edit.UNSAFE_componentWillReceiveProps({
+      request: { loading: false, loaded: true },
+      content: {
+        '@id': '/en/image.png',
+        title: 'wetland.png',
+        description: '',
+        image: {},
+      },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: '',
+        alt_source: 'custom',
+        image_metadata: undefined,
+      }),
+    );
+  });
+
+  it('sets alt_source image-metadata when upload completes with AI metadata', () => {
+    const mockChangeBlock = jest.fn();
+    const edit = new EditComponent({
+      block: blockId,
+      data: { '@type': 'image' },
+      request: { loading: true, loaded: false },
+      onChangeBlock: mockChangeBlock,
+      intl: { formatMessage: ({ defaultMessage }) => defaultMessage },
+    });
+    edit.setState = jest.fn();
+    edit.state = {
+      uploading: true,
+      imageAI: {
+        metadata: {
+          title: 'Wetland bird',
+          description: 'A beautiful wetland bird in nature',
+        },
+      },
+    };
+
+    edit.UNSAFE_componentWillReceiveProps({
+      request: { loading: false, loaded: true },
+      content: {
+        '@id': '/en/image.png',
+        title: 'Wetland bird',
+        description: 'A beautiful wetland bird in nature',
+        image: {},
+      },
+    });
+
+    expect(mockChangeBlock).toHaveBeenCalledWith(
+      blockId,
+      expect.objectContaining({
+        alt: '',
+        alt_source: 'image-metadata',
+        image_title: 'Wetland bird',
+        image_description: 'A beautiful wetland bird in nature',
+        image_metadata: 'Wetland bird: A beautiful wetland bird in nature',
+      }),
+    );
+  });
 
   it('aborts image analysis when its metadata modal is closed', async () => {
     const abort = jest.fn();

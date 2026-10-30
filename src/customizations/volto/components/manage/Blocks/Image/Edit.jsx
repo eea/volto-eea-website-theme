@@ -83,7 +83,7 @@ const messages = defineMessages({
  * @class Edit
  * @extends Component
  */
-class Edit extends Component {
+export class EditComponent extends Component {
   /**
    * Property types.
    * @property {Object} propTypes Property types.
@@ -158,6 +158,11 @@ class Edit extends Component {
       nextProps.request.loaded &&
       this.state.uploading
     ) {
+      const generatedMetadata = this.state.imageAI?.metadata;
+      const hasAIMetadata = Boolean(
+        generatedMetadata &&
+          (generatedMetadata.title || generatedMetadata.description),
+      );
       this.setState({
         uploading: false,
         imageAI: createImageAIState(),
@@ -165,18 +170,20 @@ class Edit extends Component {
       const title = (nextProps.content && nextProps.content.title) || '';
       const description =
         (nextProps.content && nextProps.content.description) || '';
-      const metadata = composeImageMetadata(title, description);
+      const metadata = hasAIMetadata
+        ? composeImageMetadata(title, description)
+        : '';
       this.props.onChangeBlock(this.props.block, {
         ...this.props.data,
         url: nextProps.content['@id'],
         image_field: 'image',
         image_scales: { image: [nextProps.content.image] },
         alt: '',
-        alt_source: 'image-metadata',
+        alt_source: hasAIMetadata ? 'image-metadata' : 'custom',
         decorative: false,
-        image_title: title,
-        image_description: description,
-        image_metadata: metadata,
+        image_title: hasAIMetadata ? title : undefined,
+        image_description: hasAIMetadata ? description : undefined,
+        image_metadata: hasAIMetadata ? metadata : undefined,
       });
     } else if (
       this.props.request.loading &&
@@ -685,4 +692,4 @@ export default compose(
     }),
     { createContent },
   ),
-)(Edit);
+)(EditComponent);

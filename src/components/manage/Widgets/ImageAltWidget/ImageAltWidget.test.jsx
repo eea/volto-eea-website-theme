@@ -48,6 +48,27 @@ jest.mock('@plone/volto/components/theme/Icon/Icon', () => {
   };
 });
 
+jest.mock('@plone/volto/components/manage/Form/Field', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ id, title, type, value, onChange, disabled }) =>
+      React.createElement(
+        'div',
+        { 'data-testid': `field-${id}` },
+        React.createElement('label', { htmlFor: id }, title),
+        React.createElement('input', {
+          id,
+          type: type === 'integer' || type === 'number' ? 'number' : undefined,
+          'aria-label': title,
+          value: value ?? '',
+          disabled,
+          onChange: (e) => onChange(id, e.target.value),
+        }),
+      ),
+  };
+});
+
 jest.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
@@ -55,6 +76,15 @@ jest.mock('@plone/volto/registry', () => ({
       apiPath: 'https://api.example.com/Plone',
       internalApiPath: 'http://backend:8080/Plone',
       publicURL: 'https://www.example.com',
+    },
+    widgets: {
+      vocabulary: {},
+      views: { widget: {}, id: {} },
+      widget: {},
+      id: {},
+      choices: {},
+      type: {},
+      default: () => null,
     },
   },
 }));

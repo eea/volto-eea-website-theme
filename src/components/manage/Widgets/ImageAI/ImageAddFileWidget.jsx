@@ -9,6 +9,7 @@ import Icon from '@plone/volto/components/theme/Icon/Icon';
 import FormFieldWrapper from '@plone/volto/components/manage/Widgets/FormFieldWrapper';
 import FileWidget from '@plone/volto/components/manage/Widgets/FileWidget';
 import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import config from '@plone/volto/registry';
 import ImageMetadataConsentModal from './ImageMetadataConsentModal';
 import GenAISettings from '@eeacms/volto-eea-website-theme/components/manage/GenAISettings/GenAISettings';
 import { isImageAIAllowed } from '@eeacms/volto-eea-website-theme/helpers/genAISettings';
@@ -114,6 +115,7 @@ const getGenerationErrorMessage = (code, isEditing, intl) => {
 };
 
 const idleWorkflow = { status: 'idle', source: null, errorCode: null };
+const AI_IMAGE_FIELD_PRIORITY = ['image', 'lead_image', 'preview_image'];
 
 const ImageAddFileWidget = (props) => {
   const { id, value, onChange, isDisabled, disabled, className } = props;
@@ -123,15 +125,41 @@ const ImageAddFileWidget = (props) => {
   const language = useSelector((state) => state.intl?.locale || 'en');
   const globalFormData = useSelector((state) => state.form?.global || {});
   const content = useSelector((state) => state.content?.data);
+  const schema = useSelector((state) => state.schema?.schema);
   const formData = props.formData || globalFormData;
   const isAdd = location.pathname.endsWith('/add');
   const type = isAdd
     ? new URLSearchParams(location.search).get('type')
     : content?.['@type'] || formData?.['@type'];
   const imageAIEnabled = useSelector((state) => isImageAIAllowed(state, type));
+
+  const widgets = props.widgets || config?.widgets;
+  const hasDedicatedWidget = Boolean(
+    props.widget &&
+      props.widget !== 'file' &&
+      props.widget !== 'image_ai' &&
+      widgets?.widget?.[props.widget],
+  );
+
+  const isCandidateField = AI_IMAGE_FIELD_PRIORITY.includes(id);
+  const isTargetAIField = (() => {
+    if (!isCandidateField) return false;
+    const schemaProperties = props.schema?.properties || schema?.properties;
+    const availableField = schemaProperties
+      ? AI_IMAGE_FIELD_PRIORITY.find((fieldKey) => fieldKey in schemaProperties)
+      : AI_IMAGE_FIELD_PRIORITY.find(
+          (fieldKey) =>
+            (formData && fieldKey in formData) ||
+            (!isAdd && content && fieldKey in content),
+        );
+    return (availableField || id) === id;
+  })();
+
+  const isFeatureActive = Boolean(imageAIEnabled && isTargetAIField);
+
   const latestContext = useRef(null);
   latestContext.current = {
-    enabled: imageAIEnabled,
+    enabled: isFeatureActive,
     isReadOnly,
     pathname: location.pathname,
     type,
@@ -188,21 +216,29 @@ const ImageAddFileWidget = (props) => {
   }, [isReadOnly]);
 
   useEffect(() => {
-    if (!imageAIEnabled) {
+    if (!isFeatureActive) {
       invalidateRequest();
       const { source } = workflowRef.current;
       setWorkflow(idleWorkflow);
       // Context/value resets above discard obsolete selections before release.
       applyNewSelection(source);
     }
-  }, [imageAIEnabled]);
+  }, [isFeatureActive]);
 
   const handlePassthroughChange = (field, image) => {
     if (latestContext.current.isReadOnly) return;
     onChange(field, image);
   };
 
-  if (!imageAIEnabled) {
+  if (props.block || hasDedicatedWidget) {
+    const DedicatedWidget =
+      (hasDedicatedWidget && widgets?.widget?.[props.widget]) ||
+      widgets?.type?.[props.type] ||
+      FileWidget;
+    return <DedicatedWidget {...props} />;
+  }
+
+  if (!isFeatureActive) {
     return (
       <FileWidget
         {...props}
@@ -454,6 +490,10 @@ ImageAddFileWidget.propTypes = {
   isDisabled: PropTypes.bool,
   disabled: PropTypes.bool,
   className: PropTypes.string,
+  block: PropTypes.string,
+  widget: PropTypes.string,
+  schema: PropTypes.object,
+  widgets: PropTypes.object,
 };
 
 export default ImageAddFileWidget;

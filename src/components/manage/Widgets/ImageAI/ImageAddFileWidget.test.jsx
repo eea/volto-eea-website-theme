@@ -122,11 +122,13 @@ const makeStore = (
   formData = {},
   genAISettings = enabledSettings,
   content = {},
+  schema = null,
 ) => {
   const state = {
     intl: { locale: 'fr' },
     content: { data: content },
     form: { global: formData },
+    schema: { schema },
     reduxAsyncConnect: { genAISettings },
   };
   return createStore((current = state, action) =>
@@ -145,10 +147,11 @@ const renderWidget = ({
   formData = {},
   genAISettings = enabledSettings,
   content = {},
+  schema = null,
   ...restProps
 } = {}) => {
   const onChange = jest.fn();
-  let store = makeStore(formData, genAISettings, content);
+  let store = makeStore(formData, genAISettings, content, schema);
   const history = createMemoryHistory({ initialEntries: [route] });
   let widgetProps = {
     id,
@@ -1225,6 +1228,157 @@ describe('ImageAddFileWidget', () => {
       expect(
         screen.queryByRole('button', { name: 'Cancel' }),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('field selection priority and block delegation', () => {
+    it('delegates to the standard widget when rendered in a block', () => {
+      renderWidget({
+        value: PNG,
+        block: 'hero-block-uuid',
+      });
+      expect(
+        screen.queryByRole('button', { name: 'Generate with AI' }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'GenAI settings' }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText('Choose PNG')).toBeInTheDocument();
+    });
+
+    it('delegates to the dedicated widget when schema specifies props.widget', () => {
+      const CustomWidget = () => (
+        <div data-testid="custom-attachedimage-widget">Custom Widget</div>
+      );
+      renderWidget({
+        value: PNG,
+        widget: 'attachedimage',
+        widgets: {
+          widget: { attachedimage: CustomWidget },
+        },
+      });
+      expect(
+        screen.getByTestId('custom-attachedimage-widget'),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Generate with AI' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('only enables AI on image when content has both image and preview_image', () => {
+      const schema = {
+        properties: {
+          image: { factory: 'Image' },
+          preview_image: { factory: 'Image' },
+        },
+      };
+
+      // image gets AI
+      const imageResult = renderWidget({
+        id: 'image',
+        value: PNG,
+        schema,
+      });
+      expect(
+        screen.getByRole('button', { name: 'Generate with AI' }),
+      ).toBeInTheDocument();
+      imageResult.unmount();
+
+      // preview_image gets standard FileWidget
+      renderWidget({
+        id: 'preview_image',
+        value: PNG,
+        schema,
+      });
+      expect(
+        screen.queryByRole('button', { name: 'Generate with AI' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('enables AI on lead_image when content has lead_image and preview_image but no image', () => {
+      const schema = {
+        properties: {
+          lead_image: { factory: 'Image' },
+          preview_image: { factory: 'Image' },
+        },
+      };
+
+      // lead_image gets AI
+      const leadResult = renderWidget({
+        id: 'lead_image',
+        value: PNG,
+        schema,
+      });
+      expect(
+        screen.getByRole('button', { name: 'Generate with AI' }),
+      ).toBeInTheDocument();
+      leadResult.unmount();
+
+      // preview_image gets standard FileWidget
+      renderWidget({
+        id: 'preview_image',
+        value: PNG,
+        schema,
+      });
+      expect(
+        screen.queryByRole('button', { name: 'Generate with AI' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('enables AI on preview_image when content only has preview_image', () => {
+      const schema = {
+        properties: {
+          preview_image: { factory: 'Image' },
+        },
+      };
+
+      renderWidget({
+        id: 'preview_image',
+        value: PNG,
+        schema,
+      });
+      expect(
+        screen.getByRole('button', { name: 'Generate with AI' }),
+      ).toBeInTheDocument();
+    });
+
+    it('disables AI when field is not a candidate (e.g. other_file)', () => {
+      renderWidget({
+        id: 'other_file',
+        value: PNG,
+      });
+      expect(
+        screen.queryByRole('button', { name: 'Generate with AI' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('uses schema properties instead of parent content in Add mode', () => {
+      const schema = {
+        properties: {
+          preview_image: { factory: 'Image' },
+        },
+      };
+
+      renderWidget({
+        route: '/folder/add?type=Document',
+        id: 'preview_image',
+        value: PNG,
+        schema,
+        genAISettings: {
+          enabled: true,
+          features: {
+            image: { enabled: true, allowed_content_types: ['Document'] },
+          },
+        },
+        content: {
+          '@type': 'Folder',
+          image: { filename: 'parent-folder.png' },
+        },
+      });
+
+      expect(
+        screen.getByRole('button', { name: 'Generate with AI' }),
+      ).toBeInTheDocument();
     });
   });
 });

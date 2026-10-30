@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { ReactReduxContext } from 'react-redux';
 import cx from 'classnames';
 import { Modal } from 'semantic-ui-react';
 import { defineMessages, useIntl } from 'react-intl';
@@ -63,6 +64,10 @@ const fallbackNumberWidgets = {
   default: NumberWidget,
 };
 
+if (config && !config.widgets) {
+  config.widgets = fallbackNumberWidgets;
+}
+
 function showToast(type, content) {
   if (typeof toast[type] === 'function') {
     toast[type](
@@ -77,10 +82,35 @@ function showToast(type, content) {
   }
 }
 
-const GenAISettings = ({ isDisabled, disabled, className }) => {
+const GenAISettings = ({
+  isDisabled,
+  disabled,
+  className,
+  canManageSettings: canManageProp,
+}) => {
   const isTriggerDisabledExplicit = Boolean(isDisabled || disabled);
   const intl = useIntl();
   const isMountedRef = useRef(true);
+  const reduxContext = useContext(ReactReduxContext);
+  const [, forceRender] = useState(0);
+
+  useEffect(() => {
+    const store = reduxContext?.store;
+    if (!store?.subscribe) return undefined;
+    return store.subscribe(() => {
+      forceRender((n) => n + 1);
+    });
+  }, [reduxContext]);
+
+  const canManageSettings = (() => {
+    if (canManageProp !== undefined) return Boolean(canManageProp);
+    if (!reduxContext?.store) return true;
+    const actions = reduxContext.store.getState()?.actions?.actions?.user;
+    if (Array.isArray(actions)) {
+      return actions.some((action) => action?.id === 'plone_setup');
+    }
+    return true;
+  })();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -177,6 +207,10 @@ const GenAISettings = ({ isDisabled, disabled, className }) => {
 
   const defaultFieldset = schema.fieldsets[0];
 
+  if (!canManageSettings) {
+    return null;
+  }
+
   return (
     <>
       <button
@@ -262,6 +296,7 @@ GenAISettings.propTypes = {
   isDisabled: PropTypes.bool,
   disabled: PropTypes.bool,
   className: PropTypes.string,
+  canManageSettings: PropTypes.bool,
 };
 
 export { GenAISettings, GenAISettings as GenAILengthSettings };

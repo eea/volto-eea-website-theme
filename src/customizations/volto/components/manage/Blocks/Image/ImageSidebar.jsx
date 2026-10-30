@@ -53,7 +53,12 @@ const ImageSidebar = (props) => {
                 url: undefined,
                 image_scales: undefined,
                 image_field: undefined,
+                alt_source: undefined,
+                image_title: undefined,
+                image_description: undefined,
+                image_metadata: undefined,
                 alt:
+                  dataRef.current.alt_source === 'image-metadata' ||
                   dataRef.current.url?.title === dataRef.current.alt
                     ? undefined
                     : dataRef.current.alt,

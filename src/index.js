@@ -490,8 +490,11 @@ const applyConfig = (config) => {
   config.widgets.widget.creatable_select = CreatableSelectWidget;
   config.widgets.widget.simple_array = SimpleArrayWidget;
   config.widgets.widget.image_alt = ImageAltWidget;
-  config.widgets.id.image = ImageAddFileWidget;
-  config.widgets.id.preview_image = ImageAddFileWidget;
+  config.widgets.widget.image_ai = ImageAddFileWidget;
+  config.widgets.factory = {
+    ...(config.widgets.factory || {}),
+    Image: ImageAddFileWidget,
+  };
   config.widgets.id.navigation_settings = NavigationBehaviorWidget;
   config.widgets.vocabulary['plone.app.vocabularies.Users'] = UserSelectWidget;
   config.widgets.widget.ad_user_group_select = ADUserGroupSelectWidget;
