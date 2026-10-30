@@ -1,6 +1,7 @@
 --- @plone/volto@18.35.1/components/manage/Form/Form.jsx
 +++ src/customizations/volto/components/manage/Form/Form.jsx
-@@ -1,7 +1,8 @@
+@@ -5,7 +5,8 @@
+ 
  import Icon from '@plone/volto/components/theme/Icon/Icon';
  import Toast from '@plone/volto/components/manage/Toast/Toast';
 -import { Field, BlocksForm } from '@plone/volto/components/manage/Form';
@@ -8,10 +9,21 @@
 +import BlocksForm from '@plone/volto/components/manage/Blocks/Block/BlocksForm';
  import BlocksToolbar from '@plone/volto/components/manage/Form/BlocksToolbar';
  import UndoToolbar from '@plone/volto/components/manage/Form/UndoToolbar';
+ import { difference } from '@plone/volto/helpers/Utils/Utils';
+@@ -53,17 +54,18 @@
+   resetMetadataFocus,
+   setSidebarTab,
+ } from '@plone/volto/actions/sidebar/sidebar';
+-import { setFormData, setUIState } from '@plone/volto/actions/form/form';
++import { setFormData } from '@plone/volto/actions/form/form';
+ import { compose } from 'redux';
+ import config from '@plone/volto/registry';
+-import SlotRenderer from '@plone/volto/components/theme/SlotRenderer/SlotRenderer';
++// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
++const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
  
-+// SlotRenderer import removed for Volto 17 compatibility (introduced in Volto 18)
-+
-@@ -63,7 +64,7 @@
+ /**
+  * Form container class.
   * @class Form
   * @extends Component
   */
@@ -20,7 +32,77 @@
    /**
     * Property types.
     * @property {Object} propTypes Property types.
-@@ -467,15 +467,16 @@
+@@ -259,6 +261,7 @@
+     };
+     this.onChangeField = this.onChangeField.bind(this);
+     this.onSelectBlock = this.onSelectBlock.bind(this);
++    this.onUndoRedo = this.onUndoRedo.bind(this);
+     this.onSubmit = this.onSubmit.bind(this);
+     this.onCancel = this.onCancel.bind(this);
+     this.onTabChange = this.onTabChange.bind(this);
+@@ -429,9 +432,61 @@
+         inFocus: { [id]: true },
+       };
+     });
++  }
++
++  /**
++   * State tracked by the undo manager. Volto block helpers (e.g. deleteBlock)
++   * mutate formData in place, which also altered the snapshots kept in the
++   * undo history, so undoing a delete or cut restored nothing. The history
++   * gets its own copy, made only when formData changes.
++   * @method getUndoState
++   * @returns {Object} Undo state.
++   */
++  getUndoState() {
++    const { formData } = this.state;
++    const { selected, multiSelected } = this.props.uiState;
++    const cache = this.undoStateCache;
++    if (
++      cache?.source === formData &&
++      cache.state.selected === selected &&
++      cache.state.multiSelected === multiSelected
++    ) {
++      return cache.state;
++    }
++    this.undoStateCache = {
++      source: formData,
++      state: {
++        formData:
++          cache?.source === formData
++            ? cache.state.formData
++            : cloneDeep(formData),
++        selected,
++        multiSelected,
++      },
++    };
++    return this.undoStateCache.state;
+   }
+ 
+   /**
++   * Undo/redo handler, restores a copy of the snapshot so later edits
++   * can't alter the history
++   * @method onUndoRedo
++   * @param {Object} undoState Undo state.
++   * @returns {undefined}
++   */
++  onUndoRedo({ state }) {
++    const formData = cloneDeep(state.formData);
++    if (this.props.global) {
++      this.props.setFormData(formData);
++    }
++    this.props.setUIState({
++      selected: state.selected,
++      multiSelected: state.multiSelected,
++    });
++    this.setState({ formData });
++  }
++
++  /**
+    * Select block handler
+    * @method onSelectBlock
+    * @param {string} id Id of the field
+@@ -467,15 +522,16 @@
        }
  
        if ((event.ctrlKey || event.metaKey) && !event.shiftKey) {
@@ -42,3 +124,59 @@
            multiSelected = [...multiSelected, id];
          }
        }
+@@ -747,12 +803,6 @@
+       // but draftJS don't like it much and the hydration gets messed up
+       this.state.isClient && (
+         <>
+-          <SlotRenderer
+-            name="aboveContent"
+-            content={this.props.content}
+-            navRoot={navRoot}
+-          />
+-
+           <Container>
+             <>
+               <BlocksToolbar
+@@ -777,18 +827,9 @@
+                 onSelectBlock={this.onSelectBlock}
+               />
+               <UndoToolbar
+-                state={{
+-                  formData,
+-                  selected: this.props.uiState.selected,
+-                  multiSelected: this.props.uiState.multiSelected,
+-                }}
++                state={this.getUndoState()}
+                 enableHotKeys
+-                onUndoRedo={({ state }) => {
+-                  if (this.props.global) {
+-                    this.props.setFormData(state.formData);
+-                  }
+-                  return this.setState(state);
+-                }}
++                onUndoRedo={this.onUndoRedo}
+               />
+               <BlocksForm
+                 onChangeFormData={(newData) => {
+@@ -893,12 +934,6 @@
+                   </UiForm>,
+                   document.getElementById('sidebar-metadata'),
+                 )}
+-
+-              <SlotRenderer
+-                name="belowContent"
+-                content={this.props.content}
+-                navRoot={navRoot}
+-              />
+             </>
+           </Container>
+         </>
+@@ -1127,7 +1162,7 @@
+     (state, props) => ({
+       content: state.content.data,
+       globalData: state.form?.global,
+-      uiState: state.form?.ui,
++      uiState: state.form?.ui ?? state.formUI,
+       metadataFieldsets: state.sidebar?.metadataFieldsets,
+       metadataFieldFocus: state.sidebar?.metadataFieldFocus,
+     }),
