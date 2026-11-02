@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import config from '@plone/volto/registry';
 import { BlocksToolbarComponent } from './BlocksToolbar';
 import { loadBlocksClipboardFromStorage } from './blocksClipboardUtils';
@@ -85,5 +85,120 @@ describe('BlocksToolbar clipboard storage sync', () => {
     );
 
     expect(loadBlocksClipboardFromStorage()).toBeUndefined();
+  });
+});
+
+describe('BlocksToolbar in nested container blocks', () => {
+  const originalBlocks = config.blocks;
+  const clipboard = { copy: [['copied', { '@type': 'slate' }]] };
+  const groupForm = {
+    blocks: { g1: { '@type': 'slate' } },
+    blocks_layout: { items: ['g1'] },
+  };
+  const columnForm = {
+    blocks: {
+      grp: { '@type': 'group', data: groupForm },
+      s1: { '@type': 'slate' },
+    },
+    blocks_layout: { items: ['grp', 's1'] },
+  };
+
+  const toolbar = (props) => (
+    <BlocksToolbarComponent
+      intl={{ formatMessage: () => '' }}
+      selectedBlocks={[]}
+      blocksClipboard={clipboard}
+      setBlocksClipboard={jest.fn()}
+      resetBlocksClipboard={jest.fn()}
+      onSetSelectedBlocks={jest.fn()}
+      onSelectBlock={jest.fn()}
+      {...props}
+    />
+  );
+
+  beforeEach(() => {
+    config.blocks = { ...originalBlocks, blocksConfig: { slate: {} } };
+  });
+
+  afterEach(() => {
+    config.blocks = originalBlocks;
+  });
+
+  it('pastes in the group placed in a column, not in the column', () => {
+    const onChangeColumn = jest.fn();
+    const onChangeGroup = jest.fn();
+    const { container } = render(
+      <>
+        {toolbar({
+          formData: columnForm,
+          selectedBlock: 'grp',
+          onChangeBlocks: onChangeColumn,
+        })}
+        {toolbar({
+          formData: groupForm,
+          selectedBlock: 'g1',
+          onChangeBlocks: onChangeGroup,
+        })}
+      </>,
+    );
+
+    const pasteButtons = container.querySelectorAll('#toolbar-paste-blocks');
+    expect(pasteButtons).toHaveLength(1);
+    fireEvent.click(pasteButtons[0]);
+
+    expect(onChangeColumn).not.toHaveBeenCalled();
+    expect(onChangeGroup).toHaveBeenCalledTimes(1);
+    expect(onChangeGroup.mock.calls[0][0].blocks_layout.items).toHaveLength(2);
+  });
+
+  it('gives the buttons back to the column when the group is unselected', () => {
+    const onChangeColumn = jest.fn();
+    const { container, rerender } = render(
+      <>
+        {toolbar({
+          formData: columnForm,
+          selectedBlock: 'grp',
+          onChangeBlocks: onChangeColumn,
+        })}
+        {toolbar({
+          formData: groupForm,
+          selectedBlock: 'g1',
+          onChangeBlocks: jest.fn(),
+        })}
+      </>,
+    );
+
+    rerender(
+      <>
+        {toolbar({
+          formData: columnForm,
+          selectedBlock: 'grp',
+          onChangeBlocks: onChangeColumn,
+        })}
+      </>,
+    );
+
+    fireEvent.click(container.querySelector('#toolbar-paste-blocks'));
+    expect(onChangeColumn).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the column buttons when blocks are multi-selected in it', () => {
+    const { container } = render(
+      <>
+        {toolbar({
+          formData: columnForm,
+          selectedBlock: null,
+          selectedBlocks: ['grp', 's1'],
+          onChangeBlocks: jest.fn(),
+        })}
+        {toolbar({
+          formData: groupForm,
+          selectedBlock: 'g1',
+          onChangeBlocks: jest.fn(),
+        })}
+      </>,
+    );
+
+    expect(container.querySelectorAll('#toolbar-copy-blocks')).toHaveLength(1);
   });
 });

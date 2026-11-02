@@ -56,13 +56,23 @@ loadFromStorage(event) {
 
 ### 3. `componentDidMount()` — no reload on mount
 
-`componentDidMount()` is identical to upstream: it only registers the `storage` listener. The clipboard must **not** be reloaded from localStorage on mount:
+`componentDidMount()` only registers the `storage` listener, as upstream does, plus the toolbar itself (see section 4). The clipboard must **not** be reloaded from localStorage on mount:
 
 - the store already rehydrates the clipboard from localStorage when it is created;
 - `redux-localstorage-simple` saves with a 500ms debounce that restarts on every Redux action (hovering blocks dispatches `setUIState`), so right after a cut/copy localStorage can still hold an older clipboard.
 
 Reloading on mount (e.g. when a container block's nested `BlocksToolbar` mounts on selection) used to overwrite the fresh cut/copy with that stale value, which made the paste button disappear.
 
+### 4. Nested container blocks — innermost toolbar owns the buttons
+
+Container blocks (columns, group, tabs, accordion) render their own `BlocksToolbar` next to the one of the main form. Upstream, all of them plug their buttons with the same ids (`blocks-delete-btn`, `blocks-cut-btn`, `blocks-copy-btn`, `block-paste-btn`), so the last toolbar that registers wins. React runs the effects of a parent after the ones of its children, so for a group placed in a column the columns block toolbar often won and **pasting in the group pasted in the column**. When one toolbar unmounted it also removed the buttons of the others, since they shared the ids.
+
+The override adds `nestedBlocksToolbars.js`, a small registry of the mounted toolbars:
+
+- every toolbar registers on mount, unregisters on unmount and notifies the others when `formData`, `selectedBlock` or `selectedBlocks` change, so they re-render;
+- `render()` returns nothing when the block selected in the toolbar contains another toolbar with a selection of its own (`hasNestedSelection`), so only the innermost toolbar shows the buttons. A toolbar with its own multi-selection always keeps its buttons;
+- the `Plug` ids get a per-instance suffix, so a toolbar never removes the buttons of another one. The button DOM ids (`toolbar-paste-blocks`, …) are unchanged.
+
 ## What did NOT change
 
-All other methods — `componentDidMount`, `deleteBlocks`, `copyBlocksToClipboard`, `cutBlocksToClipboard`, `setBlocksClipboard`, `pasteBlocks`, `render()`, and the `connect`/`compose` wrapper — are **identical** to the Volto 18 upstream.
+`deleteBlocks`, `copyBlocksToClipboard`, `cutBlocksToClipboard`, `setBlocksClipboard`, `pasteBlocks`, the buttons markup and the `connect`/`compose` wrapper are **identical** to the Volto 18 upstream.
