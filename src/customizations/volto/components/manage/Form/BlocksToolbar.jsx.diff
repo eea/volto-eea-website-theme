@@ -1,13 +1,24 @@
 13d12
 < import { load } from 'redux-localstorage-simple';
-28c27,30
+28c27,36
 < import { cloneBlocks } from '@plone/volto/helpers/Blocks/cloneBlocks';
 ---
 > import {
 >   cloneBlocks,
 >   loadBlocksClipboardFromStorage,
 > } from './blocksClipboardUtils';
-42,45c44,57
+> import {
+>   hasNestedSelection,
+>   notifyToolbars,
+>   registerToolbar,
+>   unregisterToolbar,
+> } from './nestedBlocksToolbars';
+39a48,51
+>     this.onToolbarsChange = () => this.forceUpdate();
+>     // Nested container blocks render their own toolbar, unique plug ids keep
+>     // one toolbar from removing the buttons of another one when it unmounts
+>     this.plugSuffix = uuid();
+42,45c54,67
 <   loadFromStorage() {
 <     const clipboard = load({ states: ['blocksClipboard'] })?.blocksClipboard;
 <     if (!isEqual(clipboard, this.props.blocksClipboard))
@@ -27,3 +38,45 @@
 >     if (!isEqual(clipboard, this.props.blocksClipboard || {})) {
 >       this.props.setBlocksClipboard(clipboard);
 >     }
+49a72
+>     registerToolbar(this, this.onToolbarsChange);
+51a75,84
+>   componentDidUpdate(prevProps) {
+>     if (
+>       prevProps.formData !== this.props.formData ||
+>       prevProps.selectedBlock !== this.props.selectedBlock ||
+>       prevProps.selectedBlocks !== this.props.selectedBlocks
+>     ) {
+>       notifyToolbars();
+>     }
+>   }
+> 
+53a87
+>     unregisterToolbar(this, this.onToolbarsChange);
+143a178,181
+>     if (hasNestedSelection(this)) {
+>       return null;
+>     }
+>     const plugId = (id) => `${id}-${this.plugSuffix}`;
+148c186,189
+<             <Plug pluggable="main.toolbar.bottom" id="blocks-delete-btn">
+---
+>             <Plug
+>               pluggable="main.toolbar.bottom"
+>               id={plugId('blocks-delete-btn')}
+>             >
+159c200
+<             <Plug pluggable="main.toolbar.bottom" id="blocks-cut-btn">
+---
+>             <Plug pluggable="main.toolbar.bottom" id={plugId('blocks-cut-btn')}>
+170c211,214
+<             <Plug pluggable="main.toolbar.bottom" id="blocks-copy-btn">
+---
+>             <Plug
+>               pluggable="main.toolbar.bottom"
+>               id={plugId('blocks-copy-btn')}
+>             >
+188c232
+<             id="block-paste-btn"
+---
+>             id={plugId('block-paste-btn')}
