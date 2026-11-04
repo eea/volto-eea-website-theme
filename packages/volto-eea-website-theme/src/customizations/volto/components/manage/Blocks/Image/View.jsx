@@ -13,6 +13,7 @@ import { flattenToAppURL, isInternalURL } from '@plone/volto/helpers/Url/Url';
 import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
 import config from '@plone/volto/registry';
 import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
+import { effectiveImageAlt } from '@eeacms/volto-eea-website-theme/helpers/imageAI';
 
 /**
  * View image block class.
@@ -103,7 +104,7 @@ export const View = (props) => {
                             : data.url
                       }
                       sizes={config.blocks.blocksConfig.image.getSizes(data)}
-                      alt={data.alt || ''}
+                      alt={effectiveImageAlt(data)}
                       loading="lazy"
                       responsive={true}
                     />

@@ -1,6 +1,6 @@
 --- volto-19.5.0/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Form/blocksClipboardUtils.js
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,66 @@
 +import { v4 as uuid } from 'uuid';
 +import { load } from 'redux-localstorage-simple';
 +import {
@@ -60,12 +60,10 @@
 +    : fallbackBlocksClipboardStates;
 +};
 +
++// Only read the keys the store persists: a leftover key from another layout
++// (e.g. the Volto 17 `blocksClipboard` one) is never updated and holds stale data
 +export const loadBlocksClipboardFromStorage = () =>
 +  load({
 +    states: getBlocksClipboardStates(),
-+    disableWarnings: true,
-+  })?.blocksClipboard ||
-+  load({
-+    states: ['blocksClipboard'],
 +    disableWarnings: true,
 +  })?.blocksClipboard;

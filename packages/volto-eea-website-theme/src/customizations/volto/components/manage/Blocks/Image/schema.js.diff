@@ -11,7 +11,18 @@
    Image: {
      id: 'Image',
      defaultMessage: 'Image',
-@@ -45,11 +49,21 @@
+@@ -25,10 +29,6 @@
+     id: 'Open in a new tab',
+     defaultMessage: 'Open in a new tab',
+   },
+-  AltTextHint: {
+-    id: 'Alt text hint',
+-    defaultMessage: 'Leave empty if the image is purely decorative.',
+-  },
+   AltTextHintLinkText: {
+     id: 'Alt text hint link text',
+     defaultMessage: 'Describe the purpose of the image.',
+@@ -45,11 +45,21 @@
        {
          id: 'default',
          title: 'Default',
@@ -35,7 +46,7 @@
                id: 'link_settings',
                title: intl.formatMessage(messages.linkSettings),
                fields: ['href', 'openLinkInNewTab'],
-@@ -58,6 +72,10 @@
+@@ -58,22 +68,18 @@
          : []),
      ],
      properties: {
@@ -45,8 +56,29 @@
 +      },
        alt: {
          title: intl.formatMessage(messages.AltText),
-         description: (
-@@ -95,6 +113,31 @@
+-        description: (
+-          <>
+-            <a
+-              href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
+-              title={intl.formatMessage(messages.openLinkInNewTab)}
+-              target="_blank"
+-              rel="noopener noreferrer"
+-            >
+-              {intl.formatMessage(messages.AltTextHintLinkText)}
+-            </a>{' '}
+-            {intl.formatMessage(messages.AltTextHint)}
+-          </>
+-        ),
++        widget: 'image_alt',
++        description: intl.formatMessage(messages.AltTextHintLinkText),
+       },
++      alt_source: {
++        type: 'string',
++      },
+       align: {
+         title: intl.formatMessage(messages.Align),
+         widget: 'align',
+@@ -95,6 +101,31 @@
          title: intl.formatMessage(messages.openLinkInNewTab),
          type: 'boolean',
        },

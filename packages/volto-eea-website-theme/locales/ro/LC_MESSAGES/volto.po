@@ -11,9 +11,57 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
+#. Default: "AI alt generation failed."
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "AI alt generation failed."
+msgstr ""
+
+#. Default: "AI alt generation is unavailable for this image format."
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "AI alt generation is unavailable for this image format."
+msgstr ""
+
+#. Default: "AI generation will replace the current title and description. You can edit the generated values before saving."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+msgid "AI generation will replace the current title and description. You can edit the generated values before saving."
+msgstr ""
+
+#. Default: "AI metadata is unavailable for this image format."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+msgid "AI metadata is unavailable for this image format."
+msgstr ""
+
+#. Default: "AI metadata is unavailable for this image format. You can still upload the image without AI."
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "AI metadata is unavailable for this image format. You can still upload the image without AI."
+msgstr ""
+
 #. Default: "Add"
 #: components/theme/Widgets/SimpleArrayWidget
 msgid "Add"
+msgstr ""
+
+#. Default: "Alt text"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Alt text"
+msgstr ""
+
+#. Default: "Analyzing image…"
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Analyzing image…"
+msgstr ""
+
+#. Default: "Cancel"
+#: components/manage/GenAISettings/GenAISettings
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Cancel"
+msgstr ""
+
+#. Default: "Cancel AI alt generation ({field})"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Cancel AI alt generation ({field})"
 msgstr ""
 
 #. Default: "Choices"
@@ -29,6 +77,11 @@ msgstr ""
 #. Default: "Created"
 #: components/theme/Banner/View
 msgid "Created"
+msgstr ""
+
+#. Default: "Custom alt"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Custom alt"
 msgstr ""
 
 #. Default: "Default"
@@ -51,6 +104,63 @@ msgstr ""
 msgid "European Environment Agency"
 msgstr ""
 
+#. Default: "Failed to load GenAI settings"
+#: components/manage/GenAISettings/GenAISettings
+msgid "Failed to load GenAI settings"
+msgstr ""
+
+#. Default: "Failed to update GenAI settings"
+#: components/manage/GenAISettings/GenAISettings
+msgid "Failed to update GenAI settings"
+msgstr ""
+
+#. Default: "GenAI image length settings"
+#: components/manage/GenAISettings/GenAISettings
+msgid "GenAI image length settings"
+msgstr ""
+
+#. Default: "GenAI settings"
+#: components/manage/GenAISettings/GenAISettings
+msgid "GenAI settings"
+msgstr ""
+
+#. Default: "GenAI settings are not available"
+#: components/manage/GenAISettings/GenAISettings
+msgid "GenAI settings are not available"
+msgstr ""
+
+#. Default: "GenAI settings updated"
+#: components/manage/GenAISettings/GenAISettings
+msgid "GenAI settings updated"
+msgstr ""
+
+#. Default: "Generate Image metadata with AI?"
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Generate Image metadata with AI?"
+msgstr ""
+
+#. Default: "Generate with AI"
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Generate with AI"
+msgstr ""
+
+#. Default: "Generate with AI ({field})"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Generate with AI ({field})"
+msgstr ""
+
+#. Default: "Generating AI alt…"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Generating AI alt…"
+msgstr ""
+
+#. Default: "Generating metadata will replace the current title and description."
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Generating metadata will replace the current title and description."
+msgstr ""
+
 #. Default: "Group"
 #: components/theme/Widgets/ADUserGroupSelectWidget
 msgid "Group"
@@ -59,6 +169,24 @@ msgstr ""
 #. Default: "Hide Children From Navigation"
 #: components/theme/Widgets/NavigationBehaviorWidget
 msgid "Hide Children From Navigation"
+msgstr ""
+
+#. Default: "Image AI is not allowed for this content type."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Image AI is not allowed for this content type."
+msgstr ""
+
+#. Default: "Image analysis failed. No Image has been created."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Image analysis failed. No Image has been created."
+msgstr ""
+
+#. Default: "Image analysis failed. No changes have been saved."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Image analysis failed. No changes have been saved."
 msgstr ""
 
 #. Default: "Invalid block - Will be removed on saving"
@@ -118,14 +246,57 @@ msgstr ""
 msgid "Published"
 msgstr ""
 
+#. Default: "Regenerate AI alt?"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Regenerate AI alt?"
+msgstr ""
+
+#. Default: "Regenerate with AI"
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Regenerate with AI"
+msgstr ""
+
+#. Default: "Regenerate with AI ({field})"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Regenerate with AI ({field})"
+msgstr ""
+
 #. Default: "Remove"
 #: components/theme/Widgets/SimpleArrayWidget
 msgid "Remove"
 msgstr ""
 
+#. Default: "Replace Image metadata?"
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+msgid "Replace Image metadata?"
+msgstr ""
+
 #. Default: "Required"
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Required"
+msgstr ""
+
+#. Default: "Retry"
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Retry"
+msgstr ""
+
+#. Default: "Retry AI alt generation ({field})"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Retry AI alt generation ({field})"
+msgstr ""
+
+#. Default: "Retry upload"
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Retry upload"
+msgstr ""
+
+#. Default: "Save"
+#: components/manage/GenAISettings/GenAISettings
+msgid "Save"
 msgstr ""
 
 #. Default: "Select…"
@@ -155,14 +326,74 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+#. Default: "The AI service returned no valid alt text."
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "The AI service returned no valid alt text."
+msgstr ""
+
+#. Default: "The Image could not be created. The generated metadata has been kept for retry."
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The Image could not be created. The generated metadata has been kept for retry."
+msgstr ""
+
+#. Default: "The configured AI service will analyse this image to generate its title and description. The title will also become the default alt text."
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The configured AI service will analyse this image to generate its title and description. The title will also become the default alt text."
+msgstr ""
+
+#. Default: "The image is too large for AI alt generation."
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "The image is too large for AI alt generation."
+msgstr ""
+
+#. Default: "The image or metadata fields are not accessible for editing."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The image or metadata fields are not accessible for editing."
+msgstr ""
+
+#. Default: "The requested content type cannot be added at this location."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The requested content type cannot be added at this location."
+msgstr ""
+
+#. Default: "The selected image could not be analysed safely."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The selected image could not be analysed safely."
+msgstr ""
+
+#. Default: "The selected image is too large for AI analysis."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The selected image is too large for AI analysis."
+msgstr ""
+
+#. Default: "The title or description changed during analysis. Your edits were kept. Retry to generate again."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "The title or description changed during analysis. Your edits were kept. Retry to generate again."
+msgstr ""
+
 #. Default: "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
 #: components/theme/NotFound/GoneView
 msgid "This content was part of our previous website and is no longer available. We've recently upgraded our platform and restructured our content to serve you better."
 msgstr ""
 
+#. Default: "This external image needs custom alt text."
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "This external image needs custom alt text."
+msgstr ""
+
 #. Default: "This page has been retired"
 #: components/theme/NotFound/GoneView
 msgid "This page has been retired"
+msgstr ""
+
+#. Default: "This will overwrite the current custom alt text with a freshly generated one."
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "This will overwrite the current custom alt text with a freshly generated one."
 msgstr ""
 
 #. Default: "Title"
@@ -191,6 +422,26 @@ msgstr ""
 msgid "Unknown Block"
 msgstr ""
 
+#. Default: "Updates this item's title and description."
+#: components/manage/Widgets/ImageAI/ImageAddFileWidget
+msgid "Updates this item's title and description."
+msgstr ""
+
+#. Default: "Upload without AI"
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Upload without AI"
+msgstr ""
+
+#. Default: "Uploading image…"
+#: components/manage/Widgets/ImageAI/ImageMetadataConsentModal
+msgid "Uploading image…"
+msgstr ""
+
+#. Default: "Use Image metadata"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Use Image metadata"
+msgstr ""
+
 #. Default: "Used for programmatic access to the fieldset."
 #: components/theme/Widgets/CreatableSelectWidget
 msgid "Used for programmatic access to the fieldset."
@@ -199,6 +450,11 @@ msgstr ""
 #. Default: "User"
 #: components/theme/Widgets/ADUserGroupSelectWidget
 msgid "User"
+msgstr ""
+
+#. Default: "Using linked Image metadata"
+#: components/manage/Widgets/ImageAltWidget/ImageAltWidget
+msgid "Using linked Image metadata"
 msgstr ""
 
 #. Default: "View archived version"

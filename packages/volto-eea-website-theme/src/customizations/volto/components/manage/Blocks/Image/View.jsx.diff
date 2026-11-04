@@ -1,6 +1,6 @@
 --- volto-19.5.0/packages/volto/src/components/manage/Blocks/Image/View.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Image/View.jsx
-@@ -1,91 +1,148 @@
+@@ -1,91 +1,149 @@
 +/* eslint-disable jsx-a11y/mouse-events-have-key-events */
 +/**
 + * View image block.
@@ -17,6 +17,7 @@
 +import { withBlockExtensions } from '@plone/volto/helpers//Extensions';
  import config from '@plone/volto/registry';
 +import Copyright from '@eeacms/volto-eea-design-system/ui/Copyright/Copyright';
++import { effectiveImageAlt } from '@eeacms/volto-eea-website-theme/helpers/imageAI';
  
 -export const View = ({ className, data, detached, properties, style }) => {
 -  const href = data?.href?.[0]?.['@id'] || '';
@@ -139,7 +140,7 @@
 +                            : data.url
 +                      }
 +                      sizes={config.blocks.blocksConfig.image.getSizes(data)}
-+                      alt={data.alt || ''}
++                      alt={effectiveImageAlt(data)}
 +                      loading="lazy"
 +                      responsive={true}
 +                    />
@@ -224,7 +225,7 @@
    );
  };
  
-@@ -98,4 +155,4 @@
+@@ -98,4 +156,4 @@
    data: PropTypes.objectOf(PropTypes.any).isRequired,
  };
  

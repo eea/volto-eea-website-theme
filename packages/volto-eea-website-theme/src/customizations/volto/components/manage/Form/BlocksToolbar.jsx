@@ -28,6 +28,12 @@ import {
   cloneBlocks,
   loadBlocksClipboardFromStorage,
 } from './blocksClipboardUtils';
+import {
+  hasNestedSelection,
+  notifyToolbars,
+  registerToolbar,
+  unregisterToolbar,
+} from './nestedBlocksToolbars';
 
 export class BlocksToolbarComponent extends React.Component {
   constructor(props) {
@@ -39,34 +45,46 @@ export class BlocksToolbarComponent extends React.Component {
     this.loadFromStorage = this.loadFromStorage.bind(this);
     this.pasteBlocks = this.pasteBlocks.bind(this);
     this.setBlocksClipboard = this.setBlocksClipboard.bind(this);
+    this.onToolbarsChange = () => this.forceUpdate();
+    // Nested container blocks render their own toolbar, unique plug ids keep
+    // one toolbar from removing the buttons of another one when it unmounts
+    this.plugSuffix = uuid();
   }
 
+  // Syncs the clipboard from other browser tabs. The store already
+  // rehydrates it from localStorage on creation and, within the same tab,
+  // Redux is always fresher than localStorage (saved with a debounce), so
+  // the clipboard is never reloaded on mount: doing so overwrote a recent
+  // cut/copy with stale data and made the paste button disappear.
   loadFromStorage(event) {
     if (event?.key && !event.key.includes('blocksClipboard')) {
       return;
     }
 
-    const clipboard = loadBlocksClipboardFromStorage();
-    const currentClipboard = this.props.blocksClipboard || {};
-    const currentClipboardHasBlocks =
-      currentClipboard?.cut || currentClipboard?.copy;
-
-    if (!event && !clipboard && currentClipboardHasBlocks) {
-      return;
-    }
-
-    if (!isEqual(clipboard || {}, currentClipboard)) {
-      this.props.setBlocksClipboard(clipboard || {});
+    const clipboard = loadBlocksClipboardFromStorage() || {};
+    if (!isEqual(clipboard, this.props.blocksClipboard || {})) {
+      this.props.setBlocksClipboard(clipboard);
     }
   }
 
   componentDidMount() {
-    this.loadFromStorage();
     window.addEventListener('storage', this.loadFromStorage, true);
+    registerToolbar(this, this.onToolbarsChange);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.formData !== this.props.formData ||
+      prevProps.selectedBlock !== this.props.selectedBlock ||
+      prevProps.selectedBlocks !== this.props.selectedBlocks
+    ) {
+      notifyToolbars();
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener('storage', this.loadFromStorage);
+    unregisterToolbar(this, this.onToolbarsChange);
   }
 
   deleteBlocks() {
@@ -157,11 +175,18 @@ export class BlocksToolbarComponent extends React.Component {
       selectedBlocks,
       intl,
     } = this.props;
+    if (hasNestedSelection(this)) {
+      return null;
+    }
+    const plugId = (id) => `${id}-${this.plugSuffix}`;
     return (
       <>
         {selectedBlocks.length > 0 ? (
           <>
-            <Plug pluggable="main.toolbar.bottom" id="blocks-delete-btn">
+            <Plug
+              pluggable="main.toolbar.bottom"
+              id={plugId('blocks-delete-btn')}
+            >
               <button
                 aria-label={intl.formatMessage(messages.deleteBlocks)}
                 onClick={this.deleteBlocks}
@@ -172,7 +197,7 @@ export class BlocksToolbarComponent extends React.Component {
                 <Icon name={trashSVG} size="30px" />
               </button>
             </Plug>
-            <Plug pluggable="main.toolbar.bottom" id="blocks-cut-btn">
+            <Plug pluggable="main.toolbar.bottom" id={plugId('blocks-cut-btn')}>
               <button
                 aria-label={intl.formatMessage(messages.cutBlocks)}
                 onClick={this.cutBlocksToClipboard}
@@ -183,7 +208,10 @@ export class BlocksToolbarComponent extends React.Component {
                 <Icon name={cutSVG} size="30px" />
               </button>
             </Plug>
-            <Plug pluggable="main.toolbar.bottom" id="blocks-copy-btn">
+            <Plug
+              pluggable="main.toolbar.bottom"
+              id={plugId('blocks-copy-btn')}
+            >
               <button
                 aria-label={intl.formatMessage(messages.copyBlocks)}
                 onClick={this.copyBlocksToClipboard}
@@ -201,7 +229,7 @@ export class BlocksToolbarComponent extends React.Component {
         {selectedBlock && (blocksClipboard?.cut || blocksClipboard?.copy) && (
           <Plug
             pluggable="main.toolbar.bottom"
-            id="block-paste-btn"
+            id={plugId('block-paste-btn')}
             dependencies={[selectedBlock]}
           >
             <button
