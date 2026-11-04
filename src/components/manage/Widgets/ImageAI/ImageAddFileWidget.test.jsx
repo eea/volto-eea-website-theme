@@ -1030,7 +1030,18 @@ describe('ImageAddFileWidget', () => {
       expect(
         container.querySelectorAll('.field-wrapper-preview_image'),
       ).toHaveLength(1);
-      expect(screen.getAllByText('Feature off error')).toHaveLength(1);
+      // Only one visible error label; Volto's FileWidget may also announce the
+      // same text through a visually hidden role="alert" span for screen readers.
+      const featureOffErrorLabels = container.querySelectorAll(
+        '.field-wrapper-preview_image .form-error-label',
+      );
+      expect(featureOffErrorLabels).toHaveLength(1);
+      expect(featureOffErrorLabels[0]).toHaveTextContent('Feature off error');
+      expect(
+        screen
+          .getAllByText('Feature off error')
+          .filter((node) => !node.classList.contains('visually-hidden-volto')),
+      ).toHaveLength(1);
       expect(
         screen.queryByRole('button', { name: /generate with ai/i }),
       ).not.toBeInTheDocument();
