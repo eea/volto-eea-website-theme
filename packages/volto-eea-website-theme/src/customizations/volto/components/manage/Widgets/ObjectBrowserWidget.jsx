@@ -23,7 +23,7 @@ import {
   normalizeUrl,
   removeProtocol,
 } from '@plone/volto/helpers/Url/Url';
-import { messages as validationMessages } from '@plone/volto/helpers/MessageLabels/MessageLabels';
+import { urlValidator } from '@plone/volto/helpers/FormValidation/validators';
 import { searchContent } from '@plone/volto/actions/search/search';
 import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrowser';
 import { defineMessages, injectIntl } from 'react-intl';
@@ -57,24 +57,6 @@ const messages = defineMessages({
     defaultMessage: 'Open object browser',
   },
 });
-
-// Volto 17 does not expose the Volto 18 core helper
-// `urlValidator` from `@plone/volto/helpers/FormValidation/validators`.
-// When Volto 17 support is dropped, replace this fallback with that import.
-const validateExternalUrl = ({ value, formatMessage }) => {
-  const urlRegex = new RegExp(
-    '^(https?:\\/\\/)?' +
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
-      '((\\d{1,3}\\.){3}\\d{1,3}))|' +
-      '(localhost)' +
-      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
-      '(\\?[;&a-z\\d%_.~+=-]*)?' +
-      '(\\#[-a-z\\d_]*)?$',
-    'i',
-  );
-  const isValid = urlRegex.test(value);
-  return !isValid ? formatMessage(validationMessages.isValidURL) : null;
-};
 
 /**
  * ObjectBrowserWidget component class.
@@ -258,7 +240,7 @@ export class ObjectBrowserWidgetComponent extends Component {
 
   validateManualLink = (url) => {
     if (this.props.allowExternals && !url.startsWith('/')) {
-      const error = validateExternalUrl({
+      const error = urlValidator({
         value: url,
         formatMessage: this.props.intl.formatMessage,
       });
@@ -347,6 +329,7 @@ export class ObjectBrowserWidgetComponent extends Component {
     this.props.openObjectBrowser({
       mode: this.props.mode,
       currentPath: this.props.initialPath || this.props.location.pathname,
+      initialPath: this.props.initialPath,
       propDataName: 'value',
       onSelectItem: (url, item) => {
         this.onChange(item);

@@ -113,7 +113,7 @@
          ],
          permissions: {
            view_comments: true,
-@@ -65,22 +118,314 @@
+@@ -65,22 +118,444 @@
          locale: 'en',
          messages: {},
        },
@@ -197,18 +197,14 @@
 +        messages: {},
 +      },
      });
--
-     const component = renderer.create(
-       <Provider store={store}>
--        <Comments pathname="/blog" />
++    const component = renderer.create(
++      <Provider store={store}>
 +        <Comments {...props} />
-       </Provider>,
-     );
++      </Provider>,
++    );
 +    expect(component.toJSON()).toBeFalsy();
 +  });
  
--    const json = component.toJSON();
--    expect(json).toMatchSnapshot();
 +  it('renders a comments component without permissions', () => {
 +    const props = {
 +      addComment: vi.fn(),
@@ -274,14 +270,17 @@
 +        messages: {},
 +      },
 +    });
-+    const component = renderer.create(
-+      <Provider store={store}>
+     const component = renderer.create(
+       <Provider store={store}>
+-        <Comments pathname="/blog" />
 +        <Comments {...props} />
-+      </Provider>,
-+    );
+       </Provider>,
+     );
 +    expect(component.toJSON()).toBeFalsy();
-   });
-+
++  });
+ 
+-    const json = component.toJSON();
+-    expect(json).toMatchSnapshot();
 +  it('renders a comments component, fires onClick events on comment and rerenders', () => {
 +    const props = {
 +      addComment: vi.fn(),
@@ -433,5 +432,135 @@
 +        />
 +      </Provider>,
 +    );
+   });
++
++  describe('EEA behaviour on the core 19 base', () => {
++    const items = [
++      {
++        '@id': 'http://localhost:8080/Plone/doc/++conversation++default/1',
++        comment_id: '1',
++        author_name: 'admin',
++        creation_date: '2017-11-06T19:36:01',
++        text: { data: 'Parent comment' },
++        is_deletable: true,
++        is_editable: true,
++        can_reply: true,
++      },
++      {
++        '@id': 'http://localhost:8080/Plone/doc/++conversation++default/2',
++        comment_id: '2',
++        author_name: 'editor',
++        creation_date: '2017-11-06T19:36:01',
++        text: { data: 'Reply comment' },
++        is_deletable: false,
++        is_editable: false,
++        can_reply: true,
++        in_reply_to: '1',
++      },
++    ];
++    const makeStore = () =>
++      mockStore({
++        comments: {
++          items,
++          items_total: 30,
++          next: 'http://localhost:8080/Plone/doc/@comments?b_start=25',
++          permissions: { view_comments: true, can_reply: true },
++          add: { loading: false, loaded: false },
++          delete: { loading: false, loaded: false },
++        },
++        intl: { locale: 'en', messages: {} },
++      });
++    const renderComments = (store) =>
++      render(
++        <Provider store={store}>
++          <Comments pathname="/doc" />
++        </Provider>,
++      );
++
++    it('lists the comments of the current page on mount', () => {
++      const store = makeStore();
++      renderComments(store);
++      expect(store.getActions()[0]).toMatchObject({
++        type: 'LIST_COMMENTS',
++        request: { op: 'get', path: '/doc/@comments' },
++      });
++    });
++
++    it('renders an id anchor for every comment', () => {
++      const { container } = renderComments(makeStore());
++      expect(container.querySelector('[id="1"]')).toHaveTextContent(
++        'Parent comment',
++      );
++      expect(container.querySelector('[id="2"]')).toHaveTextContent(
++        'Reply comment',
++      );
++      expect(container.querySelector('#discussion')).toBeInTheDocument();
++    });
++
++    it('loads more comments through a site relative URL', () => {
++      const store = makeStore();
++      const { container } = renderComments(store);
++      fireEvent.click(container.querySelector('.ui.blue.basic.fluid.button'));
++      expect(
++        store.getActions().find((a) => a.type === 'LIST_MORE_COMMENTS'),
++      ).toMatchObject({
++        request: { op: 'get', path: '/doc/@comments?b_start=25' },
++      });
++    });
++
++    it('uses real buttons for the comment actions', () => {
++      const { container } = renderComments(makeStore());
++      const actions = container.querySelectorAll('.actions > *');
++      expect(actions.length).toBeGreaterThan(0);
++      actions.forEach((action) => {
++        expect(action.tagName).toBe('BUTTON');
++        expect(action).toHaveAttribute('type', 'button');
++      });
++    });
++
++    it('shows the replies toggle only on comments that have replies', () => {
++      const { container } = renderComments(makeStore());
++      const parentToggle = container.querySelectorAll(
++        '[id="1"] > .content .actions button',
++      );
++      const replyToggle = container.querySelectorAll(
++        '[id="2"] > .content .actions button',
++      );
++      // Reply, Edit, Delete and the replies toggle on the parent
++      expect(parentToggle).toHaveLength(4);
++      // only Reply on the reply, which has no replies of its own
++      expect(replyToggle).toHaveLength(1);
++    });
++
++    it('toggles the replies on every click', () => {
++      const { container, getByText } = renderComments(makeStore());
++      fireEvent.click(getByText('Hide Replies'));
++      expect(getByText('Show Replies')).toBeInTheDocument();
++      fireEvent.click(getByText('Show Replies'));
++      expect(getByText('Hide Replies')).toBeInTheDocument();
++      expect(container.querySelector('.collapsed')).not.toBeInTheDocument();
++    });
++
++    it('opens the reply form under the replied comment', () => {
++      const { container } = renderComments(makeStore());
++      expect(
++        container.querySelector('#reply-place-1 form'),
++      ).not.toBeInTheDocument();
++      fireEvent.click(
++        container.querySelector('[id="1"] button[aria-label="Reply"]'),
++      );
++      expect(
++        container.querySelector('#reply-place-1 form'),
++      ).toBeInTheDocument();
++    });
++
++    it('shows a relative creation date with the raw date as title', () => {
++      const { container } = renderComments(makeStore());
++      const date = container.querySelector(
++        '[id="1"] .metadata span[title="2017-11-06T19:36:01"]',
++      );
++      expect(date).toBeInTheDocument();
++      expect(date.textContent).toMatch(/ago/);
++    });
 +  });
  });

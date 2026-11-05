@@ -1,40 +1,26 @@
 --- volto-19.5.0/packages/volto/src/components/manage/Toast/Toast.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.jsx
-@@ -1,69 +1,45 @@
+@@ -1,13 +1,10 @@
  import React from 'react';
  import PropTypes from 'prop-types';
--import { defineMessages, useIntl } from 'react-intl';
--import Icon from '@plone/volto/components/theme/Icon/Icon';
 +import cx from 'classnames';
+ import { defineMessages, useIntl } from 'react-intl';
+-import Icon from '@plone/volto/components/theme/Icon/Icon';
 +import { Icon, Message } from 'semantic-ui-react';
++import { isVolto18 } from '@eeacms/volto-eea-website-theme/helpers/voltoVersion';
  
 -import successSVG from '@plone/volto/icons/ready.svg';
 -import infoSVG from '@plone/volto/icons/info.svg';
 -import errorSVG from '@plone/volto/icons/error.svg';
 -import warningSVG from '@plone/volto/icons/warning.svg';
 -
--const messages = defineMessages({
--  success: {
--    id: 'toast_type_success',
--    defaultMessage: 'Success',
--  },
--  error: {
--    id: 'toast_type_error',
--    defaultMessage: 'Error',
--  },
--  warning: {
--    id: 'toast_type_warning',
--    defaultMessage: 'Warning',
--  },
--  info: {
--    id: 'toast_type_info',
--    defaultMessage: 'Information',
--  },
--});
--
+ const messages = defineMessages({
+   success: {
+     id: 'toast_type_success',
+@@ -30,17 +27,17 @@
  const Toast = (props) => {
--  const intl = useIntl();
--
+   const intl = useIntl();
+ 
 -  function getIcon(props) {
 +  function getStatus(props) {
      if (props.info) {
@@ -55,16 +41,10 @@
      }
    }
  
--  function getTypeLabel(props) {
--    if (props.error) return intl.formatMessage(messages.error);
--    if (props.warning) return intl.formatMessage(messages.warning);
--    if (props.info) return intl.formatMessage(messages.info);
--    if (props.success) return intl.formatMessage(messages.success);
--    return null;
--  }
--
+@@ -54,16 +51,35 @@
+ 
    const { title, content } = props;
--  const typeLabel = getTypeLabel(props);
+   const typeLabel = getTypeLabel(props);
 +  const status = getStatus(props);
 +  const statusProps = {
 +    info: status === 'info',
@@ -72,6 +52,11 @@
 +    error: status === 'error',
 +    warning: status === 'warning',
 +  };
++  // Volto 18 names its screen reader only class `visually-hidden-volto`,
++  // Volto 19 renamed it to `visually-hidden`.
++  const visuallyHiddenClassName = isVolto18
++    ? 'visually-hidden-volto'
++    : 'visually-hidden';
  
    return (
 -    <>
@@ -87,6 +72,9 @@
 +    >
 +      <Icon name="exclamation circle" />
 +      <Message.Content className="toast-inner-content">
++        {typeLabel && (
++          <span className={visuallyHiddenClassName}>{typeLabel}</span>
++        )}
 +        {title && <Message.Header>{title}</Message.Header>}
          <div>{content}</div>
 -      </div>

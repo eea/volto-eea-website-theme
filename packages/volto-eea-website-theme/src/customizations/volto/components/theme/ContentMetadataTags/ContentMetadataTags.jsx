@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
-import { toPublicURL } from '@plone/volto/helpers/Url/Url';
 import Helmet from '@plone/volto/helpers/Helmet/Helmet';
+import { toPublicURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
 import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
-import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
-import { getNavroot } from '@plone/volto/actions//navroot/navroot';
+import { getNavroot } from '@plone/volto/actions/navroot/navroot';
 import config from '@plone/volto/registry';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -61,6 +60,11 @@ const ContentMetadataTags = (props) => {
 
   const contentImageInfo = getContentImageInfo();
 
+  // EEA (#292656): hierarchical title, "page | parent | navroot site".
+  // The parts are joined with `titleAndSiteTitleSeparator` (`|` in this
+  // add-on), but the site title is appended after a plain space, without a
+  // separator. Kept as is on purpose: whether it should also be preceded by
+  // the separator is pending a product decision.
   const getTitle = () => {
     const includeSiteTitle =
       config?.settings?.siteTitleFormat?.includeSiteTitle || false;

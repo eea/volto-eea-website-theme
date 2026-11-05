@@ -1,17 +1,11 @@
 --- volto-19.5.0/packages/volto/src/components/manage/Blocks/Block/Edit.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Block/Edit.jsx
-@@ -10,14 +10,23 @@
- import { defineMessages, injectIntl } from 'react-intl';
- import cx from 'classnames';
- import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
--import { setUIState } from '@plone/volto/actions/form/form';
- import config from '@plone/volto/registry';
- import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrowser';
+@@ -16,6 +16,14 @@
  import ViewDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultView';
  import EditDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultEdit';
  import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 +// Import directly, NOT from the '@plone/volto/components' barrel: the barrel
-+// re-exports EditBlock from this very file (line 218) and, with the Volto 19
++// re-exports EditBlock from this very file and, with the Volto 19
 +// react-refresh runtime enabled in dev, the barrel's end-of-module export
 +// registration reads this module's still-uninitialized default export while
 +// it is mid-evaluation (circular import) -> "Cannot access
@@ -20,12 +14,8 @@
 +// since components/manage/Form/index.tsx uses lazy loadable() exports.
  import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
  import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
-+// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
-+const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
  
- const messages = defineMessages({
-   unknownBlock: {
-@@ -116,6 +125,23 @@
+@@ -116,6 +124,23 @@
    blockNode = React.createRef();
  
    /**
@@ -49,10 +39,11 @@
     * Render method.
     * @method render
     * @returns {string} Markup for the component.
-@@ -154,25 +180,31 @@
+@@ -153,26 +178,32 @@
+               e.preventDefault();
                e.stopPropagation();
                this.props.setUIState({ hovered: null });
-             }}
++            }}
 +            onMouseDown={(e) => {
 +              if (this.isNestedFormEvent(e)) {
 +                return;
@@ -61,7 +52,7 @@
 +              if (!this.props.selected && isMultipleSelection) {
 +                e.preventDefault();
 +              }
-+            }}
+             }}
              onClick={(e) => {
 +              if (this.isNestedFormEvent(e)) {
 +                !this.props.selected &&
@@ -96,7 +87,7 @@
                const isMultipleSelection = e.shiftKey || e.ctrlKey || e.metaKey;
                !this.props.selected &&
                  this.props.onSelectBlock(
-@@ -227,7 +259,6 @@
+@@ -227,7 +258,6 @@
                e.stopPropagation();
                this.props.setUIState({ hovered: this.props.id });
              }}
@@ -104,12 +95,3 @@
              onFocus={(e) => {
                e.preventDefault();
                e.stopPropagation();
-@@ -272,7 +303,7 @@
-   withObjectBrowser,
-   connect(
-     (state, props) => ({
--      hovered: state.form?.ui.hovered || null,
-+      hovered: state.form?.ui?.hovered ?? state.formUI?.hovered ?? null,
-       sidebarTab: state.sidebar?.tab,
-     }),
-     { setSidebarTab, setUIState },

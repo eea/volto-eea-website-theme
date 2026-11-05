@@ -1,36 +1,47 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { useState } from 'react';
 import ContainerEdit from '@plone/volto/components/manage/Blocks/Container/Edit';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUIState } from '@plone/volto/actions/form/form';
 
-const convertTeaserToGridIfNecessary = (data) => {
-  if (data?.['@type'] === 'teaserGrid')
-    return {
-      ...data,
-      '@type': 'gridBlock',
-      blocks_layout: { items: data?.columns.map((c) => c.id) },
-      blocks: data?.columns?.reduce((acc, current) => {
-        return {
-          ...acc,
-          [current?.id]: current,
-        };
-      }, {}),
-    };
-  return data;
+// EEA: legacy @kitconcept/volto-blocks-grid `teaserGrid` blocks are converted
+// to the core `gridBlock` format (refs #265726)
+export const convertTeaserToGridIfNecessary = (data) => {
+  if (data?.['@type'] !== 'teaserGrid') return data;
+  const columns = data?.columns || [];
+  return {
+    ...data,
+    '@type': 'gridBlock',
+    blocks_layout: { items: columns.map((c) => c.id) },
+    blocks: columns.reduce(
+      (acc, current) => ({
+        ...acc,
+        [current?.id]: current,
+      }),
+      {},
+    ),
+  };
 };
 
 const GridBlockEdit = (props) => {
-  const { data } = props;
+  const { block, onChangeBlock } = props;
+  const isTeaserGrid = props.data?.['@type'] === 'teaserGrid';
+  // EEA: render the converted data right away, the block data itself is
+  // updated in an effect (never call onChangeBlock while rendering)
+  const data = convertTeaserToGridIfNecessary(props.data);
 
-  const columnsLength =
-    data?.blocks_layout?.items?.length || data?.columns?.length || 0;
+  useEffect(() => {
+    if (isTeaserGrid) {
+      onChangeBlock(block, data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTeaserGrid, block]);
 
-  const [selectedBlock, setSelectedBlock] = useState(null);
+  const columnsLength = data?.blocks_layout?.items?.length || 0;
 
-  //convert to gridBlock if necessary
-  if (data?.['@type'] === 'teaserGrid') {
-    props.onChangeBlock(props.block, convertTeaserToGridIfNecessary(data));
-  }
+  const selectedBlock = useSelector((state) => state.form.ui.gridSelected);
+  const dispatch = useDispatch();
 
   return (
     <div
@@ -44,7 +55,7 @@ const GridBlockEdit = (props) => {
       // This is required to enabling a small "in-between" clickable area
       // for bringing the Grid sidebar alive once you have selected an inner block
       onClick={(e) => {
-        if (!e.block) setSelectedBlock(null);
+        if (!e.block) dispatch(setUIState({ gridSelected: null }));
       }}
       role="presentation"
     >
@@ -52,7 +63,7 @@ const GridBlockEdit = (props) => {
         {...props}
         data={data}
         selectedBlock={selectedBlock}
-        setSelectedBlock={setSelectedBlock}
+        setSelectedBlock={(id) => dispatch(setUIState({ gridSelected: id }))}
         direction="horizontal"
       />
     </div>

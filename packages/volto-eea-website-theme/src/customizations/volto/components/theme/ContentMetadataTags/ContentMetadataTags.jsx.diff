@@ -1,18 +1,17 @@
 --- volto-19.5.0/packages/volto/src/components/theme/ContentMetadataTags/ContentMetadataTags.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/ContentMetadataTags/ContentMetadataTags.jsx
-@@ -1,8 +1,9 @@
- import React, { useEffect } from 'react';
-+import { toPublicURL } from '@plone/volto/helpers/Url/Url';
- import Helmet from '@plone/volto/helpers/Helmet/Helmet';
--import { toPublicURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';
- import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
--import { getNavroot } from '@plone/volto/actions/navroot/navroot';
-+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
-+import { getNavroot } from '@plone/volto/actions//navroot/navroot';
- import config from '@plone/volto/registry';
- import { useDispatch, useSelector } from 'react-redux';
+@@ -60,19 +60,34 @@
  
-@@ -66,13 +67,23 @@
+   const contentImageInfo = getContentImageInfo();
+ 
++  // EEA (#292656): hierarchical title, "page | parent | navroot site".
++  // The parts are joined with `titleAndSiteTitleSeparator` (`|` in this
++  // add-on), but the site title is appended after a plain space, without a
++  // separator. Kept as is on purpose: whether it should also be preceded by
++  // the separator is pending a product decision.
+   const getTitle = () => {
+     const includeSiteTitle =
+       config?.settings?.siteTitleFormat?.includeSiteTitle || false;
      const titleAndSiteTitleSeparator =
        config?.settings?.titleAndSiteTitleSeparator || '-';
      const navRootTitle = navroot?.title;

@@ -133,6 +133,7 @@ describe('applyConfig', () => {
 
     expect(config.settings.contactForm).toBe('/contact');
     expect(config.settings.showTags).toBe(false);
+    expect(config.settings.notSupportedBrowsers).toEqual([]);
     expect(config.blocks.blocksConfig['teaser'].restricted).toBe(true);
     expect(config.blocks.blocksConfig['title'].restricted).toBe(false);
     expect(config.blocks.blocksConfig['description'].restricted).toBe(false);
@@ -293,6 +294,7 @@ describe('applyConfig', () => {
       config.settings.serverConfig.extractScripts.errorPages,
     ).toBeUndefined();
     expect(config.settings.showTags).toBe(false);
+    expect(config.settings.notSupportedBrowsers).toEqual([]);
     expect(config.blocks.blocksConfig['teaser'].restricted).toBe(true);
     expect(config.blocks.blocksConfig['title'].restricted).toBe(false);
     expect(config.blocks.blocksConfig['description'].restricted).toBe(false);

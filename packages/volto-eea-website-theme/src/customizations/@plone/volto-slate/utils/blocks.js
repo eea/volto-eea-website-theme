@@ -6,11 +6,13 @@ import {
   getBlocksLayoutFieldname,
 } from '@plone/volto/helpers/Blocks/Blocks';
 import find from 'lodash/find';
-import first from 'lodash/first';
 import includes from 'lodash/includes';
 import some from 'lodash/some';
+import first from 'lodash/first';
 import { makeEditor } from '@plone/volto-slate/utils/editor';
 
+// Local copy of `safeEditorNodes` from `@plone/volto-slate/utils/safe`, which
+// volto-slate 18 does not have, so the same add-on build works on both.
 const safeEditorNodes = (editor, options) => {
   try {
     return Array.from(Editor.nodes(editor, options));
@@ -85,20 +87,25 @@ approach, we're all ears!
 
 export const normalizeExternalData = (editor, nodes) => {
   let fakeEditor = makeEditor({ extensions: editor._installedPlugins });
-  // set the nodes to the fakeEditor
-  let currentIndex = 0;
-  fakeEditor.children = nodes.reduce((nodes, node) => {
+  // CUSTOMIZATION: paste from the Microsoft Word desktop app (refs #265782).
+  // Group every run of inline, text or typeless nodes into its own `p`.
+  // Upstream only wraps when the first node is not a block, so it drops loose
+  // text between paragraphs and keeps typeless elements at the top level.
+  let wrapper = null;
+  fakeEditor.children = (nodes || []).reduce((acc, node) => {
     if (Editor.isBlock(fakeEditor, node) && !!node.type) {
-      nodes.push(node);
-      currentIndex++;
-      return nodes;
+      acc.push(node);
+      wrapper = null;
+      return acc;
     }
-    if (!nodes[currentIndex]) {
-      nodes[currentIndex] = { type: 'p', children: [] };
+    if (!wrapper) {
+      wrapper = { type: 'p', children: [] };
+      acc.push(wrapper);
     }
-    nodes[currentIndex].children.push(node);
-    return nodes;
+    wrapper.children.push(node);
+    return acc;
   }, []);
+  // END CUSTOMIZATION
 
   Editor.normalize(fakeEditor, { force: true });
 
@@ -273,7 +280,7 @@ export const toggleBlock = (editor, format, allowedChildren) => {
   } else if (!isListItem && !wantsList) {
     toggleFormat(editor, format, allowedChildren);
   } else if (isListItem && wantsList && isActive) {
-    clearFormatting(editor);
+    clearList(editor);
   } else {
     console.warn('toggleBlock case not covered, please examine:', {
       wantsList,
@@ -305,6 +312,21 @@ export const switchListType = (editor, format) => {
   });
   const block = { type: format, children: [] };
   Transforms.wrapNodes(editor, block);
+};
+
+/*
+ * Clear list by exploding the block
+ */
+export const clearList = (editor) => {
+  const { slate } = config.settings;
+  Transforms.unwrapNodes(editor, {
+    match: (n) => slate.listTypes.includes(n.type),
+    split: true,
+  });
+  Transforms.setNodes(editor, {
+    type: 'p',
+  });
+  Editor.normalize(editor);
 };
 
 export const changeBlockToList = (editor, format) => {

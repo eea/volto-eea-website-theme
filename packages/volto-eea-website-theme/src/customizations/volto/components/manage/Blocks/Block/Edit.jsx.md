@@ -1,6 +1,6 @@
 # Block/Edit.jsx — Customization explanation
 
-**Upstream:** `@plone/volto` 18.35.1, `components/manage/Blocks/Block/Edit.jsx`  
+**Upstream:** `@plone/volto` 19.5.0, `components/manage/Blocks/Block/Edit.jsx` (same code in 18.36.0, only comments differ)  
 **Local override:** `src/customizations/volto/components/manage/Blocks/Block/Edit.jsx`
 
 ## Why this override exists
@@ -59,11 +59,11 @@ The check is descendant-scoped: for non-container blocks the nearest `.blocks-fo
 
 Clicks and focus on the container's own chrome (header, drag handle, add-block area) continue through the ordinary handler, including active-block promotion.
 
-## Volto 17 and 18 compatibility
+## Volto 18 and 19 compatibility
 
-The override imports `BlockSettingsSidebar` from the public `@plone/volto/components` barrel shared by Volto 17 and 18. Importing Volto 18's deep `Block/Settings` module directly creates a circular initialization path in Volto 17 (`Settings` → `BlockDataForm` → the components barrel) and crashes the server while resolving `InlineForm` before Cypress can start. The other components retain Volto 18's preferred direct imports.
+The override works unchanged on Volto 18 and 19: the upstream file is the same in both, and `setUIState` (`@plone/volto/actions/form/form`) and the `form.ui.hovered` state exist in both. The former Volto 17 fallbacks (a local `setUIState` action and `state.formUI`) were removed.
 
-Volto 17 also has no `setUIState` action or `form.ui` state. The local compatible action and `formUI` fallback preserve hover state on Volto 17 while continuing to use `form.ui` on Volto 18.
+`BlockSettingsSidebar` is imported directly from `@plone/volto/components/manage/Blocks/Block/Settings`, as upstream does, not from the `@plone/volto/components` barrel. The barrel re-exports `EditBlock` from this file, so importing it here creates a circular import that breaks the Volto 19 react-refresh runtime in development (`Cannot access '__WEBPACK_DEFAULT_EXPORT__' before initialization`).
 
 ## Preserved behavior
 

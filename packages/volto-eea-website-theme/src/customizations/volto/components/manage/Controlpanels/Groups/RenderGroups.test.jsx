@@ -1,35 +1,20 @@
 /**
- * RenderGroups — unit tests
+ * RenderGroups unit tests
  *
- * Volto 17 / 18 dual-support notes
- * ---------------------------------
- * The EEA change is a single-line tweak on line 80:
- *   `{this.props.group.title || this.props.group.groupname}`
- * instead of showing only `groupname`.
- *
- * V17 and V18 upstream are byte-for-byte identical, so this shadow is
- * compatible with both versions without any rebase.
- *
- * The `@plone/volto/components` barrel is mocked to prevent the chain:
- *   TranslationObject.jsx → store.js → @root/reducers
- * that cannot be resolved in this Jest environment.  The previous snapshot
- * test used `react-test-renderer` which produced a snapshot that contained
- * the full icon SVG tree; the new tests use @testing-library/react and
- * assert on the actual EEA-specific behavior instead.
+ * The shadow is the Volto 19.5.0 core component (identical in Volto 18.36.0)
+ * with two EEA changes:
+ * - the name column shows `group.title || group.groupname`;
+ * - the checkbox value joins the group and role ids with `&role=` (instead
+ *   of `.`), so group ids that contain a dot are split correctly.
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 
 import RenderGroups from './RenderGroups';
-
-vi.mock('@plone/volto/components', () => ({
-  // RenderGroups.jsx uses only Icon from the barrel
-  Icon: () => null,
-}));
 
 const mockStore = configureStore();
 
@@ -44,81 +29,141 @@ const testRoles = [
   { '@id': 'http://localhost:8080/Plone/@roles/Manager', id: 'Manager' },
 ];
 
+const renderGroups = (props) =>
+  render(
+    <Provider store={makeStore()}>
+      <RenderGroups roles={testRoles} onDelete={() => {}} {...props} />
+    </Provider>,
+  );
+
 describe('RenderGroups — EEA: title || groupname display', () => {
   it('shows the group title when available (EEA change)', () => {
-    const group = {
-      groupname: 'editors',
-      title: 'Site Editors',
-      roles: [],
-    };
-    render(
-      <Provider store={makeStore()}>
-        <RenderGroups group={group} roles={testRoles} onDelete={() => {}} />
-      </Provider>,
-    );
+    renderGroups({
+      group: { groupname: 'editors', title: 'Site Editors', roles: [] },
+    });
     // EEA customization: title takes precedence over groupname
     expect(screen.getByText('Site Editors')).toBeInTheDocument();
+    expect(screen.queryByText('editors')).not.toBeInTheDocument();
   });
 
   it('falls back to groupname when title is absent', () => {
-    const group = {
-      groupname: 'Administrators',
-      title: '',
-      roles: ['Manager'],
-    };
-    render(
-      <Provider store={makeStore()}>
-        <RenderGroups group={group} roles={testRoles} onDelete={() => {}} />
-      </Provider>,
-    );
+    renderGroups({
+      group: { groupname: 'Administrators', title: '', roles: ['Manager'] },
+    });
     expect(screen.getByText('Administrators')).toBeInTheDocument();
   });
 
   it('falls back to groupname when title is undefined', () => {
-    const group = {
-      groupname: 'Reviewers',
-      // no title key at all
-      roles: [],
-    };
-    render(
-      <Provider store={makeStore()}>
-        <RenderGroups group={group} roles={testRoles} onDelete={() => {}} />
-      </Provider>,
-    );
+    renderGroups({
+      group: {
+        groupname: 'Reviewers',
+        // no title key at all
+        roles: [],
+      },
+    });
     expect(screen.getByText('Reviewers')).toBeInTheDocument();
   });
+});
 
+describe('RenderGroups — role checkboxes', () => {
   it('renders a checkbox for each role', () => {
-    const group = {
-      groupname: 'Administrators',
-      title: 'Administrators',
-      roles: ['Manager'],
-    };
-    const { container } = render(
-      <Provider store={makeStore()}>
-        <RenderGroups group={group} roles={testRoles} onDelete={() => {}} />
-      </Provider>,
-    );
-    // One checkbox per role
+    const { container } = renderGroups({
+      group: {
+        groupname: 'Administrators',
+        title: 'Administrators',
+        roles: ['Manager'],
+      },
+    });
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
     expect(checkboxes).toHaveLength(testRoles.length);
   });
 
   it('checks the checkbox for roles the group already has', () => {
-    const group = {
-      groupname: 'managers',
-      title: 'Managers',
-      roles: ['Manager'],
-    };
-    const { container } = render(
-      <Provider store={makeStore()}>
-        <RenderGroups group={group} roles={testRoles} onDelete={() => {}} />
-      </Provider>,
-    );
+    const { container } = renderGroups({
+      group: { groupname: 'managers', title: 'Managers', roles: ['Manager'] },
+    });
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
     // Member → unchecked, Reader → unchecked, Manager → checked
     expect(checkboxes[0]).not.toBeChecked();
     expect(checkboxes[1]).not.toBeChecked();
     expect(checkboxes[2]).toBeChecked();
+  });
+
+  it('uses `&role=` to join the group and role ids (EEA change)', () => {
+    const { container } = renderGroups({
+      group: { id: 'eea.editors', groupname: 'eea.editors', roles: [] },
+      isUserManager: true,
+    });
+    const values = [
+      ...container.querySelectorAll('input[type="checkbox"]'),
+    ].map((checkbox) => checkbox.value);
+    expect(values).toEqual([
+      'eea.editors&role=Member',
+      'eea.editors&role=Reader',
+      'eea.editors&role=Manager',
+    ]);
+  });
+
+  it('passes a group id that contains a dot to updateGroups unchanged (EEA change)', () => {
+    const updateGroups = vi.fn();
+    const { container } = renderGroups({
+      group: { id: 'eea.editors', groupname: 'eea.editors', roles: [] },
+      isUserManager: true,
+      updateGroups,
+    });
+    fireEvent.click(container.querySelectorAll('input[type="checkbox"]')[1]);
+    expect(updateGroups).toHaveBeenCalledWith('eea.editors', 'Reader');
+  });
+
+  it('checks the inherited roles of the AuthenticatedUsers group', () => {
+    const { container } = renderGroups({
+      group: {
+        id: 'AuthenticatedUsers',
+        groupname: 'AuthenticatedUsers',
+        roles: [],
+      },
+      inheritedRole: ['Reader'],
+    });
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    expect(checkboxes[0]).not.toBeChecked();
+    expect(checkboxes[1]).toBeChecked();
+  });
+
+  it('disables the Manager role for users that are not Managers', () => {
+    const { container } = renderGroups({
+      group: { id: 'editors', groupname: 'editors', roles: [] },
+      isUserManager: false,
+    });
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    expect(checkboxes[0]).not.toBeDisabled();
+    expect(checkboxes[1]).not.toBeDisabled();
+    expect(checkboxes[2]).toBeDisabled();
+  });
+
+  it('enables every role for Managers', () => {
+    const { container } = renderGroups({
+      group: { id: 'editors', groupname: 'editors', roles: [] },
+      isUserManager: true,
+    });
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => expect(checkbox).not.toBeDisabled());
+  });
+});
+
+describe('RenderGroups — delete action', () => {
+  it('hides the delete menu of a Manager group for users that are not Managers', () => {
+    const { container } = renderGroups({
+      group: { id: 'admins', groupname: 'admins', roles: ['Manager'] },
+      isUserManager: false,
+    });
+    expect(container.querySelector('.ui.dropdown')).not.toBeInTheDocument();
+  });
+
+  it('shows the delete menu for Managers', () => {
+    const { container } = renderGroups({
+      group: { id: 'admins', groupname: 'admins', roles: ['Manager'] },
+      isUserManager: true,
+    });
+    expect(container.querySelector('.ui.dropdown')).toBeInTheDocument();
   });
 });

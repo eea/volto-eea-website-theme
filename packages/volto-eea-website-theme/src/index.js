@@ -317,6 +317,10 @@ const applyConfig = (config) => {
   // Disable tags on View
   config.settings.showTags = false;
 
+  // Never show the "outdated browser" warning (replaces the former
+  // OutdatedBrowser shadow that rendered null)
+  config.settings.notSupportedBrowsers = [];
+
   // Disable some blocks
   restrictedBlocks.forEach((block) => {
     if (config.blocks.blocksConfig[block]) {

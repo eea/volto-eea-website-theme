@@ -10,13 +10,14 @@ import { connect } from 'react-redux';
 import { defineMessages, injectIntl } from 'react-intl';
 import cx from 'classnames';
 import { setSidebarTab } from '@plone/volto/actions/sidebar/sidebar';
+import { setUIState } from '@plone/volto/actions/form/form';
 import config from '@plone/volto/registry';
 import withObjectBrowser from '@plone/volto/components/manage/Sidebar/ObjectBrowser';
 import ViewDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultView';
 import EditDefaultBlock from '@plone/volto/components/manage/Blocks/Block/DefaultEdit';
 import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal';
 // Import directly, NOT from the '@plone/volto/components' barrel: the barrel
-// re-exports EditBlock from this very file (line 218) and, with the Volto 19
+// re-exports EditBlock from this very file and, with the Volto 19
 // react-refresh runtime enabled in dev, the barrel's end-of-module export
 // registration reads this module's still-uninitialized default export while
 // it is mid-evaluation (circular import) -> "Cannot access
@@ -25,8 +26,6 @@ import SidebarPortal from '@plone/volto/components/manage/Sidebar/SidebarPortal'
 // since components/manage/Form/index.tsx uses lazy loadable() exports.
 import BlockSettingsSidebar from '@plone/volto/components/manage/Blocks/Block/Settings';
 import BlockSettingsSchema from '@plone/volto/components/manage/Blocks/Block/Schema';
-// setUIState was introduced in Volto 18; provide a compatible action for Volto 17
-const setUIState = (ui) => ({ type: 'SET_UI_STATE', ui });
 
 const messages = defineMessages({
   unknownBlock: {
@@ -303,7 +302,7 @@ export default compose(
   withObjectBrowser,
   connect(
     (state, props) => ({
-      hovered: state.form?.ui?.hovered ?? state.formUI?.hovered ?? null,
+      hovered: state.form?.ui.hovered || null,
       sidebarTab: state.sidebar?.tab,
     }),
     { setSidebarTab, setUIState },

@@ -1,5 +1,7 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-intl-redux';
 import { MemoryRouter } from 'react-router-dom';
@@ -71,5 +73,94 @@ describe('Breadcrumbs', () => {
     );
     const json = component.toJSON();
     expect(json).toMatchSnapshot();
+  });
+
+  it('renders a single Site Setup item in the control panel', () => {
+    const store = mockStore({
+      breadcrumbs: {
+        items: [{ title: 'Stale', url: '/stale' }],
+      },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+    const { container } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/controlpanel/users']}>
+          <Breadcrumbs pathname="/controlpanel/users" />
+        </MemoryRouter>
+      </Provider>,
+    );
+    const sections = container.querySelectorAll(
+      'ol > li:not(.breadcrumbs-home-item)',
+    );
+    expect(sections).toHaveLength(1);
+    expect(sections[0]).toHaveTextContent('Site Setup');
+    expect(container).not.toHaveTextContent('Stale');
+    // Control panels are non content routes: no breadcrumbs request.
+    expect(store.getActions()).toEqual([]);
+  });
+
+  it('requests the breadcrumbs on content routes only', () => {
+    const { apiExpanders } = config.settings;
+    config.settings.apiExpanders = [];
+    const store = mockStore({
+      breadcrumbs: { items: [] },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/news/edit']}>
+          <Breadcrumbs pathname="/news/edit" />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(store.getActions()).toEqual([]);
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/news']}>
+          <Breadcrumbs pathname="/news" />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(store.getActions()).toEqual([
+      expect.objectContaining({ type: 'GET_BREADCRUMBS' }),
+    ]);
+    config.settings.apiExpanders = apiExpanders;
+  });
+
+  it('links content types of contentTypesAsBreadcrumbSection for authenticated users', () => {
+    config.settings = {
+      ...config.settings,
+      contentTypesAsBreadcrumbSection: ['Folder'],
+    };
+    const store = mockStore({
+      breadcrumbs: {
+        items: [
+          { title: 'News', url: '/news', portal_type: 'Folder' },
+          { title: 'Latest Update', url: '/news/latest-update' },
+        ],
+      },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+      userSession: {
+        token: 'token',
+      },
+    });
+    const { getByText } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/news/latest-update']}>
+          <Breadcrumbs pathname="/news/latest-update" />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(getByText('News').closest('a')).toHaveAttribute('href', '/news');
   });
 });
