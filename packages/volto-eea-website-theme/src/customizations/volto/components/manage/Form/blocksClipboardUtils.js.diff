@@ -1,4 +1,4 @@
---- volto-19.5.0/NO_UPSTREAM_FILE
+--- volto-19.6.1/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Form/blocksClipboardUtils.js
 @@ -0,0 +1,66 @@
 +import { v4 as uuid } from 'uuid';

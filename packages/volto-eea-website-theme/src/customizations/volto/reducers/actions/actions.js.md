@@ -1,7 +1,7 @@
 # actions.js customization
 
 This customization shadows Volto core's `src/reducers/actions/actions.js` from
-`volto-19.5.0`.
+`volto-19.6.1`.
 
 The functional change is a single guard on `GET_CONTENT_SUCCESS`:
 
@@ -35,7 +35,7 @@ The test next to this file (`actions.test.js`) covers both paths: a
 
 ## Upstream
 
-Volto 19.5.0 still has the unguarded line, so this is an upstream fix
+Volto 19.6.1 still has the unguarded line, so this is an upstream fix
 candidate; the patch is the one-liner above plus a test case. When upstream
 fixes it, delete this customization and `actions.js.diff`.
 

@@ -9,7 +9,7 @@ library. The shadow therefore only picks, from the Volto version, one of two
 copies of the core component with the same EEA changes:
 
 - `components/manage/Contents/ContentsItemDndKit.jsx`, based on `@plone/volto`
-  19.5.0 (dnd-kit). `ContentsItem.jsx.diff` shows its changes against core.
+  19.6.1 (dnd-kit). `ContentsItem.jsx.diff` shows its changes against core.
 - `components/manage/Contents/ContentsItemReactDnd.jsx`, based on
   `@plone/volto` 18.36.0 (react-dnd). Drop it, and the version switch, once
   Volto 18 is no longer supported.

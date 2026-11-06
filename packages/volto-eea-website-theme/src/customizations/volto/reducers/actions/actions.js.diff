@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/reducers/actions/actions.js
+--- volto-19.6.1/packages/volto/src/reducers/actions/actions.js
 +++ volto-eea-website-theme/src/customizations/volto/reducers/actions/actions.js
 @@ -1,6 +1,17 @@
  /**
@@ -14,11 +14,11 @@
 + * breaking the page. See Sentry WWW-EEA-EUROPA-EU-EN-3 / -28 / -1AT / -1F.
 + *
 + * Upstream fix candidate: use `action.result['@components']?.actions` in
-+ * `@plone/volto/src/reducers/actions/actions.js` (Volto 19.5.0 still lacks it).
++ * `@plone/volto/src/reducers/actions/actions.js` (Volto 19.6.1 still lacks it).
   */
  
  import { GET_CONTENT, LIST_ACTIONS } from '@plone/volto/constants/ActionTypes';
-@@ -43,7 +54,7 @@ export default function actions(state = initialState, action = {}) {
+@@ -43,7 +54,7 @@
          'actions',
          getBaseUrl(flattenToAppURL(action.result['@id'])),
        );

@@ -1,13 +1,17 @@
---- volto-19.5.0/NO_UPSTREAM_FILE
+--- volto-19.6.1/packages/volto/src/components/manage/Blocks/LeadImage/schema.js
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/LeadImage/schema.js
-@@ -0,0 +1,116 @@
-+import { defineMessages } from 'react-intl';
-+
-+const messages = defineMessages({
+@@ -1,11 +1,27 @@
+ import { defineMessages } from 'react-intl';
+ 
+ const messages = defineMessages({
+-  LeadImage: {
+-    id: 'Lead Image',
+-    defaultMessage: 'Lead Image',
 +  Image: {
 +    id: 'Image',
 +    defaultMessage: 'Image',
-+  },
+   },
+-  Alignment: {
 +  Origin: {
 +    id: 'Origin',
 +    defaultMessage: 'Origin',
@@ -25,27 +29,45 @@
 +    defaultMessage: 'Icon',
 +  },
 +  Align: {
-+    id: 'Alignment',
-+    defaultMessage: 'Alignment',
-+  },
-+  LinkTo: {
-+    id: 'Link to',
-+    defaultMessage: 'Link to',
-+  },
-+  openLinkInNewTab: {
-+    id: 'Open in a new tab',
-+    defaultMessage: 'Open in a new tab',
-+  },
+     id: 'Alignment',
+     defaultMessage: 'Alignment',
+   },
+@@ -17,46 +33,95 @@
+     id: 'Open in a new tab',
+     defaultMessage: 'Open in a new tab',
+   },
+-  linkSettings: {
+-    id: 'Link settings',
+-    defaultMessage: 'Link settings',
 +  NoImageSelected: {
 +    id: 'No image set in image content field',
 +    defaultMessage: 'No image set in image content field',
-+  },
+   },
 +  externalURL: {
 +    id: 'External URL',
 +    defaultMessage: 'External URL',
 +  },
-+});
-+export function LeadImageSchema({ formData, intl }) {
+ });
+-
+ /**
+- * The Lead Image block data schema. It is registered as the `blockSchema` of
+- * the `leadimage` block. The image itself and its alt text come from the
+- * content item's `image` and `image_caption` fields, not from the block data.
+- * The Lead Image block sidebar reads this schema from the block configuration
+- * and adds the alt text field, which is stored in the content item.
++ * The EEA Lead Image block data schema. On Volto >= 19.6 it is also the
++ * `blockSchema` of the `leadimage` block (see `LeadImageBlockSchema` below), so
++ * it can be called with `data` instead of `formData`.
+  */
+-export const LeadImageBlockSchema = ({ intl }) => ({
+-  title: intl.formatMessage(messages.LeadImage),
+-  fieldsets: [
+-    {
+-      id: 'default',
+-      title: 'Default',
+-      fields: ['align'],
++export function LeadImageSchema({ formData: formDataProp, data, intl }) {
++  const formData = formDataProp || data || {};
 +  return {
 +    fieldsets: [
 +      {
@@ -113,7 +135,34 @@
 +        actions: ['left', 'right'],
 +        defaultValue: 'left',
 +      },
-+    },
+     },
+-    {
+-      id: 'link_settings',
+-      title: intl.formatMessage(messages.linkSettings),
+-      fields: ['href', 'openLinkInNewTab'],
+-    },
+-  ],
+-  properties: {
+-    align: {
+-      title: intl.formatMessage(messages.Alignment),
+-      widget: 'align',
+-    },
+-    href: {
+-      title: intl.formatMessage(messages.LinkTo),
+-      widget: 'url',
+-    },
+-    openLinkInNewTab: {
+-      title: intl.formatMessage(messages.openLinkInNewTab),
+-      type: 'boolean',
+-    },
+-  },
+-  required: [],
+-});
 +    required: [],
 +  };
 +}
++
++// Volto >= 19.6 ships `LeadImage/schema.js` and registers `LeadImageBlockSchema`
++// as the `blockSchema` of the `leadimage` block (config/Blocks.jsx). This file
++// shadows it, so it must provide the same export.
++export const LeadImageBlockSchema = LeadImageSchema;

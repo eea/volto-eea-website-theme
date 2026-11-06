@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/manage/Contents/ContentsItem.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Contents/ContentsItem.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Contents/ContentsItem.jsx
 @@ -4,359 +4,18 @@
   */

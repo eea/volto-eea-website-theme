@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/theme/Image/Image.jsx
+--- volto-19.6.1/packages/volto/src/components/theme/Image/Image.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Image/Image.jsx
 @@ -1,12 +1,16 @@
  import PropTypes from 'prop-types';

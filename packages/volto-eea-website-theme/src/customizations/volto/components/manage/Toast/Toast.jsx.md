@@ -1,7 +1,7 @@
 # Toast.jsx customization
 
 This customization shadows Volto core's
-`src/components/manage/Toast/Toast.jsx`. It is the Volto 19.5.0 core component
+`src/components/manage/Toast/Toast.jsx`. It is the Volto 19.6.1 core component
 with the toast rendered for the EEA Design System (#294806):
 
 - Rendered as a semantic-ui `Message` (`icon`, `size="large"` and the

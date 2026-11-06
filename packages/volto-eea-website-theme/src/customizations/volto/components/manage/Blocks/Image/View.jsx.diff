@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/manage/Blocks/Image/View.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Blocks/Image/View.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Image/View.jsx
 @@ -1,91 +1,149 @@
 +/* eslint-disable jsx-a11y/mouse-events-have-key-events */

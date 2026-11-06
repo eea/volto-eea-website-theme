@@ -1,4 +1,4 @@
-/* EEA customization (based on Volto 19.5.0, identical in 18.36.0):
+/* EEA customization (based on Volto 19.6.1, identical in 18.36.0):
  * in the list view, Image items show a thumbnail instead of the content type
  * icon, and the hoverable popup shows a bigger preview (#152099).
  */

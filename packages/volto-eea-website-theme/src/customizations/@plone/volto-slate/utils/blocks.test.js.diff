@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto-slate/src/utils/blocks.test.js
+--- volto-19.6.1/packages/volto-slate/src/utils/blocks.test.js
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/blocks.test.js
 @@ -1,4 +1,5 @@
 -import { getAllBlocks } from './blocks';

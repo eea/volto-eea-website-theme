@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/theme/View/DefaultView.jsx
+--- volto-19.6.1/packages/volto/src/components/theme/View/DefaultView.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/View/DefaultView.jsx
 @@ -17,6 +17,7 @@
  import { useDispatch, useSelector } from 'react-redux';

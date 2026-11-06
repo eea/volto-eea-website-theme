@@ -1,10 +1,10 @@
---- volto-19.5.0/NO_UPSTREAM_FILE
+--- volto-19.6.1/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.jsx.md
 @@ -0,0 +1,23 @@
 +# Toast.jsx customization
 +
 +This customization shadows Volto core's
-+`src/components/manage/Toast/Toast.jsx`. It is the Volto 19.5.0 core component
++`src/components/manage/Toast/Toast.jsx`. It is the Volto 19.6.1 core component
 +with the toast rendered for the EEA Design System (#294806):
 +
 +- Rendered as a semantic-ui `Message` (`icon`, `size="large"` and the

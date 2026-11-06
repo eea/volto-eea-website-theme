@@ -1,4 +1,4 @@
-// Copy of `@plone/volto/helpers/Utils/withSaveAsDraft` from Volto 19.5.0, which
+// Copy of `@plone/volto/helpers/Utils/withSaveAsDraft` from Volto 19.6.1, which
 // does not exist in Volto 18. Keep it local until Volto 18 is no longer
 // supported, so the same add-on build works on both. The autosave stays off on
 // Volto 18 even when `config.experimental.saveAsDraft.enabled` is set.

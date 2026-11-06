@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/manage/Widgets/NumberWidget.test.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Widgets/NumberWidget.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Widgets/NumberWidget.test.jsx
 @@ -1,31 +1,125 @@
  import React from 'react';

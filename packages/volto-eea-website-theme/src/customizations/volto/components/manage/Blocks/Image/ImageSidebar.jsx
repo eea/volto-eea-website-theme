@@ -8,12 +8,13 @@ import Image from '@plone/volto/components/theme/Image/Image';
 import BlockDataForm from '@plone/volto/components/manage/Form/BlockDataForm';
 import imageSVG from '@plone/volto/icons/image.svg';
 import trashSVG from '@plone/volto/icons/delete.svg';
+import config from '@plone/volto/registry';
 
 import { ImageSchema } from './schema';
 
 const ImageSidebar = (props) => {
   const {
-    blocksConfig,
+    blocksConfig = config.blocks.blocksConfig,
     blocksErrors,
     data,
     block,
@@ -22,7 +23,12 @@ const ImageSidebar = (props) => {
     contentType,
   } = props;
   const intl = useIntl();
-  const schema = ImageSchema({ formData: data, intl });
+  // Volto >= 19.6: use the `blockSchema` registered for the block, if any
+  const blockSchema = blocksConfig?.[data['@type']]?.blockSchema ?? ImageSchema;
+  const schema =
+    typeof blockSchema === 'function'
+      ? blockSchema({ ...props, formData: data, intl })
+      : blockSchema;
   const dataRef = useRef(data);
   dataRef.current = data;
 

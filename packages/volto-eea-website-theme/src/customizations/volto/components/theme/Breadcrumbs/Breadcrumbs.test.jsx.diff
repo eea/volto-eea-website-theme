@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
+--- volto-19.6.1/packages/volto/src/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/Breadcrumbs.test.jsx
 @@ -1,8 +1,11 @@
  import React from 'react';

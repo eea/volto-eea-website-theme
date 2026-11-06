@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto-slate/src/editor/SlateEditor.jsx
+--- volto-19.6.1/packages/volto-slate/src/editor/SlateEditor.jsx
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/editor/SlateEditor.jsx
 @@ -1,29 +1,30 @@
  import ReactDOM from 'react-dom';

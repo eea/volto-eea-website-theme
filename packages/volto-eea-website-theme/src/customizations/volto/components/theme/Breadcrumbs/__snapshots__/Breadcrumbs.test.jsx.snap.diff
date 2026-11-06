@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
+--- volto-19.6.1/packages/volto/src/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Breadcrumbs/__snapshots__/Breadcrumbs.test.jsx.snap
 @@ -1,66 +1,170 @@
  // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html

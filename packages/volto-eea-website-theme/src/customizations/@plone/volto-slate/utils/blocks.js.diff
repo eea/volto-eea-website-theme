@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto-slate/src/utils/blocks.js
+--- volto-19.6.1/packages/volto-slate/src/utils/blocks.js
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/blocks.js
 @@ -9,9 +9,23 @@
  import includes from 'lodash/includes';

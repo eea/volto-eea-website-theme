@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/manage/Diff/DiffField.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Diff/DiffField.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Diff/DiffField.jsx
 @@ -12,7 +12,7 @@
  import { Provider } from 'react-intl-redux';

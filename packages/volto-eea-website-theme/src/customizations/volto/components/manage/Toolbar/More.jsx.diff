@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/manage/Toolbar/More.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Toolbar/More.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Toolbar/More.jsx
 @@ -21,6 +21,7 @@
  import { flattenToAppURL, getBaseUrl } from '@plone/volto/helpers/Url/Url';

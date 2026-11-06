@@ -27,6 +27,11 @@ vi.mock('@plone/volto/components/manage/Form/BlockDataForm', async () => {
         { 'aria-label': 'block data' },
         JSON.stringify(props.formData),
       ),
+      React.createElement(
+        'output',
+        { 'aria-label': 'schema title' },
+        props.schema?.title,
+      ),
     );
   return { default: BlockDataForm };
 });
@@ -120,5 +125,43 @@ describe('ImageSidebar', () => {
     expect(currentData.image_title).toBeUndefined();
     expect(currentData.image_description).toBeUndefined();
     expect(currentData.image_metadata).toBeUndefined();
+  });
+
+  it('uses the ImageSchema when the block has no registered blockSchema', () => {
+    render(
+      <IntlProvider locale="en" messages={{}}>
+        <ImageSidebar
+          data={initialData}
+          block="image-block"
+          blocksConfig={{ image: {} }}
+          onChangeBlock={() => {}}
+        />
+      </IntlProvider>,
+    );
+    expect(screen.getByLabelText('schema title')).toHaveTextContent('Image');
+  });
+
+  it('uses the blockSchema registered for the block (Volto >= 19.6)', () => {
+    const blockSchema = vi.fn(() => ({
+      title: 'Registered schema',
+      fieldsets: [],
+      properties: {},
+    }));
+    render(
+      <IntlProvider locale="en" messages={{}}>
+        <ImageSidebar
+          data={initialData}
+          block="image-block"
+          blocksConfig={{ image: { blockSchema } }}
+          onChangeBlock={() => {}}
+        />
+      </IntlProvider>,
+    );
+    expect(screen.getByLabelText('schema title')).toHaveTextContent(
+      'Registered schema',
+    );
+    expect(blockSchema).toHaveBeenCalledWith(
+      expect.objectContaining({ formData: initialData }),
+    );
   });
 });

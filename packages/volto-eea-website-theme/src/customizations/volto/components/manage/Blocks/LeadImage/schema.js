@@ -42,7 +42,13 @@ const messages = defineMessages({
     defaultMessage: 'External URL',
   },
 });
-export function LeadImageSchema({ formData, intl }) {
+/**
+ * The EEA Lead Image block data schema. On Volto >= 19.6 it is also the
+ * `blockSchema` of the `leadimage` block (see `LeadImageBlockSchema` below), so
+ * it can be called with `data` instead of `formData`.
+ */
+export function LeadImageSchema({ formData: formDataProp, data, intl }) {
+  const formData = formDataProp || data || {};
   return {
     fieldsets: [
       {
@@ -114,3 +120,8 @@ export function LeadImageSchema({ formData, intl }) {
     required: [],
   };
 }
+
+// Volto >= 19.6 ships `LeadImage/schema.js` and registers `LeadImageBlockSchema`
+// as the `blockSchema` of the `leadimage` block (config/Blocks.jsx). This file
+// shadows it, so it must provide the same export.
+export const LeadImageBlockSchema = LeadImageSchema;

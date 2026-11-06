@@ -39,7 +39,10 @@ const messages = defineMessages({
   },
 });
 
-export function ImageSchema({ formData, intl }) {
+// On Volto >= 19.6 this is the `blockSchema` of the `image` block, which can be
+// called with `data` instead of `formData`.
+export function ImageSchema({ formData: formDataProp, data, intl }) {
+  const formData = formDataProp || data || {};
   return {
     fieldsets: [
       {

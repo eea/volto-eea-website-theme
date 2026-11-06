@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/reducers/breadcrumbs/breadcrumbs.js
+--- volto-19.6.1/packages/volto/src/reducers/breadcrumbs/breadcrumbs.js
 +++ volto-eea-website-theme/src/customizations/volto/reducers/breadcrumbs/breadcrumbs.js
 @@ -1,6 +1,7 @@
  /**

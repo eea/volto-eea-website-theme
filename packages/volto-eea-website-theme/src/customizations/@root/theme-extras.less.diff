@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.6.1/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/@root/theme-extras.less
 @@ -0,0 +1,10 @@
 +// Keep the focus variables and Volto's extras in the same Less scope.

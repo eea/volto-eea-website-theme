@@ -11,7 +11,7 @@
  * breaking the page. See Sentry WWW-EEA-EUROPA-EU-EN-3 / -28 / -1AT / -1F.
  *
  * Upstream fix candidate: use `action.result['@components']?.actions` in
- * `@plone/volto/src/reducers/actions/actions.js` (Volto 19.5.0 still lacks it).
+ * `@plone/volto/src/reducers/actions/actions.js` (Volto 19.6.1 still lacks it).
  */
 
 import { GET_CONTENT, LIST_ACTIONS } from '@plone/volto/constants/ActionTypes';

@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto-slate/src/blocks/Table/TableBlockView.jsx
+--- volto-19.6.1/packages/volto-slate/src/blocks/Table/TableBlockView.jsx
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Table/TableBlockView.jsx
 @@ -49,6 +49,7 @@
                cell.value && Node.string({ children: cell.value }).length > 0

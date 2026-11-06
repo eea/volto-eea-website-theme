@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/theme/Comments/Comments.jsx
+--- volto-19.6.1/packages/volto/src/components/theme/Comments/Comments.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/theme/Comments/Comments.jsx
 @@ -3,10 +3,8 @@
  import { defineMessages, FormattedMessage, useIntl } from 'react-intl';

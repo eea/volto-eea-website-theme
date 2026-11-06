@@ -1,6 +1,6 @@
 Added customization to condition the display of the layout options based on the user's roles.
 
-The shadow is the Volto 19.5.0 core `Display.jsx` (hooks version, identical in
+The shadow is the Volto 19.6.1 core `Display.jsx` (hooks version, identical in
 Volto 18.36.0) with one EEA change: the layout selector renders only for users
 that have one of the roles in `config.settings.eea.rolesWhoCanChangeLayout`
 (set in `volto-eea-website-policy`). Otherwise the component renders nothing.

@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.6.1/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/@root/toast.less
 @@ -0,0 +1,99 @@
 +.Toastify__toast-container--bottom-center {

@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto-slate/src/blocks/Text/keyboard/joinBlocks.js
+--- volto-19.6.1/packages/volto-slate/src/blocks/Text/keyboard/joinBlocks.js
 +++ volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Text/keyboard/joinBlocks.js
 @@ -48,9 +48,29 @@
    const [otherBlock = {}, otherBlockId] = prev;

@@ -1,7 +1,7 @@
 /**
  * RenderGroups unit tests
  *
- * The shadow is the Volto 19.5.0 core component (identical in Volto 18.36.0)
+ * The shadow is the Volto 19.6.1 core component (identical in Volto 18.36.0)
  * with two EEA changes:
  * - the name column shows `group.title || group.groupname`;
  * - the checkbox value joins the group and role ids with `&role=` (instead

@@ -1,7 +1,7 @@
---- volto-19.5.0/packages/volto/src/components/manage/Sidebar/ObjectBrowserNav.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Sidebar/ObjectBrowserNav.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Sidebar/ObjectBrowserNav.jsx
 @@ -1,5 +1,14 @@
-+/* EEA customization (based on Volto 19.5.0, identical in 18.36.0):
++/* EEA customization (based on Volto 19.6.1, identical in 18.36.0):
 + * in the list view, Image items show a thumbnail instead of the content type
 + * icon, and the hoverable popup shows a bigger preview (#152099).
 + */

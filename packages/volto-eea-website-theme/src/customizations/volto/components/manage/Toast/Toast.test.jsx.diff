@@ -1,4 +1,4 @@
---- volto-19.5.0/packages/volto/src/components/manage/Toast/Toast.test.jsx
+--- volto-19.6.1/packages/volto/src/components/manage/Toast/Toast.test.jsx
 +++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.test.jsx
 @@ -1,19 +1,135 @@
  import React from 'react';

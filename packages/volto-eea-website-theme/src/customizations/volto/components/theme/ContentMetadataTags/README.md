@@ -1,5 +1,5 @@
 - Customize component to enhance title generation, see 292656 for detail
-- Resynced with Volto 19.5.0 (identical to Volto 18.36.0 for this file): only
+- Resynced with Volto 19.6.1 (identical to Volto 18.36.0 for this file): only
   `getTitle()` differs from core. The title is built as
   `page | parent | navroot site` (`seo_title` replaces the page title). The
   parent is skipped on the navroot itself, the navroot when it is also the

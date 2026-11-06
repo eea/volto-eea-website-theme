@@ -1,4 +1,4 @@
---- volto-18.35.1-74d82edef/NO_UPSTREAM_FILE
+--- volto-19.6.1/NO_UPSTREAM_FILE
 +++ volto-eea-website-theme/src/customizations/@eeacms/volto-block-style/StyleWrapper/schema.js
 @@ -0,0 +1,24 @@
 +export const StyleSchema = () => {

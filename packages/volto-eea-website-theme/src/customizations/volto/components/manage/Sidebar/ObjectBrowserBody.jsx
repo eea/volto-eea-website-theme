@@ -1,4 +1,4 @@
-/* EEA customization (based on Volto 19.5.0, identical in 18.36.0):
+/* EEA customization (based on Volto 19.6.1, identical in 18.36.0):
  * - picking an image fills `alt` (title or description) and `copyright`
  *   (rights) instead of an empty `alt`;
  * - the selection limit logic lives in `./objectBrowserSelection` (#301881).

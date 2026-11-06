@@ -1,6 +1,15 @@
---- volto-19.5.0/packages/volto/src/server.jsx
+--- volto-19.6.1/packages/volto/src/server.jsx
 +++ volto-eea-website-theme/src/customizations/volto/server.jsx
-@@ -16,6 +16,7 @@
+@@ -7,6 +7,8 @@
+ import express from 'express';
+ import { renderToString } from 'react-dom/server';
+ import { createMemoryHistory } from 'history';
++import keys from 'lodash/keys';
++import locale from 'locale';
+ import { detect } from 'detect-browser';
+ import path from 'path';
+ import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
+@@ -14,6 +16,7 @@
  import { CookiesProvider } from 'react-cookie';
  import cookiesMiddleware from 'universal-cookie-express';
  import debug from 'debug';
@@ -8,6 +17,30 @@
  
  import routes from '@plone/volto/routes';
  import config from '@plone/volto/registry';
+@@ -24,20 +27,18 @@
+ import Api from '@plone/volto/helpers/Api/Api';
+ import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
+ import {
++  toBackendLang,
+   toGettextLang,
+   toReactIntlLang,
+ } from '@plone/volto/helpers/Utils/Utils';
+-import {
+-  getSupportedLocales,
+-  negotiateLocale,
+-  resolveContentLocale,
+-} from '@plone/volto/helpers/Locale/Locale';
+ import { changeLanguage } from '@plone/volto/actions/language/language';
+ 
+ import userSession from '@plone/volto/reducers/userSession/userSession';
+ 
+ import ErrorPage from '@plone/volto/error';
+ 
++import languages from '@plone/volto/constants/Languages.cjs';
++
+ import configureStore from '@plone/volto/store';
+ import {
+   ReduxAsyncConnect,
 @@ -45,6 +46,7 @@
  } from '@plone/volto/helpers/AsyncConnect';
  
@@ -16,7 +49,12 @@
  
  // Load locales listed in supportedLanguages setting
  if (config.settings) {
-@@ -68,6 +70,7 @@
+@@ -64,10 +66,11 @@
+   debug('i18n')(error);
+ }
+ 
+-const supported = getSupportedLocales(config.settings?.supportedLanguages);
++const supported = new locale.Locales(keys(languages), 'en');
  
  const server = express()
    .disable('x-powered-by')
@@ -58,7 +96,7 @@
      if (!ignoredErrors.includes(err.status)) console.error(err);
  
      res
-@@ -127,7 +140,25 @@
+@@ -127,12 +140,34 @@
    }
  });
  
@@ -83,8 +121,20 @@
 +
    const api = new Api(req);
  
-   const lang = toReactIntlLang(
-@@ -157,10 +188,16 @@
+-  const lang = negotiateLocale(
+-    req.universalCookies.get('I18N_LANGUAGE') || req.headers['accept-language'],
+-    supported,
++  const lang = toReactIntlLang(
++    new locale.Locales(
++      req.universalCookies.get('I18N_LANGUAGE') ||
++        req.headers['accept-language'],
++    )
++      .best(supported)
++      .toString(),
+   );
+ 
+   // Minimum initial state for the fake Redux store instance
+@@ -153,10 +188,16 @@
    const store = configureStore(initialState, history, api);
  
    function errorHandler(error) {
@@ -102,7 +152,7 @@
          </StaticRouter>
        </Provider>
      );
-@@ -173,7 +210,7 @@
+@@ -169,7 +210,7 @@
       * TODO:
       * - get ignored codes from Plone error_log
       */
@@ -111,7 +161,7 @@
      if (!ignoredErrors.includes(error.status)) console.error(error);
  
      res
-@@ -185,10 +222,11 @@
+@@ -181,10 +222,11 @@
      res.locals.detectedHost = `${
        req.headers['x-forwarded-proto'] || req.protocol
      }://${req.headers.host}`;
@@ -127,7 +177,7 @@
    }
  
    res.locals = {
-@@ -202,8 +240,12 @@
+@@ -198,18 +240,26 @@
  }
  
  server.get('/*', (req, res) => {
@@ -141,16 +191,47 @@
    const api = new Api(req);
  
    const browserdetect = detect(req.headers['user-agent']);
-@@ -217,7 +259,7 @@
-       .toString(),
+ 
+-  const lang = negotiateLocale(
+-    req.universalCookies.get('I18N_LANGUAGE') || req.headers['accept-language'],
+-    supported,
++  const lang = toReactIntlLang(
++    new locale.Locales(
++      req.universalCookies.get('I18N_LANGUAGE') ||
++        req.headers['accept-language'],
++    )
++      .best(supported)
++      .toString(),
    );
  
--  const authToken = req.universalCookies.get('auth_token'); // betterleaks:allow
+-  const authToken = req.universalCookies.get('auth_token');
 +  const authToken = req.universalCookies.get('auth_token'); // betterleaks:allow
    const initialState = {
      userSession: { ...userSession(), token: authToken },
      form: req.body,
-@@ -342,6 +384,7 @@
+@@ -279,17 +329,14 @@
+ 
+       const isMultilingual = state.site.data.features?.multilingual;
+ 
+-      const newLang = resolveContentLocale(
+-        contentLang,
+-        [lang, negotiateLocale(initialLang, supported)],
+-        supported,
+-      );
+-
+       if (
+-        newLang &&
++        toBackendLang(initialLang) !== contentLang &&
+         !/\/\.well-known\/.*$/.test(location.pathname) &&
+         !(isMultilingual && location.pathname === '/')
+       ) {
++        const newLang = toReactIntlLang(
++          new locale.Locales(contentLang).best(supported).toString(),
++        );
+         store.dispatch(changeLanguage(newLang, locales[newLang], req));
+       }
+ 
+@@ -337,6 +384,7 @@
          ${renderToString(
            <Html
              extractor={extractor}

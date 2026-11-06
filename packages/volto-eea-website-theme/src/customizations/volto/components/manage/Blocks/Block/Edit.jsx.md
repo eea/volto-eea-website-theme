@@ -1,6 +1,6 @@
 # Block/Edit.jsx — Customization explanation
 
-**Upstream:** `@plone/volto` 19.5.0, `components/manage/Blocks/Block/Edit.jsx` (same code in 18.36.0, only comments differ)  
+**Upstream:** `@plone/volto` 19.6.1, `components/manage/Blocks/Block/Edit.jsx` (same code in 18.36.0, only comments differ)  
 **Local override:** `src/customizations/volto/components/manage/Blocks/Block/Edit.jsx`
 
 ## Why this override exists
