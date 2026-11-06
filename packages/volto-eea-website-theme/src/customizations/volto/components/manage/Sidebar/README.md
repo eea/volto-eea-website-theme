@@ -1,0 +1,16 @@
+## ObjectBrowserBody
+
+- Based on Volto 19.6.1 (identical to 18.36.0)
+- Picking an image sets `alt` to the image title (or description) and
+  `copyright` to its rights, instead of an empty `alt`
+- Selection limit (`maximumSelectionSize`) logic lives in
+  `objectBrowserSelection.js`, refs #301881
+  (Cypress `10-object-browser-selection-limit.cy.js`)
+
+## ObjectBrowserNav
+
+- Based on Volto 19.6.1 (identical to 18.36.0)
+- Allow previewing images when selecting them with the file picker: in the
+  list view, Image items show an `@@images/image/icon` thumbnail and a
+  hoverable popup with the `@@images/image/mini` scale
+- refs #152099

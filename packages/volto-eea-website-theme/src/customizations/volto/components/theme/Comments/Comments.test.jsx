@@ -1,0 +1,561 @@
+import React from 'react';
+import { Provider } from 'react-intl-redux';
+import { render, fireEvent } from '@testing-library/react';
+import configureStore from 'redux-mock-store';
+import Comments from './Comments';
+import thunk from 'redux-thunk';
+import renderer from 'react-test-renderer';
+import '@testing-library/jest-dom';
+
+const middleware = [thunk];
+const mockStore = configureStore(middleware);
+
+vi.mock('moment', () => ({
+  default: vi.fn(() => ({
+    format: vi.fn(() => 'Tuesday, August 1, 2023 12:09 PM'),
+    fromNow: vi.fn(() => 'a few seconds ago'),
+  })),
+}));
+
+vi.mock('@plone/volto/components/theme/Avatar/Avatar', () => ({
+  __esModule: true,
+  default: ({ title }) => <div className="avatar">{title}</div>,
+}));
+
+vi.mock('@plone/volto/components/theme/Comments/CommentEditModal', () => ({
+  __esModule: true,
+  default: ({ open }) => (open ? <div className="comment-edit-modal" /> : null),
+}));
+
+vi.mock('@plone/volto/components/manage/Form/Form', () => ({
+  __esModule: true,
+  default: ({ onSubmit, submitLabel }) => (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <button
+        type="button"
+        aria-label={submitLabel}
+        onClick={(event) => onSubmit?.(event)}
+      >
+        {submitLabel}
+      </button>
+    </form>
+  ),
+}));
+
+vi.mock('@plone/volto/helpers/Loadable/Loadable');
+beforeAll(
+  async () =>
+    await (
+      await import('@plone/volto/helpers/Loadable/Loadable')
+    ).__setLoadables(),
+);
+
+describe('Comments', () => {
+  it('renders a comments component', () => {
+    const props = {
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
+      pathname: '/comments',
+      items: [
+        {
+          author_name: 'test',
+          creation_date: '2021-01-01',
+          text: {
+            data: 'test',
+            'mime-type': 'text/plain',
+          },
+          is_deletable: true,
+          is_editable: true,
+        },
+      ],
+      addRequest: { loading: false, loaded: false },
+      deleteRequest: { loading: false, loaded: false },
+    };
+    const store = mockStore({
+      comments: {
+        items: [
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171408',
+            author_name: 'admin',
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171409',
+            author_name: undefined,
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment', 'mime-type': 'text/html' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+        ],
+        permissions: {
+          view_comments: true,
+          can_reply: true,
+        },
+        add: {
+          loading: false,
+          loaded: true,
+        },
+        delete: {
+          loading: false,
+          loaded: true,
+        },
+        update: {
+          loading: false,
+          loaded: true,
+        },
+      },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+    const component = renderer.create(
+      <Provider store={store}>
+        <Comments {...props} />
+      </Provider>,
+    );
+    expect(component.toJSON()).toBeTruthy();
+  });
+
+  it('renders a comments component withour viewing the comments', () => {
+    const props = {
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
+      pathname: '/comments',
+      items: [
+        {
+          author_name: 'test',
+          creation_date: '2021-01-01',
+          text: {
+            data: 'test',
+            'mime-type': 'text/plain',
+          },
+          is_deletable: true,
+          is_editable: true,
+        },
+      ],
+      addRequest: { loading: false, loaded: false },
+      deleteRequest: { loading: false, loaded: false },
+    };
+    const store = mockStore({
+      comments: {
+        items: [
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171408',
+            author_name: 'admin',
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171409',
+            author_name: undefined,
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment', 'mime-type': 'text/html' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+        ],
+        permissions: {
+          view_comments: false,
+          can_reply: true,
+        },
+        add: {
+          loading: false,
+          loaded: true,
+        },
+        delete: {
+          loading: false,
+          loaded: true,
+        },
+        update: {
+          loading: false,
+          loaded: true,
+        },
+      },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+    const component = renderer.create(
+      <Provider store={store}>
+        <Comments {...props} />
+      </Provider>,
+    );
+    expect(component.toJSON()).toBeFalsy();
+  });
+
+  it('renders a comments component without permissions', () => {
+    const props = {
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
+      pathname: '/comments',
+      items: [
+        {
+          author_name: 'test',
+          creation_date: '2021-01-01',
+          text: {
+            data: 'test',
+            'mime-type': 'text/plain',
+          },
+          is_deletable: true,
+          is_editable: true,
+        },
+      ],
+      addRequest: { loading: false, loaded: false },
+      deleteRequest: { loading: false, loaded: false },
+    };
+    const store = mockStore({
+      comments: {
+        items: [
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171408',
+            author_name: 'admin',
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171409',
+            author_name: undefined,
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment', 'mime-type': 'text/html' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+        ],
+        permissions: undefined,
+        add: {
+          loading: false,
+          loaded: true,
+        },
+        delete: {
+          loading: false,
+          loaded: true,
+        },
+        update: {
+          loading: false,
+          loaded: true,
+        },
+      },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+    const component = renderer.create(
+      <Provider store={store}>
+        <Comments {...props} />
+      </Provider>,
+    );
+    expect(component.toJSON()).toBeFalsy();
+  });
+
+  it('renders a comments component, fires onClick events on comment and rerenders', () => {
+    const props = {
+      addComment: vi.fn(),
+      deleteComment: vi.fn(),
+      listComments: vi.fn(),
+      listMoreComments: vi.fn(),
+      pathname: '/comments',
+      items: [
+        {
+          '@id': 'someurl',
+          comment_id: '1614094601171408',
+          author_name: 'admin',
+          creation_date: '2017-11-06T19:36:01',
+          text: { data: 'Some comment' },
+          is_deletable: true,
+          is_editable: true,
+          can_reply: true,
+        },
+        {
+          '@id': 'someurl',
+          comment_id: '1614094601171409',
+          author_name: undefined,
+          creation_date: '2017-11-06T19:36:01',
+          text: { data: 'Some comment', 'mime-type': 'text/html' },
+          is_deletable: true,
+          is_editable: true,
+          can_reply: true,
+          in_reply_to: '1614094601171408',
+        },
+        {
+          '@id': 'someurl',
+          comment_id: '1614094601171410',
+          author_name: undefined,
+          creation_date: '2017-11-06T19:36:01',
+          text: { data: 'Some comment', 'mime-type': 'text/html' },
+          is_deletable: true,
+          is_editable: true,
+          can_reply: true,
+          in_reply_to: '1614094601171408',
+        },
+      ],
+      items_total: 4,
+      addRequest: { loading: true, loaded: false },
+      deleteRequest: { loading: true, loaded: false },
+    };
+    const store = mockStore({
+      comments: {
+        items: [
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171408',
+            author_name: 'admin',
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+          },
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171409',
+            author_name: undefined,
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment', 'mime-type': 'text/html' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+            in_reply_to: '1614094601171408',
+          },
+          {
+            '@id': 'someurl',
+            comment_id: '1614094601171410',
+            author_name: undefined,
+            creation_date: '2017-11-06T19:36:01',
+            text: { data: 'Some comment', 'mime-type': 'text/html' },
+            is_deletable: true,
+            is_editable: true,
+            can_reply: true,
+            in_reply_to: '1614094601171408',
+          },
+        ],
+        items_total: 4,
+        permissions: {
+          view_comments: true,
+          can_reply: true,
+        },
+        add: {
+          loading: true,
+          loaded: false,
+        },
+        delete: {
+          loading: true,
+          loaded: false,
+        },
+        update: {
+          loading: false,
+          loaded: true,
+        },
+      },
+      intl: {
+        locale: 'en',
+        messages: {},
+      },
+    });
+    const { container, rerender } = render(
+      <Provider store={store}>
+        <Comments {...props} />
+      </Provider>,
+    );
+
+    const actions = container.querySelectorAll('.actions button');
+
+    fireEvent.click(container.querySelector('button[aria-label="Reply"]'));
+    fireEvent.click(container.querySelector('button[aria-label="Edit"]'));
+    fireEvent.click(container.querySelector('button[aria-label="Delete"]'));
+    fireEvent.click(actions[actions.length - 1]);
+    fireEvent.click(
+      container.querySelector('#comment-add-id button[aria-label="Comment"]'),
+    );
+    fireEvent.click(container.querySelector('.ui.blue.basic.fluid.button'));
+
+    rerender(
+      <Provider store={store}>
+        <Comments
+          {...props}
+          pathname={'/new-comments'}
+          addRequest={{ loading: true, loaded: true }}
+        />
+      </Provider>,
+    );
+
+    rerender(
+      <Provider store={store}>
+        <Comments
+          {...props}
+          pathname={'/new-comments'}
+          addRequest={{ loading: true, loaded: true }}
+        />
+      </Provider>,
+    );
+
+    rerender(
+      <Provider store={store}>
+        <Comments
+          {...props}
+          pathname={'/new-comments'}
+          addRequest={{ loading: false, loaded: false }}
+          deleteRequest={{ loading: true, loaded: true }}
+        />
+      </Provider>,
+    );
+  });
+
+  describe('EEA behaviour on the core 19 base', () => {
+    const items = [
+      {
+        '@id': 'http://localhost:8080/Plone/doc/++conversation++default/1',
+        comment_id: '1',
+        author_name: 'admin',
+        creation_date: '2017-11-06T19:36:01',
+        text: { data: 'Parent comment' },
+        is_deletable: true,
+        is_editable: true,
+        can_reply: true,
+      },
+      {
+        '@id': 'http://localhost:8080/Plone/doc/++conversation++default/2',
+        comment_id: '2',
+        author_name: 'editor',
+        creation_date: '2017-11-06T19:36:01',
+        text: { data: 'Reply comment' },
+        is_deletable: false,
+        is_editable: false,
+        can_reply: true,
+        in_reply_to: '1',
+      },
+    ];
+    const makeStore = () =>
+      mockStore({
+        comments: {
+          items,
+          items_total: 30,
+          next: 'http://localhost:8080/Plone/doc/@comments?b_start=25',
+          permissions: { view_comments: true, can_reply: true },
+          add: { loading: false, loaded: false },
+          delete: { loading: false, loaded: false },
+        },
+        intl: { locale: 'en', messages: {} },
+      });
+    const renderComments = (store) =>
+      render(
+        <Provider store={store}>
+          <Comments pathname="/doc" />
+        </Provider>,
+      );
+
+    it('lists the comments of the current page on mount', () => {
+      const store = makeStore();
+      renderComments(store);
+      expect(store.getActions()[0]).toMatchObject({
+        type: 'LIST_COMMENTS',
+        request: { op: 'get', path: '/doc/@comments' },
+      });
+    });
+
+    it('renders an id anchor for every comment', () => {
+      const { container } = renderComments(makeStore());
+      expect(container.querySelector('[id="1"]')).toHaveTextContent(
+        'Parent comment',
+      );
+      expect(container.querySelector('[id="2"]')).toHaveTextContent(
+        'Reply comment',
+      );
+      expect(container.querySelector('#discussion')).toBeInTheDocument();
+    });
+
+    it('loads more comments through a site relative URL', () => {
+      const store = makeStore();
+      const { container } = renderComments(store);
+      fireEvent.click(container.querySelector('.ui.blue.basic.fluid.button'));
+      expect(
+        store.getActions().find((a) => a.type === 'LIST_MORE_COMMENTS'),
+      ).toMatchObject({
+        request: { op: 'get', path: '/doc/@comments?b_start=25' },
+      });
+    });
+
+    it('uses real buttons for the comment actions', () => {
+      const { container } = renderComments(makeStore());
+      const actions = container.querySelectorAll('.actions > *');
+      expect(actions.length).toBeGreaterThan(0);
+      actions.forEach((action) => {
+        expect(action.tagName).toBe('BUTTON');
+        expect(action).toHaveAttribute('type', 'button');
+      });
+    });
+
+    it('shows the replies toggle only on comments that have replies', () => {
+      const { container } = renderComments(makeStore());
+      const parentToggle = container.querySelectorAll(
+        '[id="1"] > .content .actions button',
+      );
+      const replyToggle = container.querySelectorAll(
+        '[id="2"] > .content .actions button',
+      );
+      // Reply, Edit, Delete and the replies toggle on the parent
+      expect(parentToggle).toHaveLength(4);
+      // only Reply on the reply, which has no replies of its own
+      expect(replyToggle).toHaveLength(1);
+    });
+
+    it('toggles the replies on every click', () => {
+      const { container, getByText } = renderComments(makeStore());
+      fireEvent.click(getByText('Hide Replies'));
+      expect(getByText('Show Replies')).toBeInTheDocument();
+      fireEvent.click(getByText('Show Replies'));
+      expect(getByText('Hide Replies')).toBeInTheDocument();
+      expect(container.querySelector('.collapsed')).not.toBeInTheDocument();
+    });
+
+    it('opens the reply form under the replied comment', () => {
+      const { container } = renderComments(makeStore());
+      expect(
+        container.querySelector('#reply-place-1 form'),
+      ).not.toBeInTheDocument();
+      fireEvent.click(
+        container.querySelector('[id="1"] button[aria-label="Reply"]'),
+      );
+      expect(
+        container.querySelector('#reply-place-1 form'),
+      ).toBeInTheDocument();
+    });
+
+    it('shows a relative creation date with the raw date as title', () => {
+      const { container } = renderComments(makeStore());
+      const date = container.querySelector(
+        '[id="1"] .metadata span[title="2017-11-06T19:36:01"]',
+      );
+      expect(date).toBeInTheDocument();
+      expect(date.textContent).toMatch(/ago/);
+    });
+  });
+});

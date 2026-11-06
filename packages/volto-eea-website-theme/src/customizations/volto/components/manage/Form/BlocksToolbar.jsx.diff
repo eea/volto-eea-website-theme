@@ -1,0 +1,129 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Form/BlocksToolbar.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Form/BlocksToolbar.jsx
+@@ -10,7 +10,6 @@
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+ import { Plug } from '@plone/volto/components/manage/Pluggable';
+ import { v4 as uuid } from 'uuid';
+-import { load } from 'redux-localstorage-simple';
+ import isEqual from 'lodash/isEqual';
+ import omit from 'lodash/omit';
+ import without from 'lodash/without';
+@@ -25,7 +24,16 @@
+ import cutSVG from '@plone/volto/icons/cut.svg';
+ import pasteSVG from '@plone/volto/icons/paste.svg';
+ import trashSVG from '@plone/volto/icons/delete.svg';
+-import { cloneBlocks } from '@plone/volto/helpers/Blocks/cloneBlocks';
++import {
++  cloneBlocks,
++  loadBlocksClipboardFromStorage,
++} from './blocksClipboardUtils';
++import {
++  hasNestedSelection,
++  notifyToolbars,
++  registerToolbar,
++  unregisterToolbar,
++} from './nestedBlocksToolbars';
+ 
+ export class BlocksToolbarComponent extends React.Component {
+   constructor(props) {
+@@ -37,20 +45,46 @@
+     this.loadFromStorage = this.loadFromStorage.bind(this);
+     this.pasteBlocks = this.pasteBlocks.bind(this);
+     this.setBlocksClipboard = this.setBlocksClipboard.bind(this);
++    this.onToolbarsChange = () => this.forceUpdate();
++    // Nested container blocks render their own toolbar, unique plug ids keep
++    // one toolbar from removing the buttons of another one when it unmounts
++    this.plugSuffix = uuid();
+   }
+ 
+-  loadFromStorage() {
+-    const clipboard = load({ states: ['blocksClipboard'] })?.blocksClipboard;
+-    if (!isEqual(clipboard, this.props.blocksClipboard))
+-      this.props.setBlocksClipboard(clipboard || {});
++  // Syncs the clipboard from other browser tabs. The store already
++  // rehydrates it from localStorage on creation and, within the same tab,
++  // Redux is always fresher than localStorage (saved with a debounce), so
++  // the clipboard is never reloaded on mount: doing so overwrote a recent
++  // cut/copy with stale data and made the paste button disappear.
++  loadFromStorage(event) {
++    if (event?.key && !event.key.includes('blocksClipboard')) {
++      return;
++    }
++
++    const clipboard = loadBlocksClipboardFromStorage() || {};
++    if (!isEqual(clipboard, this.props.blocksClipboard || {})) {
++      this.props.setBlocksClipboard(clipboard);
++    }
+   }
+ 
+   componentDidMount() {
+     window.addEventListener('storage', this.loadFromStorage, true);
++    registerToolbar(this, this.onToolbarsChange);
+   }
+ 
++  componentDidUpdate(prevProps) {
++    if (
++      prevProps.formData !== this.props.formData ||
++      prevProps.selectedBlock !== this.props.selectedBlock ||
++      prevProps.selectedBlocks !== this.props.selectedBlocks
++    ) {
++      notifyToolbars();
++    }
++  }
++
+   componentWillUnmount() {
+     window.removeEventListener('storage', this.loadFromStorage);
++    unregisterToolbar(this, this.onToolbarsChange);
+   }
+ 
+   deleteBlocks() {
+@@ -141,11 +175,18 @@
+       selectedBlocks,
+       intl,
+     } = this.props;
++    if (hasNestedSelection(this)) {
++      return null;
++    }
++    const plugId = (id) => `${id}-${this.plugSuffix}`;
+     return (
+       <>
+         {selectedBlocks.length > 0 ? (
+           <>
+-            <Plug pluggable="main.toolbar.bottom" id="blocks-delete-btn">
++            <Plug
++              pluggable="main.toolbar.bottom"
++              id={plugId('blocks-delete-btn')}
++            >
+               <button
+                 aria-label={intl.formatMessage(messages.deleteBlocks)}
+                 onClick={this.deleteBlocks}
+@@ -156,7 +197,7 @@
+                 <Icon name={trashSVG} size="30px" />
+               </button>
+             </Plug>
+-            <Plug pluggable="main.toolbar.bottom" id="blocks-cut-btn">
++            <Plug pluggable="main.toolbar.bottom" id={plugId('blocks-cut-btn')}>
+               <button
+                 aria-label={intl.formatMessage(messages.cutBlocks)}
+                 onClick={this.cutBlocksToClipboard}
+@@ -167,7 +208,10 @@
+                 <Icon name={cutSVG} size="30px" />
+               </button>
+             </Plug>
+-            <Plug pluggable="main.toolbar.bottom" id="blocks-copy-btn">
++            <Plug
++              pluggable="main.toolbar.bottom"
++              id={plugId('blocks-copy-btn')}
++            >
+               <button
+                 aria-label={intl.formatMessage(messages.copyBlocks)}
+                 onClick={this.copyBlocksToClipboard}
+@@ -185,7 +229,7 @@
+         {selectedBlock && (blocksClipboard?.cut || blocksClipboard?.copy) && (
+           <Plug
+             pluggable="main.toolbar.bottom"
+-            id="block-paste-btn"
++            id={plugId('block-paste-btn')}
+             dependencies={[selectedBlock]}
+           >
+             <button

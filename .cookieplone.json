@@ -1,0 +1,7 @@
+{
+  "title": "Eea Website Theme",
+  "frontend_addon_name": "volto-eea-website-theme",
+  "description": "@eeacms/volto-eea-website-theme: Volto add-on",
+  "volto_version": "19.3.0",
+  "__template__": "frontend_addon"
+}
