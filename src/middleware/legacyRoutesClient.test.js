@@ -1,3 +1,4 @@
+import { createStore, applyMiddleware } from 'redux';
 import config from '@plone/volto/registry';
 import legacyRoutesClient from './legacyRoutesClient';
 
@@ -29,6 +30,19 @@ describe('legacyRoutesClient', () => {
 
   afterEach(() => {
     Object.defineProperty(window, 'location', locationDescriptor);
+  });
+
+  it('is a store middleware, not an instantiated one', () => {
+    // `config.settings.storeExtenders` must receive the factory itself: passing
+    // `legacyRoutesClient()` makes Redux call it with the middleware API as
+    // `next`, and every dispatch blows up with "next is not a function" (SSR 500).
+    const store = createStore(
+      (state = {}) => state,
+      applyMiddleware(legacyRoutesClient),
+    );
+
+    expect(() => store.dispatch({ type: 'ANY_ACTION' })).not.toThrow();
+    expect(store.getState()).toEqual({});
   });
 
   it('does nothing when the site did not opt in', () => {

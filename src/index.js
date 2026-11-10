@@ -522,7 +522,7 @@ const applyConfig = (config) => {
   // Legacy Plone routes redirects for SPA navigation, see middleware/legacyRoutes.js
   config.settings.storeExtenders = [
     ...(config.settings.storeExtenders || []),
-    (stack) => [legacyRoutesClient(), ...stack],
+    (stack) => [legacyRoutesClient, ...stack],
   ];
 
   // InPage navigation, Custom CSS voltoCustom.css and Draft Background
