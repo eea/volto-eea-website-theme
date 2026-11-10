@@ -48,7 +48,7 @@ describe('setupPrintView', () => {
       setupPrintView(dispatch);
 
       // Run all timers and flush all promises multiple times
-      // to handle the async/await chain in forceLoadLazyBlocks and waitForPlotlyCharts
+      // to handle the async/await chain in forceLoadLazyBlocks and waitForPrintBlocks
       for (let i = 0; i < 10; i++) {
         jest.runAllTimers();
         await Promise.resolve();
@@ -180,20 +180,16 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('handles plotly charts and waits for them to load', async () => {
-    // Create plotly chart containers
+  it('waits for registered print blocks that are ready', async () => {
+    // Create registered print blocks.
     const chart1 = document.createElement('div');
-    chart1.className = 'embed-visualization';
-    const plotlyDiv1 = document.createElement('div');
-    plotlyDiv1.className = 'js-plotly-plot';
-    chart1.appendChild(plotlyDiv1);
+    chart1.dataset.printBlock = 'test-chart';
+    chart1.dataset.printStatus = 'ready';
     document.body.appendChild(chart1);
 
     const chart2 = document.createElement('div');
-    chart2.className = 'plotly-component';
-    const plotlyDiv2 = document.createElement('div');
-    plotlyDiv2.className = 'js-plotly-plot';
-    chart2.appendChild(plotlyDiv2);
+    chart2.dataset.printBlock = 'test-chart';
+    chart2.dataset.printStatus = 'ready';
     document.body.appendChild(chart2);
 
     const dispatch = jest.fn();
@@ -210,10 +206,10 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('handles plotly charts that are still loading', async () => {
-    // Create plotly chart containers without loaded charts
+  it('waits for a registered print block that is still loading', async () => {
     const chart1 = document.createElement('div');
-    chart1.className = 'plotly-chart';
+    chart1.dataset.printBlock = 'test-chart';
+    chart1.dataset.printStatus = 'loading';
     document.body.appendChild(chart1);
 
     const dispatch = jest.fn();
@@ -221,11 +217,9 @@ describe('setupPrintView', () => {
     await act(async () => {
       setupPrintView(dispatch);
 
-      // Simulate chart loading after some time
+      // Simulate the block becoming ready after some time.
       setTimeout(() => {
-        const plotlyDiv = document.createElement('div');
-        plotlyDiv.className = 'js-plotly-plot';
-        chart1.appendChild(plotlyDiv);
+        chart1.dataset.printStatus = 'ready';
       }, 1000);
 
       for (let i = 0; i < 20; i++) {
@@ -509,10 +503,10 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('continues checking charts until timeout', async () => {
-    // Create plotly chart containers without loaded charts (will timeout)
+  it('continues checking registered print blocks until timeout', async () => {
     const chart1 = document.createElement('div');
-    chart1.className = 'plotly-chart';
+    chart1.dataset.printBlock = 'test-chart';
+    chart1.dataset.printStatus = 'loading';
     document.body.appendChild(chart1);
 
     const dispatch = jest.fn();

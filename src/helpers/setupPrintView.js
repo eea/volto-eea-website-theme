@@ -111,71 +111,61 @@ export const setupPrintView = (dispatch) => {
     window.scrollTo({ top: pageDocument.scrollHeight, behavior: 'instant' });
   };
 
-  // Wait for plotly charts to load and re-render in mobile layout
-  const waitForPlotlyCharts = async () => {
-    // Give a small delay for isPrint state to propagate and VisibilitySensor to re-render
+  // Wait for registered print-aware blocks to finish rendering.
+  const waitForPrintBlocks = async () => {
+    // Give a small delay for isPrint state to propagate and visibility sensors
+    // to re-render.
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Force load all lazy blocks by scrolling through the page
     await forceLoadLazyBlocks();
 
-    // Now wait a bit for the blocks to start loading
+    // Now wait a bit for dynamically imported blocks to start loading.
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Find all plotly chart containers (now they should be loaded)
-    const plotlyCharts = document.querySelectorAll(
-      '.embed-visualization, .plotly-component, .plotly-chart, .treemap-chart',
-    );
+    const printBlocks = document.querySelectorAll('[data-print-block]');
 
-    if (plotlyCharts.length === 0) {
+    if (printBlocks.length === 0) {
       return;
     }
 
-    // Check chart loading status periodically
+    // Check registered block loading status periodically.
     return new Promise((resolve) => {
       let checkCount = 0;
       const maxChecks = 40; // 40 checks * 250ms = 10 seconds max
       const checkInterval = 250;
 
-      const checkChartsLoaded = () => {
+      const checkPrintBlocksLoaded = () => {
         checkCount++;
 
-        const allCharts = document.querySelectorAll(
-          '.embed-visualization, .plotly-component, .plotly-chart, .treemap-chart',
+        const allPrintBlocks = Array.from(
+          document.querySelectorAll('[data-print-block]'),
         );
+        const settledCount = allPrintBlocks.filter((block) =>
+          ['ready', 'failed'].includes(block.dataset.printStatus),
+        ).length;
 
-        let loadedCount = 0;
-
-        allCharts.forEach((chart, index) => {
-          const hasPlotlyDiv = chart.querySelector('.js-plotly-plot');
-
-          if (hasPlotlyDiv) {
-            loadedCount++;
-          }
-        });
-
-        // If all charts are loaded or we've reached max checks, resolve
-        if (loadedCount === allCharts.length || checkCount >= maxChecks) {
+        // Resolve when every registered block has settled or at the timeout.
+        if (settledCount === allPrintBlocks.length || checkCount >= maxChecks) {
           resolve();
         } else {
-          // Continue checking
-          setTimeout(checkChartsLoaded, checkInterval);
+          setTimeout(checkPrintBlocksLoaded, checkInterval);
         }
       };
 
-      // Start checking after a brief delay to allow initial rendering
-      setTimeout(checkChartsLoaded, 500);
+      // Start checking after a brief delay to allow initial rendering.
+      setTimeout(checkPrintBlocksLoaded, 500);
     });
   };
 
   // Wait for all content to load before printing
   const waitForAllContentToLoad = async () => {
     try {
-      // Wait for iframes, images, and Plotly charts to re-render
+      // Wait for iframes, images, and registered print-aware blocks.
       await Promise.all([
         waitForIframes(),
         waitForImages(),
-        waitForPlotlyCharts(),
+        waitForPrintBlocks(),
       ]);
 
       // Scroll back to top
