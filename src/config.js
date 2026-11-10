@@ -368,3 +368,12 @@ export const colors = [
 ];
 
 export const contentTypesWithoutHeaderImage = ['Image'];
+
+// Redirects for legacy Plone routes, see middleware/legacyRoutes.js.
+// Disabled by default: each site enables them from its own policy add-on.
+export const legacyRoutes = {
+  // Strip /view, /@@view, /folder_listing and /at_download/* to the parent
+  views: false,
+  // Redirect @@search and /search to the site search page, e.g. '/en/advanced-search'
+  search: null,
+};
