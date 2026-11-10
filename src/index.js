@@ -48,6 +48,8 @@ import SubsiteClass from './components/theme/SubsiteClass';
 import contentBoxSVG from './icons/content-box.svg';
 
 import okMiddleware from './middleware/ok';
+import legacyRoutesMiddleware from './middleware/legacyRoutesMiddleware';
+import legacyRoutesClient from './middleware/legacyRoutesClient';
 import voltoCustomCSSMiddleware from './middleware/voltoCustom';
 import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
@@ -513,8 +515,15 @@ const applyConfig = (config) => {
       voltoCustomCSSMiddleware(express),
       voltoCustomJsMiddleware(express),
       okMiddleware(express),
+      legacyRoutesMiddleware(express),
     ];
   }
+
+  // Legacy Plone routes redirects for SPA navigation, see middleware/legacyRoutes.js
+  config.settings.storeExtenders = [
+    ...(config.settings.storeExtenders || []),
+    (stack) => [legacyRoutesClient, ...stack],
+  ];
 
   // InPage navigation, Custom CSS voltoCustom.css and Draft Background
   config.settings.appExtras = [
