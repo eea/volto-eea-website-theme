@@ -7,6 +7,7 @@ import PrintLoader from './PrintLoader';
 import { IntlProvider } from 'react-intl';
 
 jest.mock('@eeacms/volto-eea-website-theme/helpers/setupPrintView', () => ({
+  cancelPrintView: jest.fn(),
   setupPrintView: jest.fn(),
 }));
 
@@ -47,6 +48,27 @@ describe('PrintLoader', () => {
     );
 
     expect(container.firstChild).toBeNull();
+  });
+
+  it('should cancel print preparation when Cancel is clicked', () => {
+    const store = mockStore({
+      print: { isPrintLoading: true },
+    });
+
+    const { getByRole } = render(
+      <Provider store={store}>
+        <IntlProvider locale="en" messages={{}}>
+          <PrintLoader />
+        </IntlProvider>
+      </Provider>,
+    );
+
+    fireEvent.click(getByRole('button', { name: 'Cancel' }));
+
+    expect(
+      require('@eeacms/volto-eea-website-theme/helpers/setupPrintView')
+        .cancelPrintView,
+    ).toHaveBeenCalledWith(expect.any(Function));
   });
 
   it('should call setupPrintView when Ctrl+P is pressed', () => {

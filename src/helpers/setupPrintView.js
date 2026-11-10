@@ -10,11 +10,54 @@ import {
 } from '@eeacms/volto-eea-website-theme/actions/print';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 
+const CANCEL_PRINT_EVENT = 'eea:cancel-print-preparation';
+const PRINT_VIEW_CLASS = 'print-view-active';
+
+const cancelActivePrintJobs = () => {
+  window.dispatchEvent(new Event(CANCEL_PRINT_EVENT));
+};
+
+const resetTabs = () => {
+  document.documentElement.classList.remove(PRINT_VIEW_CLASS);
+  Array.from(document.getElementsByClassName('ui tab')).forEach((tab) => {
+    tab.style.removeProperty('display');
+  });
+};
+
+export const cancelPrintView = (dispatch) => {
+  cancelActivePrintJobs();
+
+  resetTabs();
+  dispatch(setPrintLoading(false));
+  dispatch(setIsPrint(false));
+};
+
 export const setupPrintView = (dispatch) => {
-  // Set tabs to be visible
+  cancelActivePrintJobs();
+
+  const printJob = {
+    cancelled: false,
+    resolveCancellation: () => {},
+    startTimeout: undefined,
+  };
+  const cancellation = new Promise((resolve) => {
+    printJob.resolveCancellation = resolve;
+  });
+  const cancelPrintJob = () => {
+    printJob.cancelled = true;
+    clearTimeout(printJob.startTimeout);
+    printJob.resolveCancellation();
+  };
+  const removeCancellationListener = () => {
+    window.removeEventListener(CANCEL_PRINT_EVENT, cancelPrintJob);
+  };
+  window.addEventListener(CANCEL_PRINT_EVENT, cancelPrintJob, { once: true });
+
+  // Keep every tab pane expanded while content is prepared and printed.
+  document.documentElement.classList.add(PRINT_VIEW_CLASS);
   const tabs = document.getElementsByClassName('ui tab');
   Array.from(tabs).forEach((tab) => {
-    tab.style.display = 'block';
+    tab.style.setProperty('display', 'block', 'important');
   });
 
   dispatch(setIsPrint(true));
@@ -42,6 +85,11 @@ export const setupPrintView = (dispatch) => {
         iframe.addEventListener(
           'load',
           () => {
+            if (printJob.cancelled) {
+              resolve();
+              return;
+            }
+
             // Scroll iframe into view to ensure content loads
             iframe.scrollIntoView({
               behavior: 'instant',
@@ -100,12 +148,16 @@ export const setupPrintView = (dispatch) => {
 
     // Scroll through the page in steps to trigger lazy loading
     for (let i = 0; i <= steps; i++) {
+      if (printJob.cancelled) return;
+
       const scrollPosition = (scrollHeight / steps) * i;
       window.scrollTo({ top: scrollPosition, behavior: 'instant' });
 
       // Small delay to allow IntersectionObserver to trigger
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
+
+    if (printJob.cancelled) return;
 
     // Final scroll to absolute bottom
     window.scrollTo({ top: pageDocument.scrollHeight, behavior: 'instant' });
@@ -116,12 +168,15 @@ export const setupPrintView = (dispatch) => {
     // Give a small delay for isPrint state to propagate and visibility sensors
     // to re-render.
     await new Promise((resolve) => setTimeout(resolve, 500));
+    if (printJob.cancelled) return;
 
     // Force load all lazy blocks by scrolling through the page
     await forceLoadLazyBlocks();
+    if (printJob.cancelled) return;
 
     // Now wait a bit for dynamically imported blocks to start loading.
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (printJob.cancelled) return;
 
     const printBlocks = document.querySelectorAll('[data-print-block]');
 
@@ -136,6 +191,11 @@ export const setupPrintView = (dispatch) => {
       const checkInterval = 250;
 
       const checkPrintBlocksLoaded = () => {
+        if (printJob.cancelled) {
+          resolve();
+          return;
+        }
+
         checkCount++;
 
         const allPrintBlocks = Array.from(
@@ -162,19 +222,19 @@ export const setupPrintView = (dispatch) => {
   const waitForAllContentToLoad = async () => {
     try {
       // Wait for iframes, images, and registered print-aware blocks.
-      await Promise.all([
-        waitForIframes(),
-        waitForImages(),
-        waitForPrintBlocks(),
+      const contentLoaded = await Promise.race([
+        Promise.all([
+          waitForIframes(),
+          waitForImages(),
+          waitForPrintBlocks(),
+        ]).then(() => true),
+        cancellation.then(() => false),
       ]);
+
+      if (!contentLoaded || printJob.cancelled) return;
 
       // Scroll back to top
       window.scrollTo({ top: 0 });
-
-      // Reset tab display
-      Array.from(tabs).forEach((tab) => {
-        tab.style.display = '';
-      });
 
       // Keep isPrint=true during printing so charts stay in mobile layout
       // Only turn off loading indicator
@@ -189,6 +249,7 @@ export const setupPrintView = (dispatch) => {
         if (printDialogClosed) return; // Prevent multiple resets
         printDialogClosed = true;
 
+        resetTabs();
         dispatch(setIsPrint(false));
 
         // Clean up listeners
@@ -242,20 +303,23 @@ export const setupPrintView = (dispatch) => {
       }, 30000);
 
       // Trigger print - isPrint remains true during the dialog
+      removeCancellationListener();
       window.print();
     } catch (error) {
+      if (printJob.cancelled) return;
+
       // Still try to print even if there was an error
-      Array.from(tabs).forEach((tab) => {
-        tab.style.display = '';
-      });
       dispatch(setPrintLoading(false));
       dispatch(setIsPrint(false));
+      removeCancellationListener();
       window.print();
+      resetTabs();
     }
   };
 
   // Delay the initial call to ensure everything is rendered
-  setTimeout(() => {
+  printJob.startTimeout = setTimeout(() => {
+    if (printJob.cancelled) return;
     waitForAllContentToLoad();
   }, 1000);
 };

@@ -1,4 +1,4 @@
-import { setupPrintView } from './setupPrintView';
+import { cancelPrintView, setupPrintView } from './setupPrintView';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 import { act } from '@testing-library/react';
 
@@ -34,6 +34,68 @@ describe('setupPrintView', () => {
       removeEventListener: jest.fn(),
     };
     window.matchMedia = jest.fn(() => matchMediaMock);
+  });
+
+  it('cancels print preparation before the delayed work starts', async () => {
+    const dispatch = jest.fn();
+
+    setupPrintView(dispatch);
+    cancelPrintView(dispatch);
+
+    await act(async () => {
+      jest.runAllTimers();
+      await Promise.resolve();
+    });
+
+    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_PRINT_LOADING' });
+    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_PRINT' });
+    expect(window.print).not.toHaveBeenCalled();
+  });
+
+  it('cancels print preparation after loading has started', async () => {
+    const dispatch = jest.fn();
+    const tab = document.querySelector('.ui.tab');
+
+    setupPrintView(dispatch);
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+      await Promise.resolve();
+    });
+
+    cancelPrintView(dispatch);
+
+    await act(async () => {
+      jest.runAllTimers();
+      await Promise.resolve();
+    });
+
+    expect(tab.style.display).toBe('');
+    expect(window.print).not.toHaveBeenCalled();
+  });
+
+  it('keeps every tab expanded when the print dialog opens', async () => {
+    const dispatch = jest.fn();
+    const tab = document.querySelector('.ui.tab');
+    tab.hidden = true;
+    window.print = jest.fn(() => {
+      expect(
+        document.documentElement.classList.contains('print-view-active'),
+      ).toBe(true);
+      expect(tab.style.getPropertyValue('display')).toBe('block');
+      expect(tab.style.getPropertyPriority('display')).toBe('important');
+    });
+
+    await act(async () => {
+      setupPrintView(dispatch);
+
+      for (let i = 0; i < 10; i++) {
+        jest.runAllTimers();
+        await Promise.resolve();
+      }
+    });
+
+    expect(window.print).toHaveBeenCalled();
   });
 
   afterEach(() => {

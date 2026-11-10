@@ -1,9 +1,12 @@
 import { useEffect } from 'react';
-import { Loader } from 'semantic-ui-react';
+import { Button, Loader } from 'semantic-ui-react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
-import { setupPrintView } from '@eeacms/volto-eea-website-theme/helpers/setupPrintView';
+import {
+  cancelPrintView,
+  setupPrintView,
+} from '@eeacms/volto-eea-website-theme/helpers/setupPrintView';
 
 import './style.less';
 
@@ -11,6 +14,10 @@ const messages = defineMessages({
   preparingDownload: {
     id: 'Preparing download',
     defaultMessage: 'Preparing download',
+  },
+  cancel: {
+    id: 'Cancel',
+    defaultMessage: 'Cancel',
   },
 });
 
@@ -49,6 +56,14 @@ const PrintLoader = () => {
     >
       <Loader active inline size="medium" />
       <div>{intl.formatMessage(messages.preparingDownload)}</div>
+      <Button
+        primary
+        compact
+        type="button"
+        onClick={() => cancelPrintView(dispatch)}
+      >
+        {intl.formatMessage(messages.cancel)}
+      </Button>
     </div>
   ) : null;
 };
