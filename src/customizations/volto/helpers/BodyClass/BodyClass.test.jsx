@@ -1,9 +1,14 @@
 import React, { Suspense } from 'react';
-import { createRoot } from 'react-dom/client';
 import { act } from 'react-dom/test-utils';
 import { renderToString } from 'react-dom/server';
 import { render } from '@testing-library/react';
 import BodyClass from './BodyClass';
+
+// `react-dom/client` (createRoot) only exists from React 18 (Volto 18+).
+// Volto 17 runs on React 17, which has no concurrent rendering, so there are
+// no thrown-away renders to test there.
+const isReact18 = parseInt(React.version, 10) >= 18;
+const itReact18 = isReact18 ? it : it.skip;
 
 describe('BodyClass', () => {
   afterEach(() => {
@@ -35,38 +40,44 @@ describe('BodyClass', () => {
     expect(document.body.className).toBe('contenttype-landing_page');
   });
 
-  it('ignores instances from renders that React throws away', async () => {
-    // With a concurrent root, a sibling that suspends makes React throw away
-    // the whole render attempt: BodyClass is rendered, but never mounted or
-    // unmounted. Its classes must not end up on <body>.
-    global.IS_REACT_ACT_ENVIRONMENT = true;
-    const never = new Promise(() => {});
-    const Suspends = () => {
-      throw never;
-    };
-    const root = createRoot(document.createElement('div'));
-    try {
-      await act(async () => {
-        root.render(
-          <Suspense fallback={null}>
-            <BodyClass className="homepage-inverse" />
-            <Suspends />
-          </Suspense>,
+  itReact18(
+    'ignores instances from renders that React throws away',
+    async () => {
+      // With a concurrent root, a sibling that suspends makes React throw away
+      // the whole render attempt: BodyClass is rendered, but never mounted or
+      // unmounted. Its classes must not end up on <body>.
+      const { createRoot } = require('react-dom/client');
+      global.IS_REACT_ACT_ENVIRONMENT = true;
+      const never = new Promise(() => {});
+      const Suspends = () => {
+        throw never;
+      };
+      const root = createRoot(document.createElement('div'));
+      try {
+        await act(async () => {
+          root.render(
+            <Suspense fallback={null}>
+              <BodyClass className="homepage-inverse" />
+              <Suspends />
+            </Suspense>,
+          );
+        });
+        expect(document.body.classList.contains('homepage-inverse')).toBe(
+          false,
         );
-      });
-      expect(document.body.classList.contains('homepage-inverse')).toBe(false);
 
-      await act(async () => {
-        root.render(<BodyClass className="section-montenegro" />);
-      });
-      expect(document.body.className).toBe('section-montenegro');
-      expect(BodyClass.peek()).toEqual(['section-montenegro']);
-    } finally {
-      await act(async () => root.unmount());
-      global.IS_REACT_ACT_ENVIRONMENT = false;
-    }
-    expect(document.body.className).toBe('');
-  });
+        await act(async () => {
+          root.render(<BodyClass className="section-montenegro" />);
+        });
+        expect(document.body.className).toBe('section-montenegro');
+        expect(BodyClass.peek()).toEqual(['section-montenegro']);
+      } finally {
+        await act(async () => root.unmount());
+        global.IS_REACT_ACT_ENVIRONMENT = false;
+      }
+      expect(document.body.className).toBe('');
+    },
+  );
 
   it('ignores extra spaces in className', () => {
     const { unmount } = render(<BodyClass className="  a   b " />);
