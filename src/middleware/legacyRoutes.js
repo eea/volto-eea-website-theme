@@ -10,19 +10,52 @@
  * site's own search page, which is site specific: `/en/advanced-search` on
  * www.eea.europa.eu, something else (or nothing) on other EEA frontends.
  *
- * Both behaviours are disabled by default and enabled per site through
+ * Paths listed in `gone` are dead Plone endpoints that Volto cannot render at
+ * all (`/RSS`, `/atom.xml`, `/mail_password_form`): they are answered with 410.
+ *
+ * All behaviours are disabled by default and enabled per site through
  * `config.settings.eea.legacyRoutes`.
  */
 
-// `/view`, `/@@view`, `/folder_listing`, `/at_download/<file>`
+// `/view`, `/@@view`, `/folder_listing`, `/folder_contents`, `/at_download/<file>`
 const VIEW_SUFFIX =
-  /\/(?:@@)?view\/?$|\/folder_listing\/?$|\/at_download(?:\/.*)?$/;
+  /\/(?:@@)?view\/?$|\/folder_listing\/?$|\/folder_contents\/?$|\/at_download(?:\/.*)?$/;
+
+// `/en` -> `/` language prefix, used to recognise per language copies of a gone path
+const LANGUAGE_PREFIX = /^\/[a-z]{2}(?=\/)/;
 
 // `/search`, `/<lang>/search` (Plone's classic search entry points)
 const SEARCH_PATH = /^\/(?:[a-z]{2}\/)?search\/?$/;
 
 // `/@@search`, `/<lang>/@@search`, `/<section>/@@search` (Plone's search view)
 const SEARCH_VIEW = /(?:^|\/)@@search\/?$/;
+
+/**
+ * Whether a path is a dead Plone endpoint that must not be rendered at all.
+ * Entries are absolute paths (`/RSS`); the language prefixed form
+ * (`/en/RSS`) matches as well.
+ * @function isLegacyGone
+ * @param {string} pathname Request path.
+ * @param {Object} options `config.settings.eea.legacyRoutes`.
+ * @returns {boolean} True when the path should be answered with 410.
+ */
+export const isLegacyGone = (pathname, options) => {
+  const { gone = [] } = options || {};
+
+  if (typeof pathname !== 'string' || !pathname.startsWith('/')) {
+    return false;
+  }
+
+  // Never touch the internal API
+  if (pathname.startsWith('/++')) {
+    return false;
+  }
+
+  const normalized = pathname.replace(/\/+$/, '') || '/';
+  const withoutLanguage = normalized.replace(LANGUAGE_PREFIX, '');
+
+  return gone.includes(normalized) || gone.includes(withoutLanguage);
+};
 
 /**
  * Target path for a legacy Plone route.
