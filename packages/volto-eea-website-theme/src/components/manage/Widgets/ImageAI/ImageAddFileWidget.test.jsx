@@ -1033,8 +1033,14 @@ describe('ImageAddFileWidget', () => {
       expect(
         container.querySelectorAll('.field-wrapper-preview_image'),
       ).toHaveLength(1);
-      // FileWidget also announces the error in a visually hidden alert for
-      // screen readers; only the visible error must not be duplicated.
+      // Only one visible error label. FileWidget may also announce the same
+      // text in a visually hidden alert for screen readers (`visually-hidden`
+      // on Volto 19, `visually-hidden-volto` on Volto 18).
+      const featureOffErrorLabels = container.querySelectorAll(
+        '.field-wrapper-preview_image .form-error-label',
+      );
+      expect(featureOffErrorLabels).toHaveLength(1);
+      expect(featureOffErrorLabels[0]).toHaveTextContent('Feature off error');
       expect(
         screen
           .getAllByText('Feature off error')

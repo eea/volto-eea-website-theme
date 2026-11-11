@@ -64,6 +64,16 @@ undoing a delete or cut restored nothing.
   `selected`/`multiSelected` into component state, which the Volto 18 form no
   longer reads, so the redo history was dropped after each undo).
 
+## Submit without a blocks layout
+
+`onSubmit()` validates blocks whenever `hasBlocksData()` finds a field name
+ending in `blocks`, then reads `blocksLayout.items` without checking that a
+blocks layout exists. The content type behaviors control panel has one boolean
+field per behavior, and `eea.dexterity.indicators.blocks` ends in `blocks`, so
+saving any content type's behaviors threw
+`Cannot read properties of undefined (reading 'items')`. Block validation now
+runs only over an existing `blocks_layout`.
+
 ## Preserved behavior
 
 - Ordinary click selects one block and clears multi-selection.

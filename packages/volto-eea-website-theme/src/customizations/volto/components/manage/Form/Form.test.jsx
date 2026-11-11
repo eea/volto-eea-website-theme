@@ -161,3 +161,30 @@ describe('Form undo history', () => {
     expect(nextSnapshot.formData).toBe(snapshot.formData);
   });
 });
+
+describe('Form submit', () => {
+  it('submits forms whose field names only end in "blocks"', () => {
+    // The content type behaviors control panel has one boolean field per
+    // behavior, e.g. `eea.dexterity.indicators.blocks`, but no blocks layout.
+    const formData = {
+      'volto.blocks': true,
+      'eea.dexterity.indicators.blocks': false,
+      'eea.genai.summary': true,
+    };
+    const onSubmit = jest.fn();
+    const form = Object.create(Form.prototype);
+    form.state = { formData };
+    // Volto 19 also discards the edit draft on submit (`onCancelDraft`);
+    // Object.create skips defaultProps, so pass it explicitly.
+    form.props = {
+      schema: null,
+      isEditForm: false,
+      onSubmit,
+      onCancelDraft: jest.fn(),
+    };
+
+    form.onSubmit();
+
+    expect(onSubmit).toHaveBeenCalledWith(formData);
+  });
+});

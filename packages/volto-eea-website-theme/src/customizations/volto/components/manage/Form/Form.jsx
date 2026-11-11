@@ -644,7 +644,10 @@ export class Form extends Component {
         fieldsets: [],
         required: [],
       };
-      blocksLayout.items.forEach((block) => {
+      // hasBlocksData only checks for a field name ending in "blocks": the
+      // content type behaviors form has a boolean
+      // `eea.dexterity.indicators.blocks` field and no blocks layout.
+      (blocksLayout?.items || []).forEach((block) => {
         let blockSchema =
           config.blocks.blocksConfig[blocks[block]['@type']].blockSchema ||
           defaultSchema;
