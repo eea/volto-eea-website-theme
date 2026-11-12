@@ -94,3 +94,14 @@ paths = [
   '''(^|/)core/''',
   '''(^|/)node_modules/''',
 ]
+
+[[allowlists]]
+description = "Customization diffs: removed lines come from the upstream Volto file, not from this add-on"
+condition = "AND"
+paths = [
+  '''(^|/)src/customizations/.*\.diff$''',
+]
+regexTarget = "line"
+regexes = [
+  '''(?m)^-''',
+]
