@@ -365,6 +365,9 @@ const applyConfig = (config) => {
 
   // Date format for EU
   config.settings.dateLocale = 'en-gb';
+  // Format dates in the same time zone on the server and in the browser, so
+  // server-rendered dates hydrate (see customizations/volto/helpers/Utils/Date.js)
+  config.settings.dateTimeZone = 'Europe/Copenhagen';
 
   // Custom Homepage layouts
   config.views.layoutViews = {
