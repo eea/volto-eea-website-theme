@@ -96,6 +96,46 @@ describe('formatDate', () => {
     expect(text).not.toContain(' ');
     expect(text).toBe('9/14/26, 10:00 AM');
   });
+
+  it('resolves the moment-style tokens added in Volto 19', () => {
+    const date = '2026-01-03T19:26:08.999Z';
+    expect(formatDate({ date, format: 'll', locale: 'en-gb' })).toBe(
+      '3 Jan 2026',
+    );
+    expect(formatDate({ date, format: 'L', locale: 'en-gb' })).toBe(
+      '03/01/2026',
+    );
+    // 19:26 UTC is 20:26 in Copenhagen
+    expect(formatDate({ date, format: 'LT', locale: 'en-gb' })).toBe('20:26');
+    // the layout of dateStyle: 'full' is up to the ICU data, so no exact match
+    const full = formatDate({ date, format: 'LLLL', locale: 'en-gb' });
+    expect(full).toContain('Saturday');
+    expect(full).toContain('3 January 2026');
+    expect(full).toContain('20:26');
+  });
+
+  it('formats a token in the configured time zone too', () => {
+    expect(
+      formatDate({
+        date: '2026-10-27T23:30:00Z',
+        format: 'L',
+        locale: 'en-gb',
+      }),
+    ).toBe('28/10/2026');
+  });
+
+  it('falls back to the short format on an unknown token', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(
+      formatDate({
+        date: '2026-09-14T10:00:00+02:00',
+        format: 'unknown',
+        locale: 'en-gb',
+      }),
+    ).toBe('14/09/2026');
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
+  });
 });
 
 describe('formatRelativeDate', () => {
