@@ -55,7 +55,9 @@ const PrintLoader = () => {
       aria-live="polite"
     >
       <Loader active inline size="medium" />
-      <div>{intl.formatMessage(messages.preparingDownload)}</div>
+      <p className="print-loader-text">
+        {intl.formatMessage(messages.preparingDownload)}
+      </p>
       <Button
         primary
         compact
