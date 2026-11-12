@@ -29,8 +29,6 @@ describe('contentPayloadGuard', () => {
   it('turns an empty object payload into a 404 failure', () => {
     const store = makeStore();
 
-    // On the server superagent resolves with `{}` for a `text/html` response,
-    // so the payload is an object that carries no content.
     store.dispatch({ type: GET_CONTENT_SUCCESS, result: {} });
 
     expect(store.getState().data).toBe(null);
@@ -40,8 +38,6 @@ describe('contentPayloadGuard', () => {
   it('turns a non-object payload into a 404 failure', () => {
     const store = makeStore();
 
-    // Plone answers a browserview or a feed with 200 + HTML/XML, so
-    // helpers/Api resolves with the raw string and Volto dispatches SUCCESS.
     expect(() =>
       store.dispatch({
         type: GET_CONTENT_SUCCESS,
