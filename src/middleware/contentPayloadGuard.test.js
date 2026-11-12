@@ -26,6 +26,17 @@ describe('contentPayloadGuard', () => {
     expect(() => store.dispatch({ type: 'ANY_ACTION' })).not.toThrow();
   });
 
+  it('turns an empty object payload into a 404 failure', () => {
+    const store = makeStore();
+
+    // On the server superagent resolves with `{}` for a `text/html` response,
+    // so the payload is an object that carries no content.
+    store.dispatch({ type: GET_CONTENT_SUCCESS, result: {} });
+
+    expect(store.getState().data).toBe(null);
+    expect(store.getState().error).toEqual({ status: 404 });
+  });
+
   it('turns a non-object payload into a 404 failure', () => {
     const store = makeStore();
 
