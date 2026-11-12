@@ -20,6 +20,9 @@ describe('legacyRoutesMiddleware', () => {
     res = {
       set: jest.fn(),
       redirect: jest.fn(),
+      status: jest.fn(() => res),
+      type: jest.fn(() => res),
+      send: jest.fn(),
     };
     next = jest.fn();
     router = {
@@ -76,6 +79,29 @@ describe('legacyRoutesMiddleware', () => {
     run();
 
     expect(res.redirect).toHaveBeenCalledWith(301, '/en/about');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('answers 410 for the dead Plone paths listed in gone', () => {
+    config.settings = {
+      eea: {
+        legacyRoutes: {
+          views: true,
+          search: '/en/advanced-search',
+          gone: ['/RSS', '/atom.xml', '/mail_password_form'],
+        },
+      },
+    };
+    legacyRoutesMiddleware(express);
+    req.path = '/RSS';
+    req.url = '/RSS';
+
+    run();
+
+    expect(res.status).toHaveBeenCalledWith(410);
+    expect(res.set).toHaveBeenCalledWith('Cache-Control', 'public, max-age=60');
+    expect(res.send).toHaveBeenCalledWith('Gone');
+    expect(res.redirect).not.toHaveBeenCalled();
     expect(next).not.toHaveBeenCalled();
   });
 

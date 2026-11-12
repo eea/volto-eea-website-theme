@@ -50,6 +50,7 @@ import contentBoxSVG from './icons/content-box.svg';
 import okMiddleware from './middleware/ok';
 import legacyRoutesMiddleware from './middleware/legacyRoutesMiddleware';
 import legacyRoutesClient from './middleware/legacyRoutesClient';
+import contentPayloadGuard from './middleware/contentPayloadGuard';
 import voltoCustomCSSMiddleware from './middleware/voltoCustom';
 import { voltoCustomJsMiddleware } from './middleware/voltoCustom';
 import installSlate from './slate';
@@ -364,6 +365,9 @@ const applyConfig = (config) => {
 
   // Date format for EU
   config.settings.dateLocale = 'en-gb';
+  // Format dates in the same time zone on the server and in the browser, so
+  // server-rendered dates hydrate (see customizations/volto/helpers/Utils/Date.js)
+  config.settings.dateTimeZone = 'Europe/Copenhagen';
 
   // Custom Homepage layouts
   config.views.layoutViews = {
@@ -520,9 +524,12 @@ const applyConfig = (config) => {
   }
 
   // Legacy Plone routes redirects for SPA navigation, see middleware/legacyRoutes.js
+  // The payload guard goes last: it must sit after the `api` middleware and
+  // before the reducers, see middleware/contentPayloadGuard.js
   config.settings.storeExtenders = [
     ...(config.settings.storeExtenders || []),
     (stack) => [legacyRoutesClient, ...stack],
+    (stack) => [...stack, contentPayloadGuard],
   ];
 
   // InPage navigation, Custom CSS voltoCustom.css and Draft Background
