@@ -114,7 +114,7 @@ export function ImageSchema({ formData: formDataProp, data, intl }) {
             Ex. ri-copyright-line. See{' '}
             <a
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
               href="https://eea.github.io/volto-eea-design-system/docs/webdev/Guidelines/iconography/#icon-set"
             >
               Remix Icon set

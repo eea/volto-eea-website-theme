@@ -435,8 +435,10 @@ class SlateEditor extends Component {
                 if (handled) return;
                 onKeyDown && onKeyDown({ editor, event });
               }}
+              // EEA: no `field-undefined` label for editors without an id, and
+              // let editableProps override it.
+              aria-labelledby={id ? `field-${id}` : undefined}
               {...editableProps}
-              aria-labelledby={`field-${id}`}
             />
             {selected &&
               slateSettings.persistentHelpers.map((Helper, i) => {

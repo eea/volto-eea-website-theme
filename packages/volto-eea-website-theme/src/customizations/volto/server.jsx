@@ -7,8 +7,6 @@ import { Provider } from 'react-intl-redux';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
 import { createMemoryHistory } from 'history';
-import keys from 'lodash/keys';
-import locale from 'locale';
 import { detect } from 'detect-browser';
 import path from 'path';
 import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
@@ -27,17 +25,21 @@ import Html from '@plone/volto/helpers/Html/Html';
 import Api from '@plone/volto/helpers/Api/Api';
 import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
 import {
-  toBackendLang,
   toGettextLang,
   toReactIntlLang,
 } from '@plone/volto/helpers/Utils/Utils';
+// Volto 19 ships these as @plone/volto/helpers/Locale/Locale; the theme keeps
+// a copy so the same build also works on Volto 18.
+import {
+  getSupportedLocales,
+  negotiateLocale,
+  resolveContentLocale,
+} from '@eeacms/volto-eea-website-theme/helpers/locale';
 import { changeLanguage } from '@plone/volto/actions/language/language';
 
 import userSession from '@plone/volto/reducers/userSession/userSession';
 
 import ErrorPage from '@plone/volto/error';
-
-import languages from '@plone/volto/constants/Languages.cjs';
 
 import configureStore from '@plone/volto/store';
 import {
@@ -66,7 +68,7 @@ function reactIntlErrorHandler(error) {
   debug('i18n')(error);
 }
 
-const supported = new locale.Locales(keys(languages), 'en');
+const supported = getSupportedLocales(config.settings?.supportedLanguages);
 
 const server = express()
   .disable('x-powered-by')
@@ -161,13 +163,9 @@ function setupServer(req, res, next) {
 
   const api = new Api(req);
 
-  const lang = toReactIntlLang(
-    new locale.Locales(
-      req.universalCookies.get('I18N_LANGUAGE') ||
-        req.headers['accept-language'],
-    )
-      .best(supported)
-      .toString(),
+  const lang = negotiateLocale(
+    req.universalCookies.get('I18N_LANGUAGE') || req.headers['accept-language'],
+    supported,
   );
 
   // Minimum initial state for the fake Redux store instance
@@ -250,13 +248,9 @@ server.get('/*', (req, res) => {
 
   const browserdetect = detect(req.headers['user-agent']);
 
-  const lang = toReactIntlLang(
-    new locale.Locales(
-      req.universalCookies.get('I18N_LANGUAGE') ||
-        req.headers['accept-language'],
-    )
-      .best(supported)
-      .toString(),
+  const lang = negotiateLocale(
+    req.universalCookies.get('I18N_LANGUAGE') || req.headers['accept-language'],
+    supported,
   );
 
   const authToken = req.universalCookies.get('auth_token'); // betterleaks:allow
@@ -329,14 +323,17 @@ server.get('/*', (req, res) => {
 
       const isMultilingual = state.site.data.features?.multilingual;
 
+      const newLang = resolveContentLocale(
+        contentLang,
+        [lang, negotiateLocale(initialLang, supported)],
+        supported,
+      );
+
       if (
-        toBackendLang(initialLang) !== contentLang &&
+        newLang &&
         !/\/\.well-known\/.*$/.test(location.pathname) &&
         !(isMultilingual && location.pathname === '/')
       ) {
-        const newLang = toReactIntlLang(
-          new locale.Locales(contentLang).best(supported).toString(),
-        );
         store.dispatch(changeLanguage(newLang, locales[newLang], req));
       }
 

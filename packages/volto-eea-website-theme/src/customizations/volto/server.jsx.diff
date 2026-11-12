@@ -1,15 +1,6 @@
 --- volto-19.6.1/packages/volto/src/server.jsx
 +++ volto-eea-website-theme/src/customizations/volto/server.jsx
-@@ -7,6 +7,8 @@
- import express from 'express';
- import { renderToString } from 'react-dom/server';
- import { createMemoryHistory } from 'history';
-+import keys from 'lodash/keys';
-+import locale from 'locale';
- import { detect } from 'detect-browser';
- import path from 'path';
- import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
-@@ -14,6 +16,7 @@
+@@ -14,6 +14,7 @@
  import { CookiesProvider } from 'react-cookie';
  import cookiesMiddleware from 'universal-cookie-express';
  import debug from 'debug';
@@ -17,31 +8,22 @@
  
  import routes from '@plone/volto/routes';
  import config from '@plone/volto/registry';
-@@ -24,20 +27,18 @@
- import Api from '@plone/volto/helpers/Api/Api';
- import { persistAuthToken } from '@plone/volto/helpers/AuthToken/AuthToken';
- import {
-+  toBackendLang,
+@@ -27,11 +28,13 @@
    toGettextLang,
    toReactIntlLang,
  } from '@plone/volto/helpers/Utils/Utils';
--import {
--  getSupportedLocales,
--  negotiateLocale,
--  resolveContentLocale,
++// Volto 19 ships these as @plone/volto/helpers/Locale/Locale; the theme keeps
++// a copy so the same build also works on Volto 18.
+ import {
+   getSupportedLocales,
+   negotiateLocale,
+   resolveContentLocale,
 -} from '@plone/volto/helpers/Locale/Locale';
++} from '@eeacms/volto-eea-website-theme/helpers/locale';
  import { changeLanguage } from '@plone/volto/actions/language/language';
  
  import userSession from '@plone/volto/reducers/userSession/userSession';
- 
- import ErrorPage from '@plone/volto/error';
- 
-+import languages from '@plone/volto/constants/Languages.cjs';
-+
- import configureStore from '@plone/volto/store';
- import {
-   ReduxAsyncConnect,
-@@ -45,6 +46,7 @@
+@@ -45,6 +48,7 @@
  } from '@plone/volto/helpers/AsyncConnect';
  
  let locales = {};
@@ -49,12 +31,7 @@
  
  // Load locales listed in supportedLanguages setting
  if (config.settings) {
-@@ -64,10 +66,11 @@
-   debug('i18n')(error);
- }
- 
--const supported = getSupportedLocales(config.settings?.supportedLanguages);
-+const supported = new locale.Locales(keys(languages), 'en');
+@@ -68,6 +72,7 @@
  
  const server = express()
    .disable('x-powered-by')
@@ -62,7 +39,7 @@
    .head('/*', function (req, res) {
      // Support for HEAD requests. Required by start-test utility in CI.
      res.send('');
-@@ -102,12 +105,22 @@
+@@ -102,12 +107,22 @@
  server.use(function (err, req, res, next) {
    if (err) {
      const { store } = res.locals;
@@ -87,7 +64,7 @@
      );
  
      res.set({
-@@ -118,7 +131,7 @@
+@@ -118,7 +133,7 @@
       * TODO:
       * - get ignored codes from Plone error_log
       */
@@ -96,7 +73,7 @@
      if (!ignoredErrors.includes(err.status)) console.error(err);
  
      res
-@@ -127,12 +140,34 @@
+@@ -127,7 +142,25 @@
    }
  });
  
@@ -121,20 +98,8 @@
 +
    const api = new Api(req);
  
--  const lang = negotiateLocale(
--    req.universalCookies.get('I18N_LANGUAGE') || req.headers['accept-language'],
--    supported,
-+  const lang = toReactIntlLang(
-+    new locale.Locales(
-+      req.universalCookies.get('I18N_LANGUAGE') ||
-+        req.headers['accept-language'],
-+    )
-+      .best(supported)
-+      .toString(),
-   );
- 
-   // Minimum initial state for the fake Redux store instance
-@@ -153,10 +188,16 @@
+   const lang = negotiateLocale(
+@@ -153,10 +186,16 @@
    const store = configureStore(initialState, history, api);
  
    function errorHandler(error) {
@@ -152,7 +117,7 @@
          </StaticRouter>
        </Provider>
      );
-@@ -169,7 +210,7 @@
+@@ -169,7 +208,7 @@
       * TODO:
       * - get ignored codes from Plone error_log
       */
@@ -161,7 +126,7 @@
      if (!ignoredErrors.includes(error.status)) console.error(error);
  
      res
-@@ -181,10 +222,11 @@
+@@ -181,10 +220,11 @@
      res.locals.detectedHost = `${
        req.headers['x-forwarded-proto'] || req.protocol
      }://${req.headers.host}`;
@@ -177,7 +142,7 @@
    }
  
    res.locals = {
-@@ -198,18 +240,26 @@
+@@ -198,8 +238,12 @@
  }
  
  server.get('/*', (req, res) => {
@@ -191,17 +156,8 @@
    const api = new Api(req);
  
    const browserdetect = detect(req.headers['user-agent']);
- 
--  const lang = negotiateLocale(
--    req.universalCookies.get('I18N_LANGUAGE') || req.headers['accept-language'],
--    supported,
-+  const lang = toReactIntlLang(
-+    new locale.Locales(
-+      req.universalCookies.get('I18N_LANGUAGE') ||
-+        req.headers['accept-language'],
-+    )
-+      .best(supported)
-+      .toString(),
+@@ -209,7 +253,7 @@
+     supported,
    );
  
 -  const authToken = req.universalCookies.get('auth_token');
@@ -209,29 +165,7 @@
    const initialState = {
      userSession: { ...userSession(), token: authToken },
      form: req.body,
-@@ -279,17 +329,14 @@
- 
-       const isMultilingual = state.site.data.features?.multilingual;
- 
--      const newLang = resolveContentLocale(
--        contentLang,
--        [lang, negotiateLocale(initialLang, supported)],
--        supported,
--      );
--
-       if (
--        newLang &&
-+        toBackendLang(initialLang) !== contentLang &&
-         !/\/\.well-known\/.*$/.test(location.pathname) &&
-         !(isMultilingual && location.pathname === '/')
-       ) {
-+        const newLang = toReactIntlLang(
-+          new locale.Locales(contentLang).best(supported).toString(),
-+        );
-         store.dispatch(changeLanguage(newLang, locales[newLang], req));
-       }
- 
-@@ -337,6 +384,7 @@
+@@ -337,6 +381,7 @@
          ${renderToString(
            <Html
              extractor={extractor}
