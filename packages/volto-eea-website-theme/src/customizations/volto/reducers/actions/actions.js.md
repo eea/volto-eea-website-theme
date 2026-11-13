@@ -27,7 +27,7 @@ Redux was dispatching, breaking the page.
 
 Sentry: `WWW-EEA-EUROPA-EU-EN-3`, `-28`, `-1AT`, `-1F` — 70k+ events in the
 14 days before 2026-11-02, still firing on release 7.0.1. Triage details in
-`docs/2026-11-02-sentry-triage/REPORT.md` in the `eea-website` repository.
+the EEA `sentry-triage` skill (noise taxonomy).
 
 The test next to this file (`actions.test.js`) covers both paths: a
 `GET_CONTENT_SUCCESS` without `@components` keeps the state, one with
