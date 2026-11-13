@@ -1,0 +1,113 @@
+/**
+ * Breadcrumbs components.
+ * @module components/theme/Breadcrumbs/Breadcrumbs
+ */
+
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+
+import { getBreadcrumbs } from '@plone/volto/actions/breadcrumbs/breadcrumbs';
+import { getBaseUrl } from '@plone/volto/helpers/Url/Url';
+import { hasApiExpander } from '@plone/volto/helpers/Utils/Utils';
+import config from '@plone/volto/registry';
+
+import EEABreadcrumbs from '@eeacms/volto-eea-design-system/ui/Breadcrumbs/Breadcrumbs';
+
+// `home` and `breadcrumbs` are kept for parity with core and the i18n
+// catalog, but they are not rendered yet: `EEABreadcrumbs` hardcodes the
+// `title="Home"` of the home link and the `aria-label="Breadcrumbs"` of its
+// `nav`, and accepts no props for them.
+const messages = defineMessages({
+  home: {
+    id: 'Home',
+    defaultMessage: 'Home',
+  },
+  breadcrumbs: {
+    id: 'Breadcrumbs',
+    defaultMessage: 'Breadcrumbs',
+  },
+  controlpanel: {
+    id: 'Site Setup',
+    defaultMessage: 'Site Setup',
+  },
+});
+
+const isContentRoute = (pathname) => {
+  const { settings } = config;
+  const normalized_nonContentRoutes = settings.nonContentRoutes.map((item) => {
+    if (item.test) {
+      return item;
+    } else {
+      return new RegExp(item + '$');
+    }
+  });
+
+  const isNonContentRoute =
+    normalized_nonContentRoutes.findIndex((item) => item.test(pathname)) > -1;
+
+  return !isNonContentRoute;
+};
+
+// EEA: the `pathname` prop is ignored, the current location is used instead.
+const BreadcrumbsComponent = () => {
+  const intl = useIntl();
+  const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const controlpanelItems = [
+    {
+      url: '/controlpanel',
+      title: intl.formatMessage(messages.controlpanel),
+    },
+  ];
+
+  const items = useSelector(
+    (state) =>
+      pathname.startsWith('/controlpanel')
+        ? controlpanelItems
+        : state.breadcrumbs?.items || [],
+    shallowEqual,
+  );
+  const root = useSelector((state) => state.breadcrumbs?.root || '/');
+  const token = useSelector((state) => state.userSession?.token);
+
+  // EEA: content types rendered as plain text sections, for anonymous users
+  // only.
+  const contentTypesAsBreadcrumbSection = !token
+    ? config.settings.contentTypesAsBreadcrumbSection
+    : [];
+
+  const sections = items.map((item) => ({
+    ...item,
+    key: item.title,
+  }));
+
+  useEffect(() => {
+    if (
+      !hasApiExpander('breadcrumbs', getBaseUrl(pathname)) &&
+      isContentRoute(pathname)
+    ) {
+      dispatch(getBreadcrumbs(getBaseUrl(pathname)));
+    }
+  }, [dispatch, pathname]);
+
+  return (
+    <React.Fragment>
+      <div id="page-header" />
+      <EEABreadcrumbs
+        pathname={pathname}
+        sections={sections}
+        root={root}
+        contentTypesAsBreadcrumbSection={contentTypesAsBreadcrumbSection}
+      />
+    </React.Fragment>
+  );
+};
+
+BreadcrumbsComponent.propTypes = {
+  pathname: PropTypes.string,
+};
+
+export default BreadcrumbsComponent;

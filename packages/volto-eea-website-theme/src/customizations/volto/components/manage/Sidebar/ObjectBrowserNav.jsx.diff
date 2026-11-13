@@ -1,0 +1,67 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Sidebar/ObjectBrowserNav.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Sidebar/ObjectBrowserNav.jsx
+@@ -1,5 +1,14 @@
++/* EEA customization (based on Volto 19.6.1, identical in 18.36.0):
++ * in the list view, Image items show a thumbnail instead of the content type
++ * icon, and the hoverable popup shows a bigger preview (#152099).
++ */
+ import React from 'react';
+-import { Button, Segment, Popup } from 'semantic-ui-react';
++import {
++  Button,
++  Segment,
++  Popup,
++  Image as SemanticImage,
++} from 'semantic-ui-react';
+ import { useIntl, defineMessages } from 'react-intl';
+ import cx from 'classnames';
+ import Icon from '@plone/volto/components/theme/Icon/Icon';
+@@ -127,19 +136,44 @@
+             >
+               <span title={`${item['@id']} (${item['@type']})`}>
+                 <Popup
++                  hoverable
+                   key={item['@id']}
+                   content={
+                     <>
++                      {item['@type'] === 'Image' && (
++                        <SemanticImage
++                          style={{
++                            marginLeft: 'auto',
++                            marginRight: 'auto',
++                            marginBottom: '5px',
++                          }}
++                          src={`${item?.getURL}/@@images/image/mini`}
++                        />
++                      )}
+                       <Icon name={homeSVG} size="18px" />{' '}
+                       {flattenToAppURL(item['@id'])} ( {item['@type']})
+                     </>
+                   }
+                   trigger={
+                     <span>
+-                      <Icon
+-                        name={getContentIcon(item['@type'], item.is_folderish)}
+-                        size="24px"
+-                      />
++                      {item['@type'] === 'Image' ? (
++                        <SemanticImage
++                          src={`${item?.getURL}/@@images/image/icon`}
++                          style={{
++                            marginRight: '10px',
++                            maxHeight: '24px',
++                            maxWidth: '24px',
++                          }}
++                        />
++                      ) : (
++                        <Icon
++                          name={getContentIcon(
++                            item['@type'],
++                            item.is_folderish,
++                          )}
++                          size="24px"
++                        />
++                      )}
+                     </span>
+                   }
+                 />

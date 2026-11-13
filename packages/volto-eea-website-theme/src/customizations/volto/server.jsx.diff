@@ -1,0 +1,175 @@
+--- volto-19.6.1/packages/volto/src/server.jsx
++++ volto-eea-website-theme/src/customizations/volto/server.jsx
+@@ -14,6 +14,7 @@
+ import { CookiesProvider } from 'react-cookie';
+ import cookiesMiddleware from 'universal-cookie-express';
+ import debug from 'debug';
++import crypto from 'crypto';
+ 
+ import routes from '@plone/volto/routes';
+ import config from '@plone/volto/registry';
+@@ -27,11 +28,13 @@
+   toGettextLang,
+   toReactIntlLang,
+ } from '@plone/volto/helpers/Utils/Utils';
++// Volto 19 ships these as @plone/volto/helpers/Locale/Locale; the theme keeps
++// a copy so the same build also works on Volto 18.
+ import {
+   getSupportedLocales,
+   negotiateLocale,
+   resolveContentLocale,
+-} from '@plone/volto/helpers/Locale/Locale';
++} from '@eeacms/volto-eea-website-theme/helpers/locale';
+ import { changeLanguage } from '@plone/volto/actions/language/language';
+ 
+ import userSession from '@plone/volto/reducers/userSession/userSession';
+@@ -45,6 +48,7 @@
+ } from '@plone/volto/helpers/AsyncConnect';
+ 
+ let locales = {};
++const isCSP = process.env.CSP_HEADER || config.settings.serverConfig.csp;
+ 
+ // Load locales listed in supportedLanguages setting
+ if (config.settings) {
+@@ -68,6 +72,7 @@
+ 
+ const server = express()
+   .disable('x-powered-by')
++  .set('etag', false)
+   .head('/*', function (req, res) {
+     // Support for HEAD requests. Required by start-test utility in CI.
+     res.send('');
+@@ -102,12 +107,22 @@
+ server.use(function (err, req, res, next) {
+   if (err) {
+     const { store } = res.locals;
+-    const errorPage = (
++    const ErrorComponent =
++      config.getComponent('ErrorBoundary')?.component || null;
++    const errorPage = store ? (
+       <Provider store={store} onError={reactIntlErrorHandler}>
+         <StaticRouter context={{}} location={req.url}>
+-          <ErrorPage message={err.message} />
++          {ErrorComponent ? (
++            <ErrorComponent error={err} />
++          ) : (
++            <ErrorPage message={err.message} />
++          )}
+         </StaticRouter>
+       </Provider>
++    ) : (
++      <StaticRouter context={{}} location={req.url}>
++        <ErrorPage message={err.message} />
++      </StaticRouter>
+     );
+ 
+     res.set({
+@@ -118,7 +133,7 @@
+      * TODO:
+      * - get ignored codes from Plone error_log
+      */
+-    const ignoredErrors = [301, 302, 401, 404];
++    const ignoredErrors = [301, 302, 401, 404, 410];
+     if (!ignoredErrors.includes(err.status)) console.error(err);
+ 
+     res
+@@ -127,7 +142,25 @@
+   }
+ });
+ 
++function buildCSPHeader(options, nonce) {
++  if (typeof options === 'string') {
++    return options.replaceAll('{nonce}', `'nonce-${nonce}'`);
++  }
++
++  return Object.keys(options)
++    .sort()
++    .map(
++      (key) =>
++        `${key} ${options[key].replaceAll('{nonce}', `'nonce-${nonce}'`)}`,
++    )
++    .join('; ');
++}
++
+ function setupServer(req, res, next) {
++  if (isCSP) {
++    res.locals.nonce = crypto.randomBytes(16).toString('base64');
++  }
++
+   const api = new Api(req);
+ 
+   const lang = negotiateLocale(
+@@ -153,10 +186,16 @@
+   const store = configureStore(initialState, history, api);
+ 
+   function errorHandler(error) {
++    const ErrorComponent =
++      config.getComponent('ErrorBoundary')?.component || null;
+     const errorPage = (
+       <Provider store={store} onError={reactIntlErrorHandler}>
+         <StaticRouter context={{}} location={req.url}>
+-          <ErrorPage message={error.message} />
++          {ErrorComponent ? (
++            <ErrorComponent error={error} />
++          ) : (
++            <ErrorPage message={error.message} />
++          )}
+         </StaticRouter>
+       </Provider>
+     );
+@@ -169,7 +208,7 @@
+      * TODO:
+      * - get ignored codes from Plone error_log
+      */
+-    const ignoredErrors = [301, 302, 401, 404];
++    const ignoredErrors = [301, 302, 401, 404, 410];
+     if (!ignoredErrors.includes(error.status)) console.error(error);
+ 
+     res
+@@ -181,10 +220,11 @@
+     res.locals.detectedHost = `${
+       req.headers['x-forwarded-proto'] || req.protocol
+     }://${req.headers.host}`;
+-    config.settings.apiPath =
+-      res.locals.detectedHost + config.settings.subpathPrefix;
+-    config.settings.publicURL =
+-      res.locals.detectedHost + config.settings.subpathPrefix;
++    // Volto 18 does not define `settings.subpathPrefix`; without the fallback
++    // the client gets an `...undefined` apiPath and every API request fails.
++    const subpathPrefix = config.settings.subpathPrefix || '';
++    config.settings.apiPath = res.locals.detectedHost + subpathPrefix;
++    config.settings.publicURL = res.locals.detectedHost + subpathPrefix;
+   }
+ 
+   res.locals = {
+@@ -198,8 +238,12 @@
+ }
+ 
+ server.get('/*', (req, res) => {
+-  const { errorHandler } = res.locals;
++  const { errorHandler, nonce } = res.locals;
+ 
++  if (isCSP) {
++    res.setHeader('Content-Security-Policy', buildCSPHeader(isCSP, nonce));
++  }
++
+   const api = new Api(req);
+ 
+   const browserdetect = detect(req.headers['user-agent']);
+@@ -209,7 +253,7 @@
+     supported,
+   );
+ 
+-  const authToken = req.universalCookies.get('auth_token');
++  const authToken = req.universalCookies.get('auth_token'); // betterleaks:allow
+   const initialState = {
+     userSession: { ...userSession(), token: authToken },
+     form: req.body,
+@@ -337,6 +381,7 @@
+         ${renderToString(
+           <Html
+             extractor={extractor}
++            nonce={nonce}
+             markup={markup}
+             store={store}
+             criticalCss={readCriticalCss(req)}

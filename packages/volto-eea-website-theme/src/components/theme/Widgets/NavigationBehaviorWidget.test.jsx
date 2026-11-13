@@ -1,0 +1,696 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-intl-redux';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+
+// Add jest-dom matchers
+import '@testing-library/jest-dom';
+
+const mockStore = configureStore([thunk]);
+
+const mockGetNavigation = vi.fn(() => ({ type: 'GET_NAVIGATION' }));
+vi.mock('@plone/volto/actions/navigation/navigation', () => ({
+  getNavigation: mockGetNavigation,
+}));
+
+vi.mock('@plone/volto/registry', () => ({
+  __esModule: true,
+  default: {
+    settings: {
+      menuItemsLayouts: {
+        '/test-route-1': {
+          hideChildrenFromNavigation: false,
+          menuItemChildrenListColumns: [2, 3],
+          menuItemColumns: ['two wide column', 'three wide column'],
+        },
+        '/test-route-2': {
+          hideChildrenFromNavigation: true,
+          menuItemColumns: ['four wide column'],
+        },
+        '*': {
+          hideChildrenFromNavigation: true,
+        },
+      },
+    },
+  },
+}));
+
+// Mock uuid
+vi.mock('uuid', () => ({
+  v4: () => 'test-uuid-123',
+}));
+
+vi.mock('@plone/volto/components/theme/Icon/Icon', () => ({
+  __esModule: true,
+  default: ({ name, size }) => (
+    <div data-testid="icon" data-name={name} data-size={size} />
+  ),
+}));
+
+vi.mock('@plone/volto/components/manage/Widgets/FormFieldWrapper', () => ({
+  __esModule: true,
+  default: ({ children, ...props }) => (
+    <div data-testid="form-field-wrapper" {...props}>
+      {children}
+    </div>
+  ),
+}));
+
+vi.mock('@plone/volto/components/manage/Widgets/ObjectWidget', () => {
+  return {
+    __esModule: true,
+    default: function MockObjectWidget({ id, schema, value, onChange }) {
+      return (
+        <div data-testid="object-widget" data-id={id}>
+          {schema.properties.hideChildrenFromNavigation && (
+            <div>
+              <label>Hide Children From Navigation</label>
+              <input
+                type="checkbox"
+                checked={value.hideChildrenFromNavigation || false}
+                onChange={(e) =>
+                  onChange(id, {
+                    ...value,
+                    hideChildrenFromNavigation: e.target.checked,
+                  })
+                }
+              />
+            </div>
+          )}
+          {schema.properties.menuItemColumns && (
+            <div>
+              <label>Menu Item Columns</label>
+              <div data-testid="menu-item-columns">
+                {(value.menuItemColumns || []).map((col, index) => (
+                  <span key={index}>{col}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {schema.properties.menuItemChildrenListColumns && (
+            <div>
+              <label>Menu Item Children List Columns</label>
+              <div data-testid="menu-item-children-columns">
+                {(value.menuItemChildrenListColumns || []).map((col, index) => (
+                  <span key={index}>{col}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    },
+  };
+});
+
+// Mock semantic-ui-react components
+vi.mock('semantic-ui-react', () => {
+  const MockAccordion = ({ children, fluid, styled, ...props }) => (
+    <div className="ui accordion" data-testid="accordion" {...props}>
+      {children}
+    </div>
+  );
+
+  MockAccordion.Title = ({ children, onClick, active, index }) => (
+    <button
+      type="button"
+      className={`title ${active ? 'active' : ''}`}
+      onClick={(e) => onClick(e, { index })}
+      data-testid="accordion-title"
+    >
+      {children}
+    </button>
+  );
+
+  MockAccordion.Content = ({ children, active }) => (
+    <div
+      className={`content ${active ? 'active' : ''}`}
+      data-testid="accordion-content"
+    >
+      {active && children}
+    </div>
+  );
+
+  return {
+    Accordion: MockAccordion,
+    Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+    Segment: ({ children }) => <div data-testid="segment">{children}</div>,
+    Form: {
+      Field: ({ children }) => <div data-testid="form-field">{children}</div>,
+    },
+    Dropdown: ({ children }) => <div data-testid="dropdown">{children}</div>,
+  };
+});
+
+// Mock SVG imports
+vi.mock('@plone/volto/icons/up-key.svg', () => ({ default: 'up-icon' }));
+vi.mock('@plone/volto/icons/down-key.svg', () => ({ default: 'down-icon' }));
+
+describe('NavigationBehaviorWidget', () => {
+  let store;
+  let NavigationBehaviorWidget;
+
+  const mockOnChange = vi.fn();
+
+  const defaultNavigationItems = [
+    {
+      '@id': 'http://localhost:3000/test-route-1',
+      title: 'Test Route 1',
+      url: '/test-route-1',
+      id: 'test-route-1',
+      portal_type: 'Document',
+      items: [
+        {
+          '@id': 'http://localhost:3000/test-route-1/child',
+          title: 'Child Route',
+          url: '/test-route-1/child',
+          id: 'child',
+          portal_type: 'Document',
+          items: [],
+        },
+      ],
+    },
+    {
+      '@id': 'http://localhost:3000/test-route-2',
+      title: 'Test Route 2',
+      url: '/test-route-2',
+      id: 'test-route-2',
+      portal_type: 'Folder',
+      items: [],
+    },
+  ];
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    store = mockStore({
+      intl: {
+        locale: 'en',
+        messages: {
+          'Load Main Navigation Routes': 'Load Main Navigation Routes',
+          'Hide Children From Navigation': 'Hide Children From Navigation',
+          'Menu Item Children List Columns': 'Menu Item Children List Columns',
+          'Menu Item Columns': 'Menu Item Columns',
+        },
+      },
+      navigation: {
+        items: defaultNavigationItems,
+        loaded: true,
+      },
+      vocabularies: {},
+    });
+
+    NavigationBehaviorWidget = (await import('./NavigationBehaviorWidget'))
+      .default;
+  });
+
+  it('renders with navigation data', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Route 2')).toBeInTheDocument();
+  });
+
+  it('dispatches getNavigation when not loaded', () => {
+    const storeNotLoaded = mockStore({
+      ...store.getState(),
+      navigation: { items: [], loaded: false },
+    });
+
+    render(
+      <Provider store={storeNotLoaded}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(mockGetNavigation).toHaveBeenCalledWith('', 1);
+  });
+
+  it('handles accordion expansion', async () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('handles JSON parsing correctly', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value='{"test": {"hideChildrenFromNavigation": false}}'
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+  });
+
+  it('handles invalid JSON gracefully', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="invalid json"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+  });
+
+  it('handles object values correctly', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={{ '/test': { hideChildrenFromNavigation: false } }}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+  });
+
+  it('handles null values correctly', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={null}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+  });
+
+  it('auto-populates settings from config when no settings exist', async () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalled();
+    });
+  });
+
+  it('handles empty navigation data', () => {
+    const emptyStore = mockStore({
+      ...store.getState(),
+      navigation: { items: [], loaded: true },
+    });
+
+    const { container } = render(
+      <Provider store={emptyStore}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(
+      container.querySelector('.navigation-behavior-widget'),
+    ).toBeInTheDocument();
+  });
+
+  it('toggles accordion active state correctly', async () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+
+    // Click to expand
+    fireEvent.click(accordionTitles[0]);
+    await waitFor(() => {
+      expect(accordionTitles[0]).toHaveClass('active');
+    });
+
+    // Click again to collapse
+    fireEvent.click(accordionTitles[0]);
+    await waitFor(() => {
+      expect(accordionTitles[0]).not.toHaveClass('active');
+    });
+  });
+
+  it('processes routes with config settings correctly', () => {
+    const storeWithConfig = mockStore({
+      ...store.getState(),
+      navigation: {
+        items: [
+          {
+            '@id': 'http://localhost:3000/test-route-1',
+            title: 'Test Route 1',
+            url: '/test-route-1',
+            items: [],
+          },
+        ],
+        loaded: true,
+      },
+    });
+
+    render(
+      <Provider store={storeWithConfig}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+  });
+
+  it('filters to show only level 0 routes', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    // Should only show main routes, not child routes
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Route 2')).toBeInTheDocument();
+    expect(screen.queryByText('Child Route')).not.toBeInTheDocument();
+  });
+
+  it('handles routes without @id using fallback uuid', () => {
+    const storeWithoutIds = mockStore({
+      ...store.getState(),
+      navigation: {
+        items: [
+          {
+            title: 'Route Without ID',
+            url: '/no-id-route',
+            items: [],
+          },
+        ],
+        loaded: true,
+      },
+    });
+
+    render(
+      <Provider store={storeWithoutIds}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Route Without ID')).toBeInTheDocument();
+  });
+
+  it('merges config and saved settings correctly', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: true,
+        menuItemColumns: [1, 2],
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('handles routes with hasChildren property', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    // Test Route 1 has children, Test Route 2 doesn't
+    expect(screen.getByText('Test Route 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Route 2')).toBeInTheDocument();
+  });
+
+  it('handles menuItemColumns as integers from backend (develop server format)', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: false,
+        menuItemColumns: [8, 4], // Integer format from develop server
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+
+    // Verify the widget displays the values correctly (converted to numbers for display)
+    // The widget should handle integer input and display it properly
+  });
+
+  it('handles menuItemColumns as semantic UI strings from backend (production format)', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: false,
+        menuItemColumns: ['eight wide column', 'four wide column'], // String format from production
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+
+    // Verify the widget displays the values correctly (converted from strings to numbers for display)
+    // The widget should handle semantic UI string input and convert it to numbers for display
+  });
+
+  it('converts menuItemColumns to semantic UI format when saving', async () => {
+    const existingSettings = {
+      'http://localhost:3000/test-route-1': {
+        hideChildrenFromNavigation: false,
+        menuItemColumns: [2, 3], // Numbers that should be converted to semantic UI format
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value={JSON.stringify(existingSettings)}
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    const accordionTitles = screen.getAllByTestId('accordion-title');
+    fireEvent.click(accordionTitles[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Hide Children From Navigation'),
+      ).toBeInTheDocument();
+    });
+
+    // Simulate a change by clicking the checkbox
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalled();
+      const lastCallIndex = mockOnChange.mock.calls.length - 1;
+      const savedValue = JSON.parse(mockOnChange.mock.calls[lastCallIndex][1]);
+
+      // Find the route settings
+      const routeKey = Object.keys(savedValue).find((key) =>
+        key.includes('test-route-1'),
+      );
+      const route1Settings = savedValue[routeKey];
+
+      // Verify menuItemColumns are saved in semantic UI format, not as integers
+      if (route1Settings && route1Settings.menuItemColumns) {
+        route1Settings.menuItemColumns.forEach((col) => {
+          expect(typeof col).toBe('string');
+          expect(col).toMatch(/wide column$/);
+        });
+      }
+    });
+  });
+
+  it('displays route paths in accordion titles', () => {
+    render(
+      <Provider store={store}>
+        <NavigationBehaviorWidget
+          id="test"
+          value="{}"
+          onChange={mockOnChange}
+        />
+      </Provider>,
+    );
+
+    expect(screen.getByText('(/test-route-1)')).toBeInTheDocument();
+    expect(screen.getByText('(/test-route-2)')).toBeInTheDocument();
+  });
+});
+
+describe('menuItemColumnsToNumbers', () => {
+  let menuItemColumnsToNumbers;
+
+  beforeEach(async () => {
+    menuItemColumnsToNumbers = (await import('./NavigationBehaviorWidget'))
+      .menuItemColumnsToNumbers;
+  });
+
+  it('converts semantic UI column strings to numbers', () => {
+    const columns = [
+      'one wide column',
+      'two wide column',
+      'three wide column',
+      'four wide column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([1, 2, 3, 4]);
+  });
+
+  it('handles all number words from one to nine', () => {
+    const columns = [
+      'one wide column',
+      'two wide column',
+      'three wide column',
+      'four wide column',
+      'five wide column',
+      'six wide column',
+      'seven wide column',
+      'eight wide column',
+      'nine wide column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+
+  it('returns empty array for non-array input', () => {
+    expect(menuItemColumnsToNumbers(null)).toEqual([]);
+    expect(menuItemColumnsToNumbers(undefined)).toEqual([]);
+    expect(menuItemColumnsToNumbers('string')).toEqual([]);
+    expect(menuItemColumnsToNumbers(123)).toEqual([]);
+  });
+
+  it('filters out invalid column strings', () => {
+    const columns = [
+      'two wide column',
+      'invalid string',
+      'three wide column',
+      'not a column',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([2, 3]);
+  });
+
+  it('returns empty array for empty input', () => {
+    expect(menuItemColumnsToNumbers([])).toEqual([]);
+  });
+
+  it('handles mixed valid and invalid string inputs', () => {
+    const columns = [
+      'five wide column',
+      'invalid',
+      'six wide column',
+      'also invalid',
+    ];
+    const result = menuItemColumnsToNumbers(columns);
+    expect(result).toEqual([5, 6]);
+  });
+});

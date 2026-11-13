@@ -1,0 +1,31 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Controlpanels/Groups/RenderGroups.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Controlpanels/Groups/RenderGroups.jsx
+@@ -8,7 +8,9 @@
+ 
+ const RenderGroups = (props) => {
+   const onChange = (event, { value }) => {
+-    const [group, role] = value.split('.');
++    // The checkbox value joins the group and role ids with `&role=` instead
++    // of `.`, so group ids that contain a dot are not split in the wrong place.
++    const [group, role] = value.split('&role=');
+     props.updateGroups(group, role);
+   };
+   const isAuthGroup = (roleId) => {
+@@ -20,7 +22,7 @@
+   };
+   return (
+     <Table.Row key={props.group.title}>
+-      <Table.Cell>{props.group.groupname}</Table.Cell>
++      <Table.Cell>{props.group.title || props.group.groupname}</Table.Cell>
+       {props.roles.map((role) => (
+         <Table.Cell key={role.id}>
+           {props.inheritedRole &&
+@@ -40,7 +42,7 @@
+                   : props.group.roles.includes(role.id)
+               }
+               onChange={onChange}
+-              value={`${props.group.id}.${role.id}`}
++              value={`${props.group.id}&role=${role.id}`}
+               disabled={!canAssignRole(props.isUserManager, role)}
+             />
+           )}

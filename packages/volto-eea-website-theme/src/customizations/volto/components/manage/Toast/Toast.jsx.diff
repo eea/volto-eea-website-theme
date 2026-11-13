@@ -1,0 +1,86 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Toast/Toast.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Toast/Toast.jsx
+@@ -1,13 +1,10 @@
+ import React from 'react';
+ import PropTypes from 'prop-types';
++import cx from 'classnames';
+ import { defineMessages, useIntl } from 'react-intl';
+-import Icon from '@plone/volto/components/theme/Icon/Icon';
++import { Icon, Message } from 'semantic-ui-react';
++import { isVolto18 } from '@eeacms/volto-eea-website-theme/helpers/voltoVersion';
+ 
+-import successSVG from '@plone/volto/icons/ready.svg';
+-import infoSVG from '@plone/volto/icons/info.svg';
+-import errorSVG from '@plone/volto/icons/error.svg';
+-import warningSVG from '@plone/volto/icons/warning.svg';
+-
+ const messages = defineMessages({
+   success: {
+     id: 'toast_type_success',
+@@ -30,17 +27,17 @@
+ const Toast = (props) => {
+   const intl = useIntl();
+ 
+-  function getIcon(props) {
++  function getStatus(props) {
+     if (props.info) {
+-      return infoSVG;
++      return 'info';
+     } else if (props.success) {
+-      return successSVG;
++      return 'success';
+     } else if (props.error) {
+-      return errorSVG;
++      return 'error';
+     } else if (props.warning) {
+-      return warningSVG;
++      return 'warning';
+     } else {
+-      return successSVG;
++      return 'success';
+     }
+   }
+ 
+@@ -54,16 +51,35 @@
+ 
+   const { title, content } = props;
+   const typeLabel = getTypeLabel(props);
++  const status = getStatus(props);
++  const statusProps = {
++    info: status === 'info',
++    success: status === 'success',
++    error: status === 'error',
++    warning: status === 'warning',
++  };
++  // Volto 18 names its screen reader only class `visually-hidden-volto`,
++  // Volto 19 renamed it to `visually-hidden`.
++  const visuallyHiddenClassName = isVolto18
++    ? 'visually-hidden-volto'
++    : 'visually-hidden';
+ 
+   return (
+-    <>
+-      <Icon name={getIcon(props)} size="18px" />
+-      <div className="toast-inner-content">
+-        {typeLabel && <span className="visually-hidden">{typeLabel}</span>}
+-        {title && <h4>{title}</h4>}
++    <Message
++      icon
++      size="large"
++      className={cx('eea-toast', `eea-toast--${status}`)}
++      {...statusProps}
++    >
++      <Icon name="exclamation circle" />
++      <Message.Content className="toast-inner-content">
++        {typeLabel && (
++          <span className={visuallyHiddenClassName}>{typeLabel}</span>
++        )}
++        {title && <Message.Header>{title}</Message.Header>}
+         <div>{content}</div>
+-      </div>
+-    </>
++      </Message.Content>
++    </Message>
+   );
+ };
+ 
