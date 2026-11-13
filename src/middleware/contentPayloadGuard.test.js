@@ -26,11 +26,18 @@ describe('contentPayloadGuard', () => {
     expect(() => store.dispatch({ type: 'ANY_ACTION' })).not.toThrow();
   });
 
+  it('turns an empty object payload into a 404 failure', () => {
+    const store = makeStore();
+
+    store.dispatch({ type: GET_CONTENT_SUCCESS, result: {} });
+
+    expect(store.getState().data).toBe(null);
+    expect(store.getState().error).toEqual({ status: 404 });
+  });
+
   it('turns a non-object payload into a 404 failure', () => {
     const store = makeStore();
 
-    // Plone answers a browserview or a feed with 200 + HTML/XML, so
-    // helpers/Api resolves with the raw string and Volto dispatches SUCCESS.
     expect(() =>
       store.dispatch({
         type: GET_CONTENT_SUCCESS,
