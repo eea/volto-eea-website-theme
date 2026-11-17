@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Button, Loader } from 'semantic-ui-react';
+import { Button, Loader, Modal } from 'semantic-ui-react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
@@ -47,27 +47,30 @@ const PrintLoader = () => {
     };
   }, [dispatch]);
 
-  return showLoader ? (
-    <div
+  return (
+    <Modal
       id="download-print-loader"
-      className="ui warning message"
-      role="status"
+      open={showLoader}
+      size="mini"
+      closeOnDimmerClick={false}
+      closeOnEscape={false}
+      closeIcon={false}
       aria-live="polite"
+      aria-busy={showLoader}
     >
-      <Loader active inline size="medium" />
-      <p className="print-loader-text">
-        {intl.formatMessage(messages.preparingDownload)}
-      </p>
-      <Button
-        primary
-        compact
-        type="button"
-        onClick={() => cancelPrintView(dispatch)}
-      >
-        {intl.formatMessage(messages.cancel)}
-      </Button>
-    </div>
-  ) : null;
+      <Modal.Content className="print-loader-content">
+        <Loader active inline="centered" size="medium" />
+        <p className="print-loader-text">
+          {intl.formatMessage(messages.preparingDownload)}
+        </p>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button primary compact onClick={() => cancelPrintView(dispatch)}>
+          {intl.formatMessage(messages.cancel)}
+        </Button>
+      </Modal.Actions>
+    </Modal>
+  );
 };
 
 export default PrintLoader;

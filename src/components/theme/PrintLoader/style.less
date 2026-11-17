@@ -1,16 +1,39 @@
 #download-print-loader {
-  position: fixed;
-  z-index: 9999;
-  top: 40%;
-  right: 40%;
-  left: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1em;
-  background-color: #fff;
+  .print-loader-content {
+    text-align: center;
+  }
 
   .print-loader-text {
-    margin: 1em 0;
+    margin: 1em 0 0;
+  }
+
+  .actions {
+    text-align: center;
+  }
+}
+
+.ui.dimmer .ui.modal#download-print-loader .ui.loader {
+  color: rgba(0, 0, 0, 0.87);
+
+  &::before {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  &::after {
+    border-color: #767676 transparent transparent;
+  }
+}
+
+@media print {
+  #download-print-loader {
+    display: none !important;
+  }
+
+  // ModalDimmer sets display:flex!important inline, so display:none cannot
+  // reliably override it. Hide the portal and its backdrop instead.
+  .ui.page.modals.dimmer {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    background: transparent !important;
   }
 }
