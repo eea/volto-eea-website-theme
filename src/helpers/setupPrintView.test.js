@@ -109,8 +109,7 @@ describe('setupPrintView', () => {
     await act(async () => {
       setupPrintView(dispatch);
 
-      // Run all timers and flush all promises multiple times
-      // to handle the async/await chain in forceLoadLazyBlocks and waitForPrintBlocks
+      // Run all timers and flush the async preparation chain.
       for (let i = 0; i < 10; i++) {
         jest.runAllTimers();
         await Promise.resolve();
@@ -122,6 +121,7 @@ describe('setupPrintView', () => {
     expect(loadLazyImages).toHaveBeenCalled();
     expect(window.scrollTo).toHaveBeenCalledWith({
       behavior: 'instant',
+      left: 0,
       top: 0,
     });
     expect(window.print).toHaveBeenCalled();
@@ -293,7 +293,7 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('handles page with #page-document element for scrolling', async () => {
+  it('does not sweep through a #page-document element', async () => {
     const pageDocument = document.createElement('div');
     pageDocument.id = 'page-document';
     Object.defineProperty(pageDocument, 'scrollHeight', {
@@ -313,7 +313,11 @@ describe('setupPrintView', () => {
       }
     });
 
-    expect(window.scrollTo).toHaveBeenCalled();
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      behavior: 'instant',
+      left: 0,
+      top: 0,
+    });
     expect(window.print).toHaveBeenCalled();
   });
 
@@ -527,7 +531,7 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('scrolls iframe into view on load', async () => {
+  it('scrolls an iframe into view while waiting for it to load', async () => {
     const iframe = document.createElement('iframe');
     iframe.scrollIntoView = jest.fn();
 
@@ -559,8 +563,13 @@ describe('setupPrintView', () => {
 
     expect(iframe.scrollIntoView).toHaveBeenCalledWith({
       behavior: 'instant',
-      block: 'nearest',
-      inline: 'center',
+      block: 'center',
+      inline: 'nearest',
+    });
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      behavior: 'instant',
+      left: 0,
+      top: 0,
     });
     expect(window.print).toHaveBeenCalled();
   });
@@ -576,8 +585,8 @@ describe('setupPrintView', () => {
     await act(async () => {
       setupPrintView(dispatch);
 
-      // Run enough iterations to hit the timeout (40 checks)
-      for (let i = 0; i < 50; i++) {
+      // Run enough iterations to hit the timeout (120 checks)
+      for (let i = 0; i < 130; i++) {
         jest.runAllTimers();
         await Promise.resolve();
       }
@@ -588,25 +597,18 @@ describe('setupPrintView', () => {
 
   it('handles actual error in Promise.all', async () => {
     const dispatch = jest.fn();
-
-    // Create an iframe that will reject
-    const iframe = document.createElement('iframe');
-    document.body.appendChild(iframe);
-
-    // Mock scrollIntoView to throw an error
-    iframe.scrollIntoView = jest.fn(() => {
-      throw new Error('scrollIntoView error');
-    });
+    const querySelectorAll = document.querySelectorAll.bind(document);
+    const querySelectorAllMock = jest
+      .spyOn(document, 'querySelectorAll')
+      .mockImplementation((selector) => {
+        if (selector === '[data-print-block]') {
+          throw new Error('Print block lookup failed');
+        }
+        return querySelectorAll(selector);
+      });
 
     await act(async () => {
       setupPrintView(dispatch);
-
-      // Trigger iframe load which will call scrollIntoView and throw
-      try {
-        iframe.dispatchEvent(new Event('load'));
-      } catch (e) {
-        // Expected error
-      }
 
       for (let i = 0; i < 15; i++) {
         jest.runAllTimers();
@@ -616,5 +618,6 @@ describe('setupPrintView', () => {
 
     // Should still call print
     expect(window.print).toHaveBeenCalled();
+    querySelectorAllMock.mockRestore();
   });
 });

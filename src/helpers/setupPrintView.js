@@ -67,46 +67,70 @@ export const setupPrintView = (dispatch) => {
   loadLazyImages();
 
   // Create a promise that resolves when all iframes are loaded
-  const waitForIframes = () => {
-    const iframes = document.getElementsByTagName('iframe');
+  const waitForIframes = async () => {
+    const iframes = Array.from(document.getElementsByTagName('iframe'));
     if (iframes.length === 0) {
-      return Promise.resolve();
+      return;
     }
 
-    const iframePromises = Array.from(iframes).map((iframe) => {
+    const originalScrollPosition = {
+      left: window.scrollX || window.pageXOffset || 0,
+      top: window.scrollY || window.pageYOffset || 0,
+    };
+
+    const iframePromises = iframes.map((iframe) => {
       return new Promise((resolve) => {
-        // If iframe is already loaded, resolve immediately
-        if (iframe.contentDocument?.readyState === 'complete') {
+        let timeout;
+        const finish = () => {
+          iframe.removeEventListener('load', finish);
+          clearTimeout(timeout);
           resolve();
-          return;
-        }
+        };
 
-        // Otherwise wait for load event
-        iframe.addEventListener(
-          'load',
-          () => {
-            if (printJob.cancelled) {
-              resolve();
-              return;
-            }
-
-            // Scroll iframe into view to ensure content loads
-            iframe.scrollIntoView({
-              behavior: 'instant',
-              block: 'nearest',
-              inline: 'center',
-            });
-            resolve();
-          },
-          { once: true },
-        );
+        iframe.addEventListener('load', finish, { once: true });
 
         // Set a timeout as a fallback in case the load event doesn't fire
-        setTimeout(resolve, 5000);
+        timeout = setTimeout(finish, 5000);
+
+        try {
+          // This is available only for same-origin iframes. Cross-origin
+          // frames will continue through the load event or timeout path.
+          if (iframe.contentDocument?.readyState === 'complete') {
+            finish();
+          }
+        } catch {
+          // Cross-origin iframe contents cannot be inspected by the parent.
+        }
       });
     });
 
-    return Promise.all(iframePromises);
+    try {
+      // Some embedded applications defer their own rendering until their
+      // iframe enters the viewport. Visit only iframe elements; do not sweep
+      // through the rest of the page or affect print-aware charts and maps.
+      for (const iframe of iframes) {
+        if (printJob.cancelled) return;
+
+        iframe.scrollIntoView?.({
+          behavior: 'instant',
+          block: 'center',
+          inline: 'nearest',
+        });
+
+        const activationCompleted = await Promise.race([
+          new Promise((resolve) => setTimeout(() => resolve(true), 250)),
+          cancellation.then(() => false),
+        ]);
+        if (!activationCompleted || printJob.cancelled) return;
+      }
+
+      await Promise.race([Promise.all(iframePromises), cancellation]);
+    } finally {
+      window.scrollTo({
+        ...originalScrollPosition,
+        behavior: 'instant',
+      });
+    }
   };
 
   // Create a promise that resolves when all images are loaded
@@ -136,48 +160,8 @@ export const setupPrintView = (dispatch) => {
     return Promise.all(imagePromises);
   };
 
-  // Force load all lazy-loaded blocks by scrolling through the page in steps
-  const forceLoadLazyBlocks = async () => {
-    const pageDocument =
-      document.getElementById('page-document') || document.body;
-    const scrollHeight = pageDocument.scrollHeight;
-    const viewportHeight = window.innerHeight;
-
-    // Calculate number of steps needed to scroll through entire page
-    const steps = Math.ceil(scrollHeight / viewportHeight) + 1;
-
-    // Scroll through the page in steps to trigger lazy loading
-    for (let i = 0; i <= steps; i++) {
-      if (printJob.cancelled) return;
-
-      const scrollPosition = (scrollHeight / steps) * i;
-      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-
-      // Small delay to allow IntersectionObserver to trigger
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-
-    if (printJob.cancelled) return;
-
-    // Final scroll to absolute bottom
-    window.scrollTo({ top: pageDocument.scrollHeight, behavior: 'instant' });
-  };
-
   // Wait for registered print-aware blocks to finish rendering.
   const waitForPrintBlocks = async () => {
-    // Give a small delay for isPrint state to propagate and visibility sensors
-    // to re-render.
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    if (printJob.cancelled) return;
-
-    // Force load all lazy blocks by scrolling through the page
-    await forceLoadLazyBlocks();
-    if (printJob.cancelled) return;
-
-    // Now wait a bit for dynamically imported blocks to start loading.
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (printJob.cancelled) return;
-
     const printBlocks = document.querySelectorAll('[data-print-block]');
 
     if (printBlocks.length === 0) {
@@ -187,7 +171,9 @@ export const setupPrintView = (dispatch) => {
     // Check registered block loading status periodically.
     return new Promise((resolve) => {
       let checkCount = 0;
-      const maxChecks = 40; // 40 checks * 250ms = 10 seconds max
+      let settledChecks = 0;
+      const maxChecks = 120; // 120 checks * 250ms = 30 seconds max
+      const requiredSettledChecks = 3;
       const checkInterval = 250;
 
       const checkPrintBlocksLoaded = () => {
@@ -205,8 +191,16 @@ export const setupPrintView = (dispatch) => {
           ['ready', 'failed'].includes(block.dataset.printStatus),
         ).length;
 
-        // Resolve when every registered block has settled or at the timeout.
-        if (settledCount === allPrintBlocks.length || checkCount >= maxChecks) {
+        if (settledCount === allPrintBlocks.length) {
+          settledChecks++;
+        } else {
+          settledChecks = 0;
+        }
+
+        // Require a short stable period after every block reports completion.
+        // Plotly's afterplot event can fire just before the browser paints the
+        // final SVG/canvas into the print surface.
+        if (settledChecks >= requiredSettledChecks || checkCount >= maxChecks) {
           resolve();
         } else {
           setTimeout(checkPrintBlocksLoaded, checkInterval);
@@ -221,6 +215,14 @@ export const setupPrintView = (dispatch) => {
   // Wait for all content to load before printing
   const waitForAllContentToLoad = async () => {
     try {
+      // Allow print mode and visibility sensors to mount their content before
+      // collecting images, iframes, and registered blocks.
+      const preparationReady = await Promise.race([
+        new Promise((resolve) => setTimeout(() => resolve(true), 500)),
+        cancellation.then(() => false),
+      ]);
+      if (!preparationReady || printJob.cancelled) return;
+
       // Wait for iframes, images, and registered print-aware blocks.
       const contentLoaded = await Promise.race([
         Promise.all([
@@ -232,9 +234,6 @@ export const setupPrintView = (dispatch) => {
       ]);
 
       if (!contentLoaded || printJob.cancelled) return;
-
-      // Scroll back to top
-      window.scrollTo({ top: 0 });
 
       // Keep isPrint=true during printing so charts stay in mobile layout
       // Only turn off loading indicator
