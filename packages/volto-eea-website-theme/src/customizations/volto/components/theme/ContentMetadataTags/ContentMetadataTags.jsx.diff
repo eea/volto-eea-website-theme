@@ -1,0 +1,41 @@
+--- volto-19.6.1/packages/volto/src/components/theme/ContentMetadataTags/ContentMetadataTags.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/theme/ContentMetadataTags/ContentMetadataTags.jsx
+@@ -60,19 +60,34 @@
+ 
+   const contentImageInfo = getContentImageInfo();
+ 
++  // EEA (#292656): hierarchical title, "page | parent | navroot site".
++  // The parts are joined with `titleAndSiteTitleSeparator` (`|` in this
++  // add-on), but the site title is appended after a plain space, without a
++  // separator. Kept as is on purpose: whether it should also be preceded by
++  // the separator is pending a product decision.
+   const getTitle = () => {
+     const includeSiteTitle =
+       config?.settings?.siteTitleFormat?.includeSiteTitle || false;
+     const titleAndSiteTitleSeparator =
+       config?.settings?.titleAndSiteTitleSeparator || '-';
+     const navRootTitle = navroot?.title;
++    const contextIsRoot = navRootTitle === title;
+     const siteRootTitle = site?.['plone.site_title'];
+-    const titlePart = navRootTitle || siteRootTitle;
++    const parentTitle = !contextIsRoot && props.content?.parent?.title;
+ 
+-    if (includeSiteTitle && titlePart && titlePart !== title) {
+-      return seo_title || `${title} ${titleAndSiteTitleSeparator} ${titlePart}`;
++    const baseTitle = seo_title || title;
++    if (includeSiteTitle && siteRootTitle !== title) {
++      const parts = [
++        baseTitle,
++        parentTitle,
++        !contextIsRoot && navRootTitle !== parentTitle && navRootTitle,
++      ].filter((part) => Boolean(part));
++      const titleWithSep = parts.join(` ${titleAndSiteTitleSeparator} `);
++      return siteRootTitle && siteRootTitle !== navRootTitle
++        ? `${titleWithSep} ${siteRootTitle}`
++        : titleWithSep;
+     } else {
+-      return seo_title || title;
++      return baseTitle;
+     }
+   };
+ 

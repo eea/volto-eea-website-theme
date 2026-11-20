@@ -1,0 +1,28 @@
+--- volto-19.6.1/packages/volto-slate/src/blocks/Text/TextBlockView.jsx
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/blocks/Text/TextBlockView.jsx
+@@ -1,7 +1,11 @@
+-import { serializeNodes } from '@plone/volto-slate/editor/render';
+-import { getAnchor } from '@plone/volto-slate/utils/toc';
++import {
++  serializeNodes,
++  serializeNodesToText,
++} from '@plone/volto-slate/editor/render';
+ import config from '@plone/volto/registry';
+ import isEqual from 'lodash/isEqual';
++import Slugger from 'github-slugger';
++import { normalizeString } from '@plone/volto/helpers/Utils/Utils';
+ 
+ const TextBlockView = (props) => {
+   const { id, data, styling = {} } = props;
+@@ -13,7 +17,10 @@
+     const res = { ...styling };
+     if (node.type && isEqual(path, [0])) {
+       if (topLevelTargetElements.includes(node.type) || override_toc) {
+-        res.id = getAnchor(node) || id;
++        const text = serializeNodesToText([node] || []);
++        const slug = Slugger.slug(normalizeString(text));
++        res.id = slug || id;
++        res['data-block'] = id;
+       }
+     }
+     return res;

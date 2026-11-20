@@ -1,0 +1,75 @@
+--- volto-19.6.1/packages/volto-slate/src/utils/blocks.js
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/blocks.js
+@@ -9,9 +9,23 @@
+ import includes from 'lodash/includes';
+ import some from 'lodash/some';
+ import first from 'lodash/first';
+-import { makeEditor } from './editor';
+-import { safeEditorNodes } from './safe.js';
++import { makeEditor } from '@plone/volto-slate/utils/editor';
+ 
++// Local copy of `safeEditorNodes` from `@plone/volto-slate/utils/safe`, which
++// volto-slate 18 does not have, so the same add-on build works on both.
++const safeEditorNodes = (editor, options) => {
++  try {
++    return Array.from(Editor.nodes(editor, options));
++  } catch (error) {
++    console.warn('safeEditorNodes: selection invalid or out of bounds:', {
++      options,
++      selection: editor.selection,
++      error,
++    });
++    return [];
++  }
++};
++
+ // case sensitive; first in an inner array is the default and preffered format
+ // in that array of formats
+ const formatAliases = [
+@@ -73,27 +87,25 @@
+ 
+ export const normalizeExternalData = (editor, nodes) => {
+   let fakeEditor = makeEditor({ extensions: editor._installedPlugins });
+-  fakeEditor.children = nodes;
+-  // put all the non-blocks (e.g. images which are inline Elements) inside p-s
+-  Editor.withoutNormalizing(fakeEditor, () => {
+-    //for htmlSlateWidget compatibility
+-    if (
+-      nodes &&
+-      (!Editor.isBlock(fakeEditor, nodes[0]) || Text.isText(nodes[0]))
+-    )
+-      Transforms.wrapNodes(
+-        fakeEditor,
+-        { type: 'p' },
+-        {
+-          at: [],
+-          match: (node, path) =>
+-            (!Editor.isEditor(node) && !Editor.isBlock(fakeEditor, node)) ||
+-            fakeEditor.isInline(node) ||
+-            Text.isText(node),
+-          mode: 'highest',
+-        },
+-      );
+-  });
++  // CUSTOMIZATION: paste from the Microsoft Word desktop app (refs #265782).
++  // Group every run of inline, text or typeless nodes into its own `p`.
++  // Upstream only wraps when the first node is not a block, so it drops loose
++  // text between paragraphs and keeps typeless elements at the top level.
++  let wrapper = null;
++  fakeEditor.children = (nodes || []).reduce((acc, node) => {
++    if (Editor.isBlock(fakeEditor, node) && !!node.type) {
++      acc.push(node);
++      wrapper = null;
++      return acc;
++    }
++    if (!wrapper) {
++      wrapper = { type: 'p', children: [] };
++      acc.push(wrapper);
++    }
++    wrapper.children.push(node);
++    return acc;
++  }, []);
++  // END CUSTOMIZATION
+ 
+   Editor.normalize(fakeEditor, { force: true });
+ 

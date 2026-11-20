@@ -1,0 +1,115 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Sidebar/ObjectBrowserBody.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Sidebar/ObjectBrowserBody.jsx
+@@ -1,3 +1,8 @@
++/* EEA customization (based on Volto 19.6.1, identical in 18.36.0):
++ * - picking an image fills `alt` (title or description) and `copyright`
++ *   (rights) instead of an empty `alt`;
++ * - the selection limit logic lives in `./objectBrowserSelection` (#301881).
++ */
+ import React, { Component } from 'react';
+ import PropTypes from 'prop-types';
+ import { compose } from 'redux';
+@@ -26,6 +31,11 @@
+ import listSVG from '@plone/volto/icons/list-bullet.svg';
+ 
+ import ObjectBrowserNav from '@plone/volto/components/manage/Sidebar/ObjectBrowserNav';
++import {
++  isItemAlreadySelected,
++  isSelectableObjectBrowserItem,
++  shouldCloseAfterObjectBrowserSelection,
++} from './objectBrowserSelection';
+ 
+ const messages = defineMessages({
+   SearchInputPlaceholder: {
+@@ -341,7 +351,8 @@
+       onChangeBlock(block, {
+         ...data,
+         url: flattenToAppURL(item.getURL),
+-        alt: '',
++        alt: item.title || item.description || '',
++        copyright: item.rights || '',
+       });
+     } else if (mode === 'link') {
+       onChangeBlock(block, {
+@@ -360,32 +371,17 @@
+   };
+ 
+   isSelectable = (item) => {
+-    const {
+-      maximumSelectionSize,
+-      data,
+-      mode,
+-      selectableTypes,
+-      onlyFolderishSelectable,
+-    } = this.props;
+-
+-    if (onlyFolderishSelectable && !item.is_folderish) {
+-      return false;
+-    }
+-    if (
+-      maximumSelectionSize &&
+-      data &&
+-      mode === 'multiple' &&
+-      maximumSelectionSize <= data.length
+-    )
+-      // The item should actually be selectable, but only for removing it from already selected items list.
+-      // handleClickOnItem will handle the deselection logic.
+-      // The item is not selectable if we reached/exceeded maximumSelectionSize and is not already selected.
+-      return data.some(
+-        (d) => flattenToAppURL(d['@id']) === flattenToAppURL(item['@id']),
+-      );
+-    return selectableTypes.length > 0
+-      ? selectableTypes.indexOf(item['@type']) >= 0
+-      : true;
++    // Once maximumSelectionSize is reached, only the already selected items
++    // stay selectable (so they can be removed); see objectBrowserSelection.
++    return isSelectableObjectBrowserItem({
++      item,
++      selectableTypes: this.props.selectableTypes,
++      onlyFolderishSelectable: this.props.onlyFolderishSelectable,
++      maximumSelectionSize: this.props.maximumSelectionSize,
++      data: this.props.data,
++      mode: this.props.mode,
++      normalize: flattenToAppURL,
++    });
+   };
+ 
+   handleClickOnItem = (item) => {
+@@ -404,22 +400,22 @@
+           !this.props.data ||
+           this.props.data.length <= this.props.maximumSelectionSize
+         ) {
+-          let isDeselecting;
+-          if (this.props.mode === 'multiple' && Array.isArray(this.props.data))
+-            isDeselecting = this.props.data.some(
+-              (d) => flattenToAppURL(d['@id']) === flattenToAppURL(item['@id']),
+-            );
++          const isDeselecting =
++            this.props.mode === 'multiple' &&
++            isItemAlreadySelected({
++              data: this.props.data,
++              item,
++              normalize: flattenToAppURL,
++            });
++
+           this.onSelectItem(item);
+-          let length = this.props.data ? this.props.data.length : 0;
+-          let stopSelecting = this.props.mode !== 'multiple';
+-          if (isDeselecting && !stopSelecting)
+-            stopSelecting =
+-              this.props.maximumSelectionSize > 0 &&
+-              length - 1 >= this.props.maximumSelectionSize;
+-          else
+-            stopSelecting =
+-              this.props.maximumSelectionSize > 0 &&
+-              length + 1 >= this.props.maximumSelectionSize;
++          const stopSelecting = shouldCloseAfterObjectBrowserSelection({
++            mode: this.props.mode,
++            maximumSelectionSize: this.props.maximumSelectionSize,
++            currentLength: this.props.data ? this.props.data.length : 0,
++            isDeselecting,
++          });
++
+           if (stopSelecting) {
+             this.props.closeObjectBrowser();
+           }

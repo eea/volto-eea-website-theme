@@ -1,0 +1,75 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Widgets/ObjectBrowserWidget.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Widgets/ObjectBrowserWidget.jsx
+@@ -1,6 +1,10 @@
+ /**
+  * ObjectBrowserWidget component.
+  * @module components/manage/Widgets/ObjectBrowserWidget
++ *
++ * EEA customization: preserves hash anchors in pasted internal URLs.
++ * When a URL like `/path/to/page#section` is entered, the hash is stored in
++ * `linkWithHash` on the selected item so the link renders with the anchor.
+  */
+ 
+ import React, { Component } from 'react';
+@@ -114,7 +118,8 @@
+     this.placeholderRef = React.createRef();
+   }
+   renderLabel(item) {
+-    const href = item['@id'];
++    // EEA: use linkWithHash if available so the anchor is preserved in the label
++    const href = item['linkWithHash'] || item['@id'];
+     return (
+       <Popup
+         key={flattenToAppURL(href)}
+@@ -200,6 +205,7 @@
+           // Add the required attributes for the widget to work
+           '@id',
+           'title',
++          'linkWithHash', // EEA: preserve anchor hash stored by onSubmitManualLink
+         ];
+         resultantItem = Object.keys(item)
+           .filter((key) => allowedItemKeys.includes(key))
+@@ -247,18 +253,30 @@
+     } else {
+       return isInternalURL(url);
+     }
++  };
++
++  /**
++   * EEA: splits a URL into its path and hash components.
++   * e.g. '/path/to/page#section' → ['/path/to/page', 'section']
++   */
++  getHashAndLinkFromUrl = (url) => {
++    return url.split('#');
+   };
+ 
+   onSubmitManualLink = () => {
+     if (this.validateManualLink(this.state.manualLinkInput)) {
+       if (isInternalURL(this.state.manualLinkInput)) {
+-        const link = this.state.manualLinkInput;
++        // EEA: split off any hash anchor before searching
++        const [link, hash] = this.getHashAndLinkFromUrl(
++          this.state.manualLinkInput,
++        );
++        const relative_link = flattenToAppURL(link);
+         // convert it into an internal on if possible
+         this.props
+           .searchContent(
+             '/',
+             {
+-              'path.query': flattenToAppURL(this.state.manualLinkInput),
++              'path.query': relative_link,
+               'path.depth': '0',
+               sort_on: 'getObjPositionInParent',
+               metadata_fields: '_all',
+@@ -268,6 +286,10 @@
+           )
+           .then((resp) => {
+             if (resp.items?.length > 0) {
++              // EEA: if there is a hash, store it as linkWithHash on the item
++              if (hash) {
++                resp.items[0]['linkWithHash'] = `${relative_link}#${hash}`;
++              }
+               this.onChange(resp.items[0]);
+             } else {
+               this.props.onChange(this.props.id, [
