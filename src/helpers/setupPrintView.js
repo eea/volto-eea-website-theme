@@ -118,7 +118,7 @@ export const setupPrintView = (dispatch) => {
         });
 
         const activationCompleted = await Promise.race([
-          new Promise((resolve) => setTimeout(() => resolve(true), 250)),
+          new Promise((resolve) => setTimeout(() => resolve(true), 500)),
           cancellation.then(() => false),
         ]);
         if (!activationCompleted || printJob.cancelled) return;
