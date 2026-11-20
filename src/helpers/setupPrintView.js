@@ -10,11 +10,54 @@ import {
 } from '@eeacms/volto-eea-website-theme/actions/print';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 
+const CANCEL_PRINT_EVENT = 'eea:cancel-print-preparation';
+const PRINT_VIEW_CLASS = 'print-view-active';
+
+const cancelActivePrintJobs = () => {
+  window.dispatchEvent(new Event(CANCEL_PRINT_EVENT));
+};
+
+const resetTabs = () => {
+  document.documentElement.classList.remove(PRINT_VIEW_CLASS);
+  Array.from(document.getElementsByClassName('ui tab')).forEach((tab) => {
+    tab.style.removeProperty('display');
+  });
+};
+
+export const cancelPrintView = (dispatch) => {
+  cancelActivePrintJobs();
+
+  resetTabs();
+  dispatch(setPrintLoading(false));
+  dispatch(setIsPrint(false));
+};
+
 export const setupPrintView = (dispatch) => {
-  // Set tabs to be visible
+  cancelActivePrintJobs();
+
+  const printJob = {
+    cancelled: false,
+    resolveCancellation: () => {},
+    startTimeout: undefined,
+  };
+  const cancellation = new Promise((resolve) => {
+    printJob.resolveCancellation = resolve;
+  });
+  const cancelPrintJob = () => {
+    printJob.cancelled = true;
+    clearTimeout(printJob.startTimeout);
+    printJob.resolveCancellation();
+  };
+  const removeCancellationListener = () => {
+    window.removeEventListener(CANCEL_PRINT_EVENT, cancelPrintJob);
+  };
+  window.addEventListener(CANCEL_PRINT_EVENT, cancelPrintJob, { once: true });
+
+  // Keep every tab pane expanded while content is prepared and printed.
+  document.documentElement.classList.add(PRINT_VIEW_CLASS);
   const tabs = document.getElementsByClassName('ui tab');
   Array.from(tabs).forEach((tab) => {
-    tab.style.display = 'block';
+    tab.style.setProperty('display', 'block', 'important');
   });
 
   dispatch(setIsPrint(true));
@@ -24,41 +67,70 @@ export const setupPrintView = (dispatch) => {
   loadLazyImages();
 
   // Create a promise that resolves when all iframes are loaded
-  const waitForIframes = () => {
-    const iframes = document.getElementsByTagName('iframe');
+  const waitForIframes = async () => {
+    const iframes = Array.from(document.getElementsByTagName('iframe'));
     if (iframes.length === 0) {
-      return Promise.resolve();
+      return;
     }
 
-    const iframePromises = Array.from(iframes).map((iframe) => {
-      return new Promise((resolve) => {
-        // If iframe is already loaded, resolve immediately
-        if (iframe.contentDocument?.readyState === 'complete') {
-          resolve();
-          return;
-        }
+    const originalScrollPosition = {
+      left: window.scrollX || window.pageXOffset || 0,
+      top: window.scrollY || window.pageYOffset || 0,
+    };
 
-        // Otherwise wait for load event
-        iframe.addEventListener(
-          'load',
-          () => {
-            // Scroll iframe into view to ensure content loads
-            iframe.scrollIntoView({
-              behavior: 'instant',
-              block: 'nearest',
-              inline: 'center',
-            });
-            resolve();
-          },
-          { once: true },
-        );
+    const iframePromises = iframes.map((iframe) => {
+      return new Promise((resolve) => {
+        let timeout;
+        const finish = () => {
+          iframe.removeEventListener('load', finish);
+          clearTimeout(timeout);
+          resolve();
+        };
+
+        iframe.addEventListener('load', finish, { once: true });
 
         // Set a timeout as a fallback in case the load event doesn't fire
-        setTimeout(resolve, 5000);
+        timeout = setTimeout(finish, 5000);
+
+        try {
+          // This is available only for same-origin iframes. Cross-origin
+          // frames will continue through the load event or timeout path.
+          if (iframe.contentDocument?.readyState === 'complete') {
+            finish();
+          }
+        } catch {
+          // Cross-origin iframe contents cannot be inspected by the parent.
+        }
       });
     });
 
-    return Promise.all(iframePromises);
+    try {
+      // Some embedded applications defer their own rendering until their
+      // iframe enters the viewport. Visit only iframe elements; do not sweep
+      // through the rest of the page or affect print-aware charts and maps.
+      for (const iframe of iframes) {
+        if (printJob.cancelled) return;
+
+        iframe.scrollIntoView?.({
+          behavior: 'instant',
+          block: 'center',
+          inline: 'nearest',
+        });
+
+        const activationCompleted = await Promise.race([
+          new Promise((resolve) => setTimeout(() => resolve(true), 500)),
+          cancellation.then(() => false),
+        ]);
+        if (!activationCompleted || printJob.cancelled) return;
+      }
+
+      await Promise.race([Promise.all(iframePromises), cancellation]);
+    } finally {
+      window.scrollTo({
+        ...originalScrollPosition,
+        behavior: 'instant',
+      });
+    }
   };
 
   // Create a promise that resolves when all images are loaded
@@ -88,103 +160,80 @@ export const setupPrintView = (dispatch) => {
     return Promise.all(imagePromises);
   };
 
-  // Force load all lazy-loaded blocks by scrolling through the page in steps
-  const forceLoadLazyBlocks = async () => {
-    const pageDocument =
-      document.getElementById('page-document') || document.body;
-    const scrollHeight = pageDocument.scrollHeight;
-    const viewportHeight = window.innerHeight;
+  // Wait for registered print-aware blocks to finish rendering.
+  const waitForPrintBlocks = async () => {
+    const printBlocks = document.querySelectorAll('[data-print-block]');
 
-    // Calculate number of steps needed to scroll through entire page
-    const steps = Math.ceil(scrollHeight / viewportHeight) + 1;
-
-    // Scroll through the page in steps to trigger lazy loading
-    for (let i = 0; i <= steps; i++) {
-      const scrollPosition = (scrollHeight / steps) * i;
-      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-
-      // Small delay to allow IntersectionObserver to trigger
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-
-    // Final scroll to absolute bottom
-    window.scrollTo({ top: pageDocument.scrollHeight, behavior: 'instant' });
-  };
-
-  // Wait for plotly charts to load and re-render in mobile layout
-  const waitForPlotlyCharts = async () => {
-    // Give a small delay for isPrint state to propagate and VisibilitySensor to re-render
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Force load all lazy blocks by scrolling through the page
-    await forceLoadLazyBlocks();
-
-    // Now wait a bit for the blocks to start loading
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Find all plotly chart containers (now they should be loaded)
-    const plotlyCharts = document.querySelectorAll(
-      '.embed-visualization, .plotly-component, .plotly-chart, .treemap-chart',
-    );
-
-    if (plotlyCharts.length === 0) {
+    if (printBlocks.length === 0) {
       return;
     }
 
-    // Check chart loading status periodically
+    // Check registered block loading status periodically.
     return new Promise((resolve) => {
       let checkCount = 0;
-      const maxChecks = 40; // 40 checks * 250ms = 10 seconds max
+      let settledChecks = 0;
+      const maxChecks = 120; // 120 checks * 250ms = 30 seconds max
+      const requiredSettledChecks = 3;
       const checkInterval = 250;
 
-      const checkChartsLoaded = () => {
+      const checkPrintBlocksLoaded = () => {
+        if (printJob.cancelled) {
+          resolve();
+          return;
+        }
+
         checkCount++;
 
-        const allCharts = document.querySelectorAll(
-          '.embed-visualization, .plotly-component, .plotly-chart, .treemap-chart',
+        const allPrintBlocks = Array.from(
+          document.querySelectorAll('[data-print-block]'),
         );
+        const settledCount = allPrintBlocks.filter((block) =>
+          ['ready', 'failed'].includes(block.dataset.printStatus),
+        ).length;
 
-        let loadedCount = 0;
+        if (settledCount === allPrintBlocks.length) {
+          settledChecks++;
+        } else {
+          settledChecks = 0;
+        }
 
-        allCharts.forEach((chart, index) => {
-          const hasPlotlyDiv = chart.querySelector('.js-plotly-plot');
-
-          if (hasPlotlyDiv) {
-            loadedCount++;
-          }
-        });
-
-        // If all charts are loaded or we've reached max checks, resolve
-        if (loadedCount === allCharts.length || checkCount >= maxChecks) {
+        // Require a short stable period after every block reports completion.
+        // Plotly's afterplot event can fire just before the browser paints the
+        // final SVG/canvas into the print surface.
+        if (settledChecks >= requiredSettledChecks || checkCount >= maxChecks) {
           resolve();
         } else {
-          // Continue checking
-          setTimeout(checkChartsLoaded, checkInterval);
+          setTimeout(checkPrintBlocksLoaded, checkInterval);
         }
       };
 
-      // Start checking after a brief delay to allow initial rendering
-      setTimeout(checkChartsLoaded, 500);
+      // Start checking after a brief delay to allow initial rendering.
+      setTimeout(checkPrintBlocksLoaded, 500);
     });
   };
 
   // Wait for all content to load before printing
   const waitForAllContentToLoad = async () => {
     try {
-      // Wait for iframes, images, and Plotly charts to re-render
-      await Promise.all([
-        waitForIframes(),
-        waitForImages(),
-        waitForPlotlyCharts(),
+      // Allow print mode and visibility sensors to mount their content before
+      // collecting images, iframes, and registered blocks.
+      const preparationReady = await Promise.race([
+        new Promise((resolve) => setTimeout(() => resolve(true), 500)),
+        cancellation.then(() => false),
+      ]);
+      if (!preparationReady || printJob.cancelled) return;
+
+      // Wait for iframes, images, and registered print-aware blocks.
+      const contentLoaded = await Promise.race([
+        Promise.all([
+          waitForIframes(),
+          waitForImages(),
+          waitForPrintBlocks(),
+        ]).then(() => true),
+        cancellation.then(() => false),
       ]);
 
-      // Scroll back to top
-      window.scrollTo({ top: 0 });
-
-      // Reset tab display
-      Array.from(tabs).forEach((tab) => {
-        tab.style.display = '';
-      });
+      if (!contentLoaded || printJob.cancelled) return;
 
       // Keep isPrint=true during printing so charts stay in mobile layout
       // Only turn off loading indicator
@@ -199,6 +248,7 @@ export const setupPrintView = (dispatch) => {
         if (printDialogClosed) return; // Prevent multiple resets
         printDialogClosed = true;
 
+        resetTabs();
         dispatch(setIsPrint(false));
 
         // Clean up listeners
@@ -252,20 +302,23 @@ export const setupPrintView = (dispatch) => {
       }, 30000);
 
       // Trigger print - isPrint remains true during the dialog
+      removeCancellationListener();
       window.print();
     } catch (error) {
+      if (printJob.cancelled) return;
+
       // Still try to print even if there was an error
-      Array.from(tabs).forEach((tab) => {
-        tab.style.display = '';
-      });
       dispatch(setPrintLoading(false));
       dispatch(setIsPrint(false));
+      removeCancellationListener();
       window.print();
+      resetTabs();
     }
   };
 
   // Delay the initial call to ensure everything is rendered
-  setTimeout(() => {
+  printJob.startTimeout = setTimeout(() => {
+    if (printJob.cancelled) return;
     waitForAllContentToLoad();
   }, 1000);
 };

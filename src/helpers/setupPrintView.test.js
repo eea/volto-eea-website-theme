@@ -1,4 +1,4 @@
-import { setupPrintView } from './setupPrintView';
+import { cancelPrintView, setupPrintView } from './setupPrintView';
 import { loadLazyImages } from '@eeacms/volto-eea-website-theme/helpers/loadLazyImages';
 import { act } from '@testing-library/react';
 
@@ -36,6 +36,68 @@ describe('setupPrintView', () => {
     window.matchMedia = jest.fn(() => matchMediaMock);
   });
 
+  it('cancels print preparation before the delayed work starts', async () => {
+    const dispatch = jest.fn();
+
+    setupPrintView(dispatch);
+    cancelPrintView(dispatch);
+
+    await act(async () => {
+      jest.runAllTimers();
+      await Promise.resolve();
+    });
+
+    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_PRINT_LOADING' });
+    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_PRINT' });
+    expect(window.print).not.toHaveBeenCalled();
+  });
+
+  it('cancels print preparation after loading has started', async () => {
+    const dispatch = jest.fn();
+    const tab = document.querySelector('.ui.tab');
+
+    setupPrintView(dispatch);
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+      await Promise.resolve();
+    });
+
+    cancelPrintView(dispatch);
+
+    await act(async () => {
+      jest.runAllTimers();
+      await Promise.resolve();
+    });
+
+    expect(tab.style.display).toBe('');
+    expect(window.print).not.toHaveBeenCalled();
+  });
+
+  it('keeps every tab expanded when the print dialog opens', async () => {
+    const dispatch = jest.fn();
+    const tab = document.querySelector('.ui.tab');
+    tab.hidden = true;
+    window.print = jest.fn(() => {
+      expect(
+        document.documentElement.classList.contains('print-view-active'),
+      ).toBe(true);
+      expect(tab.style.getPropertyValue('display')).toBe('block');
+      expect(tab.style.getPropertyPriority('display')).toBe('important');
+    });
+
+    await act(async () => {
+      setupPrintView(dispatch);
+
+      for (let i = 0; i < 10; i++) {
+        jest.runAllTimers();
+        await Promise.resolve();
+      }
+    });
+
+    expect(window.print).toHaveBeenCalled();
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
@@ -47,8 +109,7 @@ describe('setupPrintView', () => {
     await act(async () => {
       setupPrintView(dispatch);
 
-      // Run all timers and flush all promises multiple times
-      // to handle the async/await chain in forceLoadLazyBlocks and waitForPlotlyCharts
+      // Run all timers and flush the async preparation chain.
       for (let i = 0; i < 10; i++) {
         jest.runAllTimers();
         await Promise.resolve();
@@ -60,6 +121,7 @@ describe('setupPrintView', () => {
     expect(loadLazyImages).toHaveBeenCalled();
     expect(window.scrollTo).toHaveBeenCalledWith({
       behavior: 'instant',
+      left: 0,
       top: 0,
     });
     expect(window.print).toHaveBeenCalled();
@@ -180,20 +242,16 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('handles plotly charts and waits for them to load', async () => {
-    // Create plotly chart containers
+  it('waits for registered print blocks that are ready', async () => {
+    // Create registered print blocks.
     const chart1 = document.createElement('div');
-    chart1.className = 'embed-visualization';
-    const plotlyDiv1 = document.createElement('div');
-    plotlyDiv1.className = 'js-plotly-plot';
-    chart1.appendChild(plotlyDiv1);
+    chart1.dataset.printBlock = 'test-chart';
+    chart1.dataset.printStatus = 'ready';
     document.body.appendChild(chart1);
 
     const chart2 = document.createElement('div');
-    chart2.className = 'plotly-component';
-    const plotlyDiv2 = document.createElement('div');
-    plotlyDiv2.className = 'js-plotly-plot';
-    chart2.appendChild(plotlyDiv2);
+    chart2.dataset.printBlock = 'test-chart';
+    chart2.dataset.printStatus = 'ready';
     document.body.appendChild(chart2);
 
     const dispatch = jest.fn();
@@ -210,10 +268,10 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('handles plotly charts that are still loading', async () => {
-    // Create plotly chart containers without loaded charts
+  it('waits for a registered print block that is still loading', async () => {
     const chart1 = document.createElement('div');
-    chart1.className = 'plotly-chart';
+    chart1.dataset.printBlock = 'test-chart';
+    chart1.dataset.printStatus = 'loading';
     document.body.appendChild(chart1);
 
     const dispatch = jest.fn();
@@ -221,11 +279,9 @@ describe('setupPrintView', () => {
     await act(async () => {
       setupPrintView(dispatch);
 
-      // Simulate chart loading after some time
+      // Simulate the block becoming ready after some time.
       setTimeout(() => {
-        const plotlyDiv = document.createElement('div');
-        plotlyDiv.className = 'js-plotly-plot';
-        chart1.appendChild(plotlyDiv);
+        chart1.dataset.printStatus = 'ready';
       }, 1000);
 
       for (let i = 0; i < 20; i++) {
@@ -237,7 +293,7 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('handles page with #page-document element for scrolling', async () => {
+  it('does not sweep through a #page-document element', async () => {
     const pageDocument = document.createElement('div');
     pageDocument.id = 'page-document';
     Object.defineProperty(pageDocument, 'scrollHeight', {
@@ -257,7 +313,11 @@ describe('setupPrintView', () => {
       }
     });
 
-    expect(window.scrollTo).toHaveBeenCalled();
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      behavior: 'instant',
+      left: 0,
+      top: 0,
+    });
     expect(window.print).toHaveBeenCalled();
   });
 
@@ -471,7 +531,7 @@ describe('setupPrintView', () => {
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('scrolls iframe into view on load', async () => {
+  it('scrolls an iframe into view while waiting for it to load', async () => {
     const iframe = document.createElement('iframe');
     iframe.scrollIntoView = jest.fn();
 
@@ -503,16 +563,21 @@ describe('setupPrintView', () => {
 
     expect(iframe.scrollIntoView).toHaveBeenCalledWith({
       behavior: 'instant',
-      block: 'nearest',
-      inline: 'center',
+      block: 'center',
+      inline: 'nearest',
+    });
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      behavior: 'instant',
+      left: 0,
+      top: 0,
     });
     expect(window.print).toHaveBeenCalled();
   });
 
-  it('continues checking charts until timeout', async () => {
-    // Create plotly chart containers without loaded charts (will timeout)
+  it('continues checking registered print blocks until timeout', async () => {
     const chart1 = document.createElement('div');
-    chart1.className = 'plotly-chart';
+    chart1.dataset.printBlock = 'test-chart';
+    chart1.dataset.printStatus = 'loading';
     document.body.appendChild(chart1);
 
     const dispatch = jest.fn();
@@ -520,8 +585,8 @@ describe('setupPrintView', () => {
     await act(async () => {
       setupPrintView(dispatch);
 
-      // Run enough iterations to hit the timeout (40 checks)
-      for (let i = 0; i < 50; i++) {
+      // Run enough iterations to hit the timeout (120 checks)
+      for (let i = 0; i < 130; i++) {
         jest.runAllTimers();
         await Promise.resolve();
       }
@@ -532,25 +597,18 @@ describe('setupPrintView', () => {
 
   it('handles actual error in Promise.all', async () => {
     const dispatch = jest.fn();
-
-    // Create an iframe that will reject
-    const iframe = document.createElement('iframe');
-    document.body.appendChild(iframe);
-
-    // Mock scrollIntoView to throw an error
-    iframe.scrollIntoView = jest.fn(() => {
-      throw new Error('scrollIntoView error');
-    });
+    const querySelectorAll = document.querySelectorAll.bind(document);
+    const querySelectorAllMock = jest
+      .spyOn(document, 'querySelectorAll')
+      .mockImplementation((selector) => {
+        if (selector === '[data-print-block]') {
+          throw new Error('Print block lookup failed');
+        }
+        return querySelectorAll(selector);
+      });
 
     await act(async () => {
       setupPrintView(dispatch);
-
-      // Trigger iframe load which will call scrollIntoView and throw
-      try {
-        iframe.dispatchEvent(new Event('load'));
-      } catch (e) {
-        // Expected error
-      }
 
       for (let i = 0; i < 15; i++) {
         jest.runAllTimers();
@@ -560,5 +618,6 @@ describe('setupPrintView', () => {
 
     // Should still call print
     expect(window.print).toHaveBeenCalled();
+    querySelectorAllMock.mockRestore();
   });
 });
