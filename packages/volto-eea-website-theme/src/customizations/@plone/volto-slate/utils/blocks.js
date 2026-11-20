@@ -87,7 +87,7 @@ approach, we're all ears!
 
 export const normalizeExternalData = (editor, nodes) => {
   let fakeEditor = makeEditor({ extensions: editor._installedPlugins });
-  // CUSTOMIZATION: paste from the Microsoft Word desktop app (refs #265782).
+  // CUSTOMIZATION: paste from the Microsoft Word desktop app.
   // Group every run of inline, text or typeless nodes into its own `p`.
   // Upstream only wraps when the first node is not a block, so it drops loose
   // text between paragraphs and keeps typeless elements at the top level.

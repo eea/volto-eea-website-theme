@@ -8,6 +8,22 @@ EEA Website [Volto](https://github.com/plone/volto) Theme
 
 ## Upgrade
 
+### Upgrading to 6.x
+
+> This version requires `Volto 18` or `Volto 19` and Node.js 22.
+
+The configuration, the registered views and block variations and the theme overrides are unchanged, so nothing needs to change on a site. The published package now lives in `packages/volto-eea-website-theme`.
+
+- **Volto 18 stays supported.** The shadows that need Volto 19 modules resolve to local fallbacks through the add-on's `razzle.extend.js` when the app runs Volto 18.
+- **The core shadows are rebased on Volto 19** instead of copied from Volto 18, and twelve that only re-exported or backported core files are gone.
+- **Opening a legacy `teaserGrid` page converts the block to `gridBlock`** in the edit form, so saving the page persists the conversion.
+- **`volto-subsites` is pinned to a commit** instead of `*`.
+
+#### Breaking changes
+
+- **Node.js 22 or newer is required** (`engines.node >= 22`).
+- **React 18 is required.** The package declares `react` and `react-dom` as `^18.2.0` peers.
+
 ### Upgrading to ^4.1.x
 
 * This version requires `^eea.volto.policy@12.0`

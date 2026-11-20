@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUIState } from '@plone/volto/actions/form/form';
 
 // EEA: legacy @kitconcept/volto-blocks-grid `teaserGrid` blocks are converted
-// to the core `gridBlock` format (refs #265726)
+// to the core `gridBlock` format
 export const convertTeaserToGridIfNecessary = (data) => {
   if (data?.['@type'] !== 'teaserGrid') return data;
   const columns = data?.columns || [];

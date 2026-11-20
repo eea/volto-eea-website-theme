@@ -141,7 +141,7 @@ describe('Blocks utils', () => {
 const p = (text) => ({ type: 'p', children: [{ text }] });
 const editor = { _installedPlugins: [] };
 
-// Regression tests for the Microsoft Word paste fix (refs #265782).
+// Regression tests for the Microsoft Word paste fix.
 describe('normalizeExternalData', () => {
   beforeAll(() => {
     config.settings.slate = {
