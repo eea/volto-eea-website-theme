@@ -1,0 +1,111 @@
+--- volto-19.6.1/packages/volto/src/components/manage/UniversalLink/UniversalLink.tsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/UniversalLink/UniversalLink.tsx
+@@ -1,3 +1,13 @@
++/*
++ * UniversalLink
++ * @module components/UniversalLink
++ *
++ * EEA customizations:
++ * - `rel="noopener"` without `noreferrer` on external and display-file links.
++ * - `item.linkWithHash` (set by ObjectBrowserWidget) keeps `#anchors`.
++ * - `/@@download/file` is appended only when the `download` prop is set.
++ * - display-file links honor `openLinkInNewTab={false}`.
++ */
+ import React from 'react';
+ import { HashLink as Link } from 'react-router-hash-link';
+ import { useSelector } from 'react-redux';
+@@ -28,7 +38,11 @@
+ 
+ type ItemOnly = {
+   href?: never;
+-  item: Partial<ObjectBrowserItem> & { remoteUrl?: string };
++  // EEA: `linkWithHash` is set by ObjectBrowserWidget for pasted `#anchor` links
++  item: Partial<ObjectBrowserItem> & {
++    remoteUrl?: string;
++    linkWithHash?: string;
++  };
+ } & BaseProps;
+ 
+ export type UniversalLinkProps = HrefOnly | ItemOnly;
+@@ -61,6 +75,13 @@
+   renderCounter: () => {},
+ };
+ 
++// EEA: with the `download` prop, internal links point to the file download
++// (e.g. the CTA block "download" option); `/@@download/file` is added once.
++const withDownload = (props: UniversalLinkProps, url: string): string =>
++  props.download && isInternalURL(url) && !url.includes('/@@download/file')
++    ? `${url}/@@download/file`
++    : url;
++
+ export function getUrl(
+   props: UniversalLinkProps,
+   token: string | null,
+@@ -68,7 +89,7 @@
+   children: React.ReactNode,
+ ): string {
+   if ('href' in props && typeof props.href === 'string') {
+-    return props.href;
++    return withDownload(props, props.href);
+   }
+ 
+   if (!item || item['@id'] === '') return config.settings.publicURL;
+@@ -90,10 +111,13 @@
+     url = remoteUrl;
+   }
+ 
++  // EEA: `download` instead of `!token`, so anonymous visitors are not
++  // always sent to the file download
+   if (
+-    !token &&
++    props.download &&
+     item['@type'] &&
+-    config.settings.downloadableObjects.includes(item['@type'])
++    config.settings.downloadableObjects.includes(item['@type']) &&
++    !url.includes('/@@download/file')
+   ) {
+     url = `${url}/@@download/file`;
+   }
+@@ -106,7 +130,7 @@
+     url = `${url}/@@display-file/file`;
+   }
+ 
+-  return url;
++  return withDownload(props, url);
+ }
+ 
+ const UniversalLink = React.memo(
+@@ -142,7 +166,9 @@
+ 
+       const checkedURL = URLUtils.checkAndNormalizeUrl(url);
+ 
+-      url = checkedURL.url;
++      // EEA: we can receive an item with a linkWithHash property set from
++      // ObjectBrowserWidget; if so, we use that instead of the computed url
++      url = item?.linkWithHash || checkedURL.url;
+       let tag = (
+         <Link
+           to={flattenToAppURL(url)}
+@@ -172,7 +198,8 @@
+                 ? '_blank'
+                 : undefined
+             }
+-            rel="noopener noreferrer"
++            // EEA: no `noreferrer`, so the target site gets the referrer
++            rel="noopener"
+             {...rest}
+             className={getClassName}
+             ref={ref as React.Ref<HTMLAnchorElement>}
+@@ -197,8 +224,10 @@
+         tag = (
+           <a
+             title={title}
+-            target="_blank"
+-            rel="noopener noreferrer"
++            // EEA: open in a new tab unless `openLinkInNewTab` is false
++            target={!(openLinkInNewTab === false) ? '_blank' : undefined}
++            // EEA: no `noreferrer`, so the target site gets the referrer
++            rel="noopener"
+             {...rest}
+             href={flattenToAppURL(url)}
+             className={className}

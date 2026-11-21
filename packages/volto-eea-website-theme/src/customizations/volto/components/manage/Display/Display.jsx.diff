@@ -1,0 +1,75 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Display/Display.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Display/Display.jsx
+@@ -1,10 +1,12 @@
+-import React, { useState, useEffect } from 'react';
++import React, { useState, useEffect, useMemo } from 'react';
+ import PropTypes from 'prop-types';
+ import { useDispatch, useSelector } from 'react-redux';
+ import { compose } from 'redux';
+ import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';
+ 
++import jwtDecode from 'jwt-decode';
+ import { getSchema } from '@plone/volto/actions/schema/schema';
++import { getUser } from '@plone/volto/actions/users/users';
+ import {
+   updateContent,
+   getContent,
+@@ -115,6 +117,15 @@
+   }),
+ };
+ 
++const getUserId = (token) => {
++  if (!token) return '';
++  try {
++    return jwtDecode(token)?.sub || '';
++  } catch (error) {
++    return '';
++  }
++};
++
+ const DisplaySelect = (props) => {
+   const { pathname } = props;
+   const intl = useIntl();
+@@ -145,6 +156,18 @@
+   const prevloaded = usePrevious(loaded);
+   const prevpathname = usePrevious(pathname);
+ 
++  // EEA: only users with one of the roles listed in
++  // `config.settings.eea.rolesWhoCanChangeLayout` can change the layout.
++  const user = useSelector((state) => state.users?.user);
++  const token = useSelector((state) => state.userSession?.token);
++  const userId = useMemo(() => getUserId(token), [token]);
++  const hasUser = !!user && Object.keys(user).length > 0;
++  const rolesWhoCanChangeLayout =
++    config.settings?.eea?.rolesWhoCanChangeLayout || [];
++  const hasMatchingRole =
++    hasUser &&
++    (user.roles || []).some((role) => rolesWhoCanChangeLayout.includes(role));
++
+   useEffect(() => {
+     dispatch(getSchema(type));
+   }, [dispatch, type]);
+@@ -157,6 +180,12 @@
+     }
+   }, [dispatch, type, pathname, prevpathname, prevloaded, loaded]);
+ 
++  useEffect(() => {
++    if (!hasUser && userId) {
++      dispatch(getUser(userId));
++    }
++  }, [dispatch, hasUser, userId]);
++
+   const setLayout = (selectedOption) => {
+     dispatch(
+       updateContent(pathname, {
+@@ -166,6 +195,10 @@
+     setselectedOption(selectedOption);
+   };
+ 
++  if (!hasMatchingRole) {
++    return null;
++  }
++
+   const Select = props.reactSelect.default;
+   const layoutsNames = config.views.layoutViewsNamesMapping;
+   const layoutOptions = layouts

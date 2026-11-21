@@ -1,0 +1,56 @@
+--- volto-19.6.1/packages/volto/src/components/manage/Blocks/Grid/Edit.jsx
++++ volto-eea-website-theme/src/customizations/volto/components/manage/Blocks/Grid/Edit.jsx
+@@ -1,12 +1,43 @@
++import { useEffect } from 'react';
+ import PropTypes from 'prop-types';
+ import cx from 'classnames';
+-import ContainerEdit from '../Container/Edit';
++import ContainerEdit from '@plone/volto/components/manage/Blocks/Container/Edit';
+ import { useDispatch, useSelector } from 'react-redux';
+ import { setUIState } from '@plone/volto/actions/form/form';
+ 
++// EEA: legacy @kitconcept/volto-blocks-grid `teaserGrid` blocks are converted
++// to the core `gridBlock` format (refs #265726)
++export const convertTeaserToGridIfNecessary = (data) => {
++  if (data?.['@type'] !== 'teaserGrid') return data;
++  const columns = data?.columns || [];
++  return {
++    ...data,
++    '@type': 'gridBlock',
++    blocks_layout: { items: columns.map((c) => c.id) },
++    blocks: columns.reduce(
++      (acc, current) => ({
++        ...acc,
++        [current?.id]: current,
++      }),
++      {},
++    ),
++  };
++};
++
+ const GridBlockEdit = (props) => {
+-  const { data } = props;
++  const { block, onChangeBlock } = props;
++  const isTeaserGrid = props.data?.['@type'] === 'teaserGrid';
++  // EEA: render the converted data right away, the block data itself is
++  // updated in an effect (never call onChangeBlock while rendering)
++  const data = convertTeaserToGridIfNecessary(props.data);
+ 
++  useEffect(() => {
++    if (isTeaserGrid) {
++      onChangeBlock(block, data);
++    }
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [isTeaserGrid, block]);
++
+   const columnsLength = data?.blocks_layout?.items?.length || 0;
+ 
+   const selectedBlock = useSelector((state) => state.form.ui.gridSelected);
+@@ -30,6 +61,7 @@
+     >
+       <ContainerEdit
+         {...props}
++        data={data}
+         selectedBlock={selectedBlock}
+         setSelectedBlock={(id) => dispatch(setUIState({ gridSelected: id }))}
+         direction="horizontal"

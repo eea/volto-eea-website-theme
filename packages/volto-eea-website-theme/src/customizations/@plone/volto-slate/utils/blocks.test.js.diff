@@ -1,0 +1,70 @@
+--- volto-19.6.1/packages/volto-slate/src/utils/blocks.test.js
++++ volto-eea-website-theme/src/customizations/@plone/volto-slate/utils/blocks.test.js
+@@ -1,4 +1,5 @@
+-import { getAllBlocks } from './blocks';
++import config from '@plone/volto/registry';
++import { clearList, getAllBlocks, normalizeExternalData } from './blocks';
+ 
+ describe('Blocks utils', () => {
+   describe('Get all blocks', () => {
+@@ -136,3 +137,60 @@
+     });
+   });
+ });
++
++const p = (text) => ({ type: 'p', children: [{ text }] });
++const editor = { _installedPlugins: [] };
++
++// Regression tests for the Microsoft Word paste fix (refs #265782).
++describe('normalizeExternalData', () => {
++  beforeAll(() => {
++    config.settings.slate = {
++      ...config.settings.slate,
++      extensions: config.settings.slate?.extensions || [],
++    };
++  });
++
++  it('keeps loose text between paragraphs in its own paragraph', () => {
++    expect(
++      normalizeExternalData(editor, [p('a'), { text: 'b' }, p('c')]),
++    ).toEqual([p('a'), p('b'), p('c')]);
++  });
++
++  it('does not merge loose text into the following paragraph', () => {
++    expect(normalizeExternalData(editor, [{ text: 'a' }, p('b')])).toEqual([
++      p('a'),
++      p('b'),
++    ]);
++  });
++
++  it('does not merge loose text into the preceding paragraph', () => {
++    expect(
++      normalizeExternalData(editor, [{ text: 'a' }, p('b'), { text: 'c' }]),
++    ).toEqual([p('a'), p('b'), p('c')]);
++  });
++
++  it('wraps typeless elements in a paragraph', () => {
++    const [node] = normalizeExternalData(editor, [
++      { children: [{ text: 'word' }] },
++    ]);
++    expect(node.type).toBe('p');
++  });
++
++  it('keeps consecutive text nodes in one paragraph', () => {
++    expect(
++      normalizeExternalData(editor, [{ text: 'a' }, { text: 'b', bold: true }]),
++    ).toEqual([
++      { type: 'p', children: [{ text: 'a' }, { text: 'b', bold: true }] },
++    ]);
++  });
++
++  it('returns an empty document when there are no nodes', () => {
++    expect(normalizeExternalData(editor, undefined)).toEqual([]);
++  });
++});
++
++describe('clearList', () => {
++  it('is exported, as in upstream volto-slate', () => {
++    expect(typeof clearList).toBe('function');
++  });
++});
